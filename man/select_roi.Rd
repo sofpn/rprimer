@@ -30,7 +30,7 @@ start at position 1.
 }
 \examples{
 # Select the first 1000 bases
-select_roi(example_rprimer_alignment, region = c(1, 1000))
+select_roi(example_rprimer_alignment, from = 1, to = 1000)
 
 }
 \seealso{

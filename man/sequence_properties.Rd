@@ -25,9 +25,6 @@ nucleotide identity and shannon entropy.
 \code{sequence_properties} returns sequence information from an alignment
 of DNA sequences.
 }
-\details{
-
-}
 \section{Majority consensus sequence}{
 
 The most frequently occuring base at each position.

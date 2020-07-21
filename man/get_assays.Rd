@@ -14,8 +14,8 @@ ranging from 40 to 5000 base pairs. The
 default is \code{65:120}, which means that assays with amplicon lengths from
 65 to 120 base-pairs will be considered as acceptable.}
 
-\item{tm_diff}{Maximum Tm difference (in C) between the two primers
-(absulute value). A number between 0 and 30. The default is 1.}
+\item{max_tm_difference}{Maximum Tm difference (in C) between the two primers
+(absolute value). A number between 0 and 30. The default is 1.}
 }
 \value{
 A tibble (a data frame) of class 'rprimer_assay' with all candidate

@@ -24,7 +24,7 @@ are removed.
 higher than a stated threshold in an alignment of DNA sequences.
 }
 \details{
-The anlignment (with gaps removed)
+The alignment (with gaps removed)
 must contain at least 200 bases (an error message will return if not).
 Note that the positions will
 not be kept from the input alignment. The positions in the new

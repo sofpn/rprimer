@@ -1,17 +1,22 @@
 ---
-title: "Designing (RT)-PCR assays with rprimer"
-author: "Sofia"
+title: "rprimer_vingette"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{rprimer}
+  %\VignetteIndexEntry{rprimer_vingette}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+# library(rprimer)
 devtools::load_all(".")
-library(purrr)
 ```
 
 ## Introduction 
@@ -40,7 +45,7 @@ my_sequence_properties <- sequence_properties(
 my_primers <- get_oligos(
   my_sequence_properties, # Enter primer design criteria 
   max_gap_frequency = 0.01, 
-  length = 18:24,
+  length = 18:22,
   max_degenerates = 1, # Maximum number of degenerate positions in each primer 
   max_degeneracy = 2, # Maximum number of variants of each primer 
   avoid_3end_ta = TRUE, 
@@ -69,10 +74,10 @@ my_probes <- get_oligos(
 
 # Get assays from primers and probes
 my_assays <- get_assays(my_primers, length = 65:120, max_tm_difference = 1.5) %>%
-  add_probes(., my_probes, tm_difference = c(0, 10)) %>%
+  add_probes(., my_probes, tm_difference = c(-2, 10)) %>%
   check_match(., my_alignment) # Check if the assays match their targets
 
-# Save all assay canditates 
+# Save all assay candidates 
 # rp_save(my_assays, filename = "my_assays")
 
 # Select an assay 

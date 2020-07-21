@@ -74,9 +74,6 @@ candidates. An error message will return if no oligos are found.
 \code{get_oligos} identifies oligos (primers and probes) from sequence data
 based on user-specfied constraints.
 }
-\details{
-
-}
 \section{Excluded oligos}{
 
 The function excludes oligos with

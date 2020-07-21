@@ -2,7 +2,7 @@
 % Please edit documentation in R/exported_functions.R
 \name{read_fasta_alignment}
 \alias{read_fasta_alignment}
-\title{Read an alignent in fasta format}
+\title{Read an alignment in fasta format}
 \usage{
 read_fasta_alignment(x)
 }

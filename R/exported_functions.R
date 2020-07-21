@@ -10,7 +10,7 @@
 
 # Import alignment ============================================================
 
-#' Read an alignent in fasta format
+#' Read an alignment in fasta format
 #'
 #' \code{read_fasta_alignment} reads a fasta file with aligned DNA
 #' sequences.
@@ -102,7 +102,7 @@ read_fasta_alignment <- function(x) {
 #' positions with a gap frequency frequency higher than
 #' the stated threshold will be removed.
 #'
-#' @details The anlignment (with gaps removed)
+#' @details The alignment (with gaps removed)
 #' must contain at least 200 bases (an error message will return if not).
 #' Note that the positions will
 #' not be kept from the input alignment. The positions in the new
@@ -181,7 +181,7 @@ remove_gaps <- function(x, threshold = 0.5) {
 #'
 #' @examples
 #' # Select the first 1000 bases
-#' select_roi(example_rprimer_alignment, region = c(1, 1000))
+#' select_roi(example_rprimer_alignment, from = 1, to = 1000)
 #'
 #' @export
 #'
@@ -278,8 +278,6 @@ sequence_profile <- function(x) {
 #' At each position, all nucleotides with a proportion
 #' higher than or equal to the stated threshold will be included in
 #' the iupac consensus sequence.
-#'
-#' @details
 #'
 #' @section Majority consensus sequence:
 #' The most frequently occuring base at each position.
@@ -389,8 +387,6 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' @param conc_na The sodium ion concentration in M, ranging
 #' from 0.01 M to 1 M. The default value is 0.05 M (50 mM)
 #' (for Tm calculation).
-#'
-#' @details
 #'
 #' @section Excluded oligos:
 #' The function excludes oligos with
@@ -600,8 +596,8 @@ get_oligos <- function(
 #' default is \code{65:120}, which means that assays with amplicon lengths from
 #' 65 to 120 base-pairs will be considered as acceptable.
 #'
-#' @param tm_diff Maximum Tm difference (in C) between the two primers
-#' (absulute value). A number between 0 and 30. The default is 1.
+#' @param max_tm_difference Maximum Tm difference (in C) between the two primers
+#' (absolute value). A number between 0 and 30. The default is 1.
 #'
 #' @details
 #' #Warning:
