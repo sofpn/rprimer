@@ -35,7 +35,7 @@ may thus be misleading for degenerate (iupac) oligos.
 }
 \examples{
 add_probes(
-example_rprimer_assay, example_rprimer_oligo, tm_difference = c(5, 15)
+example_rprimer_assay, example_rprimer_oligo, tm_difference = c(-2, 10)
 )
 
 }

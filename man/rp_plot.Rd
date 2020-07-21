@@ -42,7 +42,7 @@ Plot an rprimer-object (generic)
 
 \examples{
 rp_plot(example_rprimer_alignment)
-rp_plot(example_rprimer_nucleotide_profile, from = 1, to = 20, rc = TRUE)
+rp_plot(example_rprimer_sequence_profile, from = 1, to = 20, rc = TRUE)
 rp_plot(example_rprimer_sequence_properties)
 
 }

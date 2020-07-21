@@ -42,7 +42,6 @@ intended target sequences.
 
 \examples{
 check_match(example_rprimer_oligo, example_rprimer_alignment)
-check_match(example_rprimer_oligo, example_rprimer_alignment)
-check_match(example_rprimer_assay)
+check_match(example_rprimer_assay, example_rprimer_alignment)
 
 }

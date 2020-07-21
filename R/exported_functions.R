@@ -321,7 +321,7 @@ sequence_properties <- function(x, iupac_threshold = 0) {
   if (!inherits(x, "rprimer_sequence_profile")) {
     stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
   }
-  position <- seq_along(x)
+  position <- seq_len(ncol(x))
   majority <- majority_consensus(x)
   iupac <- iupac_consensus(x, threshold = iupac_threshold)
   gaps <- gap_frequency(x)
@@ -724,7 +724,7 @@ get_assays <- function(
 #'
 #' @examples
 #' add_probes(
-#' example_rprimer_assay, example_rprimer_oligo, tm_difference = c(5, 15)
+#' example_rprimer_assay, example_rprimer_oligo, tm_difference = c(-2, 10)
 #' )
 #'
 #' @export
@@ -827,8 +827,7 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
 #'
 #' @examples
 #' check_match(example_rprimer_oligo, example_rprimer_alignment)
-#' check_match(example_rprimer_oligo, example_rprimer_alignment)
-#' check_match(example_rprimer_assay)
+#' check_match(example_rprimer_assay, example_rprimer_alignment)
 #'
 #' @export
 check_match <- function(x, y) {
@@ -933,7 +932,7 @@ check_match.rprimer_assay <- function(x, y) {
 #'
 #' @examples
 #' rp_plot(example_rprimer_alignment)
-#' rp_plot(example_rprimer_nucleotide_profile, from = 1, to = 20, rc = TRUE)
+#' rp_plot(example_rprimer_sequence_profile, from = 1, to = 20, rc = TRUE)
 #' rp_plot(example_rprimer_sequence_properties)
 #'
 #' @export
@@ -951,7 +950,7 @@ rp_plot.rprimer_alignment <- function(x, ...) {
   op <- par(mar = c(5, 3, 3, 3))
   on.exit(par(op))
   # Make a matrix of the alignment
-  index <- seq_len(ncol(x))
+  index <- seq_along(x)
   sequences_as_integers <- purrr::map(index, function(i) {
     sequence <- unlist(strsplit(x[[i]], split = ""), use.names = FALSE)
     sequence <- gsub("-", NA, sequence)
@@ -959,10 +958,12 @@ rp_plot.rprimer_alignment <- function(x, ...) {
     return(sequence)
   })
   to_plot <- do.call("rbind", sequences_as_integers)
-  plot(seq_along(ncol(to_plot)), rep(1, ncol(to_plot)), ylab = "",
+  plot(seq_len(ncol(to_plot)), rep(1, ncol(to_plot)), ylab = "",
        xlab = "position in consensus sequence", yaxt = "n", pch = NA,
-       ylim = c(0, max(nrow(to_plot)) + 1), ...)
-  invisible(apply(to_plot, 1, function(x) lines(1:length(x), x, col = "grey")))
+       ylim = c(0, max(nrow(to_plot)) + 1))
+  invisible(
+    apply(to_plot, 1, function(x) lines(seq_along(x), x, col = "grey"))
+  )
 }
 
 #' @describeIn rp_plot Plot an object of class 'rprimer_sequence_profile'.
