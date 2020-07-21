@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Sofia" />
+
+
+<title>Designing (RT)-PCR assays with rprimer</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Designing (RT)-PCR assays with rprimer</h1>
+<h4 class="author">Sofia</h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>rprimer provides functions for designing primers, probes and assays for PCR and reverse transcription (RT) PCR for highly variable target sequences. In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV).</p>
+</div>
+<div id="quick-start" class="section level2">
+<h2>Quick start</h2>
+<p>The general workflow for assay design is described below.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># Import alignment </span></a>
+<a class="sourceLine" id="cb1-2" title="2">my_alignment &lt;-<span class="st"> &quot;example_alignment.txt&quot;</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Enter the filename of your alignment </span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="st">  </span>read_fasta_alignment <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="st">  </span><span class="kw">remove_gaps</span>(., <span class="dt">threshold =</span> <span class="fl">0.5</span>)  <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Remove positions with high gap frequency if you want to</span></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="st">  </span><span class="kw">select_roi</span>(., <span class="dt">from =</span> <span class="dv">4000</span>, <span class="dt">to =</span> <span class="dv">6000</span>) <span class="co"># Select a region of interest if you want to </span></a>
+<a class="sourceLine" id="cb1-6" title="6"></a>
+<a class="sourceLine" id="cb1-7" title="7"><span class="co"># Get the sequence profile </span></a>
+<a class="sourceLine" id="cb1-8" title="8">my_sequence_profile &lt;-<span class="st"> </span><span class="kw">sequence_profile</span>(my_alignment)</a>
+<a class="sourceLine" id="cb1-9" title="9"></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="co"># Get sequence properties </span></a>
+<a class="sourceLine" id="cb1-11" title="11">my_sequence_properties &lt;-<span class="st"> </span><span class="kw">sequence_properties</span>(</a>
+<a class="sourceLine" id="cb1-12" title="12">  my_sequence_profile, <span class="dt">iupac_threshold =</span> <span class="fl">0.05</span> </a>
+<a class="sourceLine" id="cb1-13" title="13">) <span class="co"># Set the threshold for a degenerate base (0.05 = 5 %)</span></a>
+<a class="sourceLine" id="cb1-14" title="14"></a>
+<a class="sourceLine" id="cb1-15" title="15"><span class="co"># Get primers and probes </span></a>
+<a class="sourceLine" id="cb1-16" title="16">my_primers &lt;-<span class="st"> </span><span class="kw">get_oligos</span>(</a>
+<a class="sourceLine" id="cb1-17" title="17">  my_sequence_properties, <span class="co"># Enter primer design criteria </span></a>
+<a class="sourceLine" id="cb1-18" title="18">  <span class="dt">max_gap_frequency =</span> <span class="fl">0.01</span>, </a>
+<a class="sourceLine" id="cb1-19" title="19">  <span class="dt">length =</span> <span class="dv">18</span><span class="op">:</span><span class="dv">24</span>,</a>
+<a class="sourceLine" id="cb1-20" title="20">  <span class="dt">max_degenerates =</span> <span class="dv">1</span>, <span class="co"># Maximum number of degenerate positions in each primer </span></a>
+<a class="sourceLine" id="cb1-21" title="21">  <span class="dt">max_degeneracy =</span> <span class="dv">2</span>, <span class="co"># Maximum number of variants of each primer </span></a>
+<a class="sourceLine" id="cb1-22" title="22">  <span class="dt">avoid_3end_ta =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb1-23" title="23">  <span class="dt">avoid_5end_g =</span> <span class="ot">FALSE</span>,</a>
+<a class="sourceLine" id="cb1-24" title="24">  <span class="dt">avoid_3end_runs =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb1-25" title="25">  <span class="dt">gc_range =</span> <span class="kw">c</span>(<span class="fl">0.45</span>, <span class="fl">0.56</span>),</a>
+<a class="sourceLine" id="cb1-26" title="26">  <span class="dt">tm_range =</span> <span class="kw">c</span>(<span class="dv">55</span>, <span class="dv">70</span>), </a>
+<a class="sourceLine" id="cb1-27" title="27">  <span class="dt">conc_oligo =</span> <span class="fl">5e-07</span>, <span class="co"># Primer concentration (in M), for Tm calculation</span></a>
+<a class="sourceLine" id="cb1-28" title="28">  <span class="dt">conc_na =</span> <span class="fl">0.05</span> <span class="co"># Na+ concentration (in M), for Tm calculation  </span></a>
+<a class="sourceLine" id="cb1-29" title="29">)</a>
+<a class="sourceLine" id="cb1-30" title="30"></a>
+<a class="sourceLine" id="cb1-31" title="31">my_probes &lt;-<span class="st"> </span><span class="kw">get_oligos</span>(</a>
+<a class="sourceLine" id="cb1-32" title="32">  my_sequence_properties,  <span class="co"># Enter probe design criteria </span></a>
+<a class="sourceLine" id="cb1-33" title="33">  <span class="dt">max_gap_frequency =</span> <span class="fl">0.01</span>,</a>
+<a class="sourceLine" id="cb1-34" title="34">  <span class="dt">length =</span> <span class="dv">18</span><span class="op">:</span><span class="dv">24</span>,</a>
+<a class="sourceLine" id="cb1-35" title="35">  <span class="dt">max_degenerates =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb1-36" title="36">  <span class="dt">max_degeneracy =</span> <span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb1-37" title="37">  <span class="dt">avoid_3end_ta =</span> <span class="ot">FALSE</span>,</a>
+<a class="sourceLine" id="cb1-38" title="38">  <span class="dt">avoid_5end_g =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb1-39" title="39">  <span class="dt">avoid_3end_runs =</span> <span class="ot">FALSE</span>,</a>
+<a class="sourceLine" id="cb1-40" title="40">  <span class="dt">gc_range =</span> <span class="kw">c</span>(<span class="fl">0.45</span>, <span class="fl">0.56</span>),</a>
+<a class="sourceLine" id="cb1-41" title="41">  <span class="dt">tm_range =</span> <span class="kw">c</span>(<span class="dv">55</span>, <span class="dv">70</span>),</a>
+<a class="sourceLine" id="cb1-42" title="42">  <span class="dt">conc_oligo =</span> <span class="fl">2.5e-07</span>, </a>
+<a class="sourceLine" id="cb1-43" title="43">  <span class="dt">conc_na =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb1-44" title="44">)</a>
+<a class="sourceLine" id="cb1-45" title="45"></a>
+<a class="sourceLine" id="cb1-46" title="46"><span class="co"># Get assays from primers and probes</span></a>
+<a class="sourceLine" id="cb1-47" title="47">my_assays &lt;-<span class="st"> </span><span class="kw">get_assays</span>(my_primers, <span class="dt">length =</span> <span class="dv">65</span><span class="op">:</span><span class="dv">120</span>, <span class="dt">max_tm_difference =</span> <span class="fl">1.5</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb1-48" title="48"><span class="st">  </span><span class="kw">add_probes</span>(., my_probes, <span class="dt">tm_difference =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">10</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb1-49" title="49"><span class="st">  </span><span class="kw">check_match</span>(., my_alignment) <span class="co"># Check if the assays match their targets</span></a>
+<a class="sourceLine" id="cb1-50" title="50"></a>
+<a class="sourceLine" id="cb1-51" title="51"><span class="co"># Save all assay canditates </span></a>
+<a class="sourceLine" id="cb1-52" title="52"><span class="co"># rp_save(my_assays, filename = &quot;my_assays&quot;)</span></a>
+<a class="sourceLine" id="cb1-53" title="53"></a>
+<a class="sourceLine" id="cb1-54" title="54"><span class="co"># Select an assay </span></a>
+<a class="sourceLine" id="cb1-55" title="55">selected_assay &lt;-<span class="st"> </span>my_assays[<span class="dv">1</span>, ]</a>
+<a class="sourceLine" id="cb1-56" title="56"></a>
+<a class="sourceLine" id="cb1-57" title="57"><span class="co"># Write report </span></a>
+<a class="sourceLine" id="cb1-58" title="58"><span class="co"># write_assay_report(</span></a>
+<a class="sourceLine" id="cb1-59" title="59"><span class="co"># filename = &quot;my_assay_report&quot;,</span></a>
+<a class="sourceLine" id="cb1-60" title="60"><span class="co"># selected_assay,</span></a>
+<a class="sourceLine" id="cb1-61" title="61"><span class="co"># my_alignment,</span></a>
+<a class="sourceLine" id="cb1-62" title="62"><span class="co"># my_sequence_profile,</span></a>
+<a class="sourceLine" id="cb1-63" title="63"><span class="co"># my_sequence_properties</span></a>
+<a class="sourceLine" id="cb1-64" title="64"><span class="co"># )</span></a></code></pre></div>
+</div>
+<div id="details" class="section level2">
+<h2>Details</h2>
+<div id="step-1-import-alignment" class="section level3">
+<h3>Step 1: Import alignment</h3>
+<p>Prepare a .txt-file with an alignment of the sequences of interest (in fasta-format), and import it using <code>read_fasta_alignment</code>. In this example, I use an alignment with 621 HEV sequences that I have collected from GenBank.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">my_alignment &lt;-<span class="st"> &quot;example_alignment.txt&quot;</span> <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="st">  </span>read_fasta_alignment</a></code></pre></div>
+<p>From here, it is possible to either proceed directly to Step 2, or to process the alignment using <code>remove_gaps</code> and/or <code>select_roi</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">my_alignment &lt;-<span class="st"> </span><span class="kw">remove_gaps</span>(my_alignment, <span class="dt">threshold =</span> <span class="fl">0.5</span>)  <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="st">  </span><span class="kw">select_roi</span>(., <span class="dt">from =</span> <span class="dv">4000</span>, <span class="dt">to =</span> <span class="dv">6000</span>)</a></code></pre></div>
+<ul>
+<li><p><code>remove_gaps</code> removes positions with a gap proportion higher than the stated <code>threshold</code> (the default is 0.5, i.e. 50 %). However, this should be done with caution; removing positions with high gap frequency may lead to placement of primers or probes in insertion-rich regions.</p></li>
+<li><p><code>select_roi</code> selects a region of interest (ROI) within the alignment. Note that the positions are re-calculated in the output. In the above example, position 1 in ROI corresponds to position 4000 in the original alignment.</p></li>
+</ul>
+<p>The output can be visualised with <code>rp_plot</code>, where each sequence is represented as a horizontal line.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># For brewity, I decided to only include the first 100 sequences in the figure</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="co"># new_rprimer_alignment is an internal object constructor </span></a>
+<a class="sourceLine" id="cb4-3" title="3">my_alignment_selection &lt;-<span class="st"> </span><span class="kw">new_rprimer_alignment</span>(my_alignment[<span class="dv">1</span><span class="op">:</span><span class="dv">100</span>])</a>
+<a class="sourceLine" id="cb4-4" title="4"></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="kw">rp_plot</span>(my_alignment_selection)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</div>
+<div id="step-2-get-the-sequence-profile" class="section level3">
+<h3>Step 2: Get the sequence profile</h3>
+<p><code>sequence_profile</code> takes an alignment as input and returns a matrix with the proportion of each nucleotide at each position in the alignment.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">my_sequence_profile &lt;-<span class="st"> </span><span class="kw">sequence_profile</span>(my_alignment)</a>
+<a class="sourceLine" id="cb5-2" title="2"></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="co"># The first 6 positions of the sequence profile</span></a>
+<a class="sourceLine" id="cb5-4" title="4">my_sequence_profile[, <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>]</a></code></pre></div>
+<pre><code>##             1           2           3           4           5           6
+## - 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000
+## a 0.000000000 0.000000000 0.003220612 0.004830918 0.000000000 0.016103060
+## b 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000
+## c 0.001610306 0.001610306 0.864734300 0.990338164 0.001610306 0.599033816
+## g 0.996779388 0.998389694 0.045088567 0.004830918 0.998389694 0.006441224
+## k 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000
+## m 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000
+## n 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000
+## r 0.001610306 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000
+## s 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000
+## t 0.000000000 0.000000000 0.086956522 0.000000000 0.000000000 0.376811594
+## w 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000
+## y 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.001610306</code></pre>
+<p>The sequence profile can be visualised with <code>rp_plot</code>. A specific region can be selected with <code>from</code> and <code>to</code>. The <code>rc</code> option regulates whether the sequence should be displayed as a reverse complement or not (the default is <code>FALSE</code>).</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># The first 30 positions of the sequence profile  </span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="kw">rp_plot</span>(my_sequence_profile, <span class="dt">from =</span> <span class="dv">1</span>, <span class="dt">to =</span> <span class="dv">30</span>, <span class="dt">rc =</span> <span class="ot">FALSE</span>) </a></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</div>
+<div id="step-3-get-sequence-properties" class="section level3">
+<h3>Step 3: Get sequence properties</h3>
+<p><code>sequence_properties</code> takes a sequence profile as input and returns a tibble (a data frame) with the following sequence properties:</p>
+<ul>
+<li><p><em>Majority</em>. The majority consensus sequence (the most frequently occuring nucleotide).</p></li>
+<li><p><em>Iupac</em>. The IUPAC-consensus sequence, which includes wobble bases according to the IUPAC-nomenclature. All nucleotides with a proportion higher than or equal to <code>iupac_threshold</code> will be included in the IUPAC-consensus sequence.</p></li>
+<li><p><em>Gaps</em>. The proportion of gaps.</p></li>
+<li><p><em>Identity</em>. The proportion of the most frequently occuring base.</p></li>
+<li><p><em>Entropy</em>. The Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability.</p></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">my_sequence_properties &lt;-<span class="st"> </span><span class="kw">sequence_properties</span>(</a>
+<a class="sourceLine" id="cb8-2" title="2">  my_sequence_profile, <span class="dt">iupac_threshold =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb8-3" title="3">)</a>
+<a class="sourceLine" id="cb8-4" title="4"></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="kw">str</span>(my_sequence_properties)</a></code></pre></div>
+<pre><code>## Classes &#39;rprimer_sequence_properties&#39;, &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;: 2001 obs. of  6 variables:
+##  $ position: int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ majority: chr  &quot;g&quot; &quot;g&quot; &quot;c&quot; &quot;c&quot; ...
+##  $ iupac   : chr  &quot;g&quot; &quot;g&quot; &quot;y&quot; &quot;c&quot; ...
+##  $ gaps    : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ identity: num  0.998 0.998 0.865 0.99 0.998 ...
+##  $ entropy : num  0.0173 0.0173 0.716 0.0882 0.0173 ...</code></pre>
+<p>The output can be visualised with <code>rp_plot</code>. In the following figure, vertical bars represent the value at each position. The black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent centered running averages.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">rp_plot</span>(my_sequence_properties)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</div>
+<div id="step-4-find-primers" class="section level3">
+<h3>Step 4: Find primers</h3>
+<p><code>get_oligo</code> takes sequece properties as input and searches for oligos that fulfil the following criteria:</p>
+<ul>
+<li><p><code>max_gap_frequency</code> Maximum allowed gap frequency. The default is 0.1, which means that only positions with a gap frequency of &lt;=0.1 will be considered.</p></li>
+<li><p><code>length</code> Oligo length. The default is 18-22.</p></li>
+<li><p><code>max_degenerates</code> The maximum number of degenerate positions in each oligo. The default is 2.</p></li>
+<li><p><code>max_degeneracy</code> The maximum number of degenerate variants of each oligo. The default is 4.</p></li>
+<li><p><code>avoid_3end_ta</code> If oligos with a T or an A at the 3’ end should be avoided (recommended for primers). The default is <code>TRUE</code>.</p></li>
+<li><p><code>avoid_5end_g</code> If oligos with a G at the 5’ end should be avoided (recommended for probes). The default is <code>FALSE</code>.</p></li>
+<li><p><code>avoid_3end_runs</code> If oligos with more than two runs of the same nucleotide at the 3’ end should be excluded (recommended for primers). The default is <code>TRUE</code></p></li>
+<li><p><code>gc_range</code> GC-content-range. The default is 0.45-0.55.</p></li>
+<li><p><code>tm_range</code> melting temperature (Tm) range. The default is 48-65. Tm is calculated using the nearest-neigbour method. See <code>?get_oligos</code> for a detailed description and references.</p></li>
+<li><p><code>conc_oligo</code> Oligo concentration (for Tm calculation). The default is 5e-07 M (500 nM).</p></li>
+<li><p><code>conc_na</code> Sodium ion concentration (for Tm calculation). The default is 0.05 M (50 mM).</p></li>
+</ul>
+<p>In addition, <code>get_oligos</code> avoids oligos with more than than three consecutive runs of the same dinucleotide (e.g. “TATATATA”), oligos with more than four consecutive runs of the same nucleotide (e.g. “AAAAA”), and oligos that are duplicated.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">my_primers &lt;-<span class="st"> </span><span class="kw">get_oligos</span>(</a>
+<a class="sourceLine" id="cb11-2" title="2">  my_sequence_properties,</a>
+<a class="sourceLine" id="cb11-3" title="3">  <span class="dt">max_gap_frequency =</span> <span class="fl">0.01</span>,</a>
+<a class="sourceLine" id="cb11-4" title="4">  <span class="dt">length =</span> <span class="dv">18</span><span class="op">:</span><span class="dv">22</span>,</a>
+<a class="sourceLine" id="cb11-5" title="5">  <span class="dt">max_degenerates =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb11-6" title="6">  <span class="dt">max_degeneracy =</span> <span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb11-7" title="7">  <span class="dt">avoid_3end_ta =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb11-8" title="8">  <span class="dt">avoid_5end_g =</span> <span class="ot">FALSE</span>,</a>
+<a class="sourceLine" id="cb11-9" title="9">  <span class="dt">avoid_3end_runs =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb11-10" title="10">  <span class="dt">gc_range =</span> <span class="kw">c</span>(<span class="fl">0.45</span>, <span class="fl">0.56</span>),</a>
+<a class="sourceLine" id="cb11-11" title="11">  <span class="dt">tm_range =</span> <span class="kw">c</span>(<span class="dv">55</span>, <span class="dv">65</span>),</a>
+<a class="sourceLine" id="cb11-12" title="12">  <span class="dt">conc_oligo =</span> <span class="fl">5e-07</span>, </a>
+<a class="sourceLine" id="cb11-13" title="13">  <span class="dt">conc_na =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb11-14" title="14">)</a></code></pre></div>
+<p>Candidate oligos are displayed in a tibble. Oligo sequences are displayed in both majortiy and IUPAC format, and as reverse complements (rc). <code>NA</code> means that the oligo was excluded due to e.g. a terminal A or T (if <code>avoid_3end_ta = TRUE</code>). An error message will return if no oligos are found.</p>
+<p>In this example, 52 primers were found. Most of them are located around position 1300, which is the most conserved region in our ROI. We only allowed one degenerate base in each primer, and no more than two variants of each primer. More primers can be found by increasing <code>max_degenerates</code> and <code>max_degeneracy</code>, or by increasing the <code>iupac_threshold</code> in the <code>sequence_properties</code> function.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">str</span>(my_primers)</a></code></pre></div>
+<pre><code>## Classes &#39;rprimer_oligo&#39;, &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:   52 obs. of  11 variables:
+##  $ begin      : int  1293 1294 1296 1296 1297 1299 1300 1300 1301 1301 ...
+##  $ end        : int  1310 1311 1315 1317 1316 1320 1319 1321 1320 1322 ...
+##  $ length     : int  18 18 20 22 20 22 20 22 20 22 ...
+##  $ majority   : chr  NA &quot;tggtttctggggtgacag&quot; NA NA ...
+##  $ iupac      : chr  NA &quot;tggtttctggggtgacmg&quot; NA NA ...
+##  $ majority_rc: chr  &quot;tgtcaccccagaaaccac&quot; NA &quot;aaccctgtcaccccagaaac&quot; &quot;tcaaccctgtcaccccagaaac&quot; ...
+##  $ iupac_rc   : chr  &quot;kgtcaccccagaaaccac&quot; NA &quot;aaccckgtcaccccagaaac&quot; &quot;tcaaccckgtcaccccagaaac&quot; ...
+##  $ degenerates: int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ degeneracy : num  2 2 2 2 2 2 2 2 2 2 ...
+##  $ gc_majority: num  0.556 0.556 0.55 0.545 0.55 ...
+##  $ tm_majority: num  56.6 56.3 59.1 61.2 59.1 ...</code></pre>
+</div>
+<div id="step-5-get-assays" class="section level3">
+<h3>Step 5: Get assays</h3>
+<p><code>get_assays</code> finds pairs of forward and reverse primers that fulfil the following criteria:</p>
+<ul>
+<li><p><code>length</code> Amplicon length. The default is 65-120.</p></li>
+<li><p><code>max_tm_difference</code> The maximum Tm difference between the two primers (absolute value, in C). The default is 1. Note that Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.</p></li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">my_assays &lt;-<span class="st"> </span><span class="kw">get_assays</span>(my_primers, <span class="dt">length =</span> <span class="dv">65</span><span class="op">:</span><span class="dv">120</span>, <span class="dt">max_tm_difference =</span> <span class="fl">1.5</span>)</a></code></pre></div>
+<p>Candidate assays are displayed in a tibble (see below). An error message will return if no assays are found. Three different combinations of forward and reverse primer were found in this example. <code>total_degeneracy</code> is the sum of the number of variants of the forward primer and reverse primer.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">str</span>(my_assays)</a></code></pre></div>
+<pre><code>## Classes &#39;rprimer_assay&#39;, &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:   3 obs. of  23 variables:
+##  $ begin               : int  1294 1294 1294
+##  $ end                 : int  1359 1360 1363
+##  $ amplicon_length     : int  66 67 70
+##  $ tm_difference_primer: num  1.21 1.21 1.17
+##  $ total_degeneracy    : num  3 3 4
+##  $ begin_fwd           : int  1294 1294 1294
+##  $ end_fwd             : int  1311 1311 1311
+##  $ length_fwd          : int  18 18 18
+##  $ majority_fwd        : chr  &quot;tggtttctggggtgacag&quot; &quot;tggtttctggggtgacag&quot; &quot;tggtttctggggtgacag&quot;
+##  $ iupac_fwd           : chr  &quot;tggtttctggggtgacmg&quot; &quot;tggtttctggggtgacmg&quot; &quot;tggtttctggggtgacmg&quot;
+##  $ degenerates_fwd     : int  1 1 1
+##  $ degeneracy_fwd      : num  2 2 2
+##  $ gc_majority_fwd     : num  0.556 0.556 0.556
+##  $ tm_majority_fwd     : num  56.3 56.3 56.3
+##  $ begin_rev           : int  1338 1339 1346
+##  $ end_rev             : int  1359 1360 1363
+##  $ length_rev          : int  22 22 18
+##  $ majority_rev        : chr  &quot;gggttggttggatgaatatagg&quot; &quot;ggggttggttggatgaatatag&quot; &quot;gaaggggttggttggatg&quot;
+##  $ iupac_rev           : chr  &quot;gggttggttggatgaatatagg&quot; &quot;ggggttggttggatgaatatag&quot; &quot;raaggggttggttggatg&quot;
+##  $ degenerates_rev     : int  0 0 1
+##  $ degeneracy_rev      : num  1 1 2
+##  $ gc_majority_rev     : num  0.455 0.455 0.556
+##  $ tm_majority_rev     : num  55.1 55.1 55.1</code></pre>
+</div>
+<div id="step-6-add-probes" class="section level3">
+<h3>Step 6: Add probes</h3>
+<p>Probe candidates can be generated with <code>get_oligos</code>, and added to assays with <code>add_probes</code>. Here, <code>tm_difference</code> is the acceptable difference in Tm between the primers and probe. It is calculated by subtracting the Tm of the probe with the average Tm of the primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair. Note that the Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.</p>
+<p>Candidate assays are displayed in a tibble (see below). An error message will return if no assays are found.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">my_probes &lt;-<span class="st"> </span><span class="kw">get_oligos</span>(</a>
+<a class="sourceLine" id="cb17-2" title="2">  my_sequence_properties,</a>
+<a class="sourceLine" id="cb17-3" title="3">  <span class="dt">max_gap_frequency =</span> <span class="fl">0.01</span>,</a>
+<a class="sourceLine" id="cb17-4" title="4">  <span class="dt">length =</span> <span class="dv">18</span><span class="op">:</span><span class="dv">24</span>,</a>
+<a class="sourceLine" id="cb17-5" title="5">  <span class="dt">max_degenerates =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb17-6" title="6">  <span class="dt">max_degeneracy =</span> <span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb17-7" title="7">  <span class="dt">avoid_3end_ta =</span> <span class="ot">FALSE</span>,</a>
+<a class="sourceLine" id="cb17-8" title="8">  <span class="dt">avoid_5end_g =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb17-9" title="9">  <span class="dt">avoid_3end_runs =</span> <span class="ot">FALSE</span>,</a>
+<a class="sourceLine" id="cb17-10" title="10">  <span class="dt">gc_range =</span> <span class="kw">c</span>(<span class="fl">0.45</span>, <span class="fl">0.56</span>),</a>
+<a class="sourceLine" id="cb17-11" title="11">  <span class="dt">tm_range =</span> <span class="kw">c</span>(<span class="dv">55</span>, <span class="dv">70</span>),</a>
+<a class="sourceLine" id="cb17-12" title="12">  <span class="dt">conc_oligo =</span> <span class="fl">2.5e-07</span>, </a>
+<a class="sourceLine" id="cb17-13" title="13">  <span class="dt">conc_na =</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb17-14" title="14">)</a>
+<a class="sourceLine" id="cb17-15" title="15"></a>
+<a class="sourceLine" id="cb17-16" title="16">my_assays &lt;-<span class="st"> </span><span class="kw">add_probes</span>(my_assays, my_probes, <span class="dt">tm_difference =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">10</span>))</a>
+<a class="sourceLine" id="cb17-17" title="17"></a>
+<a class="sourceLine" id="cb17-18" title="18"><span class="kw">str</span>(my_assays)</a></code></pre></div>
+<pre><code>## Classes &#39;rprimer_assay&#39;, &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:   12 obs. of  34 variables:
+##  $ begin                     : int  1294 1294 1294 1294 1294 1294 1294 1294 1294 1294 ...
+##  $ end                       : int  1359 1359 1359 1359 1360 1360 1360 1360 1363 1363 ...
+##  $ amplicon_length           : int  66 66 66 66 67 67 67 67 70 70 ...
+##  $ tm_difference_primer      : num  1.21 1.21 1.21 1.21 1.21 ...
+##  $ tm_difference_primer_probe: num  1.679 1.178 3.434 0.716 1.679 ...
+##  $ total_degeneracy          : num  4 4 5 4 4 4 5 4 5 5 ...
+##  $ begin_fwd                 : int  1294 1294 1294 1294 1294 1294 1294 1294 1294 1294 ...
+##  $ end_fwd                   : int  1311 1311 1311 1311 1311 1311 1311 1311 1311 1311 ...
+##  $ length_fwd                : int  18 18 18 18 18 18 18 18 18 18 ...
+##  $ majority_fwd              : chr  &quot;tggtttctggggtgacag&quot; &quot;tggtttctggggtgacag&quot; &quot;tggtttctggggtgacag&quot; &quot;tggtttctggggtgacag&quot; ...
+##  $ iupac_fwd                 : chr  &quot;tggtttctggggtgacmg&quot; &quot;tggtttctggggtgacmg&quot; &quot;tggtttctggggtgacmg&quot; &quot;tggtttctggggtgacmg&quot; ...
+##  $ degenerates_fwd           : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ degeneracy_fwd            : num  2 2 2 2 2 2 2 2 2 2 ...
+##  $ gc_majority_fwd           : num  0.556 0.556 0.556 0.556 0.556 ...
+##  $ tm_majority_fwd           : num  56.3 56.3 56.3 56.3 56.3 ...
+##  $ begin_rev                 : int  1338 1338 1338 1338 1339 1339 1339 1339 1346 1346 ...
+##  $ end_rev                   : int  1359 1359 1359 1359 1360 1360 1360 1360 1363 1363 ...
+##  $ length_rev                : int  22 22 22 22 22 22 22 22 18 18 ...
+##  $ majority_rev              : chr  &quot;gggttggttggatgaatatagg&quot; &quot;gggttggttggatgaatatagg&quot; &quot;gggttggttggatgaatatagg&quot; &quot;gggttggttggatgaatatagg&quot; ...
+##  $ iupac_rev                 : chr  &quot;gggttggttggatgaatatagg&quot; &quot;gggttggttggatgaatatagg&quot; &quot;gggttggttggatgaatatagg&quot; &quot;gggttggttggatgaatatagg&quot; ...
+##  $ degenerates_rev           : int  0 0 0 0 0 0 0 0 1 1 ...
+##  $ degeneracy_rev            : num  1 1 1 1 1 1 1 1 2 2 ...
+##  $ gc_majority_rev           : num  0.455 0.455 0.455 0.455 0.455 ...
+##  $ tm_majority_rev           : num  55.1 55.1 55.1 55.1 55.1 ...
+##  $ begin_pr                  : int  1312 1314 1314 1315 1312 1314 1314 1315 1312 1314 ...
+##  $ end_pr                    : int  1331 1332 1333 1332 1331 1332 1333 1332 1331 1332 ...
+##  $ length_pr                 : int  20 19 20 18 20 19 20 18 20 19 ...
+##  $ majority_pr               : chr  &quot;cgaagggctgagaatcaacc&quot; &quot;ttgattctcagcccttcgc&quot; &quot;ttgattctcagcccttcgcc&quot; &quot;tgattctcagcccttcgc&quot; ...
+##  $ iupac_pr                  : chr  &quot;cgaagggctgagaatcaacc&quot; &quot;ttgattctcagcccttcgc&quot; &quot;ttgattctcagcccttcgcm&quot; &quot;tgattctcagcccttcgc&quot; ...
+##  $ degenerates_pr            : int  0 0 1 0 0 0 1 0 0 0 ...
+##  $ degeneracy_pr             : num  1 1 2 1 1 1 2 1 1 1 ...
+##  $ gc_majority_pr            : num  0.55 0.526 0.55 0.556 0.55 ...
+##  $ tm_majority_pr            : num  57.9 57.4 59.7 57 57.9 ...
+##  $ sense_pr                  : chr  &quot;neg&quot; &quot;pos&quot; &quot;pos&quot; &quot;pos&quot; ...</code></pre>
+</div>
+<div id="step-7-check-inclusivity" class="section level3">
+<h3>Step 7: Check inclusivity</h3>
+<p><code>check_match</code> checks if oligos or assays matches with their intended target sequences by using regular expressions. The output consists of a tibble in the same format as the input object, but with columns describing the proportion of perfectly matching sequences, and an additional column, “match_matrix”. The match matrix describes in detail which sequences the oligo/assay matches perfectly to.</p>
+<p><code>check_match</code> can also be applied to primers or probes (i.e. objects of class ‘rprimer_oligo’), e.g. <code>check_match(my_primers, my_alignment)</code>.</p>
+<p>Warning: <code>check_match</code> can take a while if there are many oligo or assay candidates.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">my_assays &lt;-<span class="st"> </span><span class="kw">check_match</span>(my_assays, my_alignment)</a>
+<a class="sourceLine" id="cb19-2" title="2"></a>
+<a class="sourceLine" id="cb19-3" title="3"><span class="co"># We take a look at the first assay </span></a>
+<a class="sourceLine" id="cb19-4" title="4"><span class="kw">str</span>(my_assays[<span class="dv">1</span>, ])</a></code></pre></div>
+<pre><code>## Classes &#39;rprimer_assay&#39;, &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:   1 obs. of  43 variables:
+##  $ begin                     : int 1294
+##  $ end                       : int 1359
+##  $ amplicon_length           : int 66
+##  $ tm_difference_primer      : num 1.21
+##  $ tm_difference_primer_probe: num 1.68
+##  $ total_degeneracy          : num 4
+##  $ begin_fwd                 : int 1294
+##  $ end_fwd                   : int 1311
+##  $ length_fwd                : int 18
+##  $ majority_fwd              : chr &quot;tggtttctggggtgacag&quot;
+##  $ iupac_fwd                 : chr &quot;tggtttctggggtgacmg&quot;
+##  $ degenerates_fwd           : int 1
+##  $ degeneracy_fwd            : num 2
+##  $ gc_majority_fwd           : num 0.556
+##  $ tm_majority_fwd           : num 56.3
+##  $ begin_rev                 : int 1338
+##  $ end_rev                   : int 1359
+##  $ length_rev                : int 22
+##  $ majority_rev              : chr &quot;gggttggttggatgaatatagg&quot;
+##  $ iupac_rev                 : chr &quot;gggttggttggatgaatatagg&quot;
+##  $ degenerates_rev           : int 0
+##  $ degeneracy_rev            : num 1
+##  $ gc_majority_rev           : num 0.455
+##  $ tm_majority_rev           : num 55.1
+##  $ begin_pr                  : int 1312
+##  $ end_pr                    : int 1331
+##  $ length_pr                 : int 20
+##  $ majority_pr               : chr &quot;cgaagggctgagaatcaacc&quot;
+##  $ iupac_pr                  : chr &quot;cgaagggctgagaatcaacc&quot;
+##  $ degenerates_pr            : int 0
+##  $ degeneracy_pr             : num 1
+##  $ gc_majority_pr            : num 0.55
+##  $ tm_majority_pr            : num 57.9
+##  $ sense_pr                  : chr &quot;neg&quot;
+##  $ pm_majority_fwd           : num 0.639
+##  $ pm_iupac_fwd              : num 0.971
+##  $ pm_majority_rev           : num 0.929
+##  $ pm_iupac_rev              : num 0.929
+##  $ pm_majority_pr            : num 0.91
+##  $ pm_iupac_pr               : num 0.91
+##  $ pm_majority_all           : num 0.543
+##  $ pm_iupac_all              : num 0.834
+##  $ match_matrix              :List of 1
+##   ..$ tggtttctggggtgacag_gggttggttggatgaatatagg_cgaagggctgagaatcaacc: logi [1:621, 1:8] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. ..$ : chr  &quot;D11092.1&quot; &quot;M80581.1&quot; &quot;AF444002.1&quot; &quot;AF444003.1&quot; ...
+##   .. .. ..$ : chr  &quot;majority_fwd&quot; &quot;iupac_fwd&quot; &quot;majority_rev&quot; &quot;iupac_rev&quot; ...</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="co"># We can also take a detailed look at the match matrix for the first assay</span></a>
+<a class="sourceLine" id="cb21-2" title="2"><span class="co"># For brewity, I display only the first 10 sequences (i.e. rows, by calling [1:10, ])</span></a>
+<a class="sourceLine" id="cb21-3" title="3">my_assays<span class="op">$</span>match_matrix[[<span class="dv">1</span>]][<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, ] </a></code></pre></div>
+<pre><code>##             majority_fwd iupac_fwd majority_rev iupac_rev majority_pr iupac_pr
+## D11092.1           FALSE      TRUE         TRUE      TRUE        TRUE     TRUE
+## M80581.1           FALSE      TRUE         TRUE      TRUE        TRUE     TRUE
+## AF444002.1         FALSE      TRUE         TRUE      TRUE        TRUE     TRUE
+## AF444003.1         FALSE      TRUE         TRUE      TRUE        TRUE     TRUE
+## HI577563.1         FALSE      TRUE         TRUE      TRUE        TRUE     TRUE
+## L25595.1           FALSE      TRUE         TRUE      TRUE        TRUE     TRUE
+## L25547.1           FALSE      TRUE         TRUE      TRUE        TRUE     TRUE
+## L08816.1           FALSE      TRUE         TRUE      TRUE       FALSE    FALSE
+## NC_001434.1        FALSE      TRUE         TRUE      TRUE       FALSE    FALSE
+## M94177.1           FALSE      TRUE         TRUE      TRUE       FALSE    FALSE
+##             majority_all iupac_all
+## D11092.1           FALSE      TRUE
+## M80581.1           FALSE      TRUE
+## AF444002.1         FALSE      TRUE
+## AF444003.1         FALSE      TRUE
+## HI577563.1         FALSE      TRUE
+## L25595.1           FALSE      TRUE
+## L25547.1           FALSE      TRUE
+## L08816.1           FALSE     FALSE
+## NC_001434.1        FALSE     FALSE
+## M94177.1           FALSE     FALSE</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1"><span class="co"># It is also possible to sort the assays, by e.g. perfect match percentage </span></a>
+<a class="sourceLine" id="cb23-2" title="2">my_assays &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(my_assays, pm_majority_all)</a></code></pre></div>
+</div>
+<div id="step-8-save-results" class="section level3">
+<h3>Step 8: Save results</h3>
+<p>Alignments, sequence properties, primer, probe and assay candidates can be exported using <code>rp_save</code>. Objects of class ‘rprimer_alignment’ will be saved as .txt-files, whereas objects of class ‘rprimer_sequence_properties’, ‘rprimer_oligo’ and ‘rprimer_assay’ will be saved as .csv-files.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="co"># rp_save(my_alignment, filename = &quot;my_alignment&quot;)</span></a>
+<a class="sourceLine" id="cb24-2" title="2"><span class="co"># rp_save(my_sequence_properties, filename = &quot;my_sequence_properties&quot;)</span></a>
+<a class="sourceLine" id="cb24-3" title="3"><span class="co"># rp_save(my_assays, filename = &quot;my_assays&quot;)</span></a></code></pre></div>
+</div>
+<div id="step-9-select-an-assay-and-generate-a-report" class="section level3">
+<h3>Step 9: Select an assay and generate a report</h3>
+<p>For each assay, a report can be generated by calling <code>write_assay_report</code>.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1">selected_assay &lt;-<span class="st"> </span>my_assays[<span class="dv">1</span>, ] <span class="co"># Select an assay </span></a>
+<a class="sourceLine" id="cb25-2" title="2"></a>
+<a class="sourceLine" id="cb25-3" title="3"><span class="co"># write_assay_report(</span></a>
+<a class="sourceLine" id="cb25-4" title="4"><span class="co">#  selected_assay,</span></a>
+<a class="sourceLine" id="cb25-5" title="5"><span class="co">#  my_alignment,</span></a>
+<a class="sourceLine" id="cb25-6" title="6"><span class="co">#  my_sequence_profile,</span></a>
+<a class="sourceLine" id="cb25-7" title="7"><span class="co">#  my_sequence_properties</span></a>
+<a class="sourceLine" id="cb25-8" title="8"><span class="co"># )</span></a></code></pre></div>
+<p>The assay report contain detailed information about</p>
+<p>Example of an assay report: [picture]</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

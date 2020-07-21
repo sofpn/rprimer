@@ -1,0 +1,318 @@
+---
+title: "Designing (RT)-PCR assays with rprimer"
+author: "Sofia"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rprimer}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+devtools::load_all(".")
+library(purrr)
+```
+
+## Introduction 
+rprimer provides functions for designing primers, probes and assays for PCR and reverse transcription (RT) PCR for highly variable target sequences. In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV).
+
+## Quick start 
+The general workflow for assay design is described below.
+
+```{r}
+
+# Import alignment 
+my_alignment <- "example_alignment.txt" %>% # Enter the filename of your alignment 
+  read_fasta_alignment %>%
+  remove_gaps(., threshold = 0.5)  %>% # Remove positions with high gap frequency if you want to
+  select_roi(., from = 4000, to = 6000) # Select a region of interest if you want to 
+
+# Get the sequence profile 
+my_sequence_profile <- sequence_profile(my_alignment)
+
+# Get sequence properties 
+my_sequence_properties <- sequence_properties(
+  my_sequence_profile, iupac_threshold = 0.05 
+) # Set the threshold for a degenerate base (0.05 = 5 %)
+
+# Get primers and probes 
+my_primers <- get_oligos(
+  my_sequence_properties, # Enter primer design criteria 
+  max_gap_frequency = 0.01, 
+  length = 18:24,
+  max_degenerates = 1, # Maximum number of degenerate positions in each primer 
+  max_degeneracy = 2, # Maximum number of variants of each primer 
+  avoid_3end_ta = TRUE, 
+  avoid_5end_g = FALSE,
+  avoid_3end_runs = TRUE, 
+  gc_range = c(0.45, 0.56),
+  tm_range = c(55, 70), 
+  conc_oligo = 5e-07, # Primer concentration (in M), for Tm calculation
+  conc_na = 0.05 # Na+ concentration (in M), for Tm calculation  
+)
+
+my_probes <- get_oligos(
+  my_sequence_properties,  # Enter probe design criteria 
+  max_gap_frequency = 0.01,
+  length = 18:24,
+  max_degenerates = 1,
+  max_degeneracy = 2,
+  avoid_3end_ta = FALSE,
+  avoid_5end_g = TRUE,
+  avoid_3end_runs = FALSE,
+  gc_range = c(0.45, 0.56),
+  tm_range = c(55, 70),
+  conc_oligo = 2.5e-07, 
+  conc_na = 0.05
+)
+
+# Get assays from primers and probes
+my_assays <- get_assays(my_primers, length = 65:120, max_tm_difference = 1.5) %>%
+  add_probes(., my_probes, tm_difference = c(0, 10)) %>%
+  check_match(., my_alignment) # Check if the assays match their targets
+
+# Save all assay canditates 
+# rp_save(my_assays, filename = "my_assays")
+
+# Select an assay 
+selected_assay <- my_assays[1, ]
+
+# Write report 
+# write_assay_report(
+# filename = "my_assay_report",
+# selected_assay,
+# my_alignment,
+# my_sequence_profile,
+# my_sequence_properties
+# )
+```
+
+## Details  
+
+### Step 1: Import alignment 
+Prepare a .txt-file with an alignment of the sequences of interest (in fasta-format), and import it using `read_fasta_alignment`. In this example, I use an alignment with 621 HEV sequences that I have collected from GenBank. 
+
+```{r}
+my_alignment <- "example_alignment.txt" %>% 
+  read_fasta_alignment
+```
+
+From here, it is possible to either proceed directly to Step 2, or to process the alignment using `remove_gaps` and/or `select_roi`:
+
+```{r}
+my_alignment <- remove_gaps(my_alignment, threshold = 0.5)  %>%
+  select_roi(., from = 4000, to = 6000)
+```
+
+* `remove_gaps` removes positions with a gap proportion higher than the stated `threshold` (the default is 0.5, i.e. 50 %). However, this should be done with caution; removing positions with high gap frequency may lead to placement of primers or probes in insertion-rich regions.
+
+* `select_roi` selects a region of interest (ROI) within the alignment. Note that the positions are re-calculated in the output. In the above example, position 1 in ROI corresponds to position 4000 in the original alignment. 
+
+The output can be visualised with `rp_plot`, where each sequence is represented as a horizontal line. 
+
+```{r, fig.width=6, fig.height=6, fig.align='center'}
+# For brewity, I decided to only include the first 100 sequences in the figure
+# new_rprimer_alignment is an internal object constructor 
+my_alignment_selection <- new_rprimer_alignment(my_alignment[1:100])
+
+rp_plot(my_alignment_selection)
+```
+
+### Step 2: Get the sequence profile 
+`sequence_profile` takes an alignment as input and returns a matrix with the proportion of each nucleotide at each position in the alignment. 
+
+```{r}
+my_sequence_profile <- sequence_profile(my_alignment)
+
+# The first 6 positions of the sequence profile
+my_sequence_profile[, 1:6]
+```
+
+The sequence profile can be visualised with `rp_plot`. A specific region can be selected with `from` and `to`. The `rc` option regulates whether the sequence should be displayed as a reverse complement or not (the default is `FALSE`).
+
+```{r, fig.width=6, fig.height=6, fig.align='center'}
+# The first 30 positions of the sequence profile  
+rp_plot(my_sequence_profile, from = 1, to = 30, rc = FALSE) 
+```
+
+### Step 3: Get sequence properties 
+`sequence_properties` takes a sequence profile as input and returns a tibble (a data frame) with the following sequence properties: 
+
+* *Majority*. The majority consensus sequence (the most frequently occuring nucleotide). 
+
+* *Iupac*. The IUPAC-consensus sequence, which includes wobble bases according to the IUPAC-nomenclature. All nucleotides with a proportion higher than or equal to `iupac_threshold` will be included in the IUPAC-consensus sequence.  
+
+* *Gaps*. The proportion of gaps.  
+
+* *Identity*. The proportion of the most frequently occuring base.
+
+* *Entropy*. The Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. 
+
+```{r}
+my_sequence_properties <- sequence_properties(
+  my_sequence_profile, iupac_threshold = 0.05
+)
+
+str(my_sequence_properties)
+```
+
+The output can be visualised with `rp_plot`. In the following figure, vertical bars represent the value at each position. The black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent centered running averages. 
+
+```{r,fig.width=6, fig.height=6, fig.align='center'}
+rp_plot(my_sequence_properties)
+```
+
+### Step 4: Find primers 
+`get_oligo` takes sequece properties as input and searches for oligos that fulfil the following criteria: 
+
+* `max_gap_frequency` Maximum allowed gap frequency. The default is 0.1, which means that only positions with a  gap frequency of <=0.1 will be considered.
+
+* `length` Oligo length. The default is 18-22.
+
+* `max_degenerates` The maximum number of degenerate positions in each oligo. The default is 2. 
+
+* `max_degeneracy` The maximum number of degenerate variants of each oligo. The default is 4. 
+
+* `avoid_3end_ta` If oligos with a T or an A at the 3' end should be avoided (recommended for primers). The default is `TRUE`.
+
+* `avoid_5end_g` If oligos with a G at the 5' end should be avoided (recommended for probes). The default is `FALSE`.
+
+* `avoid_3end_runs` If oligos with more than two runs of the same nucleotide at the 3' end should be excluded (recommended for primers). The default is `TRUE`
+
+* `gc_range` GC-content-range. The default is 0.45-0.55. 
+
+* `tm_range` melting temperature (Tm) range. The default is 48-65. Tm is calculated using the nearest-neigbour method. See `?get_oligos` for a detailed description and references. 
+
+* `conc_oligo` Oligo concentration (for Tm calculation). The default is 5e-07 M (500 nM).
+
+* `conc_na` Sodium ion concentration (for Tm calculation). The default is 0.05 M (50 mM).
+
+In addition, `get_oligos` avoids oligos with more than than three consecutive runs of the same dinucleotide (e.g. "TATATATA"), oligos with more than four consecutive runs of the same nucleotide (e.g. "AAAAA"), and oligos that are duplicated.
+
+```{r}
+my_primers <- get_oligos(
+  my_sequence_properties,
+  max_gap_frequency = 0.01,
+  length = 18:22,
+  max_degenerates = 1,
+  max_degeneracy = 2,
+  avoid_3end_ta = TRUE,
+  avoid_5end_g = FALSE,
+  avoid_3end_runs = TRUE,
+  gc_range = c(0.45, 0.56),
+  tm_range = c(55, 65),
+  conc_oligo = 5e-07, 
+  conc_na = 0.05
+)
+
+```
+
+Candidate oligos are displayed in a tibble. Oligo sequences are displayed in both majortiy and IUPAC format, and as reverse complements (rc). `NA` means that the oligo was excluded due to e.g. a terminal A or T (if `avoid_3end_ta = TRUE`). An error message will return if no oligos are found. 
+
+In this example, 52 primers were found. Most of them are located around position 1300, which is the most conserved region in our ROI. We only allowed one degenerate base in each primer, and no more than two variants of each primer. More primers can be found by increasing `max_degenerates` and `max_degeneracy`, or by increasing the `iupac_threshold` in the `sequence_properties` function. 
+
+```{r}
+str(my_primers)
+```
+
+### Step 5: Get assays 
+`get_assays` finds pairs of forward and reverse primers that fulfil the following criteria:  
+
+* `length` Amplicon length. The default is 65-120.
+
+* `max_tm_difference` The maximum Tm difference between the two primers (absolute value, in C). The default is 1. Note that Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
+
+```{r}
+my_assays <- get_assays(my_primers, length = 65:120, max_tm_difference = 1.5)
+```
+
+Candidate assays are displayed in a tibble (see below). An error message will return if no assays are found. Three different combinations of forward and reverse primer were found in this example. `total_degeneracy` is the sum of the number of variants of the forward primer and reverse primer. 
+
+```{r}
+str(my_assays)
+```
+
+### Step 6: Add probes 
+Probe candidates can be generated with `get_oligos`, and added to assays with `add_probes`. Here, `tm_difference` is the acceptable difference in Tm between the primers and probe. It is calculated by subtracting the Tm of the probe with the average Tm of the primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair. Note that the Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
+
+Candidate assays are displayed in a tibble (see below). An error message will return if no assays are found.   
+
+```{r}
+my_probes <- get_oligos(
+  my_sequence_properties,
+  max_gap_frequency = 0.01,
+  length = 18:24,
+  max_degenerates = 1,
+  max_degeneracy = 2,
+  avoid_3end_ta = FALSE,
+  avoid_5end_g = TRUE,
+  avoid_3end_runs = FALSE,
+  gc_range = c(0.45, 0.56),
+  tm_range = c(55, 70),
+  conc_oligo = 2.5e-07, 
+  conc_na = 0.05
+)
+
+my_assays <- add_probes(my_assays, my_probes, tm_difference = c(0, 10))
+
+str(my_assays)
+
+```
+
+### Step 7: Check inclusivity 
+`check_match` checks if oligos or assays matches with their intended target sequences by using regular expressions. The output consists of a tibble in the same format as the input object, but with columns describing the proportion of perfectly matching sequences, and an additional column, "match_matrix". The match matrix describes in detail which sequences the oligo/assay matches perfectly to. 
+
+`check_match` can also be applied to primers or probes (i.e. objects of class 'rprimer_oligo'), e.g. `check_match(my_primers, my_alignment)`. 
+
+Warning: `check_match` can take a while if there are many oligo or assay candidates. 
+
+```{r}
+my_assays <- check_match(my_assays, my_alignment)
+
+# We take a look at the first assay 
+str(my_assays[1, ])
+
+# We can also take a detailed look at the match matrix for the first assay
+# For brewity, I display only the first 10 sequences (i.e. rows, by calling [1:10, ])
+my_assays$match_matrix[[1]][1:10, ] 
+```
+
+### Step 8: Save results 
+Alignments, sequence properties, primer, probe and assay candidates can be exported using `rp_save`. Objects of class 'rprimer_alignment' will be saved as .txt-files, whereas objects of class 'rprimer_sequence_properties', 'rprimer_oligo' and 'rprimer_assay' will be saved as .csv-files.
+
+```{r}
+# rp_save(my_alignment, filename = "my_alignment")
+# rp_save(my_sequence_properties, filename = "my_sequence_properties")
+# rp_save(my_assays, filename = "my_assays")
+```
+
+### Step 9: Select an assay and generate a report 
+For each assay, a report can be generated by calling `write_assay_report`. You can either select one assay an generate a report, or generate reports for all assays (see code example below). 
+
+```{r}
+
+# It is also possible to sort the assays, by e.g. perfect match percentage 
+my_assays <- dplyr::arrange(my_assays, pm_majority_all)
+
+# Select a specific assay, e.g. the one that matches the most 
+selected_assay <- my_assays[1, ] # Select an assay 
+
+# write_assay_report(
+#  selected_assay,
+#  my_alignment,
+#  my_sequence_profile,
+#  my_sequence_properties
+# )
+
+# Write reports for all assays 
+
+
+```
+
+The assay report contain detailed information about 
+
+Example of an assay report: 
+[picture]
+
+
