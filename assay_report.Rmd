@@ -23,7 +23,7 @@ assay_report <- print_assay_report(params$assay_selection)
 assay_overview_plot(params$sequence_properties, params$assay_selection)
 ```
 <br><br>
-**Fig. 1.** Overview of the alignment/region of interest used for assay design, with the assay region indicated in blue. Identity: Proportion of the most frequently occuring base. Entropy: Shannon entropy, a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. GC: GC-content. Gaps: Proportion of gaps. Vertical bars represent the value at each position. Black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent centered running averages.   
+**Fig. 1.** Overview of the alignment/region of interest used for assay design, with the assay region indicated in blue. Identity: Proportion of the most frequently occurring base. Entropy: Shannon entropy, a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. GC: GC-content. Gaps: Proportion of gaps. Vertical bars represent the value at each position. Black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent centered running averages.   
 <br><br>
 ```{r, fig.width=12, fig.height=6}
 assay_detail_plot(params$sequence_profile, params$assay_selection)

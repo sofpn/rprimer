@@ -10,7 +10,7 @@
     devtools.path = "~/R-dev",
     devtools.install.args = "",
     devtools.name = "Sofia Persson",
-    devtools.desc.author = "Persson Sofia <sofiapersson27@gmail.com> [aut, cre]",
+    devtools.desc.author = "Persson Sofia <sofiapersson27@gmail.com>",
     devtools.desc.license = "What license is it under?",
     devtools.desc.suggests = NULL,
     devtools.desc = list()

@@ -945,8 +945,6 @@ tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
   N <- nchar(x[[1]]) - 1 # Number of phosphates
   sumdS <- sumdS + 0.368*N*log(conc_na)
   tm <- sumdH/(sumdS + gas_constant*log(conc_oligo))
-  # gc_cont <- purrr::map_dbl(x, gc_content)
-  # tm <- 1/(1/tm + (4.29*gc_cont - 3.95)* 1e-5 * log(conc_na) + 9.40e-6 *log(conc_na)^2)
   tm <- tm - 273.15
   return(tm)
 }
@@ -1329,7 +1327,8 @@ print_assay_report <- function(x) { # x rprimer assay obj - one row
 }
 
 #' @noRd
-assay_detail_plot <- function(x, y) { # x = rprimer sequence profile y = assay object (one row)
+assay_detail_plot <- function(x, y) {
+  # x = rprimer sequence profile y = assay object (one row)
   x <- x[which(rownames(x) != "-"), ]
   fwd <- x[, y$begin_fwd:y$end_fwd]
   rev <- x[, y$begin_rev:y$end_rev]
@@ -1361,7 +1360,8 @@ assay_detail_plot <- function(x, y) { # x = rprimer sequence profile y = assay o
 }
 
 #' @noRd
-assay_overview_plot <- function(x, y) { # x rprimer_sequence properties # y assay object (one row)
+assay_overview_plot <- function(x, y) {
+  # x rprimer_sequence properties # y assay object (one row)
   op <- par(
     mfrow = c(4, 1), mai = c(0.1, 1, 0.1, 1), xpd = FALSE,
     oma = c(4, 0, 1, 0), mar = c(0.2, 4.1, 0.2, 2.1)

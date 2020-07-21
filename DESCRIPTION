@@ -6,7 +6,6 @@ Author: Sofia Persson
 Maintainer: Sofia Persson <sofiapersson27@gmail.com>
 Description: Find (RT)-PCR assay regions from a multiple sequence 
     alignment of DNA sequences.
-    .... Provides an output , table , graphical 
 Depends: R (>= 4.0.0)
 License: GPL-2
 Encoding: UTF-8
@@ -21,6 +20,6 @@ Suggests:
     rmarkdown,
     testthat
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 URL: http://github.com/sofpn/rprimer
 BugReports: http://github.com/sofpn/rprimer/issues

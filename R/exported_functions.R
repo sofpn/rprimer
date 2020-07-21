@@ -5,6 +5,7 @@
 # dokumentera dataset
 # dimeriseringscheck
 # tests for extreme values (e.g. 1 input seq and 1000 input seqs)
+# import from add, devtools check devtools check for cmd
 
 
 # Import alignment ============================================================
@@ -122,6 +123,8 @@ read_fasta_alignment <- function(x) {
 #'
 #' @export
 #'
+#' @importFrom purrr "map"
+#'
 #' @seealso \code{read_fasta_alignment}
 remove_gaps <- function(x, threshold = 0.5) {
   if (!(threshold >= 0.5 && threshold < 1)) {
@@ -182,6 +185,8 @@ remove_gaps <- function(x, threshold = 0.5) {
 #'
 #' @export
 #'
+#' @importFrom purrr "map"
+#'
 #' @seealso \code{read_fasta_alignment}.
 select_roi <- function(x, from = 1, to = NULL) {
   if (!inherits(x, "rprimer_alignment")) {
@@ -229,6 +234,9 @@ select_roi <- function(x, from = 1, to = NULL) {
 #' sequence_profile(example_rprimer_alignment)
 #'
 #' @export
+#'
+#' @importFrom purrr "map"
+#'
 sequence_profile <- function(x) {
   if (!inherits(x, "rprimer_alignment")) {
     stop("An rprimer_alignment object is expected.", call. = FALSE)
@@ -306,11 +314,14 @@ sequence_profile <- function(x) {
 #' sequence_properties(example_rprimer_sequence_profile)
 #'
 #' @export
+#'
+#' @importFrom tibble "new_tibble"
+#'
 sequence_properties <- function(x, iupac_threshold = 0) {
   if (!inherits(x, "rprimer_sequence_profile")) {
     stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
   }
-  position <- 1:ncol(x)
+  position <- seq_along(x)
   majority <- majority_consensus(x)
   iupac <- iupac_consensus(x, threshold = iupac_threshold)
   gaps <- gap_frequency(x)
@@ -454,7 +465,9 @@ get_oligos <- function(
   conc_na = 0.05
 ) {
   if (!inherits(x, "rprimer_sequence_properties")) {
-    stop("An rprimer_sequence_properties object is expected for x.", call. = FALSE)
+    stop(
+      "An rprimer_sequence_properties object is expected for x.", call. = FALSE
+  )
   }
   if (!(min(length) >= 6 && max(length) <= 30 && is.numeric(length))) {
     stop("length must be between 4 and 30", call. = FALSE)
@@ -938,7 +951,7 @@ rp_plot.rprimer_alignment <- function(x, ...) {
   op <- par(mar = c(5, 3, 3, 3))
   on.exit(par(op))
   # Make a matrix of the alignment
-  index <- seq_along(x)
+  index <- seq_len(ncol(x))
   sequences_as_integers <- purrr::map(index, function(i) {
     sequence <- unlist(strsplit(x[[i]], split = ""), use.names = FALSE)
     sequence <- gsub("-", NA, sequence)
@@ -946,7 +959,7 @@ rp_plot.rprimer_alignment <- function(x, ...) {
     return(sequence)
   })
   to_plot <- do.call("rbind", sequences_as_integers)
-  plot(1:ncol(to_plot), rep(1, ncol(to_plot)), ylab = "",
+  plot(seq_along(ncol(to_plot)), rep(1, ncol(to_plot)), ylab = "",
        xlab = "position in consensus sequence", yaxt = "n", pch = NA,
        ylim = c(0, max(nrow(to_plot)) + 1), ...)
   invisible(apply(to_plot, 1, function(x) lines(1:length(x), x, col = "grey")))
@@ -965,8 +978,8 @@ rp_plot.rprimer_alignment <- function(x, ...) {
 rp_plot.rprimer_sequence_profile <- function(
   x, ..., from = NULL, to = NULL, rc = FALSE
 ) {
-  if (is.null(from)) from = 1
-  if (is.null(to)) to = ncol(x)
+  if (is.null(from)) from <- 1
+  if (is.null(to)) to <- ncol(x)
   if (!(
     is.numeric(from) && is.numeric(to) && length(from) == 1 &&
     length(to) == 1)) {
@@ -991,7 +1004,7 @@ rp_plot.rprimer_sequence_profile <- function(
   selection <- x[, from:to]
   selection <- selection[which(rownames(selection) != "-"), ]
   if (rc == TRUE) {
-    selection <- selection[, ncol(selection):1]
+    selection <- selection[, ncol(selection):1] # rev seq len instead
     rownames(selection) <- unname(
       complement_lookup[rownames(selection)]
     )
