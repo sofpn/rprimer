@@ -24,7 +24,7 @@ A tibble (
 a data frame) of class 'rprimer_oligo' or 'rprimer_assay',
 with columns describing the proportion of perfectly matching
 sequences for each oligo or assay, and a column named
-"match_report", which contains a matrix with information about
+'match_report', which contains a matrix with information about
 which sequences the oligo/assay matches perfectly to.
 }
 \description{

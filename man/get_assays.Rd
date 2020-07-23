@@ -7,7 +7,7 @@
 get_assays(x, length = 65:120, max_tm_difference = 1)
 }
 \arguments{
-\item{x}{an object of class "rprimer_oligo".}
+\item{x}{an object of class 'rprimer_oligo'.}
 
 \item{length}{Desired amplicon length,
 ranging from 40 to 5000 base pairs. The
@@ -29,4 +29,7 @@ An error message will return if no assays are found.
 #Warning:
 The Tm-difference is calculated from the majority oligos, and
 may thus be misleading for degenerate (iupac) oligos.
+}
+\examples{
+get_assays(example_rprimer_oligo, length = 60:150, max_tm_difference = 1)
 }

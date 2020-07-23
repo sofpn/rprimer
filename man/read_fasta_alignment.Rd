@@ -10,12 +10,12 @@ read_fasta_alignment(x)
 \item{x}{The name of the file (a character vector of length one) which the
 alignment is to be read from. The file should contain one or more aligned
 DNA sequences in fasta format. Sequences in fasta format
-always begins with a '>' symbol, followed by a single-line name.
-The sequence data is always present on the next line.
+begins with a '>' symbol, followed by a single-line name.
+The sequence is present on the next line.
 All sequences (including gaps) must be of the same length.}
 }
 \value{
-A named list  containing the aligned DNA sequences from the input
+A named list containing the aligned DNA sequences from the input
 file. Each object (DNA sequence) has the same name as its
 sequence name in the input file, except for the '>' symbol. Each DNA
 sequence is a character vector of length one, in lowercase format.
@@ -24,18 +24,16 @@ The list has the class attribute 'rprimer_alignment'.
 \description{
 \code{read_fasta_alignment} reads a fasta file with aligned DNA
 sequences.
-\code{read_fasta_alignment} is a wrapper around the base function
-\code{readLines}.
 }
 \details{
-The file must contain a DNA alignment of at least 200 bases,
-and at least one sequence. All sequences must have unique names.
+The file must contain a DNA alignment.
+All sequences must have unique names.
 Valid nucleotides are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-n', 'h', 'd', 'v', 'b' and '-'.
+n', 'h', 'd', 'v', 'b' and '-'. The minimum length of the alignment is 200.
 }
 \examples{
 read_fasta_alignment(
-system.file("extdata", "example_alignment.txt", package = "rprimer")
+system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 )
 
 }

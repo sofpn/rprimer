@@ -20,7 +20,7 @@ get_oligos(
 )
 }
 \arguments{
-\item{x}{an object of class "rprimer_sequence_properties".}
+\item{x}{an object of class 'rprimer_sequence_properties'.}
 
 \item{length}{Oligo length. One or more numbers. The minimum allowed
 value is 6 and the maximum allowed value is 30.
@@ -78,7 +78,7 @@ based on user-specfied constraints.
 
 The function excludes oligos with
 more than than three consecutive runs of the same dinucleotide
-(e.g. "tatatata"), oligos with more than four consecutive runs of the
+(e.g. 'tatatata'), oligos with more than four consecutive runs of the
 same nucleotide, and oligos that are duplicated.
 }
 
@@ -127,7 +127,7 @@ Biochemistry, 35: 3555-3562 (Formula and salt correction are from here)
 
 Allawi, H. & SantaLucia, J. (1997)
 Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-Biochemistry, 34: 10581–10594 (Duplex initiation parameters are from here)
+Biochemistry, 34: 10581?\200?10594 (Duplex initiation parameters are from here)
 
 #' SantaLucia, J (1998) A unified view of polymer,
 dumbell, and oligonucleotide DNA nearest-neighbour thermodynamics.

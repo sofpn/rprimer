@@ -1,0 +1,4 @@
+> My_seq
+atgctgtggtagttaggccttttctctctcaccagcagattgagatccttattaacctaa
+tgcaaccccgccagcttgttttccgccccgaggttttctggaaccatcccatccagcgtg
+ttatccataatgagctggagctttactgtcgcgctcgctccggccgctgccttgaaattg

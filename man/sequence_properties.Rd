@@ -36,7 +36,7 @@ the consensus base will be randomly selected among these bases.
 
 The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
 Note that the iupac consensus sequence only
-takes "a", "c", "g", "t" and "-" as input. Degenerate bases
+takes 'a', 'c', 'g', 't' and '-' as input. Degenerate bases
 present in the alignment will be skipped. If a position only contains
 degenerate/invalid bases, the iupac consensus character will be NA at that
 position.
