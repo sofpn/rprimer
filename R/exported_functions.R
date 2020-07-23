@@ -78,17 +78,15 @@ read_fasta_alignment <- function(x) {
     return(sequences)
 }
 
-#' Remove positions with a high proportion of gaps
+#' Remove positions with high gap frequency
 #'
-#' \code{remove_gaps} removes all positions with a gap proportion
+#' \code{remove_gaps} removes all positions with a gap frequency
 #' higher than a stated threshold in an alignment of DNA sequences.
 #'
 #' @param x An alignment of DNA sequences
 #' (an object of class 'rprimer_alignment').
 #'
-#' @param threshold A number between 0.5 and <1 (the default is 0.5). All
-#' positions with a gap proportion higher than
-#' the stated threshold will be removed.
+#' @param threshold A number between 0.5 and <1 (the default is 0.5).
 #'
 #' @details Gaps are recognised as "-". The alignment (with gaps removed)
 #' must contain at least 200 bases (an error message will return if not).
@@ -97,7 +95,7 @@ read_fasta_alignment <- function(x) {
 #' alignment will always start at 1, and increase by 1 for every new
 #' position.
 #'
-#' @return An alignment (an object of class 'rprimer_alignment'), where
+#' @return An alignment (an list of class 'rprimer_alignment'), where
 #' all positions with a gap proportion higher than the stated threshold
 #' are removed.
 #'
@@ -135,9 +133,9 @@ remove_gaps <- function(x, threshold = 0.5) {
     return(x)
 }
 
-#' Select a region of interest of an alignment
+#' Select region of interest
 #'
-#' \code{select_roi} selects a specified region of interest of
+#' \code{select_roi} selects a specified region of interest within
 #' an alignment of DNA sequences.
 #'
 #' @param  x An alignment of DNA sequences
@@ -146,12 +144,11 @@ remove_gaps <- function(x, threshold = 0.5) {
 #' @param from Where the roi begins (an integer). The default is 1.
 #'
 #' @param to Where the roi ends (an integer). The default is \code{NULL}.
-#' In that case, to will be set as the last position in the alignment.
+#' In that case, \code{to} will be set as the last position in the alignment.
 #'
-#' @details The roi must be at least 200 bases. Note that the positions
-#' will
-#' not be kept from the input alignment. The new alignment will always
-#' start at position 1.
+#' @details The roi must be at least 200 bases (an error will return if not).
+#' Note that the positions will not be kept from the input alignment.
+#' The new alignment will always start at position 1.
 #'
 #' @return The roi of the alignment
 #' (an object of class 'rprimer_alignment').
@@ -193,11 +190,11 @@ select_roi <- function(x, from = 1, to = NULL) {
     return(x)
 }
 
-# Get the sequence profile from an alignment ==================================
+# Get sequence profile ========================================================
 
 #' Get the sequence profile of an alignment
 #'
-#' \code{sequence_profile} returns a matrix with the relative
+#' \code{sequence_profile} returns a matrix with the
 #' proportion of each nucleotide at each position in an alignment
 #' of DNA sequences.
 #'
@@ -249,8 +246,7 @@ sequence_profile <- function(x) {
 #' a numeric m x n matrix, where m is the number of nucleotides in the
 #' alignment, and n is the number of positions in the alignment.
 #'
-#' @param iupac_threshold Optional, the default is NULL. #############################
-#'
+#' @param iupac_threshold
 #' A number between 0 and 0.2 (the default is 0).
 #' At each position, all nucleotides with a proportion
 #' higher than or equal to the stated threshold will be included in
@@ -290,7 +286,6 @@ sequence_profile <- function(x) {
 #'
 #' @export
 #'
-#' @importFrom tibble 'new_tibble'
 #'
 sequence_properties <- function(x, iupac_threshold = 0) {
     if (!inherits(x, "rprimer_sequence_profile")) {
@@ -528,16 +523,15 @@ get_oligos <- function(x, length = 18:22, max_gap_frequency = 0.1, max_degenerat
 #' (absolute value). A number between 0 and 30. The default is 1.
 #'
 #' @details
-#' #Warning:
 #' The Tm-difference is calculated from the majority oligos, and
 #' may thus be misleading for degenerate (iupac) oligos.
 #'
 #' @return A tibble (a data frame) of class 'rprimer_assay' with all candidate
-#' assays.
-#' An error message will return if no assays are found.
+#' assays. An error message will return if no assays are found.
 #'
 #' @examples
 #' get_assays(example_rprimer_oligo, length = 60:150, max_tm_difference = 1)
+#'
 get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
     if (!inherits(x, "rprimer_oligo")) {
         stop("An rprimer_oligo object is expected.", call. = FALSE)
@@ -909,7 +903,8 @@ rp_plot.rprimer_sequence_properties <- function(x, ...) {
 #'
 #' @return A saved file.
 #'
-#' @examples \dontrun{
+#' @examples
+#' \dontrun{
 #' rp_save(example_rprimer_alignment, 'my_alignment')
 #' rp_save(example_rprimer_sequence_properties, 'my_sequence_properties')
 #' rp_save(example_rprimer_oligo, 'my_oligos')

@@ -11,7 +11,9 @@ sequence_properties(x, iupac_threshold = 0)
 a numeric m x n matrix, where m is the number of nucleotides in the
 alignment, and n is the number of positions in the alignment.}
 
-\item{iupac_threshold}{A number between 0 and 0.2 (the default is 0).
+\item{iupac_threshold}{Optional, the default is NULL. #############################
+
+A number between 0 and 0.2 (the default is 0).
 At each position, all nucleotides with a proportion
 higher than or equal to the stated threshold will be included in
 the iupac consensus sequence.}

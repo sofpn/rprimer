@@ -10,9 +10,10 @@ select_roi(x, from = 1, to = NULL)
 \item{x}{An alignment of DNA sequences
 (an object of class 'rprimer_alignment').}
 
-\item{from}{Where the roi begins (an integer).}
+\item{from}{Where the roi begins (an integer). The default is 1.}
 
-\item{to}{Where the roi ends (an integer, greater than from).}
+\item{to}{Where the roi ends (an integer). The default is \code{NULL}.
+In that case, to will be set as the last position in the alignment.}
 }
 \value{
 The roi of the alignment
@@ -32,7 +33,4 @@ start at position 1.
 # Select the first 1000 bases
 select_roi(example_rprimer_alignment, from = 1, to = 1000)
 
-}
-\seealso{
-\code{read_fasta_alignment}.
 }

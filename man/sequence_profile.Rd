@@ -18,7 +18,7 @@ number of positions in the alignment.
 }
 \description{
 \code{sequence_profile} returns a matrix with the relative
-abundance (proportion) of each nucleotide at each position in an alignment
+proportion of each nucleotide at each position in an alignment
 of DNA sequences.
 }
 \examples{

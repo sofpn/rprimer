@@ -7,29 +7,31 @@
 read_fasta_alignment(x)
 }
 \arguments{
-\item{x}{The name of the file (a character vector of length one) which the
-alignment is to be read from. The file should contain one or more aligned
-DNA sequences in fasta format. Sequences in fasta format
-begins with a '>' symbol, followed by a single-line name.
-The sequence is present on the next line.
-All sequences (including gaps) must be of the same length.}
+\item{x}{The name of the file of which the
+alignment is to be read from (a character vector of length one).}
 }
 \value{
-A named list containing the aligned DNA sequences from the input
-file. Each object (DNA sequence) has the same name as its
-sequence name in the input file, except for the '>' symbol. Each DNA
-sequence is a character vector of length one, in lowercase format.
-The list has the class attribute 'rprimer_alignment'.
+The alignment from the input
+file (a named list with class attribute 'rprimer_alignment').
+Each object (DNA sequence) will have the same name as its
+sequence name in the input file, except for the '>' symbol.
+Sequencees are will be presented as character vectors of length one,
+in lowercase format.
 }
 \description{
 \code{read_fasta_alignment} reads a fasta file with aligned DNA
 sequences.
 }
 \details{
-The file must contain a DNA alignment.
-All sequences must have unique names.
+The file must contain one or more aligned
+DNA sequences in fasta format. Sequences in fasta format
+begins with a '>' symbol, followed by a single-line name.
+The sequence is present on the next line.
+All sequences (including gaps) must be of the same length,
+and the minimum length of the alignment is 200.
 Valid nucleotides are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-n', 'h', 'd', 'v', 'b' and '-'. The minimum length of the alignment is 200.
+n', 'h', 'd', 'v', 'b' and '-'. The alignment can be in either
+upper- or lowercase format.
 }
 \examples{
 read_fasta_alignment(

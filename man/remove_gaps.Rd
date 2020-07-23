@@ -2,7 +2,7 @@
 % Please edit documentation in R/exported_functions.R
 \name{remove_gaps}
 \alias{remove_gaps}
-\title{Remove positions with gaps in an alignment}
+\title{Remove positions with a high proportion of gaps}
 \usage{
 remove_gaps(x, threshold = 0.5)
 }
@@ -11,30 +11,25 @@ remove_gaps(x, threshold = 0.5)
 (an object of class 'rprimer_alignment').}
 
 \item{threshold}{A number between 0.5 and <1 (the default is 0.5). All
-positions with a gap frequency frequency higher than
+positions with a gap proportion higher than
 the stated threshold will be removed.}
 }
 \value{
 An alignment (an object of class 'rprimer_alignment'), where
-all positions with a gap frequency higher than the stated threshold
+all positions with a gap proportion higher than the stated threshold
 are removed.
 }
 \description{
-\code{remove_gaps} removes all positions with a gap frequency
+\code{remove_gaps} removes all positions with a gap proportion
 higher than a stated threshold in an alignment of DNA sequences.
 }
 \details{
-The alignment (with gaps removed)
+Gaps are recognised as "-". The alignment (with gaps removed)
 must contain at least 200 bases (an error message will return if not).
 Note that the positions will
 not be kept from the input alignment. The positions in the new
 alignment will always start at 1, and increase by 1 for every new
 position.
-
-# Warning
-\code{remove_gaps} should be used with caution during oligo and assay
-design. Removing positions with high gap frequency may lead to
-placement of primers or probes in insertion-rich regions.
 }
 \examples{
 remove_gaps(example_rprimer_alignment, threshold = 0.5)
