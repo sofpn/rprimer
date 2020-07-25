@@ -40,7 +40,10 @@ new_rprimer_alignment <- function(x = list()) {
     # All sequences must be a character vector of length one
     has_length_one <- purrr::map_lgl(x, ~is.character(.x) && length(.x) == 1)
     if (any(has_length_one == FALSE)) {
-        stop("All sequences must be a character vector of length one", call. = FALSE)
+        stop(
+          "All sequences must be a character vector of length one",
+          call. = FALSE
+        )
     }
     # All sequences must contain the same number of characters
     sequence_lengths <- purrr::map_int(x, nchar)
@@ -160,16 +163,20 @@ majority_consensus <- function(x) {
 #' @noRd
 as_iupac <- function(x) {
     if (!(is.character(x) && length(x) == 1)) {
-        stop("A character vector of length one is expected, e.g. 'a,c,t'")
+        stop(
+          "A character vector of length one is expected, e.g. 'a,c,t'",
+          call. = FALSE
+        )
     }
     x <- gsub(" ", "", x)
     x <- unlist(strsplit(x, split = ","), use.names = FALSE)
     x <- x[order(x)]
+    x <- unique(x)
     bases <- c("a", "c", "g", "t", "-")  # accepted nucleotides
     match <- x %in% bases
     x <- x[!(match == FALSE)]  # exclude non accepted nucleotides
     x <- paste(x, collapse = ",")
-    iupac <- unname(iupac_lookup[x])  # match with lookup table
+    iupac <- unname(iupac_lookup[x]) # match with lookup table
     return(iupac)
 }
 
@@ -204,13 +211,17 @@ iupac_consensus <- function(x, threshold = 0) {
         stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
     }
     if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
-        stop(paste("The threshold was set to", threshold, "valid threshold values
-     are between 0 and 0.2"))
+        stop(paste0(
+        "The threshold was set to ", threshold, ". Valid threshold values
+     are from 0 to 0.2"
+        ))
     }
     # Select only a, c, g, t and - to count in the iupac consensus sequence
     bases <- c("a", "c", "g", "t", "-")
     x <- x[which(rownames(x) %in% bases), ]
-    bases_to_include <- apply(x, 2, function(y) paste(rownames(x)[which(y >= threshold)], collapse = ","))
+    bases_to_include <- apply(x, 2, function(y) {
+      paste(rownames(x)[which(y >= threshold)], collapse = ",")
+    })
     bases_to_include <- unname(bases_to_include)
     consensus <- purrr::map_chr(bases_to_include, ~as_iupac(.x))
     if (any(is.na(consensus))) {
@@ -228,6 +239,8 @@ iupac_consensus <- function(x, threshold = 0) {
 #' @param x A nucleotide profile of class 'rprimer_sequence_profile', i.e.
 #' a numeric m x n matrix, where m is the number of nucleotides in the
 #' alignment, and n is the number of positions in the alignment.
+#'
+#' @details Gaps are recognised as "-".
 #'
 #' @return the gap frequency (a numeric vector of length n).
 #'
@@ -263,12 +276,13 @@ nucleotide_identity <- function(x) {
     if (!inherits(x, "rprimer_sequence_profile")) {
         stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
     }
-    # We want to assess identity based on DNA bases (i.e. ignore gaps and degenerate) positions so we make a subset (s) of x
+    # We want to assess identity based on DNA bases,
+    # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
     # with the rows named a, c, g and t.
     bases <- c("a", "c", "g", "t")
     s <- x[which(rownames(x) %in% bases), ]
     # Calculate relative proportions of the bases in s
-    s <- apply(s, 2, function(x) x/sum(x))
+    s <- apply(s, 2, function(x) x / sum(x))
     # Find the largest proportion at each position
     identity <- apply(s, 2, max)
     identity <- unname(identity)
@@ -304,12 +318,13 @@ shannon_entropy <- function(x) {
     if (!inherits(x, "rprimer_sequence_profile")) {
         stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
     }
-    # We want to assess identity based on DNA bases (i.e. ignore gaps and degenerate) positions so we make a subset (s) of x
+    # We want to assess identity based on DNA bases,
+    # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
     # with the rows named a, c, g and t.
     bases <- c("a", "c", "g", "t")
     s <- x[which(rownames(x) %in% bases), ]
     # Calculate relative proportions of the bases in s
-    s <- apply(s, 2, function(x) x/sum(x))
+    s <- apply(s, 2, function(x) x / sum(x))
     entropy <- apply(s[which(rownames(s) %in% bases), ], 2, function(x) {
         ifelse(x == 0, 0, x * log2(x))
     })
@@ -343,7 +358,7 @@ get_nmers <- function(x, n = NULL) {
         stop("x must be a character vector.", call. = FALSE)
     }
     if (is.null(n)) {
-        n <- round(length(x)/10)
+        n <- round(length(x) / 10)
         if (n == 0)
             n <- 1
     }
@@ -352,7 +367,9 @@ get_nmers <- function(x, n = NULL) {
     }
     begin <- 1:(length(x) - n + 1)
     end <- begin + n - 1
-    nmer <- purrr::map_chr(begin, ~paste(x[begin[[.x]]:end[[.x]]], collapse = ""))
+    nmer <- purrr::map_chr(
+      begin, ~paste(x[begin[[.x]]:end[[.x]]], collapse = "")
+    )
     return(nmer)
 }
 
@@ -1260,8 +1277,8 @@ print_assay_report <- function(x) {
 assay_detail_plot <- function(x, y) {
     # x = rprimer sequence profile y = assay object (one row)
     x <- x[which(rownames(x) != "-"), ]
-    fwd <- x[, y$begin_fwd:y$end_fwd]
-    rev <- x[, y$begin_rev:y$end_rev]
+    fwd <- x[, y$begin_fwd:y$end_fwd] #seq_len
+    rev <- x[, y$begin_rev:y$end_rev] #seq-len
     rev <- rev[, ncol(rev):1]
     rownames(rev) <- unname(complement_lookup[rownames(rev)])
     if (any(grepl("_pr", names(y)))) {

@@ -19,14 +19,12 @@ default is \code{65:120}, which means that assays with amplicon lengths from
 }
 \value{
 A tibble (a data frame) of class 'rprimer_assay' with all candidate
-assays.
-An error message will return if no assays are found.
+assays. An error message will return if no assays are found.
 }
 \description{
 \code{get_assays} combines forward and reverse primers to (RT)-PCR assays.
 }
 \details{
-#Warning:
 The Tm-difference is calculated from the majority oligos, and
 may thus be misleading for degenerate (iupac) oligos.
 }

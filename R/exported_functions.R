@@ -1,5 +1,7 @@
 # Exported functions for the package rprimer
 
+# covr package
+
 # Import alignment ============================================================
 
 #' Read an alignment in fasta format
@@ -62,7 +64,7 @@ read_fasta_alignment <- function(x) {
     end <- index - 1
     # Remove the first 'end', as there is no sequence above the first sequence
     end <- c(end[-1], length(infile))
-    # Make a list containing all sequences
+    # Make a list with all sequences
     sequences <- purrr::map(seq_along(index), function(i) {
         sequence <- paste(infile[begin[[i]]:end[[i]]], collapse = "")
         sequence <- tolower(sequence)
@@ -71,7 +73,6 @@ read_fasta_alignment <- function(x) {
     # Get the name of each sequence
     name <- infile[index]
     name <- gsub(">", "", name)
-    # Name the list
     names(sequences) <- name
     # Assign and validate a class attribute (rprimer_alignment)
     sequences <- new_rprimer_alignment(sequences)
@@ -109,7 +110,7 @@ remove_gaps <- function(x, threshold = 0.5) {
     if (!(threshold >= 0.5 && threshold < 1)) {
         stop(paste0(
           "The threshold was set to ", threshold, ".
-          Valid threshold values are between 0.5 and <1"
+          treshold must be between 0.5 and <1"
         ), call. = FALSE)
     }
     if (!inherits(x, "rprimer_alignment")) {
@@ -158,7 +159,6 @@ remove_gaps <- function(x, threshold = 0.5) {
 #' select_roi(example_rprimer_alignment, from = 1, to = 1000)
 #'
 #' @export
-#'
 select_roi <- function(x, from = 1, to = NULL) {
     if (!inherits(x, "rprimer_alignment")) {
         stop("An rprimer_alignment object is expected.", call. = FALSE)
@@ -195,14 +195,14 @@ select_roi <- function(x, from = 1, to = NULL) {
 #' Get the sequence profile of an alignment
 #'
 #' \code{sequence_profile} returns a matrix with the
-#' proportion of each nucleotide at each position in an alignment
+#' proportion of each nucleotide at each position within an alignment
 #' of DNA sequences.
 #'
 #' @param x An alignment of DNA sequences (an object of class
 #' 'rprimer_alignment').
 #'
-#' @return The sequence profile. An object of class
-#' 'rprimer_sequence_profile', i.e. a numeric m x n matrix,
+#' @return The sequence profile (an object of class
+#' 'rprimer_sequence_profile'). A numeric m x n matrix,
 #' where m is the number of unique bases in the alignment, and n is the
 #' number of positions in the alignment.
 #'
@@ -210,7 +210,6 @@ select_roi <- function(x, from = 1, to = NULL) {
 #' sequence_profile(example_rprimer_alignment)
 #'
 #' @export
-#'
 sequence_profile <- function(x) {
     if (!inherits(x, "rprimer_alignment")) {
         stop("An rprimer_alignment object is expected.", call. = FALSE)
@@ -218,7 +217,7 @@ sequence_profile <- function(x) {
     splitted <- purrr::map(x, split_sequence)
     # Make a matrix
     matr <- do.call("rbind", splitted)
-    # Get all unique bases in the dataset and sort in alphabetical order
+    # Get all unique bases in the dataset and sort them in alphabetical order
     bases <- unique(sort(unlist(apply(matr, 1, unique), use.names = FALSE)))
     # Count the occurence of each base at each position
     count_base <- function(x, base) length(x[which(x == base)])
@@ -235,9 +234,9 @@ sequence_profile <- function(x) {
     return(proportions)
 }
 
-# Get sequence data from a nucleotide profile =================================
+# Get sequence properties from a nucleotide profile ===========================
 
-#' Get sequence data
+#' Get sequence properties
 #'
 #' \code{sequence_properties} returns sequence information from an alignment
 #' of DNA sequences.
@@ -246,8 +245,7 @@ sequence_profile <- function(x) {
 #' a numeric m x n matrix, where m is the number of nucleotides in the
 #' alignment, and n is the number of positions in the alignment.
 #'
-#' @param iupac_threshold
-#' A number between 0 and 0.2 (the default is 0).
+#' @param iupac_threshold A number between 0 and 0.2 (the default is 0).
 #' At each position, all nucleotides with a proportion
 #' higher than or equal to the stated threshold will be included in
 #' the iupac consensus sequence.
@@ -262,8 +260,17 @@ sequence_profile <- function(x) {
 #' Note that the iupac consensus sequence only
 #' takes 'a', 'c', 'g', 't' and '-' as input. Degenerate bases
 #' present in the alignment will be skipped. If a position only contains
-#' degenerate/invalid bases, the iupac consensus character will be NA at that
+#' degenerate/invalid bases, the iupac consensus will be \code{NA} at that
 #' position.
+#'
+#' @section Gaps:
+#' Gaps are recognised as "-".
+#'
+#' @section Identity:
+#' The nucleotide identity is the proportion of
+#' the most common base at each position in the alignment.  Gaps (-),
+#' as well as nucleotides other than a, c, g and t, are excluded from the
+#' calculation.
 #'
 #' @section Shannon entropy:
 #' Shannon entropy is a measurement of
@@ -274,19 +281,17 @@ sequence_profile <- function(x) {
 #' followed by multiplication by \code{-1}.
 #' A value of \code{0} indicate no variability and a high value
 #' indicate high variability.
-#' Gaps (-), as well as nucleotides other than
+#' Gaps (-), as well as bases other than
 #' a, c, g and t, are excluded from the calculation.
 #'
-#' @return a tibble (i.e. a data frame) of class 'rprimer_sequence_properties',
-#' with information about majority and iupac consensus base, gap frequency,
+#' @return A tibble (data frame) of class 'rprimer_sequence_properties',
+#' with information about majority and iupac consensus sequence, gap frequency,
 #' nucleotide identity and shannon entropy.
 #'
 #' @examples
 #' sequence_properties(example_rprimer_sequence_profile)
 #'
 #' @export
-#'
-#'
 sequence_properties <- function(x, iupac_threshold = 0) {
     if (!inherits(x, "rprimer_sequence_profile")) {
         stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
@@ -297,8 +302,13 @@ sequence_properties <- function(x, iupac_threshold = 0) {
     gaps <- gap_frequency(x)
     identity <- nucleotide_identity(x)
     entropy <- shannon_entropy(x)
-    sequence_properties <- tibble::tibble(position, majority, iupac, gaps, identity, entropy)
-    sequence_properties <- tibble::new_tibble(sequence_properties, nrow = nrow(sequence_properties), class = "rprimer_sequence_properties")
+    sequence_properties <- tibble::tibble(
+      position, majority, iupac, gaps, identity, entropy
+    )
+    sequence_properties <- tibble::new_tibble(
+      sequence_properties, nrow = nrow(sequence_properties),
+      class = "rprimer_sequence_properties"
+    )
     return(sequence_properties)
 }
 

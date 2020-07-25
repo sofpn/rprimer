@@ -2,7 +2,7 @@
 % Please edit documentation in R/exported_functions.R
 \name{remove_gaps}
 \alias{remove_gaps}
-\title{Remove positions with a high proportion of gaps}
+\title{Remove positions with high gap frequency}
 \usage{
 remove_gaps(x, threshold = 0.5)
 }
@@ -10,17 +10,15 @@ remove_gaps(x, threshold = 0.5)
 \item{x}{An alignment of DNA sequences
 (an object of class 'rprimer_alignment').}
 
-\item{threshold}{A number between 0.5 and <1 (the default is 0.5). All
-positions with a gap proportion higher than
-the stated threshold will be removed.}
+\item{threshold}{A number between 0.5 and <1 (the default is 0.5).}
 }
 \value{
-An alignment (an object of class 'rprimer_alignment'), where
+An alignment (an list of class 'rprimer_alignment'), where
 all positions with a gap proportion higher than the stated threshold
 are removed.
 }
 \description{
-\code{remove_gaps} removes all positions with a gap proportion
+\code{remove_gaps} removes all positions with a gap frequency
 higher than a stated threshold in an alignment of DNA sequences.
 }
 \details{

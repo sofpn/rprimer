@@ -2,7 +2,7 @@
 % Please edit documentation in R/exported_functions.R
 \name{select_roi}
 \alias{select_roi}
-\title{Select a region of interest of an alignment}
+\title{Select region of interest}
 \usage{
 select_roi(x, from = 1, to = NULL)
 }
@@ -13,21 +13,20 @@ select_roi(x, from = 1, to = NULL)
 \item{from}{Where the roi begins (an integer). The default is 1.}
 
 \item{to}{Where the roi ends (an integer). The default is \code{NULL}.
-In that case, to will be set as the last position in the alignment.}
+In that case, \code{to} will be set as the last position in the alignment.}
 }
 \value{
 The roi of the alignment
 (an object of class 'rprimer_alignment').
 }
 \description{
-\code{select_roi} selects a specified region of interest of
+\code{select_roi} selects a specified region of interest within
 an alignment of DNA sequences.
 }
 \details{
-The roi must be at least 200 bases. Note that the positions
-will
-not be kept from the input alignment. The new alignment will always
-start at position 1.
+The roi must be at least 200 bases (an error will return if not).
+Note that the positions will not be kept from the input alignment.
+The new alignment will always start at position 1.
 }
 \examples{
 # Select the first 1000 bases

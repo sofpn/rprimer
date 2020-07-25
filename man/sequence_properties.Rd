@@ -2,7 +2,7 @@
 % Please edit documentation in R/exported_functions.R
 \name{sequence_properties}
 \alias{sequence_properties}
-\title{Get sequence data}
+\title{Get sequence properties}
 \usage{
 sequence_properties(x, iupac_threshold = 0)
 }
@@ -11,16 +11,14 @@ sequence_properties(x, iupac_threshold = 0)
 a numeric m x n matrix, where m is the number of nucleotides in the
 alignment, and n is the number of positions in the alignment.}
 
-\item{iupac_threshold}{Optional, the default is NULL. #############################
-
-A number between 0 and 0.2 (the default is 0).
+\item{iupac_threshold}{A number between 0 and 0.2 (the default is 0).
 At each position, all nucleotides with a proportion
 higher than or equal to the stated threshold will be included in
 the iupac consensus sequence.}
 }
 \value{
-a tibble (i.e. a data frame) of class 'rprimer_sequence_properties',
-with information about majority and iupac consensus base, gap frequency,
+A tibble (data frame) of class 'rprimer_sequence_properties',
+with information about majority and iupac consensus sequence, gap frequency,
 nucleotide identity and shannon entropy.
 }
 \description{
@@ -40,8 +38,21 @@ The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
 Note that the iupac consensus sequence only
 takes 'a', 'c', 'g', 't' and '-' as input. Degenerate bases
 present in the alignment will be skipped. If a position only contains
-degenerate/invalid bases, the iupac consensus character will be NA at that
+degenerate/invalid bases, the iupac consensus will be \code{NA} at that
 position.
+}
+
+\section{Gaps}{
+
+Gaps are recognised as "-".
+}
+
+\section{Identity}{
+
+The nucleotide identity is the proportion of
+the most common base at each position in the alignment.  Gaps (-),
+as well as nucleotides other than a, c, g and t, are excluded from the
+calculation.
 }
 
 \section{Shannon entropy}{
@@ -54,7 +65,7 @@ these values for each nucleotide at the position in matter,
 followed by multiplication by \code{-1}.
 A value of \code{0} indicate no variability and a high value
 indicate high variability.
-Gaps (-), as well as nucleotides other than
+Gaps (-), as well as bases other than
 a, c, g and t, are excluded from the calculation.
 }
 

@@ -11,14 +11,14 @@ sequence_profile(x)
 'rprimer_alignment').}
 }
 \value{
-The sequence profile. An object of class
-'rprimer_sequence_profile', i.e. a numeric m x n matrix,
+The sequence profile (an object of class
+'rprimer_sequence_profile'). A numeric m x n matrix,
 where m is the number of unique bases in the alignment, and n is the
 number of positions in the alignment.
 }
 \description{
-\code{sequence_profile} returns a matrix with the relative
-proportion of each nucleotide at each position in an alignment
+\code{sequence_profile} returns a matrix with the
+proportion of each nucleotide at each position within an alignment
 of DNA sequences.
 }
 \examples{
