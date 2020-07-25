@@ -616,15 +616,12 @@ exclude_unwanted_oligos <- function(
         x <- exclude_oligos(x,"a$|t$")
     }
     if (avoid_5end_g == TRUE) {
-        # Remove oligos with a g at the 5' end
+        # Remove oligos with g at the 5' end
         x <- exclude_oligos(x, "^g")
     }
     if (avoid_3end_runs == TRUE) {
         # Remove oligos with at least 3 'runs' of the same nucleotide in 3'
-        x <- exclude_oligos(
-          x,
-          pattern  = paste0("([a-z])", repeat_pattern(3), "$")
-        )
+        x <- exclude_oligos(x, paste0("([a-z])", repeat_pattern(3), "$"))
     }
     return(x)
 }
