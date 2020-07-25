@@ -10,6 +10,7 @@
 #'
 #' @noRd
 split_sequence <- function(x) {
+  stopifnot(is.character(x), length(x) == 1)
   x <- unlist(strsplit(x, split = ""), use.names = FALSE)
   return(x)
 }
@@ -337,15 +338,16 @@ shannon_entropy <- function(x) {
 
 #' Divide a DNA sequence into n-sized chunks
 #'
-#' \code{get_nmers} divides a character vector into chunks of size n,
+#' \code{get_nmers} divides a character vector into chunks of size \code{n},
 #' in steps of one.
 #'
 #' @param x A character vector.
 #'
-#' @param n The desired size of each 'chunk'/'mer', an integer between
-#' 1 and length(x). The default is NULL. In that case, n will be set to
-#' the nearest integer to length(x)/10. However, if that is zero, n will be
-#' set to one.
+#' @param n The desired size of each 'chunk'/'mer'. An integer between
+#' \code{1} and \code{length(x)}. The default is \code{NULL}.
+#' In that case, n will be set to
+#' the nearest integer to \code{length(x)/10}. However, if the nearest integer
+#' is zero, \code{n} will be set to one.
 #'
 #' @return A character vector where each element is a 'mer' of size n.
 #'
@@ -354,7 +356,7 @@ shannon_entropy <- function(x) {
 #'
 #' @noRd
 get_nmers <- function(x, n = NULL) {
-    if (!is.character(x) || !is.vector(x)) {
+    if (!is.character(x)) {
         stop("x must be a character vector.", call. = FALSE)
     }
     if (is.null(n)) {
@@ -395,11 +397,11 @@ gc_content <- function(x) {
     if (typeof(x) != "character" || length(x) != 1) {
         stop("x must be a character vector of length one", call. = FALSE)
     }
+    x <- tolower(x)
     if (grepl("[^acgt-]", x)) {
         stop("x contains at least one invalid base.
       x can only contain 'a', 'c', 'g', 't' and '-'", call. = FALSE)
     }
-    x <- tolower(x)
     x <- strsplit(x, split = "")
     x <- unlist(x, use.names = FALSE)
     gc_count <- length(which(x == "c" | x == "g"))
@@ -411,7 +413,7 @@ gc_content <- function(x) {
 
 #' Complement
 #'
-#' \code{complement} finds the complement of a DNA seuquence.
+#' \code{complement} finds the complement of a DNA sequence.
 #'
 #' @param x a DNA sequence (a character vector of length one, e.g. 'cttgg').
 #'
@@ -428,13 +430,13 @@ complement <- function(x) {
     if (typeof(x) != "character" || length(x) != 1) {
         stop("x must be a character vector of length one", call. = FALSE)
     }
+    x <- tolower(x)
     if (grepl("[^acgtrymkswnhdvb-]", x)) {
         stop("x contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
             call. = FALSE)
     }
-    x <- tolower(x)
     x <- strsplit(x, split = "")
     complement <- complement_lookup[unlist(x)]
     complement <- unname(complement)
@@ -461,13 +463,13 @@ reverse_complement <- function(x) {
     if (typeof(x) != "character" || length(x) != 1) {
         stop("x must be a character vector of length one", call. = FALSE)
     }
+    x <- tolower(x)
     if (grepl("[^acgtrymkswnhdvb-]", x)) {
         stop("x contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
             call. = FALSE)
     }
-    x <- tolower(x)
     x <- strsplit(x, split = "")
     complement <- complement_lookup[unlist(x)]
     complement <- unname(complement)
@@ -506,7 +508,7 @@ running_sum <- function(x, n = NULL) {
         stop("A numeric vector is expected for x.", call. = FALSE)
     }
     if (is.null(n)) {
-        n <- round(length(x)/10)
+        n <- round(length(x) / 10)
         if (n == 0)
             n <- 1
     }
@@ -518,18 +520,19 @@ running_sum <- function(x, n = NULL) {
     return(runsum)
 }
 
-#' Make a regular expression to repeat a pattern
+#' Regular expression to repeat a pattern
 #'
 #' \code{repeat_pattern} creates a regular expression for repeating a pattern.
 #'
 #' @param n An integer equal to or greater than 1.
-#' The number of times the pattern is to be repeated.
+#' The number of times the pattern is to be printed.
 #'
 #' @return A regular expression that can be pasted with another regular
-#' expression, so that it can be repeated n times.
+#' expression, so that it can be repeated \code{n} times.
 #'
 #' @examples
-#' repeat_pattern(3)
+#' repeat_pattern(3) # this pattern will be printed 3 times when pasted
+#' to a regular expression.
 #'
 #' @noRd
 repeat_pattern <- function(n) {
@@ -543,7 +546,7 @@ repeat_pattern <- function(n) {
 #' Exclude oligos with 3'-end runs
 #'
 #' \code{exclude_end_runs} replaces oligos with at least n 'runs'
-#' of the same nucleotide in 3' with NA.
+#' of the same nucleotide in 3' with \code{NA}.
 #'
 #' @param x One or more DNA sequences (a character vector).
 #'
@@ -702,7 +705,9 @@ exclude_5end_g <- function(x) {
 #' exclude_unwanted_oligos(c('gtgtaaaaatatttt', 'cgattctg'))
 #'
 #' @noRd
-exclude_unwanted_oligos <- function(x, avoid_3end_ta = FALSE, avoid_5end_g = FALSE, avoid_3end_runs = FALSE) {
+exclude_unwanted_oligos <- function(
+  x, avoid_3end_ta = FALSE, avoid_5end_g = FALSE, avoid_3end_runs = FALSE
+  ) {
     # Remove oligos with at least 4 'runs' of the same dinucleotide
     x <- exclude_dinucleotide_runs(x, n = 4)
     # Remove oligos with at least 5 'runs' of the same nucleotide
