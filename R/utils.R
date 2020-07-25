@@ -536,170 +536,67 @@ running_sum <- function(x, n = NULL) {
 #'
 #' @noRd
 repeat_pattern <- function(n) {
-    if (!is.numeric(n) | n < 1) {
+    if (!is.numeric(n) || n < 1) {
         stop("n must be a number, and at least 1.", call. = FALSE)
     }
     regex <- paste(rep("\\1", n - 1), collapse = "")
     return(regex)
 }
 
-#' Exclude oligos with 3'-end runs
+#' Exclude oligos with a certain pattern
 #'
-#' \code{exclude_end_runs} replaces oligos with at least n 'runs'
-#' of the same nucleotide in 3' with \code{NA}.
+#' \code{exclude_oligos} replaces oligos with a certain pattern
+#' with \code{NA}.
 #'
-#' @param x One or more DNA sequences (a character vector).
+#' @param x One or more oligo sequences (a character vector).
 #'
-#' @param n An integer equal to or greater than 1. The default value
-#' is 3.
+#' @param pattern A regular expression.
 #'
-#' @return A character vector where oligos with at least n 'runs'
-#' of the same nucleotide in 3' has been replaced to NA.
-#'
-#' @examples
-#' exclude_end_runs(c('cttgttatttt', 'cgattctg'), n = 4)
-#'
-#' @noRd
-exclude_end_runs <- function(x, n = 3) {
-    if (!is.character(x)) {
-        stop("x must be a character vector", call. = FALSE)
-    }
-    if (!is.numeric(n) | n < 1) {
-        stop("n must be a number, and at least 1.", call. = FALSE)
-    }
-    regex <- paste0("([a-z])", repeat_pattern(n), "$")
-    x[which(grepl(regex, x))] <- NA
-    return(x)
-}
-
-#' Exclude oligos with many dinucleotide runs
-#'
-#' \code{exclude_dinucleotide_runs} replaces oligos with at least n 'runs'
-#' of the same dinucleotide with NA.
-#'
-#' @param x One or more DNA sequences (a character vector).
-#'
-#' @param n An integer equal to or greater than 1. The default value is
-#' 4.
-#'
-#' @return A character vector where oligos with at least n 'runs'
-#' of the same dinucleotide has been replaced to NA.
+#' @return A character vector where the oligos with the pattern
+#' have been replaced with \code{NA}.
 #'
 #' @examples
-#' exclude_dinucleotide_runs(c('cttgtgtgtgtatttt', 'cgattctg'), n = 4)
+#' exclude_oligos(c('cttgttatttt', 'cgattctg'), "a$|t$")
 #'
 #' @noRd
-exclude_dinucleotide_runs <- function(x, n = 4) {
-    if (!is.character(x)) {
-        stop("x must be a character vector", call. = FALSE)
-    }
-    if (!is.numeric(n) | n < 1) {
-        stop("n must be a number, and at least 1.", call. = FALSE)
-    }
-    regex <- paste0("(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)", repeat_pattern(n))
-    x[which(grepl(regex, x))] <- NA
-    return(x)
-}
-
-#' Exclude oligos with many mononucleotide runs
-#'
-#' \code{exclude_mononucleotide_runs} replaces oligos with at least n 'runs'
-#' of the same nucleotide with NA.
-#'
-#' @param x One or more DNA sequences (a character vector).
-#'
-#' @param n An integer equal to or greater than 1. The default value is
-#' 5.
-#'
-#' @return A character vector where oligos with at least n 'runs'
-#' of the same nucleotide has been replaced to NA.
-#'
-#' @examples
-#' exclude_monoucleotide_runs(c('cttgtgtaaaaatatttt', 'cgattctg'), n = 4)
-#'
-#' @noRd
-exclude_mononucleotide_runs <- function(x, n = 5) {
-    if (!is.character(x)) {
-        stop("x must be a character vector", call. = FALSE)
-    }
-    if (!is.numeric(n) | n < 1) {
-        stop("n must be a number equal to or greater than one.", call. = FALSE)
-    }
-    regex <- paste0("([a-z])", repeat_pattern(n))
-    x[which(grepl(regex, x))] <- NA
-    return(x)
-}
-
-#' Exclude oligos with t or a at the 3' end
-#'
-#' \code{exclude_3end_ta} replaces oligos with t or a at the 3' end
-#'  with NA.
-#'
-#' @param x One or more DNA sequences (a character vector).
-#'
-#' @return A character vector where oligos with t or a at the 3' end
-#' has been replaced with NA.
-#'
-#' @examples
-#' exclude_3end_ta(c('cttgtgtaaaaatatttt', 'cgattctg'))
-#'
-#' @noRd
-exclude_3end_ta <- function(x) {
-    if (!is.character(x)) {
-        stop("x must be a character vector", call. = FALSE)
-    }
-    regex <- "a$|t$"
-    x[which(grepl(regex, x))] <- NA
-    return(x)
-}
-
-#' Exclude oligos with g at the 5' end
-#'
-#' \code{exclude_5end_g} replaces oligos with g at the 5' end
-#'  with NA.
-#'
-#' @param x One or more DNA sequences (a character vector).
-#'
-#' @return A character vector where oligos with g at the 5' end
-#' has been replaced with NA.
-#'
-#' @examples
-#'exclude_5end_g(c('gtgtaaaaatatttt', 'cgattctg'))
-#'
-#' @noRd
-exclude_5end_g <- function(x) {
-    if (!is.character(x)) {
-        stop("x must be a character vector", call. = FALSE)
-    }
-    regex <- "^g"
-    x[which(grepl(regex, x))] <- NA
-    return(x)
+exclude_oligos <- function(x, pattern) {
+  if (!is.character(x)) {
+    stop("x must be a character vector", call. = FALSE)
+  }
+  if (!is.character(pattern)) {
+    stop("pattern must be a character vector", call. = FALSE)
+  }
+  regex <- pattern
+  x[which(grepl(regex, x))] <- NA
+  return(x)
 }
 
 #' Exclude unwanted oligos
 #'
-#' \code{exclude unwanted oligos} replaces oligos with many consequtive
-#' mono- or dinucleotides with NA. If selected, it also replaces oligos
-#' with 5'-end g or 3'-end t or a with NA.
+#' \code{exclude unwanted oligos} replaces oligos with many consecutive
+#' mono- or dinucleotides with \code{NA}. If selected, it also replaces oligos
+#' with 5'-end g or 3'-end t or a with \code{NA}.
 #'
 #' @param x One or more DNA sequences (a character vector).
 #'
-#' @param avoid_3end_ta TRUE/FALSE. If oligos with t or a at the 3' end
-#' should be replaced with NA. The default is FALSE.
+#' @param avoid_3end_ta \code{TRUE} or \code{FALSE}.
+#' If oligos with t or a at the 3' end
+#' should be replaced with \code{NA}. The default is \code{FALSE}.
 #'
-#' @param avoid_5end_g TRUE/FALSE. If oligos with g at the 5' end
-#' should be replaced with NA. The default is FALSE.
+#' @param avoid_5end_g \code{TRUE} or \code{FALSE}.If oligos with g
+#' at the 5' end should be replaced with \code{NA}. The default is \code{FALSE}.
 #'
-#' @param avoid_3end_runs TRUE/FALSE. If oligos with more than two runs
-#' of the same nucleotide at the 3' end should be replaced with NA.
-#' The default is FALSE.
+#' @param avoid_3end_runs \code{TRUE} or \code{FALSE}.
+#' If oligos with more than two runs
+#' of the same nucleotide at the 3' end should be replaced with \code{NA}.
+#' The default is \code{FALSE}.
 #'
-#' @details An oligo is replaced with NA if
+#' @details An oligo is replaced with \code{NA} if
 #' - It has more than three runs of the same dinucleotide (e.g. 'tatatata')
 #' - It has more than four runs of the same nucleotide
 #'
 #' @return A character vector where unwanted oligos
-#' has been replaced with NA.
+#' has been replaced with \code{NA}.
 #'
 #' @examples
 #' exclude_unwanted_oligos(c('gtgtaaaaatatttt', 'cgattctg'))
@@ -709,20 +606,25 @@ exclude_unwanted_oligos <- function(
   x, avoid_3end_ta = FALSE, avoid_5end_g = FALSE, avoid_3end_runs = FALSE
   ) {
     # Remove oligos with at least 4 'runs' of the same dinucleotide
-    x <- exclude_dinucleotide_runs(x, n = 4)
+    x <- exclude_oligos(
+      x, paste0("(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)", repeat_pattern(4))
+    )
     # Remove oligos with at least 5 'runs' of the same nucleotide
-    x <- exclude_mononucleotide_runs(x, n = 5)
+    x <- exclude_oligos(x, paste0("([a-z])", repeat_pattern(5)))
     if (avoid_3end_ta == TRUE) {
         # Remove oligos with t or a at the 3' end
-        x <- exclude_3end_ta(x)
+        x <- exclude_oligos(x,"a$|t$")
     }
     if (avoid_5end_g == TRUE) {
         # Remove oligos with a g at the 5' end
-        x <- exclude_5end_g(x)
+        x <- exclude_oligos(x, "^g")
     }
     if (avoid_3end_runs == TRUE) {
         # Remove oligos with at least 3 'runs' of the same nucleotide in 3'
-        x <- exclude_end_runs(x, n = 3)
+        x <- exclude_oligos(
+          x,
+          pattern  = paste0("([a-z])", repeat_pattern(3), "$")
+        )
     }
     return(x)
 }

@@ -75,3 +75,14 @@ test_that("repeat_pattern returns an error when it should", {
 test_that("repeat_pattern works", {
   expect_equal(repeat_pattern(3), "\\1\\1")
 })
+
+
+test_that("exclude_oligos returns an error when it should", {
+ expect_error(exclude_oligos(12))
+ expect_error(exclude_oligos("cgg", pattern = 12))
+})
+
+test_that("exclude_oligos works", {
+ expect_true(is.na(exclude_oligos("at", "t$")))
+  expect_true(is.na(exclude_oligos("attt", paste0("(t)", repeat_pattern(3)))))
+})
