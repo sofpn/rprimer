@@ -33,7 +33,7 @@ test_that("complement returns an error when it should", {
 
 test_that("complement works", {
   expect_equal(complement("c"), "g")
-  expect_equal(complement("ctt"), "gaa")
+  expect_equal(complement("ctt"), c("g", "a", "a"))
   expect_equal(complement("r"), "y")
   expect_equal(complement("R"), "y")
 })
@@ -123,6 +123,17 @@ test_that("nn_split returns an error when it should", {
 
 test_that("nn_split works", {
   expect_equal(nn_split("cgtc"), c("cg", "gt", "tc"))
+})
+
+test_that("nn_lookup returns an error when it should", {
+ expect_error(nn_lookup("cg", dH))
+ expect_error(nn_lookup("cr", "dH"))
+})
+
+test_that("nn_lookup works", {
+  expect_equal(nn_lookup("cg", "dH"), -10600)
+  expect_equal(nn_lookup("cg", "dS"), -27.2)
+  expect_equal(nn_lookup(c("cg", "cg"), "dS"), rep(-27.2, 2))
 })
 
 # TM functions ------------------
