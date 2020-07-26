@@ -1,5 +1,3 @@
-# Functions for the package rprimer (not exported) The code was written by Sofia in R 4.0.0
-
 #' Split sequence
 #'
 #' @param x A character vector of length one
@@ -520,32 +518,9 @@ running_sum <- function(x, n = NULL) {
     return(runsum)
 }
 
-#' Regular expression to repeat a pattern
+#' Exclude oligos with a specific pattern
 #'
-#' \code{repeat_pattern} creates a regular expression for repeating a pattern.
-#'
-#' @param n An integer equal to or greater than 1.
-#' The number of times the pattern is to be printed.
-#'
-#' @return A regular expression that can be pasted with another regular
-#' expression, so that it can be repeated \code{n} times.
-#'
-#' @examples
-#' repeat_pattern(3) # this pattern will be printed 3 times when pasted
-#' to a regular expression.
-#'
-#' @noRd
-repeat_pattern <- function(n) {
-    if (!is.numeric(n) || n < 1) {
-        stop("n must be a number, and at least 1.", call. = FALSE)
-    }
-    regex <- paste(rep("\\1", n - 1), collapse = "")
-    return(regex)
-}
-
-#' Exclude oligos with a certain pattern
-#'
-#' \code{exclude_oligos} replaces oligos with a certain pattern
+#' \code{exclude_oligos} replaces oligos with a specific pattern
 #' with \code{NA}.
 #'
 #' @param x One or more oligo sequences (a character vector).
@@ -563,8 +538,8 @@ exclude_oligos <- function(x, pattern) {
   if (!is.character(x)) {
     stop("x must be a character vector", call. = FALSE)
   }
-  if (!is.character(pattern)) {
-    stop("pattern must be a character vector", call. = FALSE)
+  if (!is.character(pattern) || length(pattern) != 1) {
+    stop("pattern must be a character vector of length one", call. = FALSE)
   }
   regex <- pattern
   x[which(grepl(regex, x))] <- NA
@@ -605,15 +580,18 @@ exclude_oligos <- function(x, pattern) {
 exclude_unwanted_oligos <- function(
   x, avoid_3end_ta = FALSE, avoid_5end_g = FALSE, avoid_3end_runs = FALSE
   ) {
+    if (any(!is.logical(c(avoid_3end_ta, avoid_5end_g, avoid_3end_runs)))) {
+      stop(
+        "avoid_3end_ta, avoid_5end_g and avoid_3end_runs
+        must be set to TRUE or FALSE", call. = FALSE)
+    }
     # Remove oligos with at least 4 'runs' of the same dinucleotide
-    x <- exclude_oligos(
-      x, paste0("(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)", repeat_pattern(4))
-    )
+    x <- exclude_oligos(x, "(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)\\1\\1\\1")
     # Remove oligos with at least 5 'runs' of the same nucleotide
-    x <- exclude_oligos(x, paste0("([a-z])", repeat_pattern(5)))
+    x <- exclude_oligos(x, "([a-z])\\1\\1\\1\\1")
     if (avoid_3end_ta == TRUE) {
         # Remove oligos with t or a at the 3' end
-        x <- exclude_oligos(x,"a$|t$")
+        x <- exclude_oligos(x, "a$|t$")
     }
     if (avoid_5end_g == TRUE) {
         # Remove oligos with g at the 5' end
@@ -621,7 +599,7 @@ exclude_unwanted_oligos <- function(
     }
     if (avoid_3end_runs == TRUE) {
         # Remove oligos with at least 3 'runs' of the same nucleotide in 3'
-        x <- exclude_oligos(x, paste0("([a-z])", repeat_pattern(3), "$"))
+        x <- exclude_oligos(x, "([a-z])\\1\\1$")
     }
     return(x)
 }
@@ -636,7 +614,7 @@ exclude_unwanted_oligos <- function(
 #' @details Valid bases for \code{x} are 'a', 'c', 'g', 't', 'r', 'y', 'm',
 #' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
 #'
-#' @return the number of degenerate bases in x (an integer).
+#' @return the number of degenerate bases in \code{x} (an integer).
 #'
 #' @examples
 #' count_degenerates('cttnra')
@@ -685,8 +663,7 @@ count_degeneracy <- function(x) {
       'n', 'h', 'd', 'v', 'b' and '-'",
             call. = FALSE)
     }
-    x <- strsplit(x, split = "")
-    x <- unlist(x, use.names = FALSE)
+    x <- split_sequence(x)
     # Find the number of nucleotides at each position in x
     n_nucleotides <- degeneracy_lookup[x]
     # Calculate the total number of DNA sequences in x
@@ -709,14 +686,13 @@ count_degeneracy <- function(x) {
 #'
 #' @noRd
 nn_split <- function(x) {
-    if (!(!is.na(x) && is.character(x) && is.vector(x) && nchar(x) > 1)) {
+    if (!(!is.na(x) && is.character(x) && nchar(x) > 1)) {
         stop("x must be a character vector of length one,
       with at least two characters (e.g. 'caaggnt')", call. = FALSE)
     }
-    x <- strsplit(x, split = "")
-    x <- unlist(x, use.names = FALSE)
-    from <- 1:(length(x) - 1)
-    to <- 2:length(x)
+    x <- split_sequence(x)
+    from <- (seq_along(x) - 1)[-1]
+    to <- seq_along(x)[-1]
     nn <- purrr::map_chr(from, ~paste(x[from[[.x]]:to[[.x]]], collapse = ""))
     return(nn)
 }
@@ -732,7 +708,7 @@ nn_split <- function(x) {
 #' @details \code{x} cannot contain other characters than
 #' 'a', 'c', 'g', 't' and '-'.
 #'
-#' @return The corresponding values for dH or dS,
+#' @return The corresponding values for dH or dS (cal/M)
 #'
 #' @examples
 #' nn_lookup(c('ac', 'cc'), table = 'dS')
@@ -744,7 +720,9 @@ nn_lookup <- function(x, table) {
         stop("table must be set to either 'dH' or 'dS'", call. = FALSE)
     }
     if (any(grepl("[^acgt.]", x))) {
-        stop("x contain at least one invalid base. Valid bases are a, c, g and t.", call. = FALSE)
+        stop(
+          "x contain at least one invalid base.
+          Valid bases are a, c, g and t.", call. = FALSE)
     }
     if (table == "dH") {
         selected_table <- nearest_neighbour_lookup$dH
@@ -821,7 +799,8 @@ init_5end <- function(x) {
 #'
 #' Allawi, H. & SantaLucia, J. (1997)
 #' Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-#' Biochemistry, 34: 10581?\200?10594 (Duplex initiation parameters are from here)
+#' Biochemistry, 34: 10581?\200?10594
+#' (Duplex initiation parameters are from here)
 #'
 #' #' SantaLucia, J (1998) A unified view of polymer,
 #' dumbell, and oligonucleotide DNA nearest-neighbour thermodynamics.
@@ -833,12 +812,14 @@ init_5end <- function(x) {
 #'
 #' @noRd
 tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
+    # Find initiation values
     init_H <- purrr::map_dbl(x, ~init_5end(.x)[["H"]] + init_3end(.x)[["H"]])
     init_S <- purrr::map_dbl(x, ~init_5end(.x)[["S"]] + init_3end(.x)[["S"]])
     nn <- purrr::map(x, nn_split)
     # Check oligo length
     oligo_length <- purrr::map_int(nn, length)
-    # I made a matrix based tm-calculation, which means that all oligos must be of the same length
+    # I made a matrix based tm-calculation,
+    # which means that all oligos must be of the same length
     if (length(unique(oligo_length)) != 1) {
         stop("All oligos are not of the same length", call. = FALSE)
     }
@@ -854,6 +835,8 @@ tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
     tm <- tm - 273.15
     return(tm)
 }
+
+################################################################################### new test file
 
 #' Convert a DNA sequence to a regular expression
 #'
@@ -962,10 +945,11 @@ running_average <- function(x, size = NULL) {
     }
     stopifnot(is.numeric(x) && size <= length(x) && size >= 1 && length(size == 1))
     sums <- c(0, cumsum(x))
-    average <- (sums[((size + 1):length(sums))] - sums[(1:(length(sums) - size))])/size
+    average <- (sums[((size + 1):length(sums))] - sums[(1:(length(sums) - size))]) / size
     # First, we set the position to get a trailed moving average
     position <- (1 + size - 1):length(x)
-    # Then, to get a centered running average, we align each moving average to the midpoint of the range of observations
+    # Then, to get a centered running average,
+    # we align each moving average to the midpoint of the range of observations
     # that each average includes
     midpoint <- size/2
     position <- position - midpoint
@@ -1003,7 +987,7 @@ gc_running_average <- function(x, size = NULL) {
         if (size == 0)
             size <- 1
     }
-    stopifnot(is.character(x) && size <= length(x) && size >= 1 && length(size == 1))
+    stopifnot(is.character(x) && size <= length(x) && size >= 1 && length(size == 1)) #############
     begins <- 1:(length(x) - size + 1)
     ends <- begins + size - 1
     frame <- 1:(length(x) - size + 1)
@@ -1013,7 +997,8 @@ gc_running_average <- function(x, size = NULL) {
     })
     # First, we set the position to get a trailed moving average
     position <- (1 + size - 1):length(x)
-    # Then, to get a centered running average, we align each moving average to the midpoint of the range of observations
+    # Then, to get a centered running average,
+    # we align each moving average to the midpoint of the range of observations
     # that each average includes
     midpoint <- size/2
     position <- position - midpoint
@@ -1124,7 +1109,8 @@ check_probe_match <- function(x, y) {
 
 #' Draw a rectangle
 #'
-#'
+#' @from Where (at the x-axis) the rectangle starts.
+#' @to Where (at the x-axis) the rectangle ends.
 #' @noRd
 rectangle <- function(from, to) {
     rect(from, 0, to, 5, border = NA, col = rgb(123, 149, 169, alpha = 100, maxColorValue = 200), xpd = NA)
@@ -1132,8 +1118,11 @@ rectangle <- function(from, to) {
 
 #' Make a sequence barplot
 #'
-#'
 #' @param x A selection of a sequence profile
+#'
+#' @param ... Additional arguments that should be passed to the barplot, e.g. a title.
+#'
+#' @return A barplot
 #'
 #' @noRd
 sequence_barplot <- function(x, ...) {

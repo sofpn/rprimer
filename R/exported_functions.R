@@ -1,7 +1,3 @@
-# Exported functions for the package rprimer
-
-# covr package
-
 # Import alignment ============================================================
 
 #' Read an alignment in fasta format
@@ -416,7 +412,8 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #'
 #' Allawi, H. & SantaLucia, J. (1997)
 #' Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-#' Biochemistry, 34: 10581?\200?10594 (Duplex initiation parameters are from here)
+#' Biochemistry, 34: 10581?\200?10594
+#' (Duplex initiation parameters are from here)
 #'
 #' #' SantaLucia, J (1998) A unified view of polymer,
 #' dumbell, and oligonucleotide DNA nearest-neighbour thermodynamics.
@@ -446,10 +443,6 @@ get_oligos <- function(x, length = 18:22, max_gap_frequency = 0.1, max_degenerat
     }
     if (!(min(tm_range) >= 20 && max(tm_range) <= 90 && is.numeric(tm_range))) {
         stop("tm_range must be between 20 and 90, e.g. c(55, 60)", call. = FALSE)
-    }
-    if (!(is.logical(avoid_3end_ta) && is.logical(avoid_5end_g) && is.logical(avoid_3end_runs))) {
-        stop("avoid_3end_ta, avoid_5end_g and avoid_3end_runs
-      must be set to TRUE or FALSE", call. = FALSE)
     }
     if (!is.double(conc_oligo) || conc_oligo < 2e-08 || conc_oligo > 2e-06) {
         stop("The oligo concentration must be between
@@ -555,7 +548,7 @@ get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
     # Remove columns with match information (if any)
     if (any(grepl("^pm_", names(x)))) {
         drop <- grep("^pm_|match_matrix", names(x))
-        x <- x[, -drop]
+        x <- x[, -drop] # # # # # Logical subsetting ??? include match in get ols?
     }
     # Get all fwd and rev primers
     fwd <- x[which(!is.na(x$majority)), ]

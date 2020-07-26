@@ -67,16 +67,6 @@ test_that("running_sum works", {
   expect_equal(length(running_sum(x, n = 3)), length(x) - 2)
 })
 
-test_that("repeat_pattern returns an error when it should", {
-  expect_error(repeat_pattern(0))
-  expect_error(repeat_pattern("a"))
-})
-
-test_that("repeat_pattern works", {
-  expect_equal(repeat_pattern(3), "\\1\\1")
-})
-
-
 test_that("exclude_oligos returns an error when it should", {
  expect_error(exclude_oligos(12))
  expect_error(exclude_oligos("cgg", pattern = 12))
@@ -84,5 +74,58 @@ test_that("exclude_oligos returns an error when it should", {
 
 test_that("exclude_oligos works", {
  expect_true(is.na(exclude_oligos("at", "t$")))
-  expect_true(is.na(exclude_oligos("attt", paste0("(t)", repeat_pattern(3)))))
+ expect_true(is.na(exclude_oligos("attt", "(t)\\1\\1")))
 })
+
+test_that("exclude_unwanted_oligos returns an error when it should", {
+ expect_error(exclude_unwanted_oligos(0))
+ expect_error(exclude_unwanted_oligos("ctgtt", avoid_5end_g = 0))
+ expect_error(exclude_unwanted_oligos("ctgtt", avoid_3end_ta = NULL))
+})
+
+test_that("exclude_unwanted_oligos works", {
+ oligos <- c("cttgttta", "ggttccggtc")
+ expect_equal(
+   exclude_unwanted_oligos(oligos, avoid_3end_ta = FALSE, avoid_5end_g = TRUE),
+   c("cttgttta", NA)
+  )
+ expect_true(is.na(exclude_unwanted_oligos("cgtgtgtgt")))
+ expect_true(is.na(exclude_unwanted_oligos("cggggg")))
+})
+
+test_that("count_degenerates returns an error when it should", {
+ expect_error(cound_degenerates("cx"))
+ expect_error(cound_degenerates(0))
+ expect_error(cound_degenerates(c("ca", "ca")))
+})
+
+test_that("count_degenerates works", {
+ expect_equal(count_degenerates("cgtcg"), 0)
+ expect_equal(count_degenerates("cgtcgnyr"), 3)
+})
+
+test_that("count_degeneracy returns an error when it should", {
+  expect_error(cound_degeneracy("cx"))
+  expect_error(cound_degeneracy(0))
+  expect_error(cound_degeneracy(c("ca", "ca")))
+})
+
+test_that("count_degeneracy works", {
+  expect_equal(count_degeneracy("cgtcg"), 1)
+  expect_equal(count_degeneracy("cgtcgnyr"), 16)
+})
+
+test_that("nn_split returns an error when it should", {
+  expect_error(nn_split(NA))
+  expect_error(nn_split(c(1, 2, 3)))
+  expect_error(nn_split("c"))
+})
+
+test_that("nn_split works", {
+  expect_equal(nn_split("cgtc"), c("cg", "gt", "tc"))
+})
+
+# TM functions ------------------
+
+#  TM functions
+
