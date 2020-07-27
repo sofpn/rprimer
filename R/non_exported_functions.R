@@ -845,6 +845,151 @@ tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
     return(tm)
 }
 
+#' Generate oligos of a specific length
+#'
+#' @param x An object of class 'rprimer_sequence_properties'
+#'
+#' @param oligo_length An integer. The minimum allowed
+#' value is 6 and the maximum allowed value is 30. The default is 20.
+#'
+#' @param max_gap_frequency Maximum allowed gap frequency.
+#' A number between 0 and 1 (default is 0.1, which means that only
+#' positions with a gap frequency equal to or less than 0.1 will be
+#' considered as an oligo region).
+#'
+#' @return A tibble with all possible oligos
+#'
+#' @noRd
+generate_oligos <- function(
+  x,
+  oligo_length = 20,
+  max_gap_frequency = 0.1,
+  max_degenerates = 2,
+  max_degeneracy = 4
+) {
+  if (!inherits(x, "rprimer_sequence_properties")) {
+    stop(
+      "An rprimer_sequence_properties object is expected for x.", call. = FALSE
+    )
+  }
+  if (!(min(oligo_length) >= 6 && max(oligo_length) <= 30)) {
+    stop("oligo_length must be between 6 and 30", call. = FALSE)
+  }
+  if (!(max_gap_frequency >= 0 && max_gap_frequency <= 1)) {
+    stop("max_gap_frequency must be between 0 and 1", call. = FALSE)
+  }
+  if (!(max_degenerates <= 6 && max_degenerates >= 0)) {
+    stop("max_degenerates must be between 0 and 6", call. = FALSE)
+  }
+  if (!(max_degeneracy >= 1 && max_degeneracy <= 64)) {
+    stop("max_degeneracy must be between 1 and 64", call. = FALSE)
+  }
+  # Find all possible oligos of length y
+  majority <- get_nmers(x$majority, n = oligo_length)
+  iupac <- get_nmers(x$iupac, n = oligo_length)
+  majority_rc <- purrr::map_chr(majority, ~reverse_complement(.x))
+  iupac_rc <- purrr::map_chr(iupac, ~reverse_complement(.x))
+  degenerates <- purrr::map_int(iupac, ~count_degenerates(.x))
+  degeneracy <- purrr::map_dbl(iupac, ~count_degeneracy(.x))
+  begin <- seq_along(majority)
+  end <- seq_along(majority) + oligo_length - 1
+  length <- oligo_length
+
+  # Identify oligos with high gap frequency
+  gap_bin <- ifelse(x$gaps > max_gap_frequency, 1L, 0L)
+  gap_penalty <- running_sum(gap_bin, n = oligo_length)
+
+  oligos <- tibble::tibble(
+    begin, end, length, majority, iupac,
+    majority_rc, iupac_rc, degenerates, degeneracy
+  )
+  # Exclude oligos with too high gap frequency
+  oligos <- oligos[gap_penalty == 0, ]
+  # Exclude oligos with too many degenerate bases
+  oligos <- oligos[oligos$degenerates <= max_degenerates, ]
+  # Exclude oligos with too high degeneracy
+  oligos <- oligos[oligos$degeneracy <= max_degeneracy, ]
+  # Identify and exclude oligos that are duplicated
+  unique_oligos <- match(oligos$majority, unique(oligos$majority))
+  oligos <- oligos[unique_oligos, ]
+  return(oligos)
+}
+
+#' Calculate GC content and tm of oligos
+#'
+#' @param oligos A tibble with oligos.
+#'
+#' @param gc_range The GC-content range of each oligo. Can range between
+#' 0 and 1. The default is \code{c(0.45, 0.55)}.
+#'
+#' @param tm_range The Tm-range of each oligo. Can range between 20 and 90.
+#' The default is \code{c(48, 70)}.
+#'
+#' @param conc_oligo The concentration of oligonucleotide in M,
+#' ranging from 0.2e-07 M (20 nM) to 2e-06 M (2000 nM).
+#' The default value is 5e-07 M (500 nM) (for Tm calculation)
+#'
+#' @param conc_na The sodium ion concentration in M, ranging
+#' from 0.01 M to 1 M. The default value is 0.05 M (50 mM)
+#' (for Tm calculation).
+#'
+#' @section Excluded oligos:
+#' The function excludes oligos with
+#' more than than three consecutive runs of the same dinucleotide
+#' (e.g. 'tatatata'), oligos with more than four consecutive runs of the
+#' same nucleotide, and oligos that are duplicated.
+#'
+#' @section Tm:
+#' The melting temperature is calculated using the nearest-neigbour method.
+#' The oligo concentration is set to 500 nM and the sodium ion concentration
+#' is set to 50 mM.
+#'
+#' Assumptions for Tm calculation:
+#'
+#' Oligos are not expected to be self-complementary, so no symmetry
+#' correction is done.
+#'
+#' We assume that the oligo concentration is much higher
+#' than the target concentration.
+#'
+#' See references for table values and equations.
+#'
+#' #Warning:
+#' GC-content and Tm are calculated based on the majority oligos, and
+#' may thus be misleading for degenerate (iupac) oligos.
+#'
+#' @return A tibble (a data frame) with oligo candidates.
+#'
+#' @noRd
+add_gc_tm <- function(
+  oligos,
+  gc_range = c(0.45, 0.55),
+  tm_range = c(48, 70),
+  conc_oligo = 5e-07,
+  conc_na = 0.05
+  ) {
+  if (!(min(gc_range) >= 0 && max(gc_range) <= 1)) {
+    stop("gc_range must be between 0 and 1, e.g. c(0.45, 0.65)", call. = FALSE)
+  }
+  if (!(min(tm_range) >= 20 && max(tm_range) <= 90)) {
+    stop("tm_range must be between 20 and 90, e.g. c(55, 60)", call. = FALSE)
+  }
+  # Calculate GC content of all majority oligos
+  gc_majority <- purrr::map_dbl(oligos$majority, ~gc_content(.x))
+  oligos <- tibble::add_column(oligos, gc_majority)
+  # Exclude oligos with GC content outside the stated thresholds
+  oligos <- oligos[oligos$gc_majority >= min(gc_range), ]
+  oligos <- oligos[oligos$gc_majority <= max(gc_range), ]
+  # Calculate Tm of all majority oligos
+  tm_majority <- tm(oligos$majority, conc_oligo = conc_oligo, conc_na = conc_na)
+  oligos <- tibble::add_column(oligos, tm_majority)
+  # Exclude oligos with Tm outside the stated thresholds
+  oligos <- oligos[tm_majority >= min(tm_range), ]
+  oligos <- oligos[tm_majority <= max(tm_range), ]
+  return(oligos)
+}
+
+
 ################################################################################### new test file
 
 #' Convert a DNA sequence to a regular expression
@@ -916,14 +1061,18 @@ expand_degenerate <- function(x) {
     x <- split_sequence(x)
     # Go through each base of the DNA sequence
     expanded <- purrr::map(x, function(i) {
-        # Check which bases the IUPAC base at position i correspond to by using a lookup table
+        # Check which bases the IUPAC base at position i correspond to
         all_bases <- unname(degenerate_lookup[[i]])
         all_bases <- unlist(strsplit(all_bases, split = ","))
         return(all_bases)
     })
     # Get all possible combinations of DNA sequences
-    expanded <- expand.grid(expanded[seq_along(expanded)], stringsAsFactors = FALSE)
-    expanded <- purrr::map(seq_len(nrow(expanded)), ~paste(expanded[.x, ], collapse = ""))
+    expanded <- expand.grid(
+      expanded[seq_along(expanded)], stringsAsFactors = FALSE
+    )
+    expanded <- purrr::map(
+      seq_len(nrow(expanded)), ~paste(expanded[.x, ], collapse = "")
+    )
     expanded <- unlist(expanded, use.names = FALSE)
     return(expanded)
 }
@@ -1082,39 +1231,6 @@ check_primer_match <- function(x, y) {
     return(match_matrix)
 }
 
-#' Check if probes within an assay match their targets
-#'
-#' \code{check_probe_match} checks if probes in assays matches with their
-#' intended target sequences.
-#'
-#' @param x Probes within an object of class
-#' 'rprimer_oligo' or 'rprimer_assay'.
-#'
-#' @param y The intended target. An alignment of DNA sequences
-#' (an object of class 'rprimer_alignment').
-#'
-#' @return A match report for each probe (a list of logical matrices).
-#'
-#' @noRd
-check_probe_match <- function(x, y) {
-    probes <- x[c("majority_pr", "iupac_pr", "sense_pr")]
-    probes$majority_pr[which(probes$sense_pr == "neg")] <- purrr::map_chr(probes$majority_pr[which(probes$sense_pr == "neg")],
-        reverse_complement)
-    probes$iupac_pr[which(probes$sense_pr == "neg")] <- purrr::map_chr(probes$iupac_pr[which(probes$sense_pr == "neg")],
-        reverse_complement)
-    probes <- as.matrix(probes[, -ncol(probes)])
-    probes <- apply(probes, c(1, 2), make_regex)
-    match_matrix <- apply(probes, 1, function(x) {
-        match <- purrr::map(x, ~grepl(.x, y))
-        return(match)
-    })
-    match_matrix <- purrr::map(match_matrix, ~do.call("cbind", .x))
-    match_matrix <- purrr::map(match_matrix, function(x) {
-        rownames(x) <- names(y)
-        x
-    })
-    return(match_matrix)
-}
 
 #' Draw a rectangle
 #'

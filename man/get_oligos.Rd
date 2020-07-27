@@ -50,9 +50,9 @@ should be replaced with NA. The default is \code{FALSE}.}
 \item{avoid_3end_runs}{\code{TRUE} or \code{FALSE}.
 If oligos with more than two runs
 of the same nucleotide at the 3' end should be replaced with NA.
-The default is \code{TRUE}.
+The default is \code{TRUE}.}
 
- @param gc_range The GC-content range of each oligo. Can range between
+\item{gc_range}{The GC-content range of each oligo. Can range between
 0 and 1. The default is \code{c(0.45, 0.55)}.}
 
 \item{tm_range}{The Tm-range of each oligo. Can range between 20 and 90.
@@ -127,9 +127,10 @@ Biochemistry, 35: 3555-3562 (Formula and salt correction are from here)
 
 Allawi, H. & SantaLucia, J. (1997)
 Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-Biochemistry, 34: 10581?\200?10594 (Duplex initiation parameters are from here)
+Biochemistry, 34: 10581?\200?10594
+(Duplex initiation parameters are from here)
 
 #' SantaLucia, J (1998) A unified view of polymer,
-dumbell, and oligonucleotide DNA nearest-neighbour thermodynamics.
+dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
 Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
 }

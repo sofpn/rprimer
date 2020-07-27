@@ -308,30 +308,30 @@ sequence_properties <- function(x, iupac_threshold = 0) {
     return(sequence_properties)
 }
 
-# Get oligos from sequence data ===============================================
+# Get oligos from sequence properties =========================================
 
-#' Get oligos from sequence data
+#' Get oligos from sequence properties
 #'
-#' \code{get_oligos} identifies oligos (primers and probes) from sequence data
-#' based on user-specfied constraints.
+#' \code{get_oligos} identifies oligos (primers and probes) from
+#' sequence properties.
 #'
 #' @param x an object of class 'rprimer_sequence_properties'.
 #'
 #' @param max_gap_frequency Maximum allowed gap frequency.
-#' A number between 0 and 1 (default is 0.1, which means that only
+#' A number between 0 and 1 (default is 0.1, which means that
 #' positions with a gap frequency equal to or less than 0.1 will be
 #' considered as an oligo region).
 #'
-#' @param length Oligo length. One or more numbers. The minimum allowed
+#' @param length Oligo length. The minimum allowed
 #' value is 6 and the maximum allowed value is 30.
 #' The default is \code{18:22}.
 #'
-#' @param max_degenerates Maximum number of degenerate positions in each
-#' oligo. An integer. The minimum allowed value is 0 and the maximum
+#' @param max_degenerates Maximum number of degenerate positions.
+#' The minimum allowed value is 0 and the maximum
 #' allowed value is 6 (default is 2).
 #'
-#' @param max_degeneracy Maximum number of degenerate variants of each
-#' oligo. A number. The minimum allowed value is 1 and the maximum
+#' @param max_degeneracy Maximum number of degenerate variants.
+#' The minimum allowed value is 1 and the maximum
 #' allowed value is 64 (default is 4).
 #'
 #' @param avoid_3end_ta \code{TRUE} or \code{FALSE}.
@@ -347,7 +347,7 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' of the same nucleotide at the 3' end should be replaced with NA.
 #' The default is \code{TRUE}.
 #'
-#'  @param gc_range The GC-content range of each oligo. Can range between
+#' @param gc_range The GC-content range of each oligo. Can range between
 #' 0 and 1. The default is \code{c(0.45, 0.55)}.
 #'
 #' @param tm_range The Tm-range of each oligo. Can range between 20 and 90.
@@ -369,10 +369,6 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #'
 #' @section Tm:
 #' The melting temperature is calculated using the nearest-neigbour method.
-#' The oligo concentration is set to 500 nM and the sodium ion concentration
-#' is set to 50 mM.
-#'
-#' Assumptions for Tm calculation:
 #'
 #' Oligos are not expected to be self-complementary, so no symmetry
 #' correction is done.
@@ -382,7 +378,7 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #'
 #' See references for table values and equations.
 #'
-#' #Warning:
+#' # Warning:
 #' GC-content and Tm are calculated based on the majority oligos, and
 #' may thus be misleading for degenerate (iupac) oligos.
 #'
@@ -415,92 +411,72 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' Biochemistry, 34: 10581?\200?10594
 #' (Duplex initiation parameters are from here)
 #'
-#' #' SantaLucia, J (1998) A unified view of polymer,
+#' SantaLucia, J (1998) A unified view of polymer,
 #' dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
 #' Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
 #'
 #' @export
-get_oligos <- function(x, length = 18:22, max_gap_frequency = 0.1, max_degenerates = 2, max_degeneracy = 4, avoid_3end_ta = TRUE,
-    avoid_5end_g = FALSE, avoid_3end_runs = TRUE, gc_range = c(0.45, 0.55), tm_range = c(48, 70), conc_oligo = 5e-07, conc_na = 0.05) {
-    if (!inherits(x, "rprimer_sequence_properties")) {
-        stop("An rprimer_sequence_properties object is expected for x.", call. = FALSE)
-    }
-    if (!(min(length) >= 6 && max(length) <= 30 && is.numeric(length))) {
-        stop("length must be between 4 and 30", call. = FALSE)
-    }
-    if (!(max_gap_frequency >= 0 && max_gap_frequency <= 1 && is.numeric(max_gap_frequency) && length(max_gap_frequency) ==
-        1)) {
-        stop("max_gap_frequency must be between 0 and 1", call. = FALSE)
-    }
-    if (!(max_degenerates <= 30 && max_degenerates >= 0 && is.numeric(max_degenerates))) {
-        stop("max_degenerates must be between 0 and 6", call. = FALSE)
-    }
-    if (!(max_degeneracy >= 1 && max_degeneracy <= 64 && length(max_degeneracy == 1) && is.numeric(max_degeneracy))) {
-        stop("max_degeneracy must be between 1 and 64", call. = FALSE)
-    }
-    if (!(min(gc_range) >= 0 && max(gc_range) <= 1 && is.numeric(gc_range))) {
-        stop("gc_range must be between 0 and 1, e.g. c(0.45, 0.65)", call. = FALSE)
-    }
-    if (!(min(tm_range) >= 20 && max(tm_range) <= 90 && is.numeric(tm_range))) {
-        stop("tm_range must be between 20 and 90, e.g. c(55, 60)", call. = FALSE)
-    }
-    all_oligos <- purrr::map_dfr(length, function(y) {
-        # Find all possible oligos of length y
-        majority <- get_nmers(x$majority, n = y)
-        iupac <- get_nmers(x$iupac, n = y)
-        majority_rc <- purrr::map_chr(majority, ~reverse_complement(.x))
-        iupac_rc <- purrr::map_chr(iupac, ~reverse_complement(.x))
-        degenerates <- purrr::map_int(iupac, ~count_degenerates(.x))
-        degeneracy <- purrr::map_dbl(iupac, ~count_degeneracy(.x))
-        begin <- seq(1, length(majority))
-        end <- seq(y, length(majority) + y - 1)
-        length <- y
-        # Combine the information in a data frame
-        oligos <- tibble::tibble(begin, end, length, majority, iupac, majority_rc, iupac_rc, degenerates, degeneracy)
-        # Exclude oligos with positions with a gap frequency higher than the stated threshold
-        gap_bin <- ifelse(x$gaps > max_gap_frequency, 1L, 0L)
-        gap_penalty <- running_sum(gap_bin, n = y)
-        oligos <- oligos[which(gap_penalty == 0), ]
-        # Exclude oligos with more degenerate bases than the stated threshold
-        oligos <- oligos[which(oligos$degenerates <= max_degenerates), ]
-        # Exclude oligos with higher degeneracy than the stated threshold
-        oligos <- oligos[which(oligos$degeneracy <= max_degeneracy), ]
-        # Exclude oligos with '-' (gaps)
-        if (any(grepl("-", oligos$majority))) {
-            oligos <- oligos[-grep("-", oligos$majority), ]
-        }
-        # Identify and exclude oligos that are duplicated
-        unique_oligos <- match(oligos$majority, unique(oligos$majority))
-        oligos <- oligos[unique_oligos, ]
-        # Calculate GC content of all majority oligos
-        gc_majority <- purrr::map_dbl(oligos$majority, ~gc_content(.x))
-        oligos <- tibble::add_column(oligos, gc_majority)
-        # Exclude oligos with GC content outside the stated thresholds
-        oligos <- oligos[which(gc_majority >= min(gc_range) & gc_majority <= max(gc_range)), ]
-        # Calculate Tm of all majority oligos
-        tm_majority <- tm(oligos$majority)
-        oligos <- tibble::add_column(oligos, tm_majority)
-        # Exclude oligos with Tm outside the stated thresholds
-        oligos <- oligos[which(tm_majority >= min(tm_range) & tm_majority <= max(tm_range)), ]
-        # Indentify non-complex oligos and (if specified) oligos with 3' t-a or 5' g, and set to NA
-        oligos$majority <- exclude_unwanted_oligos(oligos$majority, avoid_3end_ta = avoid_3end_ta, avoid_5end_g = avoid_5end_g,
-            avoid_3end_runs = avoid_3end_runs)
-        oligos$majority_rc <- exclude_unwanted_oligos(oligos$majority_rc, avoid_3end_ta = avoid_3end_ta, avoid_5end_g = avoid_5end_g,
-            avoid_3end_runs = avoid_3end_runs)
-        oligos$iupac[which(is.na(oligos$majority))] <- NA
-        oligos$iupac_rc[which(is.na(oligos$majority_rc))] <- NA
-        # Identify oligos where both the sense and antisense sequence is NA
-        invalid_oligos <- dplyr::intersect(which(is.na(oligos$majority)), which(is.na(oligos$majority_rc)))
-        if (length(invalid_oligos) > 0L)
-            oligos <- oligos[-invalid_oligos, ]
-        return(oligos)
-    })
-    if (nrow(all_oligos) == 0L)
-        stop("No oligos were found.", call. = FALSE)
-    all_oligos <- dplyr::arrange(all_oligos, begin)
-    all_oligos <- tibble::new_tibble(all_oligos, nrow = nrow(all_oligos), class = "rprimer_oligo")
-    return(all_oligos)
+get_oligos <- function(
+  x,
+  length = 18:22,
+  max_gap_frequency = 0.1,
+  max_degenerates = 2,
+  max_degeneracy = 4,
+  avoid_3end_ta = TRUE,
+  avoid_5end_g = FALSE,
+  avoid_3end_runs = TRUE,
+  gc_range = c(0.45, 0.55),
+  tm_range = c(48, 70),
+  conc_oligo = 5e-07,
+  conc_na = 0.05
+) {
+  all_oligos <- purrr::map_dfr(length, function(y) {
+    oligos <- generate_oligos(
+      x,
+      oligo_length = y,
+      max_gap_frequency = max_gap_frequency,
+      max_degenerates = max_degenerates,
+      max_degeneracy = max_degeneracy
+    )
+    oligos <- add_gc_tm(
+      oligos,
+      gc_range = gc_range,
+      tm_range = tm_range,
+      conc_oligo = conc_oligo,
+      conc_na = conc_na
+    )
+    oligos$majority <- exclude_unwanted_oligos(
+      oligos$majority,
+      avoid_3end_ta = avoid_3end_ta,
+      avoid_5end_g = avoid_5end_g,
+      avoid_3end_runs = avoid_3end_runs
+    )
+    oligos$majority_rc <- exclude_unwanted_oligos(
+      oligos$majority_rc,
+      avoid_3end_ta = avoid_3end_ta,
+      avoid_5end_g = avoid_5end_g,
+      avoid_3end_runs = avoid_3end_runs
+    )
+    oligos$iupac[which(is.na(oligos$majority))] <- NA
+    oligos$iupac_rc[which(is.na(oligos$majority_rc))] <- NA
+    # Identify oligos where both the sense and antisense sequence is NA
+    invalid_oligos <- is.na(oligos$majority) & is.na(oligos$majority_rc)
+    # Remove them
+    oligos <- oligos[!invalid_oligos, ]
+    return(oligos)
+  })
+  if (nrow(all_oligos) == 0L)
+    stop("No oligos were found.", call. = FALSE)
+
+  # Check match
+
+  all_oligos <- dplyr::arrange(all_oligos, begin)
+  all_oligos <- tibble::new_tibble(
+    all_oligos, nrow = nrow(all_oligos), class = "rprimer_oligo"
+  )
+  return(all_oligos)
 }
+
 
 # Get PCR assays from oligos ==================================================
 
@@ -674,110 +650,6 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
 
 # Check if oligos and assays matches their targets ============================
 
-#' Check if oligos or assays matches their targets (generic)
-#'
-#' \code{check_match} checks if oligos or assays matches with their
-#' intended target sequences.
-#'
-#' @param x An object of class
-#' 'rprimer_oligo' or 'rprimer_assay'.
-#'
-#' @param y The intended target. An alignment of DNA sequences
-#' (an object of class 'rprimer_alignment').
-#'
-#' @return A tibble (
-#' a data frame) of class 'rprimer_oligo' or 'rprimer_assay',
-#' with columns describing the proportion of perfectly matching
-#' sequences for each oligo or assay, and a column named
-#' 'match_report', which contains a matrix with information about
-#' which sequences the oligo/assay matches perfectly to.
-#'
-#' @examples
-#' check_match(example_rprimer_oligo, example_rprimer_alignment)
-#' check_match(example_rprimer_assay, example_rprimer_alignment)
-#'
-#' @export
-check_match <- function(x, y) {
-    if (!inherits(y, "rprimer_alignment")) {
-        stop("An rprimer_alignment object is expected for y.", call. = FALSE)
-    }
-    UseMethod("check_match")
-}
-
-#' @describeIn check_match Check match of an object of class
-#' 'rprimer_oligo'.
-#' @export
-check_match.rprimer_oligo <- function(x, y) {
-    # If the positive-sense sequence is NA, then take the negative sense and make a reverse complement Make regular
-    # expressions of majority and iupac sequences
-    majority <- ifelse(!is.na(x$majority), x$majority, purrr::map_chr(x$majority_rc, reverse_complement))
-    majority <- purrr::map_chr(majority, make_regex)
-    iupac <- ifelse(!is.na(x$iupac), x$iupac, purrr::map_chr(x$iupac_rc, reverse_complement))
-    iupac <- purrr::map_chr(iupac, make_regex)
-    # Shorten the sequence names to only accession numbers
-    names(y) <- purrr::map_chr(names(y), truncate_name)
-    # Make a matrix that describes exactly which sequences the oligo matches perfectly to
-    match_matrix <- purrr::map(seq_len(nrow(x)), function(i) {
-        match_majority <- grepl(majority[[i]], y)
-        match_iupac <- grepl(iupac[[i]], y)
-        match <- cbind(match_majority, match_iupac)
-        colnames(match) <- c("match_majority", "match_iupac")
-        rownames(match) <- names(y)
-        return(match)
-    })
-    names(match_matrix) <- x$iupac
-    # Calculate the match percentage for each oligo
-    match_percentage <- purrr::map(match_matrix, colMeans)
-    match_percentage <- do.call("rbind", match_percentage)
-    colnames(match_percentage) <- c("pm_majority", "pm_iupac")
-    match_percentage <- tibble::as_tibble(match_percentage)
-    # Add this information to the rprimer_oligo object
-    x <- dplyr::bind_cols(x, match_percentage)
-    match_matrix <- tibble::tibble(match_matrix)
-    x <- dplyr::bind_cols(x, match_matrix)
-    x <- tibble::new_tibble(x, nrow = nrow(x), class = "rprimer_oligo")
-    return(x)
-}
-
-#' @describeIn check_match Check match of an object of class
-#' 'rprimer_assay'.
-#' @export
-check_match.rprimer_assay <- function(x, y) {
-    # Shorten the names of y to only accession numbers
-    names(y) <- purrr::map_chr(names(y), truncate_name)
-    # Get match matrices for each assay
-    primer_match_matrix <- check_primer_match(x, y)
-    if (any(grepl("_pr$", names(x)))) {
-        probe_match_matrix <- check_probe_match(x, y)
-        match_matrix <- purrr::map(seq_len(nrow(x)), function(x) {
-            match <- cbind(primer_match_matrix[[x]], probe_match_matrix[[x]])
-            return(match)
-        })
-    } else match_matrix <- primer_match_matrix
-    match_matrix <- purrr::map(match_matrix, function(x) {
-        majority_cols <- seq(1, ncol(x), 2)
-        iupac_cols <- seq(2, ncol(x), 2)
-        majority_all <- rowSums(x[, majority_cols])
-        iupac_all <- rowSums(x[, iupac_cols])
-        majority_all <- ifelse(majority_all == length(majority_cols), TRUE, FALSE)
-        iupac_all <- ifelse(iupac_all == length(iupac_cols), TRUE, FALSE)
-        x <- cbind(x, majority_all, iupac_all)
-        return(x)
-    })
-    names(match_matrix) <- paste0(x$majority_fwd, "_", x$majority_rev, "_", x$majority_pr)
-    match_percentage <- purrr::map(match_matrix, colMeans)
-    match_percentage <- do.call("rbind", match_percentage)
-    match_percentage <- tibble::as_tibble(match_percentage)
-    names(match_percentage) <- paste0("pm_", names(match_percentage))
-    if (any(grepl("^pm_", names(x)))) {
-        stop("matches have already been checked in x", call. = FALSE)
-    }
-    x <- dplyr::bind_cols(x, match_percentage)
-    match_matrix <- tibble::tibble(match_matrix)
-    x <- dplyr::bind_cols(x, match_matrix)
-    x <- tibble::new_tibble(x, nrow = nrow(x), class = "rprimer_assay")
-    return(x)
-}
 
 # Plot results ================================================================
 
