@@ -416,7 +416,7 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' (Duplex initiation parameters are from here)
 #'
 #' #' SantaLucia, J (1998) A unified view of polymer,
-#' dumbell, and oligonucleotide DNA nearest-neighbour thermodynamics.
+#' dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
 #' Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
 #'
 #' @export
@@ -443,13 +443,6 @@ get_oligos <- function(x, length = 18:22, max_gap_frequency = 0.1, max_degenerat
     }
     if (!(min(tm_range) >= 20 && max(tm_range) <= 90 && is.numeric(tm_range))) {
         stop("tm_range must be between 20 and 90, e.g. c(55, 60)", call. = FALSE)
-    }
-    if (!is.double(conc_oligo) || conc_oligo < 2e-08 || conc_oligo > 2e-06) {
-        stop("The oligo concentration must be between
-         0.2e-07 M (20 nM) and 2e-08 M (2000 nM)", call. = FALSE)
-    }
-    if (!is.double(conc_na) || conc_na < 0.01 || conc_na > 1) {
-        stop("The Na+ concentration must be between 0.01 and 1 M", call. = FALSE)
     }
     all_oligos <- purrr::map_dfr(length, function(y) {
         # Find all possible oligos of length y

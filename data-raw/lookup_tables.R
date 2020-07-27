@@ -153,7 +153,7 @@ dS <- c(
     0
   )*-1
 
-nearest_neighbour_lookup <- tibble::tibble(bases, dH, dS)
+nearest_neighbor_lookup <- tibble::tibble(bases, dH, dS)
 
 gas_constant <- 1.987
 
@@ -162,7 +162,7 @@ usethis::use_data(
   iupac_lookup,
   degenerate_lookup,
   degeneracy_lookup,
-  nearest_neighbour_lookup,
+  nearest_neighbor_lookup,
   gas_constant,
   internal = TRUE,
   overwrite = TRUE

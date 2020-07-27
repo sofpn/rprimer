@@ -136,7 +136,32 @@ test_that("nn_lookup works", {
   expect_equal(nn_lookup(c("cg", "cg"), "dS"), rep(-27.2, 2))
 })
 
-# TM functions ------------------
+test_that("init_3end works", {
+  expect_equivalent(init_3end("cggtc"), c(100.0, -2.8))
+  expect_equivalent(init_3end("cggtg"), c(100.0, -2.8))
+  expect_equivalent(init_3end("cggta"), c(2300.0, 4.1))
+  expect_equivalent(init_3end("cggtt"), c(2300.0, 4.1))
+})
 
-#  TM functions
+test_that("init_5end works", {
+  expect_equivalent(init_5end("cggtc"), c(100.0, -2.8))
+  expect_equivalent(init_5end("gggtc"), c(100.0, -2.8))
+  expect_equivalent(init_5end("tggtc"), c(2300.0, 4.1))
+  expect_equivalent(init_5end("aggtc"), c(2300.0, 4.1))
+})
+
+
+test_that("tm returns an error when it should", {
+  expect_error(tm("cgrtttg"))
+  expect_error(tm("cgtttgttt", conc_oligo = 0.19e-07))
+  expect_error(tm("cgtttgttt", conc_oligo = 2.1e-06))
+  expect_error(tm("cgtttgttt", conc_na = 0.009))
+  expect_error(tm("cgtttgttt", conc_na = 1.1))
+  expect_error(tm(c("cggtttgg", "cggtttgggtag")))
+})
+
+test_that("tm works", {
+  expect_true(is.double(tm("cgtttgggtcgtt")))
+})
+
 

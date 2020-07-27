@@ -671,15 +671,15 @@ count_degeneracy <- function(x) {
     return(degeneracy)
 }
 
-#' Split a DNA sequence into nearest neighbours
+#' Split a DNA sequence into nearest neighbors
 #'
-#' \code{nn_split} splits an oligo sequence into nearest neighbours
+#' \code{nn_split} splits an oligo sequence into nearest neighbors
 #' (for calculation of deltaG, deltaH and Tm)
 #'
 #' @param x a DNA sequence with at least two bases, e.g. 'ctta'
 #' (a character vector of length one).
 #'
-#' @return The nearest neighbours of x (a character vector).
+#' @return The nearest neighbors of x (a character vector).
 #'
 #' @example
 #' nn_split('ccgtncg')
@@ -697,7 +697,7 @@ nn_split <- function(x) {
     return(nn)
 }
 
-#' Calculate dH or dS of nearest neighbours using lookup tables
+#' Calculate dH or dS of nearest neighbors using lookup tables
 #'
 #' @param x A character vector with nearest-neigbour pairs
 #' of DNA sequences (e.g. \code{c('ct', 'tt', 'ta')})
@@ -708,7 +708,7 @@ nn_split <- function(x) {
 #' @details \code{x} cannot contain other characters than
 #' 'a', 'c', 'g', 't' and '-'.
 #'
-#' @return The corresponding values for dH or dS (cal/M)
+#' @return The corresponding values for dH or dS (in cal/M)
 #'
 #' @examples
 #' nn_lookup(c('ac', 'cc'), table = 'dS')
@@ -719,17 +719,17 @@ nn_lookup <- function(x, table) {
     if (!is.character(table) || !table %in% valid_tables) {
         stop("table must be set to either 'dH' or 'dS'", call. = FALSE)
     }
-    if (any(grepl("[^acgt.]", x))) {
+    if (any(grepl("[^acgt]", x))) {
         stop(
           "x contain at least one invalid base.
           Valid bases are a, c, g and t.", call. = FALSE)
     }
     if (table == "dH") {
-        selected_table <- nearest_neighbour_lookup$dH
+        selected_table <- nearest_neighbor_lookup$dH
     } else {
-        selected_table <- nearest_neighbour_lookup$dS
+        selected_table <- nearest_neighbor_lookup$dS
     }
-    matching <- selected_table[match(x, nearest_neighbour_lookup$bases)]
+    matching <- selected_table[match(x, nearest_neighbor_lookup$bases)]
     if (is.null(ncol(x))) {
         result <- matching
     } else {
@@ -749,11 +749,11 @@ nn_lookup <- function(x, table) {
 #'
 #' @noRd
 init_3end <- function(x) {
-    if (grepl("^(t|a)", x))
+    if (grepl("(t|a)$", x))
         c(H = 2.3 * 1000, S = 4.1) else c(H = 0.1 * 1000, S = -2.8)
 }
 init_5end <- function(x) {
-    if (grepl("(t|a)$", x))
+    if (grepl("^(t|a)", x))
         c(H = 2.3 * 1000, S = 4.1) else c(H = 0.1 * 1000, S = -2.8)
 }
 
@@ -766,15 +766,14 @@ init_5end <- function(x) {
 #' @param x One or more DNA sequences (a character vector).
 #'
 #' @param conc_oligo The concentration of oligonucleotide in M,
-#' ranging from 0.2e-07 M (20 nM) to 2e-06 M (2000 nM).
+#' ranging from 0.2e-07 M (20 nM) to 2.0e-06 M (2000 nM).
 #' The default value is 5e-07 M (500 nM).
 #'
 #' @param conc_na The sodium ion concentration in M, ranging
 #' from 0.01 M to 1 M. The default value is 0.05 M (50 mM).
 #'
 #' @details \code{x} cannot contain other characters than
-#' 'a', 'c', 'g', 't' and '-'.
-#' All oligos in x must be of equal length.
+#' 'a', 'c', 'g', 't' and '-'. All oligos must be of equal length.
 #'
 #' @section Calculation of Tm:
 #'
@@ -803,7 +802,7 @@ init_5end <- function(x) {
 #' (Duplex initiation parameters are from here)
 #'
 #' #' SantaLucia, J (1998) A unified view of polymer,
-#' dumbell, and oligonucleotide DNA nearest-neighbour thermodynamics.
+#' dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
 #' Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
 #'
 #' @examples
@@ -812,6 +811,14 @@ init_5end <- function(x) {
 #'
 #' @noRd
 tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
+    if (!is.double(conc_oligo) || conc_oligo < 2e-07 || conc_oligo > 2.0e-06) {
+      stop("The oligo concentration must be between
+           0.2e-07 M (20 nM) and 2e-06 M (2000 nM)", call. = FALSE)
+    }
+    if (!is.double(conc_na) || conc_na < 0.01 || conc_na > 1) {
+      stop("The Na+ concentration must be between 0.01 and 1 M", call. = FALSE)
+    }
+    x <- tolower(x)
     # Find initiation values
     init_H <- purrr::map_dbl(x, ~init_5end(.x)[["H"]] + init_3end(.x)[["H"]])
     init_S <- purrr::map_dbl(x, ~init_5end(.x)[["S"]] + init_3end(.x)[["S"]])
@@ -821,14 +828,16 @@ tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
     # I made a matrix based tm-calculation,
     # which means that all oligos must be of the same length
     if (length(unique(oligo_length)) != 1) {
-        stop("All oligos are not of the same length", call. = FALSE)
+        stop("All oligos must be of equal length", call. = FALSE)
     }
+    # Find nearest neighbor values for dH and dS
     nn <- do.call("rbind", nn)
     dH_result <- nn_lookup(nn, "dH")
     dS_result <- nn_lookup(nn, "dS")
+    # Sum dH and dS
     sumdH <- rowSums(dH_result) + init_H
     sumdS <- rowSums(dS_result) + init_S
-    # Correct delta S for salt conc
+    # Correct delta S for salt conc.
     N <- nchar(x[[1]]) - 1  # Number of phosphates
     sumdS <- sumdS + 0.368 * N * log(conc_na)
     tm <- sumdH / (sumdS + gas_constant * log(conc_oligo))
