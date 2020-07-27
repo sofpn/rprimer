@@ -217,9 +217,9 @@ iupac_consensus <- function(x, threshold = 0) {
     }
     # Select only a, c, g, t and - to count in the iupac consensus sequence
     bases <- c("a", "c", "g", "t", "-")
-    x <- x[which(rownames(x) %in% bases), ]
+    x <- x[rownames(x) %in% bases, ]
     bases_to_include <- apply(x, 2, function(y) {
-      paste(rownames(x)[which(y >= threshold)], collapse = ",")
+      paste(rownames(x)[y >= threshold], collapse = ",")
     })
     bases_to_include <- unname(bases_to_include)
     consensus <- purrr::map_chr(bases_to_include, ~as_iupac(.x))
@@ -248,7 +248,7 @@ gap_frequency <- function(x) {
     if (!inherits(x, "rprimer_sequence_profile")) {
         stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
     }
-    gaps <- x[which(rownames(x) == "-"), ]
+    gaps <- x[rownames(x) == "-", ]
     gaps <- unname(gaps)
     return(gaps)
 }
@@ -279,13 +279,13 @@ nucleotide_identity <- function(x) {
     # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
     # with the rows named a, c, g and t.
     bases <- c("a", "c", "g", "t")
-    s <- x[which(rownames(x) %in% bases), ]
+    s <- x[rownames(x) %in% bases, ]
     # Calculate relative proportions of the bases in s
     s <- apply(s, 2, function(x) x / sum(x))
     # Find the largest proportion at each position
     identity <- apply(s, 2, max)
     identity <- unname(identity)
-    identity[which(is.na(identity))] <- 0
+    identity[is.na(identity)] <- 0
     return(identity)
 }
 
@@ -321,16 +321,16 @@ shannon_entropy <- function(x) {
     # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
     # with the rows named a, c, g and t.
     bases <- c("a", "c", "g", "t")
-    s <- x[which(rownames(x) %in% bases), ]
+    s <- x[rownames(x) %in% bases, ]
     # Calculate relative proportions of the bases in s
     s <- apply(s, 2, function(x) x / sum(x))
-    entropy <- apply(s[which(rownames(s) %in% bases), ], 2, function(x) {
+    entropy <- apply(s[rownames(s) %in% bases, ], 2, function(x) {
         ifelse(x == 0, 0, x * log2(x))
     })
     entropy <- -colSums(entropy)
     entropy <- unname(entropy)
     entropy <- abs(entropy)  # abs to avoid -0 (due to neg sums)
-    entropy[which(is.na(entropy))] <- 0
+    entropy[is.na(entropy)] <- 0
     return(entropy)
 }
 
@@ -400,8 +400,7 @@ gc_content <- function(x) {
         stop("x contains at least one invalid base.
       x can only contain 'a', 'c', 'g', 't' and '-'", call. = FALSE)
     }
-    x <- strsplit(x, split = "")
-    x <- unlist(x, use.names = FALSE)
+    x <- split_sequence()
     gc_count <- length(which(x == "c" | x == "g"))
     # Gaps will not be included in the total count
     total_count <- length(which(x == "a" | x == "c" | x == "g" | x == "t"))
@@ -502,7 +501,7 @@ reverse_complement <- function(x) {
 #'
 #' @noRd
 running_sum <- function(x, n = NULL) {
-    if (!(is.numeric(x) && is.vector(x))) {
+    if (!(is.numeric(x))) {
         stop("A numeric vector is expected for x.", call. = FALSE)
     }
     if (is.null(n)) {
@@ -542,7 +541,7 @@ exclude_oligos <- function(x, pattern) {
     stop("pattern must be a character vector of length one", call. = FALSE)
   }
   regex <- pattern
-  x[which(grepl(regex, x))] <- NA
+  x[grepl(regex, x)] <- NA
   return(x)
 }
 
@@ -631,8 +630,7 @@ count_degenerates <- function(x) {
             call. = FALSE)
     }
     nt <- c("a", "c", "g", "t", "-")
-    x <- strsplit(x, split = "")
-    x <- unlist(x)
+    x <- split_sequence(x)
     count <- length(x[!x %in% nt])
     return(count)
 }
@@ -787,11 +785,6 @@ init_5end <- function(x) {
 #'
 #' @references
 #'
-#' Owczary et al. (2004)
-#' Effects of Sodium Ions on DNA Duplex Oligomers:?\200? # NOT IN USE !
-#' Improved Predictions of Melting Temperatures.
-#' Biochemistry 43: 3537-3554
-#'
 #' SantaLucia, J, et al. (1996)
 #' Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
 #' Biochemistry, 35: 3555-3562 (Formula and salt correction are from here)
@@ -801,7 +794,7 @@ init_5end <- function(x) {
 #' Biochemistry, 34: 10581?\200?10594
 #' (Duplex initiation parameters are from here)
 #'
-#' #' SantaLucia, J (1998) A unified view of polymer,
+#' SantaLucia, J (1998) A unified view of polymer,
 #' dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
 #' Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
 #'
@@ -1273,7 +1266,6 @@ sequence_barplot <- function(x, ...) {
 round_df_dbl <- function(x) {
     dbls <- purrr::map_lgl(x, is.double)
     dbls <- unname(dbls)
-    dbls <- which(dbls == TRUE)
     x[dbls] <- round(x[dbls], 2)
     return(x)
 }

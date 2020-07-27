@@ -165,26 +165,36 @@ test_that("tm works", {
 })
 
 test_that("generate_oligos returns an error when it should", {
- expect_error(generate_oligos(unclass(example_rprimer_sequence_properties)))
+  expect_error(
+    generate_oligos(example_rprimer_sequence_properties, oligo_length = NA)
+  )
   expect_error(
     generate_oligos(example_rprimer_sequence_properties, oligo_length = 4)
   )
   expect_error(
-    generate_oligos(example_rprimer_sequence_properties, max_degenerates = 15)
+    generate_oligos(example_rprimer_sequence_properties, max_gap_frequency = 6)
   )
   expect_error(
-    generate_oligos(example_rprimer_sequence_properties, max_degeneracy = 0)
+    generate_oligos(example_rprimer_sequence_properties, max_degenerates = 30)
   )
   expect_error(
-    generate_oligos(example_rprimer_sequence_properties, max_gap_frequency = 2)
+    generate_oligos(example_rprimer_sequence_properties, max_degeneracy = 65)
+  )
+  expect_error(
+    generate_oligos(unclass(example_rprimer_sequence_properties))
   )
 })
 
-#test_that("generate_oligos works", {
-#
-#})
+test_that("generate_oligos works", {
+ oligos <- generate_oligos(example_rprimer_sequence_properties)
+ expect_false(any(oligos$degenerates > 2))
+ expect_false(any(oligos$degeneracy > 4))
+ expect_false(any(oligos$length != 20))
+ expect_equal(length(unique(oligos$majority)), nrow(oligos))
+})
 
 #test_that("add_gc_tm returns an error when it should", {
+ # expect_error()
 
 #})
 

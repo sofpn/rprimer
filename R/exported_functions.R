@@ -253,18 +253,18 @@ sequence_profile <- function(x) {
 #'
 #' @section IUPAC consensus sequence:
 #' The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
-#' Note that the iupac consensus sequence only
+#' Note that the IUPAC consensus sequence only
 #' takes 'a', 'c', 'g', 't' and '-' as input. Degenerate bases
 #' present in the alignment will be skipped. If a position only contains
-#' degenerate/invalid bases, the iupac consensus will be \code{NA} at that
+#' degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
 #' position.
 #'
 #' @section Gaps:
-#' Gaps are recognised as "-".
+#' Gaps are recognised as "-" in the sequence profile.
 #'
 #' @section Identity:
 #' The nucleotide identity is the proportion of
-#' the most common base at each position in the alignment.  Gaps (-),
+#' the most common base at each position in the alignment. Gaps (-),
 #' as well as nucleotides other than a, c, g and t, are excluded from the
 #' calculation.
 #'
@@ -334,18 +334,19 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' The minimum allowed value is 1 and the maximum
 #' allowed value is 64 (default is 4).
 #'
+#' @param x One or more DNA sequences (a character vector).
+#'
 #' @param avoid_3end_ta \code{TRUE} or \code{FALSE}.
 #' If oligos with t or a at the 3' end
-#' should be replaced with NA. The default is \code{TRUE}.
+#' should be replaced with \code{NA}. The default is \code{FALSE}.
 #'
-#' @param avoid_5end_g \code{TRUE} or \code{FALSE}.
-#' If oligos with g at the 5' end
-#' should be replaced with NA. The default is \code{FALSE}.
+#' @param avoid_5end_g \code{TRUE} or \code{FALSE}.If oligos with g
+#' at the 5' end should be replaced with \code{NA}. The default is \code{FALSE}.
 #'
 #' @param avoid_3end_runs \code{TRUE} or \code{FALSE}.
 #' If oligos with more than two runs
-#' of the same nucleotide at the 3' end should be replaced with NA.
-#' The default is \code{TRUE}.
+#' of the same nucleotide at the 3' end should be replaced with \code{NA}.
+#' The default is \code{FALSE}.
 #'
 #' @param gc_range The GC-content range of each oligo. Can range between
 #' 0 and 1. The default is \code{c(0.45, 0.55)}.
@@ -508,10 +509,10 @@ get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
     if (!inherits(x, "rprimer_oligo")) {
         stop("An rprimer_oligo object is expected.", call. = FALSE)
     }
-    if (!(max_tm_difference > 0 && max_tm_difference < 30 && is.numeric(max_tm_difference))) {
+    if (!(max_tm_difference > 0 && max_tm_difference < 30)) {
         stop("max_tm_difference must be between 0 and 30", call. = FALSE)
     }
-    if (!(min(length) >= 40 && max(length) <= 5000 && is.numeric(length))) {
+    if (!(min(length) >= 40 && max(length) <= 5000)) {
         stop("length must be between 40 and 5000", call. = FALSE)
     }
     # Remove columns with match information (if any)
