@@ -528,16 +528,13 @@ get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
     if (!(min(length) >= 40 && max(length) <= 5000)) {
         stop("length must be between 40 and 5000", call. = FALSE)
     }
-    # Remove columns with match information (if any)
-    if (any(grepl("^pm_", names(x)))) {
-        drop <- grep("^pm_|match_matrix", names(x))
-        x <- x[, -drop] # # # # # Logical subsetting ??? include match in get ols?
-    }
     # Get all fwd and rev primers
     fwd <- x[which(!is.na(x$majority)), ]
     rev <- x[which(!is.na(x$majority_rc)), ]
     # Get all possible combinations of fwd and rev primers
-    combinations <- expand.grid(fwd$majority, rev$majority_rc, stringsAsFactors = FALSE)
+    combinations <- expand.grid(
+      fwd$majority, rev$majority_rc, stringsAsFactors = FALSE
+    )
     names(combinations) <- c("fwd_majority", "rev_majority")
     # Get the indexes of the primer sequences
     index_fwd <- match(combinations$fwd_majority, x$majority)
@@ -570,7 +567,7 @@ get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
     assays <- assays[which(assays$tm_difference_primer <= max_tm_difference), ]
     if (nrow(assays) == 0L)
         stop("No assays were found.", call. = FALSE)
-    assays <- dplyr::arrange(assays, begin)
+    assays <- dplyr::arrange(assays, begin)   ############################### combine match matrices!!!!!!!!!!!
     assays <- tibble::new_tibble(assays, class = "rprimer_assay")
     return(assays)
 }
@@ -698,9 +695,14 @@ rp_plot.rprimer_alignment <- function(x, ...) {
         return(sequence)
     })
     to_plot <- do.call("rbind", sequences_as_integers)
-    plot(seq_len(ncol(to_plot)), rep(1, ncol(to_plot)), ylab = "", xlab = "position in consensus sequence", yaxt = "n",
-        pch = NA, ylim = c(0, max(nrow(to_plot)) + 1))
-    invisible(apply(to_plot, 1, function(x) lines(seq_along(x), x, col = "grey")))
+    plot(
+      seq_len(ncol(to_plot)), rep(1, ncol(to_plot)),
+      ylab = "", xlab = "position in consensus sequence", yaxt = "n",
+      pch = NA, ylim = c(0, max(nrow(to_plot)) + 1)
+    )
+    invisible(
+      apply(to_plot, 1, function(x) lines(seq_along(x), x, col = "grey"))
+    )
 }
 
 #' @describeIn rp_plot Plot an object of class 'rprimer_sequence_profile'.
@@ -713,16 +715,21 @@ rp_plot.rprimer_alignment <- function(x, ...) {
 #' as reverse complement or not. The default is \code{FALSE}.
 #'
 #' @export
-rp_plot.rprimer_sequence_profile <- function(x, ..., from = NULL, to = NULL, rc = FALSE) {
+rp_plot.rprimer_sequence_profile <- function(
+  x, ..., from = NULL, to = NULL, rc = FALSE
+ ) {
     if (is.null(from))
         from <- 1
     if (is.null(to))
         to <- ncol(x)
-    if (!(is.numeric(from) && is.numeric(to) && length(from) == 1 && length(to) == 1)) {
+    if (!(is.numeric(from) && is.numeric(to) && length(from) == 1)) {
         stop("from and to must be numbers", call. = FALSE)
     }
     if (!(from <= ncol(x) && to <= ncol(x))) {
-        stop("from and to cannot be greater than the number of columns in x", call. = FALSE)
+        stop(
+          "from and to cannot be greater than the number of columns in x",
+          call. = FALSE
+        )
     }
     if (!(from >= 1 && to >= 1)) {
         stop("from and to must be 1 or greater", call. = FALSE)
@@ -744,27 +751,12 @@ rp_plot.rprimer_sequence_profile <- function(x, ..., from = NULL, to = NULL, rc 
 #' @describeIn rp_plot Plot an object of class 'rprimer_sequence_properties'.
 #' @export
 rp_plot.rprimer_sequence_properties <- function(x, ...) {
-    op <- par(mfrow = c(4, 1), mai = c(0.1, 1, 0.1, 1), xpd = FALSE, oma = c(4, 0, 1, 0), mar = c(0.2, 4.1, 0.2, 2.1))
+    op <- par(
+      mfrow = c(4, 1), mai = c(0.1, 1, 0.1, 1),
+      xpd = FALSE, oma = c(4, 0, 1, 0), mar = c(0.2, 4.1, 0.2, 2.1)
+    )
     on.exit(par(op))
-    identity_plot <- plot(x$position, x$identity, type = "h", ylim = c(0, 1), ylab = "identity", xlab = "", xaxt = "n",
-        col = ifelse(x$identity < 1, "gray80", "gray60"))
-    identity_line <- lines(running_average(x$identity))
-    entropy_plot <- plot(x$position, x$entropy, type = "h", ylim = c(0, max(x$entropy, na.rm = TRUE) * 1.1), ylab = "shannon entropy",
-        xlab = "", xaxt = "n", col = ifelse(x$entropy > 0, "gray80", "gray60"))
-    entropy_line <- lines(running_average(x$entropy))
-    gc_plot <- plot(x$position, pch = NA, ylab = "gc content", ylim = c(0, 1), xlab = "", xaxt = "n")
-    clip(0, nrow(x), -1, 2)
-    abline(h = 0.5, col = "gray80")
-    gc_line <- lines(gc_running_average(x$majority))
-    gap_plot <- plot(x$position, x$gaps, type = "h", ylim = c(0, 1), ylab = "gaps", xlab = "")
-    identity_plot
-    identity_line
-    entropy_plot
-    entropy_line
-    gc_plot
-    gc_line
-    gap_plot
-    mtext(side = 1, outer = TRUE, "position in consensus sequence", line = 3, cex = 0.7)
+    sequence_detail_plot(x)
 }
 
 # Save results ================================================================
@@ -814,7 +806,9 @@ rp_save.rprimer_alignment <- function(x, filename) {
 #' @describeIn rp_save Save an object of class 'rprimer_sequence_properties'.
 #' @export
 rp_save.rprimer_sequence_properties <- function(x, filename) {
-    write.csv(x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE)
+    write.csv(
+      x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE
+    )
 }
 
 #' @describeIn rp_save Save an object of class 'rprimer_oligo'.
@@ -823,7 +817,9 @@ rp_save.rprimer_oligo <- function(x, filename) {
     if (any(grepl("match_matrix", names(x)))) {
         x <- x[, which(names(x) != "match_matrix")]  # Can't save a list
     }
-    write.csv(x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE)
+    write.csv(
+      x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE
+    )
 }
 
 #' @describeIn rp_save Save an object of class 'rprimer_assay'.
@@ -832,7 +828,9 @@ rp_save.rprimer_assay <- function(x, filename) {
     if (any(grepl("match_matrix", names(x)))) {
         x <- x[, which(names(x) != "match_matrix")]  # Can't save a list
     }
-    write.csv(x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE)
+    write.csv(
+      x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE
+    )
 }
 
 # Generate report ============================================================

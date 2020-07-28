@@ -1,4 +1,19 @@
-# General functions ===========================================================
+# Utils =======================================================================
+
+#'  Round all doubles in a data frame
+#'
+#'  @param x A data frame/tibble.
+#'
+#'  @return A data frame/tibble where all vectors
+#'  of type 'double' have been rounded to two digits.
+#'
+#'  @noRd
+round_df_dbl <- function(x) {
+  dbls <- purrr::map_lgl(x, is.double)
+  dbls <- unname(dbls)
+  x[dbls] <- round(x[dbls], 2)
+  return(x)
+}
 
 #' Split sequence
 #'
@@ -15,6 +30,27 @@ split_sequence <- function(x) {
   return(x)
 }
 
+#' Truncate the name of a sequence in fasta format
+#'
+#' \code{truncate_name} shortens the name of a sequence.
+#'
+#' @param x A sequence name (a character vector of length one).
+#'
+#' @return A shorter version of the sequence name (the first
+#' word of the sequence name). '>' symbols are removed.
+#'
+#' @example
+#' truncate_name('AB856243.1 Hepatitis E virus')
+#'
+#' @noRd
+truncate_name <- function(name) {
+  name <- strsplit(name, split = "[[:space:]]")
+  name <- unlist(name, use.names = FALSE)
+  name <- name[[1]]
+  name <- gsub(">", "", name)
+  return(name)
+}
+
 #' Complement
 #'
 #' \code{complement} finds the complement of a DNA sequence.
@@ -24,7 +60,7 @@ split_sequence <- function(x) {
 #' @details For \code{x}, valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm',
 #' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
 #'
-#' @return The complement sequence of x. Non valid bases will return as NA.
+#' @return The complement sequence of x.
 #'
 #' @examples
 #' reverse_complement('cttgtr')
@@ -678,175 +714,6 @@ count_degeneracy <- function(x) {
     return(degeneracy)
 }
 
-#' Split a DNA sequence into nearest neighbors
-#'
-#' \code{nn_split} splits an oligo sequence into nearest neighbors
-#' (for calculation of deltaG, deltaH and Tm)
-#'
-#' @param x a DNA sequence with at least two bases, e.g. 'ctta'
-#' (a character vector of length one).
-#'
-#' @return The nearest neighbors of x (a character vector).
-#'
-#' @example
-#' nn_split('ccgtncg')
-#'
-#' @noRd
-nn_split <- function(x) {
-    if (!(!is.na(x) && is.character(x) && nchar(x) > 1)) {
-        stop("x must be a character vector of length one,
-      with at least two characters (e.g. 'caaggnt')", call. = FALSE)
-    }
-    x <- split_sequence(x)
-    from <- (seq_along(x) - 1)[-1]
-    to <- seq_along(x)[-1]
-    nn <- purrr::map_chr(from, ~paste(x[from[[.x]]:to[[.x]]], collapse = ""))
-    return(nn)
-}
-
-#' Calculate dH or dS of nearest neighbors using lookup tables
-#'
-#' @param x A character vector with nearest-neighbor pairs
-#' of DNA sequences (e.g. \code{c('ct', 'tt', 'ta')})
-#'
-#' @param table The lookup table that should be used.
-#' Either 'dH' (entropy) or 'dS' (enthalpy).
-#'
-#' @details \code{x} cannot contain other characters than
-#' 'a', 'c', 'g', 't' and '-'.
-#'
-#' @return The corresponding values for dH or dS (in cal/M)
-#'
-#' @examples
-#' nn_lookup(c('ac', 'cc'), table = 'dS')
-#'
-#' @noRd
-nn_lookup <- function(x, table) {
-    valid_tables <- c("dH", "dS")
-    if (!is.character(table) || !table %in% valid_tables) {
-        stop("table must be set to either 'dH' or 'dS'", call. = FALSE)
-    }
-    if (any(grepl("[^acgt]", x))) {
-        stop(
-          "x contain at least one invalid base.
-          Valid bases are a, c, g and t.", call. = FALSE)
-    }
-    if (table == "dH") {
-        selected_table <- nearest_neighbor_lookup$dH
-    } else {
-        selected_table <- nearest_neighbor_lookup$dS
-    }
-    matching <- selected_table[match(x, nearest_neighbor_lookup$bases)]
-    if (is.null(ncol(x))) {
-        result <- matching
-    } else {
-        result <- matrix(matching, ncol = ncol(x), byrow = FALSE)
-    }
-    return(result)
-}
-
-#' Initiation of DNA sequences for Tm calculation
-#'
-#' @param x One or more DNA sequences (a character vector).
-#'
-#' @details \code{x} cannot contain other characters than
-#' 'a', 'c', 'g', 't' and '-'.
-#'
-#' @return The initiaion values for x.
-#'
-#' @noRd
-init_3end <- function(x) {
-    if (grepl("(t|a)$", x))
-        c(H = 2.3 * 1000, S = 4.1) else c(H = 0.1 * 1000, S = -2.8)
-}
-init_5end <- function(x) {
-    if (grepl("^(t|a)", x))
-        c(H = 2.3 * 1000, S = 4.1) else c(H = 0.1 * 1000, S = -2.8)
-}
-
-#' Melting temperature
-#'
-#' \code{tm} calculates the melting temperature of one or
-#' more perfectly matching DNA duplexes (i.e. oligo-target duplexes),
-#' using the nearest neigbour method.
-#'
-#' @param x One or more DNA sequences (a character vector).
-#'
-#' @param conc_oligo The concentration of oligonucleotide in M,
-#' ranging from 0.2e-07 M (20 nM) to 2.0e-06 M (2000 nM).
-#' The default value is 5e-07 M (500 nM).
-#'
-#' @param conc_na The sodium ion concentration in M, ranging
-#' from 0.01 M to 1 M. The default value is 0.05 M (50 mM).
-#'
-#' @details \code{x} cannot contain other characters than
-#' 'a', 'c', 'g', 't' and '-'. All oligos must be of equal length.
-#'
-#' @section Calculation of Tm:
-#'
-#' No symmetry correction is done
-#' (oligos are not expected to be self-complementary).
-#'
-#' We assume that the oligo concentration is much higher
-#' than the target concentration.
-#'
-#' @return The melting temperature(s) of x.
-#'
-#' @references
-#'
-#' SantaLucia, J, et al. (1996)
-#' Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
-#' Biochemistry, 35: 3555-3562 (Formula and salt correction are from here)
-#'
-#' Allawi, H. & SantaLucia, J. (1997)
-#' Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-#' Biochemistry, 34: 10581?\200?10594
-#' (Duplex initiation parameters are from here)
-#'
-#' SantaLucia, J (1998) A unified view of polymer,
-#' dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
-#' Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
-#'
-#' @examples
-#' tm('acggtgcctac')
-#' tm(c('acggtgcctac', 'acggtggctgc'))
-#'
-#' @noRd
-tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
-    if (!is.double(conc_oligo) || conc_oligo < 2e-07 || conc_oligo > 2.0e-06) {
-      stop("The oligo concentration must be between
-           0.2e-07 M (20 nM) and 2e-06 M (2000 nM)", call. = FALSE)
-    }
-    if (!is.double(conc_na) || conc_na < 0.01 || conc_na > 1) {
-      stop("The Na+ concentration must be between 0.01 and 1 M", call. = FALSE)
-    }
-    x <- tolower(x)
-    # Find initiation values
-    init_H <- purrr::map_dbl(x, ~init_5end(.x)[["H"]] + init_3end(.x)[["H"]])
-    init_S <- purrr::map_dbl(x, ~init_5end(.x)[["S"]] + init_3end(.x)[["S"]])
-    nn <- purrr::map(x, nn_split)
-    # Check oligo length
-    oligo_length <- purrr::map_int(nn, length)
-    # I made a matrix based tm-calculation,
-    # which means that all oligos must be of the same length
-    if (length(unique(oligo_length)) != 1) {
-        stop("All oligos must be of equal length", call. = FALSE)
-    }
-    # Find nearest neighbor values for dH and dS
-    nn <- do.call("rbind", nn)
-    dH_result <- nn_lookup(nn, "dH")
-    dS_result <- nn_lookup(nn, "dS")
-    # Sum dH and dS
-    sumdH <- rowSums(dH_result) + init_H
-    sumdS <- rowSums(dS_result) + init_S
-    # Correct delta S for salt conc.
-    N <- nchar(x[[1]]) - 1  # Number of phosphates
-    sumdS <- sumdS + 0.368 * N * log(conc_na)
-    tm <- sumdH / (sumdS + gas_constant * log(conc_oligo))
-    tm <- tm - 273.15
-    return(tm)
-}
-
 #' Generate oligos of a specific length
 #'
 #' @param x An object of class 'rprimer_sequence_properties'
@@ -986,8 +853,8 @@ add_gc_tm <- function(
   tm_majority <- tm(oligos$majority, conc_oligo = conc_oligo, conc_na = conc_na)
   oligos <- tibble::add_column(oligos, tm_majority)
   # Exclude oligos with Tm outside the stated thresholds
-  oligos <- oligos[tm_majority >= min(tm_range), ]
-  oligos <- oligos[tm_majority <= max(tm_range), ]
+  oligos <- oligos[oligos$tm_majority >= min(tm_range), ]
+  oligos <- oligos[oligos$tm_majority <= max(tm_range), ]
   return(oligos)
 }
 
@@ -1084,52 +951,178 @@ check_match <- function(x, y) {
   return(x)
 }
 
-# Context: ======================================================
+# Context: Calculate tm =======================================================
 
-#' Get all combinations of a DNA sequence with degenerate bases
+#' Split a DNA sequence into nearest neighbors
 #'
-#' \code{expand_degenerate} returns all combinations of a DNA sequence with
-#' degenerate bases.
+#' \code{nn_split} splits an oligo sequence into nearest neighbors
+#' (for calculation of deltaG, deltaH and Tm)
 #'
-#' @param x A DNA sequence (a character vector of length one), e.g. 'cttgg'.
-#' Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-#' n', 'h', 'd', 'v', 'b' and '-'.
+#' @param x a DNA sequence with at least two bases, e.g. 'ctta'
+#' (a character vector of length one).
 #'
-#' @return A list containing all combinations of the DNA sequence with
-#'degenerate bases.
+#' @return The nearest neighbors of x (a character vector).
 #'
-#' @examples
-#' expand_degenerate('cgtrn')
+#' @example
+#' nn_split('ccgtncg')
 #'
 #' @noRd
-expand_degenerate <- function(x) {
-    if (typeof(x) != "character" || length(x) != 1) {
-        stop("x must be a character vector of length one", call. = FALSE)
-    }
-    if (grepl("[^acgtrymkswnhdvb-]", x)) {
-        stop("x contains at least one invalid base.
-      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-      'n', 'h', 'd', 'v', 'b' and '-'",
-            call. = FALSE)
-    }
-    x <- split_sequence(x)
-    # Go through each base of the DNA sequence
-    expanded <- purrr::map(x, function(i) {
-        # Check which bases the IUPAC base at position i correspond to
-        all_bases <- unname(degenerate_lookup[[i]])
-        all_bases <- unlist(strsplit(all_bases, split = ","))
-        return(all_bases)
-    })
-    # Get all possible combinations of DNA sequences
-    expanded <- expand.grid(
-      expanded[seq_along(expanded)], stringsAsFactors = FALSE
-    )
-    expanded <- purrr::map(
-      seq_len(nrow(expanded)), ~paste(expanded[.x, ], collapse = "")
-    )
-    expanded <- unlist(expanded, use.names = FALSE)
-    return(expanded)
+nn_split <- function(x) {
+  if (!(!is.na(x) && is.character(x) && nchar(x) > 1)) {
+    stop("x must be a character vector of length one,
+      with at least two characters (e.g. 'caaggnt')", call. = FALSE)
+  }
+  x <- split_sequence(x)
+  from <- (seq_along(x) - 1)[-1]
+  to <- seq_along(x)[-1]
+  nn <- purrr::map_chr(from, ~paste(x[from[[.x]]:to[[.x]]], collapse = ""))
+  return(nn)
 }
+
+#' Calculate dH or dS of nearest neighbors using lookup tables
+#'
+#' @param x A character vector with nearest-neighbor pairs
+#' of DNA sequences (e.g. \code{c('ct', 'tt', 'ta')})
+#'
+#' @param table The lookup table that should be used.
+#' Either 'dH' (entropy) or 'dS' (enthalpy).
+#'
+#' @details \code{x} cannot contain other characters than
+#' 'a', 'c', 'g', 't' and '-'.
+#'
+#' @return The corresponding values for dH or dS (in cal/M)
+#'
+#' @examples
+#' nn_lookup(c('ac', 'cc'), table = 'dS')
+#'
+#' @noRd
+nn_lookup <- function(x, table) {
+  valid_tables <- c("dH", "dS")
+  if (!is.character(table) || !table %in% valid_tables) {
+    stop("table must be set to either 'dH' or 'dS'", call. = FALSE)
+  }
+  if (any(grepl("[^acgt]", x))) {
+    stop(
+      "x contain at least one invalid base.
+          Valid bases are a, c, g and t.", call. = FALSE)
+  }
+  if (table == "dH") {
+    selected_table <- nearest_neighbor_lookup$dH
+  } else {
+    selected_table <- nearest_neighbor_lookup$dS
+  }
+  matching <- selected_table[match(x, nearest_neighbor_lookup$bases)]
+  if (is.null(ncol(x))) {
+    result <- matching
+  } else {
+    result <- matrix(matching, ncol = ncol(x), byrow = FALSE)
+  }
+  return(result)
+}
+
+#' Initiation of DNA sequences for Tm calculation
+#'
+#' @param x One or more DNA sequences (a character vector).
+#'
+#' @details \code{x} cannot contain other characters than
+#' 'a', 'c', 'g', 't' and '-'.
+#'
+#' @return The initiaion values for x.
+#'
+#' @noRd
+init_3end <- function(x) {
+  if (grepl("(t|a)$", x))
+    c(H = 2.3 * 1000, S = 4.1) else c(H = 0.1 * 1000, S = -2.8)
+}
+init_5end <- function(x) {
+  if (grepl("^(t|a)", x))
+    c(H = 2.3 * 1000, S = 4.1) else c(H = 0.1 * 1000, S = -2.8)
+}
+
+#' Melting temperature
+#'
+#' \code{tm} calculates the melting temperature of one or
+#' more perfectly matching DNA duplexes (i.e. oligo-target duplexes),
+#' using the nearest neigbour method.
+#'
+#' @param x One or more DNA sequences (a character vector).
+#'
+#' @param conc_oligo The concentration of oligonucleotide in M,
+#' ranging from 0.2e-07 M (20 nM) to 2.0e-06 M (2000 nM).
+#' The default value is 5e-07 M (500 nM).
+#'
+#' @param conc_na The sodium ion concentration in M, ranging
+#' from 0.01 M to 1 M. The default value is 0.05 M (50 mM).
+#'
+#' @details \code{x} cannot contain other characters than
+#' 'a', 'c', 'g', 't' and '-'. All oligos must be of equal length.
+#'
+#' @section Calculation of Tm:
+#'
+#' No symmetry correction is done
+#' (oligos are not expected to be self-complementary).
+#'
+#' We assume that the oligo concentration is much higher
+#' than the target concentration.
+#'
+#' @return The melting temperature(s) of x.
+#'
+#' @references
+#'
+#' SantaLucia, J, et al. (1996)
+#' Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
+#' Biochemistry, 35: 3555-3562 (Formula and salt correction are from here)
+#'
+#' Allawi, H. & SantaLucia, J. (1997)
+#' Thermodynamics and NMR of Internal G·T Mismatches in DNA.
+#' Biochemistry, 34: 10581?\200?10594
+#' (Duplex initiation parameters are from here)
+#'
+#' SantaLucia, J (1998) A unified view of polymer,
+#' dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
+#' Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
+#'
+#' @examples
+#' tm('acggtgcctac')
+#' tm(c('acggtgcctac', 'acggtggctgc'))
+#'
+#' @noRd
+tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
+  if (!is.double(conc_oligo) || conc_oligo < 2e-07 || conc_oligo > 2.0e-06) {
+    stop("The oligo concentration must be between
+           0.2e-07 M (20 nM) and 2e-06 M (2000 nM)", call. = FALSE)
+  }
+  if (!is.double(conc_na) || conc_na < 0.01 || conc_na > 1) {
+    stop("The Na+ concentration must be between 0.01 and 1 M", call. = FALSE)
+  }
+  x <- tolower(x)
+  # Find initiation values
+  init_H <- purrr::map_dbl(x, ~init_5end(.x)[["H"]] + init_3end(.x)[["H"]])
+  init_S <- purrr::map_dbl(x, ~init_5end(.x)[["S"]] + init_3end(.x)[["S"]])
+  nn <- purrr::map(x, nn_split)
+  # Check oligo length
+  oligo_length <- purrr::map_int(nn, length)
+  # I made a matrix based tm-calculation,
+  # which means that all oligos must be of the same length
+  if (length(unique(oligo_length)) != 1) {
+    stop("All oligos must be of equal length", call. = FALSE)
+  }
+  # Find nearest neighbor values for dH and dS
+  nn <- do.call("rbind", nn)
+  dH_result <- nn_lookup(nn, "dH")
+  dS_result <- nn_lookup(nn, "dS")
+  # Sum dH and dS
+  sumdH <- rowSums(dH_result) + init_H
+  sumdS <- rowSums(dS_result) + init_S
+  # Correct delta S for salt conc.
+  N <- nchar(x[[1]]) - 1  # Number of phosphates
+  sumdS <- sumdS + 0.368 * N * log(conc_na)
+  tm <- sumdH / (sumdS + gas_constant * log(conc_oligo))
+  tm <- tm - 273.15
+  return(tm)
+}
+
+# Context: Plots ==============================================================
 
 #' Calculate running average
 #'
@@ -1155,7 +1148,7 @@ running_average <- function(x, size = NULL) {
         if (size == 0)
             size <- 1
     }
-    stopifnot(is.numeric(x) && size <= length(x) && size >= 1 && length(size == 1))
+    stopifnot(is.numeric(x) && size <= length(x) && size >= 1)
     sums <- c(0, cumsum(x))
     average <- (sums[((size + 1):length(sums))] - sums[(1:(length(sums) - size))]) / size
     # First, we set the position to get a trailed moving average
@@ -1199,7 +1192,7 @@ gc_running_average <- function(x, size = NULL) {
         if (size == 0)
             size <- 1
     }
-    stopifnot(is.character(x) && size <= length(x) && size >= 1 && length(size == 1)) #############
+    stopifnot(is.character(x) && size <= length(x) && size >= 1)
     begins <- 1:(length(x) - size + 1)
     ends <- begins + size - 1
     frame <- 1:(length(x) - size + 1)
@@ -1218,123 +1211,140 @@ gc_running_average <- function(x, size = NULL) {
     return(df)
 }
 
-#' Truncate the name of a sequence in fasta format
-#'
-#' \code{truncate_name} shortens the name of a sequence.
-#'
-#' @param x A sequence name (a character vector of length one).
-#'
-#' @return A shorter version of the sequence name (the first
-#' word of the sequence name). '>' symbols are removed.
-#'
-#' @example
-#' truncate_name('AB856243.1 Hepatitis E virus')
-#'
-#' @noRd
-truncate_name <- function(name) {
-    name <- strsplit(name, split = "[[:space:]]")
-    name <- unlist(name, use.names = FALSE)
-    name <- name[[1]]
-    name <- gsub(">", "", name)
-    return(name)
-}
-
-#' Check if primers within an assay match their targets
-#'
-#' \code{check_primer_match} checks if primers in assays matches with their
-#' intended target sequences.
-#'
-#' @param x Probes within an object of class
-#' 'rprimer_oligo' or 'rprimer_assay'.
-#'
-#' @param y The intended target. An alignment of DNA sequences
-#' (an object of class 'rprimer_alignment').
-#'
-#' @return A match report for each primer pair
-#' (a list of logical matrices).
-#'
-#' @noRd
-check_primer_match <- function(x, y) {
-    # Collect the primer sequences from x
-    primers <- x[c("majority_fwd", "iupac_fwd", "majority_rev", "iupac_rev")]
-    # Reverse complement the reverse primers so that they can be matched against their targets
-    primers$majority_rev <- purrr::map_chr(primers$majority_rev, reverse_complement)
-    primers$iupac_rev <- purrr::map_chr(primers$iupac_rev, reverse_complement)
-    # Select the unique primer pairs (will speed up the process a bit)
-    primers <- unique(primers)
-    # Make a matrix and convert primer sequences to regular expressions
-    primer_matrix <- as.matrix(primers)
-    primer_matrix <- apply(primer_matrix, c(1, 2), make_regex)
-    # For each primer, check if it matches its targets
-    match_matrix <- apply(primer_matrix, 1, function(x) {
-        match <- purrr::map(x, ~grepl(.x, y))
-        return(match)
-    })
-    match_matrix <- purrr::map(match_matrix, ~do.call("cbind", .x))
-    # Set the sequence names as row names
-    match_matrix <- purrr::map(match_matrix, function(x) {
-        rownames(x) <- names(y)
-        x
-    })
-    # Name the list with the primer pair so that it can be matched against x
-    primers$majority_rev <- purrr::map_chr(primers$majority_rev, reverse_complement)
-    names(match_matrix) <- paste0(primers$majority_fwd, "_", primers$majority_rev)
-    # Expand to match x
-    to_expand <- match(paste0(x$majority_fwd, "_", x$majority_rev), names(match_matrix))
-    match_matrix <- match_matrix[to_expand]
-    return(match_matrix)
-}
-
-
 #' Draw a rectangle
 #'
 #' @from Where (at the x-axis) the rectangle starts.
+#'
 #' @to Where (at the x-axis) the rectangle ends.
+#'
+#' @return A rectangle.
+#'
 #' @noRd
 rectangle <- function(from, to) {
-    rect(from, 0, to, 5, border = NA, col = rgb(123, 149, 169, alpha = 100, maxColorValue = 200), xpd = NA)
+  rect(
+    from, 0, to, 5, border = NA,
+    col = rgb(123, 149, 169, alpha = 100, maxColorValue = 200), xpd = NA
+  )
 }
 
-#' Make a sequence barplot
+#' Sequence detail plot
+#'
+#' @param x An object of class 'rprimer_sequence_properties'
+#'
+#' @return A visual representation of \code{x}
+#'
+#' @noRd
+sequence_detail_plot <- function(x) {
+  identity_plot <- plot(
+    x$position, x$identity, type = "h", ylim = c(0, 1),
+    ylab = "identity", xlab = "", xaxt = "n",
+    col = ifelse(x$identity < 1, "gray80", "gray60")
+  )
+  identity_line <- lines(running_average(x$identity))
+  entropy_plot <- plot(
+    x$position, x$entropy, type = "h",
+    ylim = c(0, max(x$entropy, na.rm = TRUE) * 1.1),
+    ylab = "shannon entropy",
+    xlab = "", xaxt = "n", col = ifelse(x$entropy > 0, "gray80", "gray60")
+  )
+  entropy_line <- lines(running_average(x$entropy))
+  gc_plot <- plot(
+    x$position, pch = NA, ylab = "gc content", ylim = c(0, 1),
+    xlab = "", xaxt = "n"
+  )
+  clip(0, nrow(x), -1, 2)
+  abline(h = 0.5, col = "gray80")
+  gc_line <- lines(gc_running_average(x$majority))
+  gap_plot <- plot(
+    x$position, x$gaps, type = "h", ylim = c(0, 1), ylab = "gaps", xlab = "")
+  identity_plot
+  identity_line
+  entropy_plot
+  entropy_line
+  gap_plot
+  mtext(
+    side = 1, outer = TRUE, "position in consensus sequence",
+    line = 3, cex = 0.7
+  )
+}
+
+#' Sequence barplot
 #'
 #' @param x A selection of a sequence profile
 #'
-#' @param ... Additional arguments that should be passed to the barplot, e.g. a title.
+#' @param ... Additional arguments that should be
+#' passed to the barplot, e.g. a title.
 #'
-#' @return A barplot
+#' @return A barplot.
 #'
 #' @noRd
 sequence_barplot <- function(x, ...) {
-    colors1 <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038")
-    names(colors1) <- c("a", "c", "g", "t")
-    colors2 <- gray.colors(nrow(x) - 4, start = 0.6)
-    names(colors2) <- setdiff(rownames(x), names(colors1))
-    colors <- c(colors1, colors2)
-    # Make the plot
-    barplot(x, space = 0, xaxt = "n", font.main = 1, border = "grey80", col = colors[rownames(x)], legend = TRUE, ylab = "Proportion",
-        ylim = c(0, 1), ..., args.legend = list(x = "right", box.col = NA, border = "grey80", bg = rgb(60, 60, 60, alpha = 50,
-            maxColorValue = 200), inset = c(0, -0.3)))
+  colors1 <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038")
+  names(colors1) <- c("a", "c", "g", "t")
+  colors2 <- gray.colors(nrow(x) - 4, start = 0.6)
+  names(colors2) <- setdiff(rownames(x), names(colors1))
+  colors <- c(colors1, colors2)
+  # Make the plot
+  barplot(
+    x, space = 0, xaxt = "n", font.main = 1, border = "grey80",
+    col = colors[rownames(x)], legend = TRUE, ylab = "Proportion",
+    ylim = c(0, 1), ...,
+    args.legend = list(
+      x = "right", box.col = NA, border = "grey80",
+      bg = rgb(60, 60, 60, alpha = 50,
+      maxColorValue = 200), inset = c(0, -0.3)
+    )
+  )
 }
 
-#'  Round all doubles in a data frame
-#'
-#'  @param x A data frame/tibble.
-#'
-#'  @return A data frame/tibble where all vectors
-#'  of type 'double' have been rounded to two digits.
-#'
-#'  @noRd
-round_df_dbl <- function(x) {
-    dbls <- purrr::map_lgl(x, is.double)
-    dbls <- unname(dbls)
-    x[dbls] <- round(x[dbls], 2)
-    return(x)
-}
+# Context: Assay report =======================================================
 
-#############################################################################
-
-# Functions to create report
+#' Get all combinations of a DNA sequence with degenerate bases
+#'
+#' \code{expand_degenerate} returns all combinations of a DNA sequence with
+#' degenerate bases.
+#'
+#' @param x A DNA sequence (a character vector of length one), e.g. 'cttgg'.
+#' Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
+#' n', 'h', 'd', 'v', 'b' and '-'.
+#'
+#' @return A list containing all combinations of the DNA sequence with
+#'degenerate bases.
+#'
+#' @examples
+#' expand_degenerate('cgtrn')
+#'
 #' @noRd
+expand_degenerate <- function(x) {
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("x must be a character vector of length one", call. = FALSE)
+  }
+  if (grepl("[^acgtrymkswnhdvb-]", x)) {
+    stop("x contains at least one invalid base.
+      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
+      'n', 'h', 'd', 'v', 'b' and '-'",
+         call. = FALSE)
+  }
+  x <- split_sequence(x)
+  # Go through each base of the DNA sequence
+  expanded <- purrr::map(x, function(i) {
+    # Check which bases the IUPAC base at position i correspond to
+    all_bases <- unname(degenerate_lookup[[i]])
+    all_bases <- unlist(strsplit(all_bases, split = ","))
+    return(all_bases)
+  })
+  # Get all possible combinations of DNA sequences
+  expanded <- expand.grid(
+    expanded[seq_along(expanded)], stringsAsFactors = FALSE
+  )
+  expanded <- purrr::map(
+    seq_len(nrow(expanded)), ~paste(expanded[.x, ], collapse = "")
+  )
+  expanded <- unlist(expanded, use.names = FALSE)
+  return(expanded)
+}
+
+
 print_assay_report <- function(x) {
     # x rprimer assay obj - one row
     if (any(grepl("match_matrix", names(x)))) {
@@ -1344,7 +1354,6 @@ print_assay_report <- function(x) {
     }
 }
 
-#' @noRd
 assay_detail_plot <- function(x, y) {
     # x = rprimer sequence profile y = assay object (one row)
     x <- x[which(rownames(x) != "-"), ]
@@ -1373,35 +1382,21 @@ assay_detail_plot <- function(x, y) {
     }
 }
 
-#' @noRd
 assay_overview_plot <- function(x, y) {
     # x rprimer_sequence properties # y assay object (one row)
-    op <- par(mfrow = c(4, 1), mai = c(0.1, 1, 0.1, 1), xpd = FALSE, oma = c(4, 0, 1, 0), mar = c(0.2, 4.1, 0.2, 2.1))
+    op <- par(
+      mfrow = c(4, 1), mai = c(0.1, 1, 0.1, 1),
+      xpd = FALSE, oma = c(4, 0, 1, 0), mar = c(0.2, 4.1, 0.2, 2.1)
+    )
     on.exit(par(op))
-    identity_plot <- plot(x$position, x$identity, type = "h", ylim = c(0, 1), ylab = "identity", xlab = "", xaxt = "n",
-        col = ifelse(x$identity < 1, "gray80", "gray60"))
-    identity_line <- lines(running_average(x$identity))
-    entropy_plot <- plot(x$position, x$entropy, type = "h", ylim = c(0, max(x$entropy, na.rm = TRUE) * 1.1), ylab = "shannon entropy",
-        xlab = "", xaxt = "n", col = ifelse(x$entropy > 0, "gray80", "gray60"))
-    entropy_line <- lines(running_average(x$entropy))
-    gc_plot <- plot(x$position, pch = NA, ylab = "gc content", ylim = c(0, 1), xlab = "", xaxt = "n")
-    clip(0, nrow(x), -1, 2)
-    abline(h = 0.5, col = "gray80")
-    gc_line <- lines(gc_running_average(x$majority))
-    gap_plot <- plot(x$position, x$gaps, type = "h", ylim = c(0, 1), ylab = "gaps", xlab = "")
-    identity_plot
-    identity_line
-    entropy_plot
-    entropy_line
-    gap_plot
+    sequence_detail_plot(x)
     rectangle(y$begin_fwd, y$end_fwd)
     rectangle(y$begin_rev, y$end_rev)
     if (any(grepl("_pr$", names(x))))
         rectangle(y$begin_pr, y$end_pr)
-    mtext(side = 1, outer = TRUE, "position in consensus sequence", line = 3, cex = 0.7)
 }
 
-#' @noRd
+
 print_assay <- function(x) {
     # x assay object (one row)
     if (any(grepl("match_matrix", names(x)))) {
@@ -1423,7 +1418,6 @@ print_assay <- function(x) {
     return(my_list)
 }
 
-#' @noRd
 print_degenerates <- function(x) {
     # x assay object (one row)
     iupac_oligos <- x[grep("^iupac", names(x))]
@@ -1439,7 +1433,6 @@ print_degenerates <- function(x) {
     return(to_print)
 }
 
-#' @noRd
 print_match_matrix <- function(x) {
     # assay obj (one row)
     iupac <- x[, grep("iupac", colnames(x))]
