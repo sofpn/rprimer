@@ -2,7 +2,7 @@
 % Please edit documentation in R/exported_functions.R
 \name{get_oligos}
 \alias{get_oligos}
-\title{Get oligos from sequence data}
+\title{Get oligos from sequence properties}
 \usage{
 get_oligos(
   x,
@@ -16,41 +16,41 @@ get_oligos(
   gc_range = c(0.45, 0.55),
   tm_range = c(48, 70),
   conc_oligo = 5e-07,
-  conc_na = 0.05
+  conc_na = 0.05,
+  target_alignment
 )
 }
 \arguments{
-\item{x}{an object of class 'rprimer_sequence_properties'.}
+\item{x}{One or more DNA sequences (a character vector).}
 
-\item{length}{Oligo length. One or more numbers. The minimum allowed
+\item{length}{Oligo length. The minimum allowed
 value is 6 and the maximum allowed value is 30.
 The default is \code{18:22}.}
 
 \item{max_gap_frequency}{Maximum allowed gap frequency.
-A number between 0 and 1 (default is 0.1, which means that only
+A number between 0 and 1 (default is 0.1, which means that
 positions with a gap frequency equal to or less than 0.1 will be
 considered as an oligo region).}
 
-\item{max_degenerates}{Maximum number of degenerate positions in each
-oligo. An integer. The minimum allowed value is 0 and the maximum
+\item{max_degenerates}{Maximum number of degenerate positions.
+The minimum allowed value is 0 and the maximum
 allowed value is 6 (default is 2).}
 
-\item{max_degeneracy}{Maximum number of degenerate variants of each
-oligo. A number. The minimum allowed value is 1 and the maximum
+\item{max_degeneracy}{Maximum number of degenerate variants.
+The minimum allowed value is 1 and the maximum
 allowed value is 64 (default is 4).}
 
 \item{avoid_3end_ta}{\code{TRUE} or \code{FALSE}.
 If oligos with t or a at the 3' end
-should be replaced with NA. The default is \code{TRUE}.}
+should be replaced with \code{NA}. The default is \code{FALSE}.}
 
-\item{avoid_5end_g}{\code{TRUE} or \code{FALSE}.
-If oligos with g at the 5' end
-should be replaced with NA. The default is \code{FALSE}.}
+\item{avoid_5end_g}{\code{TRUE} or \code{FALSE}.If oligos with g
+at the 5' end should be replaced with \code{NA}. The default is \code{FALSE}.}
 
 \item{avoid_3end_runs}{\code{TRUE} or \code{FALSE}.
 If oligos with more than two runs
-of the same nucleotide at the 3' end should be replaced with NA.
-The default is \code{TRUE}.}
+of the same nucleotide at the 3' end should be replaced with \code{NA}.
+The default is \code{FALSE}.}
 
 \item{gc_range}{The GC-content range of each oligo. Can range between
 0 and 1. The default is \code{c(0.45, 0.55)}.}
@@ -65,14 +65,22 @@ The default value is 5e-07 M (500 nM) (for Tm calculation)}
 \item{conc_na}{The sodium ion concentration in M, ranging
 from 0.01 M to 1 M. The default value is 0.05 M (50 mM)
 (for Tm calculation).}
+
+\item{target_alignment}{The intended target. An alignment of DNA sequences
+(an object of class 'rprimer_alignment').}
 }
 \value{
 A tibble (a data frame) of class 'rprimer_oligo', with all oligo
 candidates. An error message will return if no oligos are found.
+
+The tibble has columns describing the proportion of perfectly matching
+sequences for each oligo, and a column named
+'match_report', which contains a matrix with information about
+which sequences the oligo matches perfectly to.
 }
 \description{
-\code{get_oligos} identifies oligos (primers and probes) from sequence data
-based on user-specfied constraints.
+\code{get_oligos} identifies oligos (primers and probes) from
+sequence properties.
 }
 \section{Excluded oligos}{
 
@@ -85,10 +93,6 @@ same nucleotide, and oligos that are duplicated.
 \section{Tm}{
 
 The melting temperature is calculated using the nearest-neigbour method.
-The oligo concentration is set to 500 nM and the sodium ion concentration
-is set to 50 mM.
-
-Assumptions for Tm calculation:
 
 Oligos are not expected to be self-complementary, so no symmetry
 correction is done.
@@ -98,7 +102,7 @@ than the target concentration.
 
 See references for table values and equations.
 
-#Warning:
+# Warning:
 GC-content and Tm are calculated based on the majority oligos, and
 may thus be misleading for degenerate (iupac) oligos.
 }
@@ -114,7 +118,8 @@ avoid_3end_ta = TRUE,
 avoid_5end_g = FALSE,
 avoid_3end_runs = TRUE,
 gc_range = c(0.45, 0.55),
-tm_range = c(48, 70)
+tm_range = c(48, 70),
+target_alignment = example_rprimer_alignment
 )
 
 }
@@ -130,7 +135,7 @@ Thermodynamics and NMR of Internal G·T Mismatches in DNA.
 Biochemistry, 34: 10581?\200?10594
 (Duplex initiation parameters are from here)
 
-#' SantaLucia, J (1998) A unified view of polymer,
+SantaLucia, J (1998) A unified view of polymer,
 dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
 Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
 }

@@ -400,7 +400,7 @@ gc_content <- function(x) {
         stop("x contains at least one invalid base.
       x can only contain 'a', 'c', 'g', 't' and '-'", call. = FALSE)
     }
-    x <- split_sequence()
+    x <- split_sequence(x)
     gc_count <- length(which(x == "c" | x == "g"))
     # Gaps will not be included in the total count
     total_count <- length(which(x == "a" | x == "c" | x == "g" | x == "t"))
@@ -980,6 +980,59 @@ add_gc_tm <- function(
   oligos <- oligos[tm_majority >= min(tm_range), ]
   oligos <- oligos[tm_majority <= max(tm_range), ]
   return(oligos)
+}
+
+#' Check if oligos matches their targets
+#'
+#' \code{check_match} checks if oligos matches with their
+#' intended target sequences.
+#'
+#' @param x A tibble with oligos
+#'
+#' @param y The intended target. An alignment of DNA sequences
+#' (an object of class 'rprimer_alignment').
+#'
+#' @return A tibble (a data frame)
+#' with columns describing the proportion of perfectly matching
+#' sequences for each oligo, and a column named
+#' 'match_report', which contains a matrix with information about
+#' which sequences the oligo matches perfectly to.
+#'
+#' @noRd
+check_match <- function(x, y) {
+  if (!inherits(y, "rprimer_alignment")) {
+    stop("An rprimer_alignment object is expected for y.", call. = FALSE)
+  }
+  majority <- ifelse(
+    !is.na(x$majority), x$majority,
+    purrr::map_chr(x$majority_rc, reverse_complement)
+  )
+  iupac <- ifelse(
+    !is.na(x$iupac), x$iupac, purrr::map_chr(x$iupac_rc, reverse_complement)
+  )
+  iupac <- purrr::map_chr(iupac, make_regex)
+  # Shorten the sequence names to only accession numbers
+  names(y) <- purrr::map_chr(names(y), truncate_name)
+  # Make a matrix that describes which sequences the oligo matches perfectly to
+  match_matrix <- purrr::map(seq_len(nrow(x)), function(i) {
+    match_majority <- grepl(majority[[i]], y)
+    match_iupac <- grepl(iupac[[i]], y)
+    match <- cbind(match_majority, match_iupac)
+    colnames(match) <- c("match_majority", "match_iupac")
+    rownames(match) <- names(y)
+    return(match)
+  })
+  names(match_matrix) <- x$iupac
+  # Calculate the match percentage for each oligo
+  match_percentage <- purrr::map(match_matrix, colMeans)
+  match_percentage <- do.call("rbind", match_percentage)
+  colnames(match_percentage) <- c("pm_majority", "pm_iupac")
+  match_percentage <- tibble::as_tibble(match_percentage)
+  # Add this information to the rprimer_oligo object
+  x <- dplyr::bind_cols(x, match_percentage)
+  match_matrix <- tibble::tibble(match_matrix)
+  x <- dplyr::bind_cols(x, match_matrix)
+  return(x)
 }
 
 

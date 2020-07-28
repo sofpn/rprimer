@@ -193,15 +193,30 @@ test_that("generate_oligos works", {
  expect_equal(length(unique(oligos$majority)), nrow(oligos))
 })
 
-#test_that("add_gc_tm returns an error when it should", {
- # expect_error()
+test_that("add_gc_tm returns an error when it should", {
+  oligos <- generate_oligos(example_rprimer_sequence_properties)
+  expect_error(add_gc_tm(oligos, gc_range = c(0.45, 1.1)))
+  expect_error(add_gc_tm(oligos, tm_range = c(15, 50)))
+  expect_error(add_gc_tm(oligos, gc_range = c(0.45, 1.1)))
+  expect_error(add_gc_tm(oligos, conc_na = 1.1))
+  expect_error(add_gc_tm(oligos, conc_oligo = 500))
+})
 
-#})
+test_that("add_gc_tm works", {
+  oligos <- add_gc_tm(generate_oligos(example_rprimer_sequence_properties))
+  expect_true("gc_majority" %in% colnames(oligos))
+  expect_true("tm_majority" %in% colnames(oligos))
+})
 
-#test_that("add_gc_tm works", {
 
-#})
+test_that("check_match returns an error when it should", {
+  oligos <- add_gc_tm(generate_oligos(example_rprimer_sequence_properties))
+  expect_error(check_match(oligos, unclass(example_rprimer_alignment)))
+})
 
+test_that("check_match works", {
+
+})
 #test_that("get_oligos returns an error when it should, {
 
 #})

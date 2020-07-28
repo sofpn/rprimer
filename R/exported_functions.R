@@ -1,3 +1,6 @@
+# Update example_rprimer_oligo
+
+
 # Import alignment ============================================================
 
 #' Read an alignment in fasta format
@@ -362,6 +365,9 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' from 0.01 M to 1 M. The default value is 0.05 M (50 mM)
 #' (for Tm calculation).
 #'
+#' @param target_alignment The intended target. An alignment of DNA sequences
+#' (an object of class 'rprimer_alignment').
+#'
 #' @section Excluded oligos:
 #' The function excludes oligos with
 #' more than than three consecutive runs of the same dinucleotide
@@ -386,6 +392,11 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' @return A tibble (a data frame) of class 'rprimer_oligo', with all oligo
 #' candidates. An error message will return if no oligos are found.
 #'
+#' The tibble has columns describing the proportion of perfectly matching
+#' sequences for each oligo, and a column named
+#' 'match_report', which contains a matrix with information about
+#' which sequences the oligo matches perfectly to.
+#'
 #' @examples
 #' get_oligos <- function(
 #' example_rprimer_sequence_properties,
@@ -397,7 +408,8 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' avoid_5end_g = FALSE,
 #' avoid_3end_runs = TRUE,
 #' gc_range = c(0.45, 0.55),
-#' tm_range = c(48, 70)
+#' tm_range = c(48, 70),
+#' target_alignment = example_rprimer_alignment
 #' )
 #'
 #' @references
@@ -429,7 +441,8 @@ get_oligos <- function(
   gc_range = c(0.45, 0.55),
   tm_range = c(48, 70),
   conc_oligo = 5e-07,
-  conc_na = 0.05
+  conc_na = 0.05,
+  target
 ) {
   all_oligos <- purrr::map_dfr(length, function(y) {
     oligos <- generate_oligos(
@@ -468,9 +481,8 @@ get_oligos <- function(
   })
   if (nrow(all_oligos) == 0L)
     stop("No oligos were found.", call. = FALSE)
-
   # Check match
-
+  all_oligos <- check_match(all_oligos, target)
   all_oligos <- dplyr::arrange(all_oligos, begin)
   all_oligos <- tibble::new_tibble(
     all_oligos, nrow = nrow(all_oligos), class = "rprimer_oligo"
@@ -648,9 +660,6 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
     assays <- tibble::new_tibble(assays, class = "rprimer_assay")
     return(assays)
 }
-
-# Check if oligos and assays matches their targets ============================
-
 
 # Plot results ================================================================
 

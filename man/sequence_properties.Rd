@@ -35,22 +35,22 @@ the consensus base will be randomly selected among these bases.
 \section{IUPAC consensus sequence}{
 
 The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
-Note that the iupac consensus sequence only
+Note that the IUPAC consensus sequence only
 takes 'a', 'c', 'g', 't' and '-' as input. Degenerate bases
 present in the alignment will be skipped. If a position only contains
-degenerate/invalid bases, the iupac consensus will be \code{NA} at that
+degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
 position.
 }
 
 \section{Gaps}{
 
-Gaps are recognised as "-".
+Gaps are recognised as "-" in the sequence profile.
 }
 
 \section{Identity}{
 
 The nucleotide identity is the proportion of
-the most common base at each position in the alignment.  Gaps (-),
+the most common base at each position in the alignment. Gaps (-),
 as well as nucleotides other than a, c, g and t, are excluded from the
 calculation.
 }
