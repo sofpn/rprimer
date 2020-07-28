@@ -233,7 +233,7 @@ sequence_profile <- function(x) {
     return(proportions)
 }
 
-# Get sequence properties from a nucleotide profile ===========================
+# Get sequence properties =====================================================
 
 #' Get sequence properties
 #'
@@ -311,7 +311,7 @@ sequence_properties <- function(x, iupac_threshold = 0) {
     return(sequence_properties)
 }
 
-# Get oligos from sequence properties =========================================
+# Get oligos ==================================================================
 
 #' Get oligos from sequence properties
 #'
@@ -322,7 +322,7 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #'
 #' @param max_gap_frequency Maximum allowed gap frequency.
 #' A number between 0 and 1 (default is 0.1, which means that
-#' positions with a gap frequency equal to or less than 0.1 will be
+#' positions with a gap frequency of maximum 0.1 will be
 #' considered as an oligo region).
 #'
 #' @param length Oligo length. The minimum allowed
@@ -380,12 +380,12 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' Oligos are not expected to be self-complementary, so no symmetry
 #' correction is done.
 #'
-#' We assume that the oligo concentration is much higher
+#' The oligo concentration is assumed to be much higher
 #' than the target concentration.
 #'
 #' See references for table values and equations.
 #'
-#' # Warning:
+#' @section Note:
 #' GC-content and Tm are calculated based on the majority oligos, and
 #' may thus be misleading for degenerate (iupac) oligos.
 #'
@@ -417,7 +417,8 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #'
 #' SantaLucia, J, et al. (1996)
 #' Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
-#' Biochemistry, 35: 3555-3562 (Formula and salt correction are from here)
+#' Biochemistry, 35: 3555-3562 (Formula and salt correction method
+#' are from here)
 #'
 #' Allawi, H. & SantaLucia, J. (1997)
 #' Thermodynamics and NMR of Internal G·T Mismatches in DNA.
@@ -481,7 +482,7 @@ get_oligos <- function(
   })
   if (nrow(all_oligos) == 0L)
     stop("No oligos were found.", call. = FALSE)
-  # Check match
+  # Check match to targets
   all_oligos <- check_match(all_oligos, target)
   all_oligos <- dplyr::arrange(all_oligos, begin)
   all_oligos <- tibble::new_tibble(

@@ -17,7 +17,7 @@ get_oligos(
   tm_range = c(48, 70),
   conc_oligo = 5e-07,
   conc_na = 0.05,
-  target_alignment
+  target
 )
 }
 \arguments{
@@ -29,7 +29,7 @@ The default is \code{18:22}.}
 
 \item{max_gap_frequency}{Maximum allowed gap frequency.
 A number between 0 and 1 (default is 0.1, which means that
-positions with a gap frequency equal to or less than 0.1 will be
+positions with a gap frequency of maximum 0.1 will be
 considered as an oligo region).}
 
 \item{max_degenerates}{Maximum number of degenerate positions.

@@ -53,7 +53,6 @@ test_that("reverse_complement works", {
 
 test_that("running_sum returns an error when it should", {
   expect_error(running_sum("c"))
-  expect_error(running_sum(example_rprimer_sequence_profile))
   expect_error(running_sum(c(2, 3, 5, 4), n = 0))
   expect_error(running_sum(c(2, 3, 5, 4), n = 10))
 })
@@ -208,6 +207,15 @@ test_that("add_gc_tm works", {
   expect_true("tm_majority" %in% colnames(oligos))
 })
 
+test_that("make_regex returns an error when it should", {
+  expect_error(make_regex(2))
+  expect_error(make_regex("cax"))
+  expect_error(make_regex(c("c", "a")))
+})
+
+test_that("make_regex works", {
+  expect_equal(make_regex("cgtggnr"),  "(c)(g)(t)(g)(g)(a|c|g|t)(a|g)")
+})
 
 test_that("check_match returns an error when it should", {
   oligos <- add_gc_tm(generate_oligos(example_rprimer_sequence_properties))
@@ -215,12 +223,31 @@ test_that("check_match returns an error when it should", {
 })
 
 test_that("check_match works", {
-
+  oligos <- add_gc_tm(generate_oligos(example_rprimer_sequence_properties))
+  oligos <- check_match(oligos, example_rprimer_alignment)
+  expect_true(
+    all(c("pm_majority", "pm_iupac", "match_matrix") %in% colnames(oligos))
+  )
+  expect_true(is.list(oligos$match_matrix))
+  expect_true(is.matrix(oligos$match_matrix[[1]]))
+  expect_true(is.logical(oligos$match_matrix[[1]]))
+  expect_equal(
+    colnames(oligos$match_matrix[[1]]), c("match_majority", "match_iupac")
+  )
 })
-#test_that("get_oligos returns an error when it should, {
 
-#})
+test_that("get_oligos returns an error when it should", {
+  expect_error(
+    get_oligos(
+      unclass(example_rprimer_sequence_properties),
+      target = example_rprimer_alignment
+    )
+  )
+})
 
-#test_that("get_oligos works, {
-
-#})
+test_that("get_oligos works", {
+ oligos <- get_oligos(
+   example_rprimer_sequence_properties, target = example_rprimer_alignment
+  )
+ expect_s3_class(oligos, class = "rprimer_oligo")
+})

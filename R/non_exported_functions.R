@@ -1,3 +1,5 @@
+# General functions ===========================================================
+
 #' Split sequence
 #'
 #' @param x A character vector of length one
@@ -12,6 +14,40 @@ split_sequence <- function(x) {
   x <- unlist(strsplit(x, split = ""), use.names = FALSE)
   return(x)
 }
+
+#' Complement
+#'
+#' \code{complement} finds the complement of a DNA sequence.
+#'
+#' @param x a DNA sequence (a character vector of length one, e.g. 'cttgg').
+#'
+#' @details For \code{x}, valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm',
+#' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
+#'
+#' @return The complement sequence of x. Non valid bases will return as NA.
+#'
+#' @examples
+#' reverse_complement('cttgtr')
+#'
+#' @noRd
+complement <- function(x) {
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("x must be a character vector of length one", call. = FALSE)
+  }
+  x <- tolower(x)
+  if (grepl("[^acgtrymkswnhdvb-]", x)) {
+    stop("x contains at least one invalid base.
+      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
+      'n', 'h', 'd', 'v', 'b' and '-'",
+         call. = FALSE)
+  }
+  x <- strsplit(x, split = "")
+  complement <- complement_lookup[unlist(x)]
+  complement <- unname(complement)
+  return(complement)
+}
+
+# Context: Import alignment ===================================================
 
 #' 'rprimer_alignment' constructor and validator
 #'
@@ -80,6 +116,8 @@ new_rprimer_alignment <- function(x = list()) {
     return(x)
 }
 
+# Context: Get sequence profile ===============================================
+
 #' 'rprimer_sequence_profile' constructor and validator
 #'
 #' \code{new_rprimer_sequence_profile} creates an object of class
@@ -105,6 +143,8 @@ new_rprimer_sequence_profile <- function(x = matrix()) {
     x <- structure(x, class = "rprimer_sequence_profile")
     return(x)
 }
+
+# Context: Get sequence properties ============================================
 
 #' Majority consensus sequence
 #'
@@ -334,6 +374,8 @@ shannon_entropy <- function(x) {
     return(entropy)
 }
 
+# Context: Get oligos =========================================================
+
 #' Divide a DNA sequence into n-sized chunks
 #'
 #' \code{get_nmers} divides a character vector into chunks of size \code{n},
@@ -407,39 +449,6 @@ gc_content <- function(x) {
     gc <- gc_count / total_count
     return(gc)
 }
-
-#' Complement
-#'
-#' \code{complement} finds the complement of a DNA sequence.
-#'
-#' @param x a DNA sequence (a character vector of length one, e.g. 'cttgg').
-#'
-#' @details For \code{x}, valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm',
-#' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
-#'
-#' @return The complement sequence of x. Non valid bases will return as NA.
-#'
-#' @examples
-#' reverse_complement('cttgtr')
-#'
-#' @noRd
-complement <- function(x) {
-    if (typeof(x) != "character" || length(x) != 1) {
-        stop("x must be a character vector of length one", call. = FALSE)
-    }
-    x <- tolower(x)
-    if (grepl("[^acgtrymkswnhdvb-]", x)) {
-        stop("x contains at least one invalid base.
-      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-      'n', 'h', 'd', 'v', 'b' and '-'",
-            call. = FALSE)
-    }
-    x <- strsplit(x, split = "")
-    complement <- complement_lookup[unlist(x)]
-    complement <- unname(complement)
-    return(complement)
-}
-
 
 #' Reverse complement
 #'
@@ -982,6 +991,46 @@ add_gc_tm <- function(
   return(oligos)
 }
 
+#' Convert a DNA sequence to a regular expression
+#'
+#' \code{make_regex} converts a DNA sequence
+#' to a regular expression for pattern matching.
+#'
+#' @param x A DNA sequence (a character vector of length one), e.g. 'cttgtr'.
+#'
+#' @details Valid bases for \code{x} are 'a', 'c', 'g', 't', 'r', 'y', 'm',
+#' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'
+#'
+#' @return A regular expression of x (e.g. '(c)(t)(t)(g)(t)(a|g)').
+#'
+#' @examples
+#' make_regex('cttrng')
+#'
+#' @noRd
+make_regex <- function(x) {
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("x must be a character vector of length one", call. = FALSE)
+  }
+  if (grepl("[^acgtryswkmbdhvn-]", x)) {
+    stop("x contains at least one invalid base.
+      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
+      'n', 'h', 'd', 'v', 'b' and '-'",
+         call. = FALSE)
+  }
+  x <- split_sequence(x)
+  # Go through each base of the DNA sequence
+  regx <- purrr::map(x, function(i) {
+    # Check which bases the IUPAC base at position 'i' corresponds to
+    all_bases <- unname(degenerate_lookup[i])
+    all_bases <- unlist(strsplit(all_bases, split = ","))
+    return(all_bases)
+  })
+  regx <- purrr::map(regx, ~paste(.x, collapse = "|"))
+  regx <- purrr::map(regx, ~paste0("(", .x, ")"))
+  regx <- unlist(paste(regx, collapse = ""))
+  return(regx)
+}
+
 #' Check if oligos matches their targets
 #'
 #' \code{check_match} checks if oligos matches with their
@@ -1035,48 +1084,7 @@ check_match <- function(x, y) {
   return(x)
 }
 
-
-################################################################################### new test file
-
-#' Convert a DNA sequence to a regular expression
-#'
-#' \code{make_regex} converts a DNA sequence
-#' to a regular expression for pattern matching.
-#'
-#' @param x A DNA sequence (a character vector of length one), e.g. 'cttgtr'.
-#'
-#' @details Valid bases for \code{x} are 'a', 'c', 'g', 't', 'r', 'y', 'm',
-#' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'
-#'
-#' @return A regular expression of x (e.g. '(c)(t)(t)(g)(t)(a|g)').
-#'
-#' @examples
-#' make_regex('cttrng')
-#'
-#' @noRd
-make_regex <- function(x) {
-    if (typeof(x) != "character" || length(x) != 1) {
-        stop("x must be a character vector of length one", call. = FALSE)
-    }
-    if (grepl("[^acgtryswkmbdhvn-]", x)) {
-        stop("x contains at least one invalid base.
-      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-      'n', 'h', 'd', 'v', 'b' and '-'",
-            call. = FALSE)
-    }
-    x <- split_sequence(x)
-    # Go through each base of the DNA sequence
-    regx <- purrr::map(x, function(i) {
-        # Check which bases the IUPAC base at position 'i' corresponds to
-        all_bases <- unname(degenerate_lookup[i])
-        all_bases <- unlist(strsplit(all_bases, split = ","))
-        return(all_bases)
-    })
-    regx <- purrr::map(regx, ~paste(.x, collapse = "|"))
-    regx <- purrr::map(regx, ~paste0("(", .x, ")"))
-    regx <- unlist(paste(regx, collapse = ""))
-    return(regx)
-}
+# Context: ======================================================
 
 #' Get all combinations of a DNA sequence with degenerate bases
 #'
