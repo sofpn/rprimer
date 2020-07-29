@@ -30,9 +30,6 @@ check_match_rprimer_assay <- function(x, y) {
   match_percentage <- do.call("rbind", match_percentage)
   match_percentage <- tibble::as_tibble(match_percentage)
   names(match_percentage) <- paste0("pm_", names(match_percentage))
-  if (any(grepl("^pm_", names(x)))) {
-    stop("matches have already been checked in x", call. = FALSE)
-  }
   x <- dplyr::bind_cols(x, match_percentage)
   match_matrix <- tibble::tibble(match_matrix)
   x <- dplyr::bind_cols(x, match_matrix)

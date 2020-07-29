@@ -564,7 +564,7 @@ running_sum <- function(x, n = NULL) {
 
 #' Exclude oligos with a specific pattern
 #'
-#' \code{exclude_oligos} replaces oligos with a specific pattern
+#' \code{exclude} replaces oligos with a specific pattern
 #' with \code{NA}.
 #'
 #' @param x One or more oligo sequences (a character vector).
@@ -575,10 +575,10 @@ running_sum <- function(x, n = NULL) {
 #' have been replaced with \code{NA}.
 #'
 #' @examples
-#' exclude_oligos(c('cttgttatttt', 'cgattctg'), "a$|t$")
+#' exclude(c('cttgttatttt', 'cgattctg'), "a$|t$")
 #'
 #' @noRd
-exclude_oligos <- function(x, pattern) {
+exclude <- function(x, pattern) {
   if (!is.character(x)) {
     stop("x must be a character vector", call. = FALSE)
   }
@@ -590,9 +590,9 @@ exclude_oligos <- function(x, pattern) {
   return(x)
 }
 
-#' Exclude unwanted oligos
+#' Exclude oligos
 #'
-#' \code{exclude unwanted oligos} replaces oligos with many consecutive
+#' \code{exclude oligos} replaces oligos with many consecutive
 #' mono- or dinucleotides with \code{NA}. If selected, it also replaces oligos
 #' with 5'-end g or 3'-end t or a with \code{NA}.
 #'
@@ -618,10 +618,10 @@ exclude_oligos <- function(x, pattern) {
 #' has been replaced with \code{NA}.
 #'
 #' @examples
-#' exclude_unwanted_oligos(c('gtgtaaaaatatttt', 'cgattctg'))
+#' exclude_oligos(c('gtgtaaaaatatttt', 'cgattctg'))
 #'
 #' @noRd
-exclude_unwanted_oligos <- function(
+exclude_oligos <- function(
   x, avoid_3end_ta = FALSE, avoid_5end_g = FALSE, avoid_3end_runs = FALSE
   ) {
     if (any(!is.logical(c(avoid_3end_ta, avoid_5end_g, avoid_3end_runs)))) {
@@ -630,22 +630,73 @@ exclude_unwanted_oligos <- function(
         must be set to TRUE or FALSE", call. = FALSE)
     }
     # Remove oligos with at least 4 'runs' of the same dinucleotide
-    x <- exclude_oligos(x, "(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)\\1\\1\\1")
+    x <- exclude(x, "(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)\\1\\1\\1")
     # Remove oligos with at least 5 'runs' of the same nucleotide
-    x <- exclude_oligos(x, "([a-z])\\1\\1\\1\\1")
+    x <- exclude(x, "([a-z])\\1\\1\\1\\1")
     if (avoid_3end_ta == TRUE) {
         # Remove oligos with t or a at the 3' end
-        x <- exclude_oligos(x, "a$|t$")
+        x <- exclude(x, "a$|t$")
     }
     if (avoid_5end_g == TRUE) {
         # Remove oligos with g at the 5' end
-        x <- exclude_oligos(x, "^g")
+        x <- exclude(x, "^g")
     }
     if (avoid_3end_runs == TRUE) {
         # Remove oligos with at least 3 'runs' of the same nucleotide in 3'
-        x <- exclude_oligos(x, "([a-z])\\1\\1$")
+        x <- exclude(x, "([a-z])\\1\\1$")
     }
     return(x)
+}
+
+#' Exclude unwanted oligos
+#'
+#' \code{exclude unwanted oligos} replaces oligos with many consecutive
+#' mono- or dinucleotides with \code{NA}. If selected, it also replaces oligos
+#' with 5'-end g or 3'-end t or a with \code{NA}.
+#'
+#' @param x A tibble with oligos.
+#'
+#' @param avoid_3end_ta \code{TRUE} or \code{FALSE}.
+#' If oligos with t or a at the 3' end
+#' should be replaced with \code{NA}.
+#'
+#' @param avoid_5end_g \code{TRUE} or \code{FALSE}.If oligos with g
+#' at the 5' end should be replaced with \code{NA}.
+#'
+#' @param avoid_3end_runs \code{TRUE} or \code{FALSE}.
+#' If oligos with more than two runs
+#' of the same nucleotide at the 3' end should be replaced with \code{NA}.
+#'
+#' @details An oligo is replaced with \code{NA} if
+#' - It has more than three runs of the same dinucleotide (e.g. 'tatatata')
+#' - It has more than four runs of the same nucleotide
+#'
+#' @return A tibble where unwanted oligos
+#' has been replaced with \code{NA}.
+#'
+#' @noRd
+exclude_unwanted_oligos <- function(
+  x, avoid_3end_ta, avoid_5end_g, avoid_3end_runs
+  ) {
+  x$majority <- exclude_oligos(
+    x$majority,
+    avoid_3end_ta = avoid_3end_ta,
+    avoid_5end_g = avoid_5end_g,
+    avoid_3end_runs = avoid_3end_runs
+  )
+  x$majority_rc <- exclude_oligos(
+    x$majority_rc,
+    avoid_3end_ta = avoid_3end_ta,
+    avoid_5end_g = avoid_5end_g,
+    avoid_3end_runs = avoid_3end_runs
+  )
+  x$iupac[is.na(x$majority)] <- NA
+  x$iupac_rc[is.na(x$majority_rc)] <- NA
+  # Identify oligos where both the sense and antisense sequence is NA
+  invalid_oligos <- is.na(x$majority) & is.na(x$majority_rc)
+  # Remove them
+  x <- x[!invalid_oligos, ]
+  return(x)
 }
 
 #' Count the number of degenerate bases in a DNA sequence
@@ -1120,6 +1171,46 @@ tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
   tm <- sumdH / (sumdS + gas_constant * log(conc_oligo))
   tm <- tm - 273.15
   return(tm)
+}
+
+# Context: Get assays =========================================================
+
+#' Combine match matrices
+#'
+#' @param x A tibble with assays
+#'
+#' @return A tibble with assays, with information on perfect matches    #### Not tested!!!!
+#' for fwd and rev primers combined.
+#'
+#' @noRd
+combine_match_matrices <- function(x) {
+  fwd <- x$match_matrix_fwd
+  rev <- x$match_matrix_rev
+  fwd <- purrr::map(fwd, function(x) {
+    colnames(x) <- paste0(colnames(x), "_fwd"); x
+  })
+  rev <- purrr::map(rev, function(x) {
+    colnames(x) <- paste0(colnames(x), "_rev"); x
+  })
+  match_matrix <- purrr::map(seq_len(nrow(x)), function(y) {
+    match <- cbind(fwd[[y]], rev[[y]])
+    majority_all <- rowSums(match[, c(1, 3)])
+    iupac_all <- rowSums(match[, c(2, 4)])
+    majority_all <- ifelse(majority_all == 2, TRUE, FALSE)
+    iupac_all <- ifelse(iupac_all == 2, TRUE, FALSE)
+    match <- cbind(match, majority_all, iupac_all)
+    return(match)
+  })
+  match_percentage <- purrr::map(match_matrix, ~ colMeans(.x[, 5:6]))
+  match_percentage <- do.call("rbind", match_percentage)
+  match_percentage <- tibble::as_tibble(match_percentage)
+  names(match_percentage) <- paste0("pm_", names(match_percentage))
+  x <- dplyr::bind_cols(x, match_percentage)
+  match_matrix <- tibble::tibble(match_matrix)
+  x <- dplyr::bind_cols(x, match_matrix)
+  drop <- c("match_matrix_fwd", "match_matrix_rev")
+  x <- x[, !(names(x) %in% drop)]
+  return(x)
 }
 
 # Context: Plots ==============================================================

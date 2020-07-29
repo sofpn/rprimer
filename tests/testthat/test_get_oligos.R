@@ -66,30 +66,30 @@ test_that("running_sum works", {
   expect_equal(length(running_sum(x, n = 3)), length(x) - 2)
 })
 
+test_that("exclude returns an error when it should", {
+ expect_error(exclude(12))
+ expect_error(exclude("cgg", pattern = 12))
+})
+
+test_that("exclude works", {
+ expect_true(is.na(exclude("at", "t$")))
+ expect_true(is.na(exclude("attt", "(t)\\1\\1")))
+})
+
 test_that("exclude_oligos returns an error when it should", {
- expect_error(exclude_oligos(12))
- expect_error(exclude_oligos("cgg", pattern = 12))
+ expect_error(exclude_oligos(0))
+ expect_error(exclude_oligos("ctgtt", avoid_5end_g = 0))
+ expect_error(exclude_oligos("ctgtt", avoid_3end_ta = NULL))
 })
 
 test_that("exclude_oligos works", {
- expect_true(is.na(exclude_oligos("at", "t$")))
- expect_true(is.na(exclude_oligos("attt", "(t)\\1\\1")))
-})
-
-test_that("exclude_unwanted_oligos returns an error when it should", {
- expect_error(exclude_unwanted_oligos(0))
- expect_error(exclude_unwanted_oligos("ctgtt", avoid_5end_g = 0))
- expect_error(exclude_unwanted_oligos("ctgtt", avoid_3end_ta = NULL))
-})
-
-test_that("exclude_unwanted_oligos works", {
  oligos <- c("cttgttta", "ggttccggtc")
  expect_equal(
-   exclude_unwanted_oligos(oligos, avoid_3end_ta = FALSE, avoid_5end_g = TRUE),
+   exclude_oligos(oligos, avoid_3end_ta = FALSE, avoid_5end_g = TRUE),
    c("cttgttta", NA)
   )
- expect_true(is.na(exclude_unwanted_oligos("cgtgtgtgt")))
- expect_true(is.na(exclude_unwanted_oligos("cggggg")))
+ expect_true(is.na(exclude_oligos("cgtgtgtgt")))
+ expect_true(is.na(exclude_oligos("cggggg")))
 })
 
 test_that("count_degenerates returns an error when it should", {
@@ -97,6 +97,10 @@ test_that("count_degenerates returns an error when it should", {
  expect_error(cound_degenerates(0))
  expect_error(cound_degenerates(c("ca", "ca")))
 })
+
+# test_that("exclide_unwanted_oligos returns an error when it should", {
+
+# })
 
 test_that("count_degenerates works", {
  expect_equal(count_degenerates("cgtcg"), 0)

@@ -1,6 +1,3 @@
-# Update example_rprimer_oligo
-
-
 # Import alignment ============================================================
 
 #' Read an alignment in fasta format
@@ -240,9 +237,7 @@ sequence_profile <- function(x) {
 #' \code{sequence_properties} returns sequence information from an alignment
 #' of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_sequence_profile', i.e.
-#' a numeric m x n matrix, where m is the number of nucleotides in the
-#' alignment, and n is the number of positions in the alignment.
+#' @param x A nucleotide profile of class 'rprimer_sequence_profile'.
 #'
 #' @param iupac_threshold A number between 0 and 0.2 (the default is 0).
 #' At each position, all nucleotides with a proportion
@@ -250,9 +245,9 @@ sequence_profile <- function(x) {
 #' the iupac consensus sequence.
 #'
 #' @section Majority consensus sequence:
-#' The most frequently occuring base at each position.
+#' The most frequently occuring nucleotide.
 #' If two or more bases occur with the same frequency,
-#' the consensus base will be randomly selected among these bases.
+#' the consensus nucleotide will be randomly selected among these bases.
 #'
 #' @section IUPAC consensus sequence:
 #' The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
@@ -267,14 +262,14 @@ sequence_profile <- function(x) {
 #'
 #' @section Identity:
 #' The nucleotide identity is the proportion of
-#' the most common base at each position in the alignment. Gaps (-),
+#' the most common base. Gaps (-),
 #' as well as nucleotides other than a, c, g and t, are excluded from the
 #' calculation.
 #'
 #' @section Shannon entropy:
 #' Shannon entropy is a measurement of
-#' variability. First, for each nucleotide that occurs at the position in
-#' matter, \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
+#' variability. First, for each nucleotide that occurs at a specific position,
+#' \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
 #' that nucleotide. Then, the shannon entropy is calculated by summarising
 #' these values for each nucleotide at the position in matter,
 #' followed by multiplication by \code{-1}.
@@ -400,6 +395,7 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' @examples
 #' get_oligos <- function(
 #' example_rprimer_sequence_properties,
+#' target_alignment = example_rprimer_alignment,
 #' length = 18:22,
 #' max_gap_frequency = 0.1,
 #' max_degenerates = 2,
@@ -408,8 +404,7 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' avoid_5end_g = FALSE,
 #' avoid_3end_runs = TRUE,
 #' gc_range = c(0.45, 0.55),
-#' tm_range = c(48, 70),
-#' target_alignment = example_rprimer_alignment
+#' tm_range = c(48, 70)
 #' )
 #'
 #' @references
@@ -432,6 +427,7 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' @export
 get_oligos <- function(
   x,
+  target,
   length = 18:22,
   max_gap_frequency = 0.1,
   max_degenerates = 2,
@@ -442,11 +438,10 @@ get_oligos <- function(
   gc_range = c(0.45, 0.55),
   tm_range = c(48, 70),
   conc_oligo = 5e-07,
-  conc_na = 0.05,
-  target
+  conc_na = 0.05
 ) {
   all_oligos <- purrr::map_dfr(length, function(y) {
-    oligos <- generate_oligos(
+   oligos <- generate_oligos(
       x,
       oligo_length = y,
       max_gap_frequency = max_gap_frequency,
@@ -460,24 +455,12 @@ get_oligos <- function(
       conc_oligo = conc_oligo,
       conc_na = conc_na
     )
-    oligos$majority <- exclude_unwanted_oligos(
-      oligos$majority,
+    oligos <- exclude_unwanted_oligos(
+      oligos,
       avoid_3end_ta = avoid_3end_ta,
       avoid_5end_g = avoid_5end_g,
       avoid_3end_runs = avoid_3end_runs
     )
-    oligos$majority_rc <- exclude_unwanted_oligos(
-      oligos$majority_rc,
-      avoid_3end_ta = avoid_3end_ta,
-      avoid_5end_g = avoid_5end_g,
-      avoid_3end_runs = avoid_3end_runs
-    )
-    oligos$iupac[which(is.na(oligos$majority))] <- NA
-    oligos$iupac_rc[which(is.na(oligos$majority_rc))] <- NA
-    # Identify oligos where both the sense and antisense sequence is NA
-    invalid_oligos <- is.na(oligos$majority) & is.na(oligos$majority_rc)
-    # Remove them
-    oligos <- oligos[!invalid_oligos, ]
     return(oligos)
   })
   if (nrow(all_oligos) == 0L)
@@ -490,7 +473,6 @@ get_oligos <- function(
   )
   return(all_oligos)
 }
-
 
 # Get PCR assays from oligos ==================================================
 
@@ -528,46 +510,52 @@ get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
     if (!(min(length) >= 40 && max(length) <= 5000)) {
         stop("length must be between 40 and 5000", call. = FALSE)
     }
-    # Get all fwd and rev primers
-    fwd <- x[which(!is.na(x$majority)), ]
-    rev <- x[which(!is.na(x$majority_rc)), ]
+    # Get all pontential candidates for fwd and rev primers
+    fwd <- x[!is.na(x$majority), ]
+    rev <- x[!is.na(x$majority_rc), ]
     # Get all possible combinations of fwd and rev primers
     combinations <- expand.grid(
       fwd$majority, rev$majority_rc, stringsAsFactors = FALSE
     )
     names(combinations) <- c("fwd_majority", "rev_majority")
-    # Get the indexes of the primer sequences
+    # Get indexes of the fwd and rev primer sequences
     index_fwd <- match(combinations$fwd_majority, x$majority)
     index_rev <- match(combinations$rev_majority, x$majority_rc)
-    # Expand and combine
+    # Make two datasets of x, one for fwd and one for rev
     fwd <- x[index_fwd, ]
     rev <- x[index_rev, ]
-    # Add a tag on the colnames
+    # Add a tag on colnames before combining the two datasets
     colnames(fwd) <- paste0(colnames(fwd), "_fwd")
     colnames(rev) <- paste0(colnames(rev), "_rev")
-    # Combine in a tibble
-    assays <- list(fwd, rev)
-    assays <- do.call("cbind", assays)
+    # Combine the two datasets
+    assays <- dplyr::bind_cols(fwd, rev)
     assays <- tibble::as_tibble(assays)
     # Add amplicon length, tm difference and total degeneracy to the data
     amplicon_length <- assays$end_rev - assays$begin_fwd + 1
     amplicon_length <- as.integer(amplicon_length)
-    tm_difference_primer <- abs(assays$tm_majority_fwd - assays$tm_majority_rev)
+    tm_difference_primer <- assays$tm_majority_fwd - assays$tm_majority_rev
+    tm_difference_primer <- abs(tm_difference_primer)
     begin <- assays$begin_fwd
     end <- assays$end_rev
     total_degeneracy <- assays$degeneracy_fwd + assays$degeneracy_rev
-    assays <- tibble::add_column(assays, begin, end, amplicon_length, tm_difference_primer, total_degeneracy, .before = "begin_fwd")
-    # Drop columns that we do not longer need
+    assays <- tibble::add_column(
+      assays, begin, end, amplicon_length,
+      tm_difference_primer, total_degeneracy, .before = "begin_fwd"
+    )
+    # Drop columns that we do no longer need
     drop <- c("majority_rc_fwd", "iupac_rc_fwd", "majority_rev", "iupac_rev")
     assays <- assays[, !(names(assays) %in% drop)]
     # Rename columns
     names(assays)[grep("_rc", names(assays))] <- c("majority_rev", "iupac_rev")
-    # Collect assays with correct amplicon length
-    assays <- assays[which(assays$amplicon_length >= min(length) & assays$amplicon_length <= max(length)), ]
-    assays <- assays[which(assays$tm_difference_primer <= max_tm_difference), ]
+    # Collect assays with desired amplicon length and tm difference
+    assays <- assays[assays$amplicon_length >= min(length), ]
+    assays <- assays[assays$amplicon_length <= max(length), ]
+    assays <- assays[assays$tm_difference_primer <= max_tm_difference, ]
     if (nrow(assays) == 0L)
         stop("No assays were found.", call. = FALSE)
-    assays <- dplyr::arrange(assays, begin)   ############################### combine match matrices!!!!!!!!!!!
+    # Combine match matrices and calculate match for the entire assay
+    assays <- combine_match_matrices(assays)
+    assays <- dplyr::arrange(assays, begin)
     assays <- tibble::new_tibble(assays, class = "rprimer_assay")
     return(assays)
 }
