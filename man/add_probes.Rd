@@ -29,7 +29,6 @@ primer pair. Thus, a negative Tm-difference
 means that the Tm of the probe is lower than the average Tm of the
 primer pair.
 
-#Warning
 The Tm-difference is calculated from the majority oligos, and
 may thus be misleading for degenerate (iupac) oligos.
 }

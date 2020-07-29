@@ -856,7 +856,7 @@ rp_save.rprimer_assay <- function(x, filename) {
 #' @return A html-report
 #'
 #' @details Details:
-#' rmarkdown and xxx are needed for this function.
+#' rmarkdown and kableExtra are needed for this function to work.
 #'
 #' @export
 write_report <- function(
@@ -880,7 +880,7 @@ write_report <- function(
     if (typeof(filename) != "character" || length(filename) != 1) {
       stop("filename must be a character vector of length one", call. = FALSE)
     }
-    if (!inherits(assay, "rprimer_assay")) {
+    if (!inherits(assay_selection, "rprimer_assay")) {
       stop(
         "An rprimer_assay object is expected for assay_selection", #### If several rows?
         call. = FALSE

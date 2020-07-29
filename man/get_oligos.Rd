@@ -6,6 +6,7 @@
 \usage{
 get_oligos(
   x,
+  target,
   length = 18:22,
   max_gap_frequency = 0.1,
   max_degenerates = 2,
@@ -16,8 +17,7 @@ get_oligos(
   gc_range = c(0.45, 0.55),
   tm_range = c(48, 70),
   conc_oligo = 5e-07,
-  conc_na = 0.05,
-  target
+  conc_na = 0.05
 )
 }
 \arguments{
@@ -97,12 +97,14 @@ The melting temperature is calculated using the nearest-neigbour method.
 Oligos are not expected to be self-complementary, so no symmetry
 correction is done.
 
-We assume that the oligo concentration is much higher
+The oligo concentration is assumed to be much higher
 than the target concentration.
 
 See references for table values and equations.
+}
 
-# Warning:
+\section{Note}{
+
 GC-content and Tm are calculated based on the majority oligos, and
 may thus be misleading for degenerate (iupac) oligos.
 }
@@ -110,6 +112,7 @@ may thus be misleading for degenerate (iupac) oligos.
 \examples{
 get_oligos <- function(
 example_rprimer_sequence_properties,
+target_alignment = example_rprimer_alignment,
 length = 18:22,
 max_gap_frequency = 0.1,
 max_degenerates = 2,
@@ -118,8 +121,7 @@ avoid_3end_ta = TRUE,
 avoid_5end_g = FALSE,
 avoid_3end_runs = TRUE,
 gc_range = c(0.45, 0.55),
-tm_range = c(48, 70),
-target_alignment = example_rprimer_alignment
+tm_range = c(48, 70)
 )
 
 }
@@ -128,7 +130,8 @@ Tm-calculation:
 
 SantaLucia, J, et al. (1996)
 Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
-Biochemistry, 35: 3555-3562 (Formula and salt correction are from here)
+Biochemistry, 35: 3555-3562 (Formula and salt correction method
+are from here)
 
 Allawi, H. & SantaLucia, J. (1997)
 Thermodynamics and NMR of Internal G·T Mismatches in DNA.

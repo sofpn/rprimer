@@ -7,9 +7,7 @@
 sequence_properties(x, iupac_threshold = 0)
 }
 \arguments{
-\item{x}{A nucleotide profile of class 'rprimer_sequence_profile', i.e.
-a numeric m x n matrix, where m is the number of nucleotides in the
-alignment, and n is the number of positions in the alignment.}
+\item{x}{A nucleotide profile of class 'rprimer_sequence_profile'.}
 
 \item{iupac_threshold}{A number between 0 and 0.2 (the default is 0).
 At each position, all nucleotides with a proportion
@@ -27,9 +25,9 @@ of DNA sequences.
 }
 \section{Majority consensus sequence}{
 
-The most frequently occuring base at each position.
+The most frequently occuring nucleotide.
 If two or more bases occur with the same frequency,
-the consensus base will be randomly selected among these bases.
+the consensus nucleotide will be randomly selected among these bases.
 }
 
 \section{IUPAC consensus sequence}{
@@ -50,7 +48,7 @@ Gaps are recognised as "-" in the sequence profile.
 \section{Identity}{
 
 The nucleotide identity is the proportion of
-the most common base at each position in the alignment. Gaps (-),
+the most common base. Gaps (-),
 as well as nucleotides other than a, c, g and t, are excluded from the
 calculation.
 }
@@ -58,8 +56,8 @@ calculation.
 \section{Shannon entropy}{
 
 Shannon entropy is a measurement of
-variability. First, for each nucleotide that occurs at the position in
-matter, \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
+variability. First, for each nucleotide that occurs at a specific position,
+\code{p*log2(p)}, is calculated, where \code{p} is the proportion of
 that nucleotide. Then, the shannon entropy is calculated by summarising
 these values for each nucleotide at the position in matter,
 followed by multiplication by \code{-1}.

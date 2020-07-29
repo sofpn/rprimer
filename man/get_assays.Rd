@@ -29,6 +29,5 @@ The Tm-difference is calculated from the majority oligos, and
 may thus be misleading for degenerate (iupac) oligos.
 }
 \examples{
-get_assays(example_rprimer_oligo, length = 60:150, max_tm_difference = 1)
-
+get_assays(example_rprimer_oligo, length = 60:150, max_tm_difference = 4)
 }

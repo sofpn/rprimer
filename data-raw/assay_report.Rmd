@@ -3,7 +3,6 @@ title: "Assay report"
 output: html_document
 params: 
   assay_selection: assay_selection
-  alignment: alignment
   sequence_profile: sequence_profile 
   sequence_properties: sequence_properties 
    
@@ -13,7 +12,7 @@ params:
 knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 ```
 <br><br>
-The assay was designed from an alignment of `r length(params$alignment)` sequences. The length of the alignment/region of interest was `r nchar(params$alignment[[1]])` nucleotides. The report was generated `r Sys.Date()`.
+The assay was designed from an alignment of `r "blah"` sequences. The length of the alignment/region of interest was `r "blah"` nucleotides. The report was generated `r Sys.Date()`.
 <br><br>
 ```{r}
 assay_report <- print_assay_report(params$assay_selection)
