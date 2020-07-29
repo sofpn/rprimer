@@ -643,12 +643,13 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
     )
     probe_candidates <- tibble::add_column(probe_candidates, sense)
     drop <- c("majority_rc", "iupac_rc")
-    probe_candidates <- probe_candidates[, !(names(probe_candidates) %in% drop)] ### Does this work?
+    probe_candidates <- probe_candidates[, !names(probe_candidates) %in% drop]
     names(probe_candidates) <- paste0(names(probe_candidates), "_pr")
     assays <- dplyr::bind_cols(assays, probe_candidates)
     assays$total_degeneracy <- assays$total_degeneracy + probe_candidates$degeneracy_pr
-    tm_difference_primer_probe <- purrr::map_dbl(seq_len(nrow(assays)), function(x) {
-      assays$tm_majority_pr[[x]] - mean(
+    tm_difference_primer_probe <- purrr::map_dbl(
+      seq_len(nrow(assays)), function(x) {
+        assays$tm_majority_pr[[x]] - mean(
         assays$tm_majority_fwd[[x]], assays$tm_majority_rev[[x]]
       )
     })
@@ -659,6 +660,7 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
     assays <- assays[assays$tm_difference_primer_probe <= max(tm_difference), ]
     if (nrow(assays) == 0L)
         stop("No assays could be generated.", call. = FALSE)
+    assays <- add_probe_to_match_matrix(assays)
     assays <- tibble::new_tibble(assays, class = "rprimer_assay")
     return(assays)
 }
@@ -726,7 +728,7 @@ rp_plot.rprimer_sequence_profile <- function(
         from <- 1
     if (is.null(to))
         to <- ncol(x)
-    if (!(is.numeric(from) && is.numeric(to) && length(from) == 1)) {
+    if (!(is.numeric(from) && is.numeric(to))) {
         stop("from and to must be numbers", call. = FALSE)
     }
     if (!(from <= ncol(x) && to <= ncol(x))) {
@@ -746,7 +748,7 @@ rp_plot.rprimer_sequence_profile <- function(
     selection <- x[, from:to]
     selection <- selection[which(rownames(selection) != "-"), ]
     if (rc == TRUE) {
-        selection <- selection[, ncol(selection):1]  # rev seq len instead
+        selection <- selection[, rev(seq_len(ncol(selection)))]
         rownames(selection) <- unname(complement_lookup[rownames(selection)])
     }
     sequence_barplot(selection)
@@ -789,7 +791,9 @@ rp_plot.rprimer_sequence_properties <- function(x, ...) {
 #' @export
 rp_save <- function(x, filename) {
     if (!is.character(filename) || length(filename) != 1) {
-        stop("filename must be a character vector of length one", call. = FALSE)
+        stop(
+          "filename must be a character vector of length one", call. = FALSE
+        )
     }
     object_name <- as.character(substitute(x))
     if (!exists(object_name)) {
@@ -841,16 +845,68 @@ rp_save.rprimer_assay <- function(x, filename) {
 
 #' Write assay report
 #'
+#' @param filename (a character vector of length one)
+#'
+#' @param assay_selection
+#'
+#' @param sequence_profile
+#'
+#' @param sequence_properties
+#'
+#' @return A html-report
+#'
+#' @details Details:
+#' rmarkdown and xxx are needed for this function.
+#'
 #' @export
-write_assay_report <- function(filename = "my_assay_report", assay_selection, alignment, sequence_profile, sequence_properties) {
+write_report <- function(
+  filename = "my_assay_report",
+  assay_selection,
+  sequence_profile,
+  sequence_properties
+  ) {
     if (!requireNamespace("rmarkdown", quietly = TRUE)) {
-        stop("rmkardown is needed for this function to work. Please install it.", call. = FALSE)
+        stop(
+          "rmkardown is needed for this function to work.
+          Please install it.", call. = FALSE
+        )
     }
     if (!requireNamespace("kableExtra", quietly = TRUE)) {
-        stop("kableExtra is needed for this function to work. Please install it.", call. = FALSE)
+      stop(
+          "kableExtra is needed for this function to work.
+          Please install it.", call. = FALSE
+         )
+     }
+    if (typeof(filename) != "character" || length(filename) != 1) {
+      stop("filename must be a character vector of length one", call. = FALSE)
+    }
+    if (!inherits(assay, "rprimer_assay")) {
+      stop(
+        "An rprimer_assay object is expected for assay_selection", #### If several rows?
+        call. = FALSE
+      )
+    }
+    if (!inherits(sequence_profile, "rprimer_sequence_profile")) {
+      stop(
+        "An rprimer_sequence_profile object is expected for sequence_profile",
+        call. = FALSE
+      )
+    }
+    if (!inherits(sequence_properties, "rprimer_sequence_properties")) {
+      stop(
+        "An rprimer_sequence_properties object is expected for
+        sequence_properties",
+        call. = FALSE
+      )
     }
     filename <- paste0(filename, ".html")
-    # if if if inputs
-    rmarkdown::render(input = "assay_report.Rmd", output_file = filename, params = list(assay_selection = assay_selection,
-        alignment = alignment, sequence_profile = sequence_profile, sequence_properties = sequence_properties))
+    rmarkdown::render(
+      input = "assay_report.Rmd",
+      output_file = filename,
+      params = list(
+        assay_selection = assay_selection,
+        sequence_profile = sequence_profile,
+        sequence_properties = sequence_properties
+      )
+    )
 }

@@ -1213,6 +1213,44 @@ combine_match_matrices <- function(x) {
   return(x)
 }
 
+# Context: Add probes =========================================================
+
+#' Add probes to match matrices
+#'
+#' @param x A tibble with assays (with probes)
+#'
+#' @return A tibble with assays, with information on perfect matches    #### Not tested!!!!
+#' for fwd and rev primers and probes combined.
+#'
+#' @noRd
+add_probe_to_match_matrix <- function(x) {
+  assays <- x$match_matrix
+  probe <-  x$match_matrix_pr
+  probe <- purrr::map(probe, function(x) {
+    colnames(x) <- paste0(colnames(x), "_pr"); x
+  })
+  match_matrix <- purrr::map(seq_len(nrow(x)), function(y) {
+    match <- cbind(assays[[y]], probe[[y]])
+    match <- match[ , -(5:6)]
+    majority_all <- rowSums(match[, c(1, 3, 5)])
+    iupac_all <- rowSums(match[, c(2, 4, 6)])
+    majority_all <- ifelse(majority_all == 3, TRUE, FALSE)
+    iupac_all <- ifelse(iupac_all == 3, TRUE, FALSE)
+    match <- cbind(match, majority_all, iupac_all)
+    return(match)
+  })
+  match_percentage <- purrr::map(match_matrix, ~ colMeans(.x[, 7:8]))
+  match_percentage <- do.call("rbind", match_percentage)
+  match_percentage <- tibble::as_tibble(match_percentage)
+  names(match_percentage) <- paste0("pm_", names(match_percentage))
+  drop <- c("match_matrix_pr", "match_matrix", "pm_majority_all", "pm_iupac_all")
+  x <- x[, !(names(x) %in% drop)]
+  x <- dplyr::bind_cols(x, match_percentage)
+  match_matrix <- tibble::tibble(match_matrix)
+  x <- dplyr::bind_cols(x, match_matrix)
+  return(x)
+}
+
 # Context: Plots ==============================================================
 
 #' Calculate running average
