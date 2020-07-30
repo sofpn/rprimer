@@ -18,6 +18,9 @@ rp_plot(x, ...)
 \arguments{
 \item{x}{An rprimer-object (see methods for details).}
 
+\item{...}{Additional arguments that should be passed to the plot, when
+plotting an object of class 'rprimer_sequence_profile'.}
+
 \item{from}{At which position the plot begins (an integer).}
 
 \item{to}{At which position the plot ends (an integer).}

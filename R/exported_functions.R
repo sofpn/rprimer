@@ -1,11 +1,8 @@
 #to do:
-#par mar changes globally rp plot sequence barplot i markdwn rep
-#add_match_matrix probe problem
 #document datasets
 #vignette
-#readme
+#readme github
 #read_fasdta_aln docum
-#kable_extra docum
 #non-tidy eval
 #pm om aln har hog gapfreq hur hantera (skriv detta i beskrivningen)
 
@@ -328,6 +325,9 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #'
 #' @param x an object of class 'rprimer_sequence_properties'.
 #'
+#' @param target The intended target. An alignment of DNA sequences
+#' (an object of class 'rprimer_alignment').
+#'
 #' @param max_gap_frequency Maximum allowed gap frequency.
 #' A number between 0 and 1 (default is 0.1, which means that
 #' positions with a gap frequency of maximum 0.1 will be
@@ -372,9 +372,6 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #' @param conc_na The sodium ion concentration in M, ranging
 #' from 0.01 M to 1 M. The default value is 0.05 M (50 mM)
 #' (for Tm calculation).
-#'
-#' @param target_alignment The intended target. An alignment of DNA sequences
-#' (an object of class 'rprimer_alignment').
 #'
 #' @section Excluded oligos:
 #' The function excludes oligos with
@@ -480,7 +477,7 @@ get_oligos <- function(
     stop("No oligos were found.", call. = FALSE)
   # Check match to targets
   all_oligos <- check_match(all_oligos, target)
-  all_oligos <- dplyr::arrange(all_oligos, begin)
+  all_oligos <- dplyr::arrange(all_oligos, "begin")
   all_oligos <- tibble::new_tibble(
     all_oligos, nrow = nrow(all_oligos), class = "rprimer_oligo"
   )
@@ -684,6 +681,9 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
 #'
 #' @param x An rprimer-object (see methods for details).
 #'
+#' @param ... Additional arguments that should be passed to the plot, when
+#' plotting an object of class 'rprimer_sequence_profile'.
+#'
 #' @return A plot.
 #'
 #' @examples
@@ -860,15 +860,16 @@ rp_save.rprimer_assay <- function(x, filename) {
 #'
 #' @param filename (a character vector of length one)
 #'
-#' @param assay_selection
+#' @param assay_selection An object of class 'rprimer_assay', with one row.
 #'
-#' @param sequence_profile
+#' @param sequence_profile An object of class 'rprimer_sequence_profile'.
 #'
-#' @param sequence_properties
+#' @param sequence_properties An object of class 'rprimer_sequence_properties.
 #'
-#' @param comment . The default is \code{NULL}
+#' @param comment Optional. Comments that should be included in the report.
+#' A character vector of length one. The default is \code{NULL}
 #'
-#' @return A html-report
+#' @return A html-document with detailed assay information.
 #'
 #' @details Details:
 #' rmarkdown and kableExtra are needed for this function to work.

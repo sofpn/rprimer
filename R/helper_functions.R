@@ -1,20 +1,5 @@
 # Utils =======================================================================
 
-#'  Round all doubles in a data frame
-#'
-#'  @param x A data frame/tibble.
-#'
-#'  @return A data frame/tibble where all vectors
-#'  of type 'double' have been rounded to two digits.
-#'
-#'  @noRd
-round_df_dbl <- function(x) {
-  dbls <- purrr::map_lgl(x, is.double)
-  dbls <- unname(dbls)
-  x[dbls] <- round(x[dbls], 2)
-  return(x)
-}
-
 #' Split sequence
 #'
 #' @param x A character vector of length one

@@ -23,6 +23,9 @@ get_oligos(
 \arguments{
 \item{x}{One or more DNA sequences (a character vector).}
 
+\item{target}{The intended target. An alignment of DNA sequences
+(an object of class 'rprimer_alignment').}
+
 \item{length}{Oligo length. The minimum allowed
 value is 6 and the maximum allowed value is 30.
 The default is \code{18:22}.}
@@ -65,9 +68,6 @@ The default value is 5e-07 M (500 nM) (for Tm calculation)}
 \item{conc_na}{The sodium ion concentration in M, ranging
 from 0.01 M to 1 M. The default value is 0.05 M (50 mM)
 (for Tm calculation).}
-
-\item{target_alignment}{The intended target. An alignment of DNA sequences
-(an object of class 'rprimer_alignment').}
 }
 \value{
 A tibble (a data frame) of class 'rprimer_oligo', with all oligo

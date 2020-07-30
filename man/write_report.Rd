@@ -15,16 +15,17 @@ write_report(
 \arguments{
 \item{filename}{(a character vector of length one)}
 
-\item{assay_selection}{}
+\item{assay_selection}{An object of class 'rprimer_assay', with one row.}
 
-\item{sequence_profile}{}
+\item{sequence_profile}{An object of class 'rprimer_sequence_profile'.}
 
-\item{sequence_properties}{}
+\item{sequence_properties}{An object of class 'rprimer_sequence_properties.}
 
-\item{comment}{. The default is \code{NULL}}
+\item{comment}{Optional. Comments that should be included in the report.
+A character vector of length one. The default is \code{NULL}}
 }
 \value{
-A html-report
+A html-document with detailed assay information.
 }
 \description{
 Write assay report
