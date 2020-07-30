@@ -1,5 +1,5 @@
 ---
-title: "Assay report"
+title: "Design report (rprimer)"
 output: html_document
 params: 
   assay_selection: assay_selection
@@ -182,9 +182,10 @@ plot_match_matrix <- function(assay_selection) {
 **Report generated:** `r Sys.Date()`
 <br>
 **Comment:** `r params$comment`
-<br>
-**Details**: Melting temperatures (Tm) are calculated using the nearest-neighbor method (see `r ?rprimer::find_oligos` for details).
 <br><br>
+
+### Assay information 
+
 ```{r}
 assay_report <- print_assay_report(params$assay_selection)
 ```
@@ -201,7 +202,7 @@ plot_assay_details(params$sequence_profile, params$assay_selection)
 <br><br>
 **Fig. 2.** Proportion of each nucleotide in the alignment at the oligo binding sites. Sequences are displayed from 5'- to 3'-end. 
 <br><br>
-**Table 1**. Assay info. Begin: Where the assay region starts (with regards to the alignment/region of interest), End: Where the assay region ends. Tm difference, primers: Tm difference between the two primers (absolute value, in C). Tm difference, probe-primers: The Tm of the probe subtracted by the average Tm of the primer pair. Note that the Tm-differences are calculated from majority oligos. They may therefore be misleading for degenerate (IUPAC) oligos. Degeneracy; total number of oligo variants in the assay.  
+**Table 1**. Assay info. Begin: Where the assay region starts (with regards to the alignment/region of interest), End: Where the assay region ends. Tm difference, primers: Tm difference between the two primers (absolute value, in C). Tm difference, probe-primers: Tm of the probe subtracted by the average Tm of the primer pair. Note that tm-differences are calculated from majority oligos and may therefore be misleading for degenerate (IUPAC) oligos. Degeneracy; total number of oligo variants in the assay. Perfect match; *proportion* of perfectly matching sequences. 
 <br>
 ```{r}
 # Customise table options 
@@ -223,7 +224,8 @@ custom_table(
 )
 ```
 <br>
-**Table 2.** Forward primer, summary. 
+**Table 2.** Forward primer, summary.
+<br>
 ```{r}
 custom_table(
   assay_report[[1]]$forward, 
@@ -235,6 +237,7 @@ custom_table(
 ```
 <br>
 **Table 3.** Forward primer, all variants.   
+<br>
 ```{r}
 custom_table(
   assay_report[[2]]$fwd$all_variants,
@@ -243,13 +246,15 @@ custom_table(
 ```
 <br>
 **Table 4.** Forward primer, mean values. 
+<br>
 ```{r}
 custom_table(
   assay_report[[2]]$fwd$mean_values, col.names = "", full_width = FALSE
 )
 ```
 <br>
-**Table 5.** Reverse primer, summary. 
+**Table 5.** Reverse primer, summary.
+<br>
 ```{r}
 custom_table(
   assay_report[[1]]$reverse, 
@@ -261,6 +266,7 @@ custom_table(
 ```
 <br>
 **Table 6.** Reverse primer, all variants. 
+<br>
 ```{r}
 custom_table(
   assay_report[[2]]$rev$all_variants,
@@ -270,6 +276,7 @@ custom_table(
 ```
 <br>
 **Table 7.** Reverse primer, mean values.
+<br>
 ```{r}
 custom_table(
   assay_report[[2]]$rev$mean_values, col.names = "", full_width = FALSE
@@ -277,6 +284,7 @@ custom_table(
 ```
 <br>
 **Table 8.** Probe, summary. 
+<br>
 ```{r}
 has_probe <- any(grepl("probe", names(assay_report[[1]])))
 
@@ -286,14 +294,15 @@ custom_table(
   col.names = c(
     "Begin", "End", "Length", "Sequence (majority)", 
     "Sequence (IUPAC)", "Degenerates", "Degeneracy", "GC-content (majority)", 
-    "Tm (majority)", "Sense", "Perfect matches (majority)", 
-    "Perfect matches (IUPAC)"
+    "Tm (majority)", "Perfect matches (majority)", 
+    "Perfect matches (IUPAC)", "Sense"
   )
 )
 }
 ```
 <br>
 **Table 9.** Probe, all variants. 
+<br>
 ```{r}
 if (has_probe) {
   custom_table(
@@ -304,6 +313,7 @@ if (has_probe) {
 ```
 <br>
 **Table 10.** Probe, mean values. 
+<br>
 ```{r}
 if (has_probe) {
  custom_table(
@@ -311,9 +321,19 @@ if (has_probe) {
  )
 }
 ```
+<br>
+
+### Target information
+<br>
+Amplicon GC-content (in consensus sequence): `r round(gc_content(paste(sequence_properties$majority[assay_report[[1]]$general$begin:assay_report[[1]]$general$end], collapse = "")), 2)*100` %.
 <br><br>
 ```{r, fig.width=12, fig.height=12}
 plot_match_matrix(assay_selection)
 ```
 <br><br>
-**Fig. 3** Matching and mismatching sequences. 
+**Fig. 3.** Matching and mismatching target sequences.
+<br><br>
+The assay was designed from the following target sequences: 
+<br><br>
+`r rownames(assay_selection$match_matrix[[1]])`.
+

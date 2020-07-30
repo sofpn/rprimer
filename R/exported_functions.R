@@ -6,6 +6,8 @@
 #readme
 #read_fasdta_aln docum
 #kable_extra docum
+#non-tidy eval
+#pm om aln har hog gapfreq hur hantera (skriv detta i beskrivningen)
 
 # Import alignment ============================================================
 
@@ -900,13 +902,13 @@ write_report <- function(
         call. = FALSE
       )
     }
-    if (!inherits(sequence_profile, "rprimer_sequence_profile.")) {
+    if (!inherits(sequence_profile, "rprimer_sequence_profile")) {
       stop(
         "An rprimer_sequence_profile object is expected for sequence_profile.",
         call. = FALSE
       )
     }
-    if (!inherits(sequence_properties, "rprimer_sequence_properties.")) {
+    if (!inherits(sequence_properties, "rprimer_sequence_properties")) {
       stop(
         "An rprimer_sequence_properties object is expected for
         sequence_properties.",
