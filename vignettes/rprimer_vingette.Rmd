@@ -44,6 +44,7 @@ my_sequence_properties <- sequence_properties(
 # Get primers and probes 
 my_primers <- get_oligos(
   my_sequence_properties, # Enter primer design criteria 
+  target = my_alignment,
   max_gap_frequency = 0.01, 
   length = 18:22,
   max_degenerates = 1, # Maximum number of degenerate positions in each primer 
@@ -58,7 +59,8 @@ my_primers <- get_oligos(
 )
 
 my_probes <- get_oligos(
-  my_sequence_properties,  # Enter probe design criteria 
+  my_sequence_properties, # Enter probe design criteria 
+  target = my_alignment,
   max_gap_frequency = 0.01,
   length = 18:24,
   max_degenerates = 1,
@@ -74,8 +76,7 @@ my_probes <- get_oligos(
 
 # Get assays from primers and probes
 my_assays <- get_assays(my_primers, length = 65:120, max_tm_difference = 1.5) %>%
-  add_probes(., my_probes, tm_difference = c(-2, 10)) %>%
-  check_match(., my_alignment) # Check if the assays match their targets
+  add_probes(., my_probes, tm_difference = c(-2, 10))  
 
 # Save all assay candidates 
 # rp_save(my_assays, filename = "my_assays")

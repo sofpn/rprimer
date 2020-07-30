@@ -8,7 +8,8 @@ write_report(
   filename = "my_assay_report",
   assay_selection,
   sequence_profile,
-  sequence_properties
+  sequence_properties,
+  comment = NULL
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ write_report(
 \item{sequence_profile}{}
 
 \item{sequence_properties}{}
+
+\item{comment}{. The default is \code{NULL}}
 }
 \value{
 A html-report
@@ -28,5 +31,5 @@ Write assay report
 }
 \details{
 Details:
-rmarkdown and xxx are needed for this function.
+rmarkdown and kableExtra are needed for this function to work.
 }

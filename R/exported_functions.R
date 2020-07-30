@@ -1,4 +1,11 @@
+#to do:
 #par mar changes globally rp plot sequence barplot i markdwn rep
+#add_match_matrix probe problem
+#document datasets
+#vignette
+#readme
+#read_fasdta_aln docum
+#kable_extra docum
 
 # Import alignment ============================================================
 
@@ -857,7 +864,7 @@ rp_save.rprimer_assay <- function(x, filename) {
 #'
 #' @param sequence_properties
 #'
-#' @param comment
+#' @param comment . The default is \code{NULL}
 #'
 #' @return A html-report
 #'
@@ -869,7 +876,8 @@ write_report <- function(
   filename = "my_assay_report",
   assay_selection,
   sequence_profile,
-  sequence_properties
+  sequence_properties,
+  comment = NULL
   ) {
     if (!requireNamespace("rmarkdown", quietly = TRUE)) {
         stop(
@@ -884,26 +892,30 @@ write_report <- function(
          )
      }
     if (typeof(filename) != "character" || length(filename) != 1) {
-      stop("filename must be a character vector of length one", call. = FALSE)
+      stop("filename must be a character vector of length one.", call. = FALSE)
     }
     if (!inherits(assay_selection, "rprimer_assay")) {
       stop(
-        "An rprimer_assay object is expected for assay_selection", #### If several rows?
+        "An rprimer_assay object is expected for assay_selection.", #### If several rows?
         call. = FALSE
       )
     }
-    if (!inherits(sequence_profile, "rprimer_sequence_profile")) {
+    if (!inherits(sequence_profile, "rprimer_sequence_profile.")) {
       stop(
-        "An rprimer_sequence_profile object is expected for sequence_profile",
+        "An rprimer_sequence_profile object is expected for sequence_profile.",
         call. = FALSE
       )
     }
-    if (!inherits(sequence_properties, "rprimer_sequence_properties")) {
+    if (!inherits(sequence_properties, "rprimer_sequence_properties.")) {
       stop(
         "An rprimer_sequence_properties object is expected for
-        sequence_properties",
+        sequence_properties.",
         call. = FALSE
       )
+    if (is.null(comment)) comment <- ""
+    if (!is.character(comment)) {
+      stop("comment must be a character vector of length one.")
+    }
     }
     filename <- paste0(filename, ".html")
     rmarkdown::render(
@@ -913,7 +925,7 @@ write_report <- function(
         assay_selection = assay_selection,
         sequence_profile = sequence_profile,
         sequence_properties = sequence_properties,
-        comment = "enter comment here"
+        comment = comment
       )
     )
 }

@@ -15,7 +15,7 @@ The alignment from the input
 file (a named list with class attribute 'rprimer_alignment').
 Each object (DNA sequence) will have the same name as its
 sequence name in the input file, except for the '>' symbol.
-Sequencees are will be presented as character vectors of length one,
+Sequences are will be presented as character vectors of length one,
 in lowercase format.
 }
 \description{
@@ -32,6 +32,9 @@ and the minimum length of the alignment is 200.
 Valid nucleotides are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
 n', 'h', 'd', 'v', 'b' and '-'. The alignment can be in either
 upper- or lowercase format.
+}
+\note{
+This function is based on ##########################################
 }
 \examples{
 read_fasta_alignment(

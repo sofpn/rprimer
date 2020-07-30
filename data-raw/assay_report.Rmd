@@ -11,6 +11,168 @@ params:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
+
+# Custom functions needed to generate this report 
+
+# x - a DNA sequence (e.g. "cggttrt")
+expand_degenerate <- function(x) {
+  x <- split_sequence(x)
+  # Go through each base of the DNA sequence
+  expanded <- purrr::map(x, function(i) {
+    # Check which bases the IUPAC base at position i correspond to
+    all_bases <- unname(degenerate_lookup[[i]])
+    all_bases <- unlist(strsplit(all_bases, split = ","))
+    return(all_bases)
+  })
+  # Get all possible combinations of DNA sequences
+  expanded <- expand.grid(
+    expanded[seq_along(expanded)], stringsAsFactors = FALSE
+  )
+  expanded <- purrr::map(
+    seq_len(nrow(expanded)), ~paste(expanded[.x, ], collapse = "")
+  )
+  expanded <- unlist(expanded, use.names = FALSE)
+  return(expanded)
+}
+
+# x - an object of class rprimer_assay (one row)
+print_assay_report <- function(x) {
+  x <- x[which(!grepl("match_matrix", names(x)))]
+  all <- x[which(!grepl("_fwd$|_rev$|_pr$", names(x)))]
+  names(all) <- gsub("_all$", "", names(all))
+  fwd <- x[which(grepl("_fwd$", names(x)))]
+  names(fwd) <- gsub("_fwd$", "", names(fwd))
+  rev <- x[which(grepl("_rev$", names(x)))]
+  names(rev) <- gsub("_rev$", "", names(rev))
+  if (any(grepl("_pr", names(x)))) {
+    pr <- x[which(grepl("_pr$", names(x)))]
+    names(pr) <- gsub("_pr$", "", names(pr))
+    assay <- list(general = all, forward = fwd, reverse = rev, probe = pr)
+  } else {
+    assay <- list(general = all, forward = fwd, reverse = rev)
+  }
+  iupac_oligos <- x[grep("^iupac", names(x))]
+  names(iupac_oligos) <- gsub("iupac_", "", names(iupac_oligos))
+  degenerates <- purrr::map(iupac_oligos, function(x) {
+    variant <- expand_degenerate(x)
+    gc_content <- purrr::map_dbl(variant, ~gc_content(.x))
+    tm <- tm(variant)
+    table <- tibble::tibble(variant, gc_content, tm)
+    mean_values <- round(c(gc_content = mean(gc_content), tm = mean(tm)), 2)
+    return(list(all_variants = table, mean_values = mean_values))
+  })
+  return(list(assay, degenerates))
+}
+
+# x - an object of class rprimer_sequence_properties 
+# y - an object of class rprimer_assay (one row)
+plot_assay_overview <- function(x, y) {
+    op <- par(
+      mfrow = c(4, 1), mai = c(0.1, 1, 0.1, 1),
+      xpd = FALSE, oma = c(4, 0, 1, 0), mar = c(0.2, 4.1, 0.2, 2.1)
+    )
+    on.exit(par(op))
+    sequence_detail_plot(x)
+    rectangle(y$begin_fwd, y$end_fwd)
+    rectangle(y$begin_rev, y$end_rev)
+    if (any(grepl("_pr$", names(x))))
+        rectangle(y$begin_pr, y$end_pr)
+}
+
+# x - an object of class rprimer_sequence_profile 
+# y - an object of class rprimer_assay (one row)
+plot_assay_details <- function(x, y) {
+  x <- x[which(rownames(x) != "-"), ]
+  fwd <- x[, y$begin_fwd:y$end_fwd] #seq_len
+  rev <- x[, y$begin_rev:y$end_rev] #seq-len
+  rev <- rev[, ncol(rev):1]
+  rownames(rev) <- unname(complement_lookup[rownames(rev)])
+  if (any(grepl("_pr", names(y)))) {
+    pr <- x[, y$begin_pr:y$end_pr]
+    if (y$sense_pr == "neg") {
+      pr <- pr[, ncol(pr):1]
+      rownames(pr) <- unname(complement_lookup[rownames(pr)])
+    }
+  }
+  if (any(grepl("_pr", names(y)))) {
+    op <- par(mar = c(0.75, 4.57, 4.57, 0.75), mfrow = c(1, 3))
+    on.exit(par(op))
+    sequence_barplot(fwd, main = "forward")
+    sequence_barplot(rev, main = "reverse")
+    sequence_barplot(pr, main = "probe")
+  } else {
+    op <- par(mar = c(0.75, 4.57, 4.57, 0.75), mfrow = c(1, 2))
+    on.exit(par(op))
+    sequence_barplot(fwd, main = "forward")
+    sequence_barplot(rev, main = "reverse")
+  }
+}
+
+# x - a matrix 
+split_matrix <- function(x) {
+  n <- nrow(x)
+  out <- split.data.frame(x, rep(seq_len(ceiling(n/100)), each = 50)[1:n])
+  return(out)
+}
+
+# x - an object of class rprimer_assay (one row)
+plot_match_matrix <- function(assay_selection) {
+  x <- assay_selection$match_matrix[[1]]
+  # Convert from logical to integer
+  x[] <- as.integer(x)
+  # Remove columns with "all"
+  x <- x[ , !grepl("_all", colnames(x))]
+  colnames(x) <- gsub("match_", "", colnames(x))
+  # Split the matrix to several matrices to make neater plots
+  matrices <- split_matrix(x)
+  purrr::walk(matrices, function(x) {
+    # Make subsets, one with majority and one with IUPAC
+    majority <- x[, grepl("majority", colnames(x))]
+    colnames(majority) <- gsub("majority_", "", colnames(majority))
+    iupac <- x[, grepl("iupac", colnames(x))]
+    colnames(iupac) <- gsub("iupac_", "", colnames(iupac))
+    # Set plot colors
+    colors <- c(mismatch = "#E07A5F", match = "#81B29A")
+    # Set plot layout
+    layout(
+      matrix(data = c(1, 2, 3), nrow = 1, ncol = 3),
+      widths = c(0.6, 0.6, 0.2), heights = c(1, 1)
+    )
+    # Plot majority
+    op <- par(mar = c(3, 5, 3, 3))
+    on.exit(par(op))
+    image(
+      seq_along(colnames(majority)), seq_along(rownames(majority)), t(majority),
+      col = colors, xlab = "", ylab = "", axes = FALSE, main = "Majority"
+    )
+    axis(
+      side = 1, at = seq_along(colnames(majority)),
+      labels = colnames(majority), cex.axis = 1, tick = FALSE
+    )
+    axis(
+      side = 2, at = seq_along(rownames(x)), labels = rownames(x), las = 1,
+      cex.axis = 0.7, tick = FALSE
+    )
+    # Plot IUPAC
+    image(
+      seq_along(colnames(iupac)), seq_along(rownames(iupac)), t(iupac),
+      col = colors, xlab = "", ylab = "", axes = FALSE, main = "IUPAC"
+    )
+    axis(
+      side = 1, at = seq_along(colnames(iupac)),
+      labels = colnames(iupac), cex.axis = 1, tick = FALSE
+    )
+    op <- par(mar = c(3, 1, 3, 3))
+    on.exit(par(op))
+    # Add a legend
+    image(matrix(-4:5, ncol = 10, nrow = 1),
+          col = c(rep("white", 4), colors, rep("white", 4)),
+          axes = FALSE, xlab = "", ylab = ""
+    )
+    text(0, 0.45, "mismatch", cex = 1)
+    text(0, 0.55, "match", cex = 1)
+  })
+}
 ```
 <br><br>
 **Alignment size:** `r nrow(assay_selection$match_matrix[[1]])` sequences
@@ -20,24 +182,26 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 **Report generated:** `r Sys.Date()`
 <br>
 **Comment:** `r params$comment`
+<br>
+**Details**: Melting temperatures (Tm) are calculated using the nearest-neighbor method (see `r ?rprimer::find_oligos` for details).
 <br><br>
 ```{r}
 assay_report <- print_assay_report(params$assay_selection)
 ```
 
 ```{r, fig.width=12, fig.height=8}
-assay_overview_plot(params$sequence_properties, params$assay_selection)
+plot_assay_overview(params$sequence_properties, params$assay_selection)
 ```
 <br><br>
 **Fig. 1.** Overview of the alignment/region of interest used for assay design, with the assay region indicated in blue. Identity: Proportion of the most frequently occuring base. Entropy: Shannon entropy, a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. GC: GC-content. Gaps: Proportion of gaps. Vertical bars represent the value at each position. Black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent centered running averages.   
 <br><br>
 ```{r, fig.width=12, fig.height=6}
-assay_detail_plot(params$sequence_profile, params$assay_selection)
+plot_assay_details(params$sequence_profile, params$assay_selection)
 ```
 <br><br>
 **Fig. 2.** Proportion of each nucleotide in the alignment at the oligo binding sites. Sequences are displayed from 5'- to 3'-end. 
 <br><br>
-**Table 1**. Assay info. Begin: Where the assay region starts (with regards to the alignment), End: Where the assay region ends. Tm difference, primers: Tm difference between the two primers (absolute value, in C). Tm difference, probe-primers: The Tm of the probe subtracted by the average Tm of the primer pair. Note that the Tm-differences are calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos. Degeneracy; total number of oligo variants in the assay.  
+**Table 1**. Assay info. Begin: Where the assay region starts (with regards to the alignment/region of interest), End: Where the assay region ends. Tm difference, primers: Tm difference between the two primers (absolute value, in C). Tm difference, probe-primers: The Tm of the probe subtracted by the average Tm of the primer pair. Note that the Tm-differences are calculated from majority oligos. They may therefore be misleading for degenerate (IUPAC) oligos. Degeneracy; total number of oligo variants in the assay.  
 <br>
 ```{r}
 # Customise table options 
@@ -152,4 +316,4 @@ if (has_probe) {
 plot_match_matrix(assay_selection)
 ```
 <br><br>
-**Fig. 3** Match reports. 
+**Fig. 3** Matching and mismatching sequences. 
