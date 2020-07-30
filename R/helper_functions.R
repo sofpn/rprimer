@@ -1475,12 +1475,8 @@ expand_degenerate <- function(x) {
 
 
 print_assay_report <- function(x) {
-    # x rprimer assay obj - one row
-    if (any(grepl("match_matrix", names(x)))) {
-        return(list(print_assay(x), print_degenerates(x), print_match_matrix(x$match_matrix[[1]])))
-    } else {
-        return(list(print_assay(x), print_degenerates(x)))
-    }
+  # x rprimer assay obj - one row
+  return(list(print_assay(x), print_degenerates(x))) ################################### obsolete?!
 }
 
 assay_detail_plot <- function(x, y) {
@@ -1526,14 +1522,24 @@ assay_overview_plot <- function(x, y) {
 }
 
 
+#' Split a matrix into 50-sized chunks
+#'
+#' @param x A matrix.
+#'
+#' @return Several matrices.
+#'
+#' @noRd
+split_matrix <- function(x) {
+  n <- nrow(x)
+  out <- split.data.frame(x, rep(seq_len(ceiling(n/100)), each = 50)[1:n])
+  return(out)
+}
 
 #' Plot a match matrix
 #'
 #' @param assay_selection An object of class 'rprimer_assay', with only one row
 #'
 #' @return A visual representation of the match matrix
-#'
-#' @note This plot was inspired from the ############ package
 #'
 #' @noRd
 plot_match_matrix <- function(assay_selection) {
@@ -1543,57 +1549,60 @@ plot_match_matrix <- function(assay_selection) {
   # Remove columns with "all"
   x <- x[ , !grepl("_all", colnames(x))]
   colnames(x) <- gsub("match_", "", colnames(x))
-  # Make subsets, one with majority and one with IUPAC
-  majority <- x[, grepl("majority", colnames(x))]
-  colnames(majority) <- gsub("majority_", "", colnames(majority))
-  iupac <- x[, grepl("iupac", colnames(x))]
-  colnames(iupac) <- gsub("iupac_", "", colnames(iupac))
-  # Set plot colors
-  colors <- c(mismatch = "#E07A5F", match = "#81B29A")
-  # Set plot layout
-  layout(
-    matrix(data = c(1, 2, 3), nrow = 1, ncol = 3),
-    widths = c(0.6, 0.6, 0.2), heights = c(1, 1)
-  )
-  # Plot majority
-  image(
-    seq_along(colnames(majority)), seq_along(rownames(majority)), t(majority),
-    col = colors, xlab = "", ylab = "", axes = FALSE, main = "Majority"
-  )
-  axis(
-    side = 1, at = seq_along(colnames(majority)),
-    labels = colnames(majority), cex.axis = 1, tick = FALSE
-  )
-  axis(
-    side = 2, at = seq_along(rownames(x)), labels = rownames(x), las = 1,
-    cex.axis = 0.3, tick = FALSE
-  )
-  # Plot IUPAC
-  image(
-    seq_along(colnames(iupac)), seq_along(rownames(iupac)), t(iupac),
-    col = colors, xlab = "", ylab = "", axes = FALSE, main = "IUPAC"
-  )
-  axis(
-    side = 1, at = seq_along(colnames(iupac)),
-    labels = colnames(iupac), cex.axis = 1, tick = FALSE
-  )
-  op <- par(mar = c(3, 1, 3, 3))
-  on.exit(par(op))
-  # Add a legend
-  image(matrix(-4:5, ncol = 10, nrow = 1),
-        col = c(rep("white", 4), colors, rep("white", 4)),
-        axes = FALSE, xlab = "", ylab = ""
-  )
-  text(0, 0.45, "mismatch", cex = 0.8)
-  text(0, 0.55, "match", cex = 0.8)
+  # Split the matrix to several matrices to make neater plots
+  matrices <- split_matrix(x)
+  purrr::walk(matrices, function(x) {
+    # Make subsets, one with majority and one with IUPAC
+    majority <- x[, grepl("majority", colnames(x))]
+    colnames(majority) <- gsub("majority_", "", colnames(majority))
+    iupac <- x[, grepl("iupac", colnames(x))]
+    colnames(iupac) <- gsub("iupac_", "", colnames(iupac))
+    # Set plot colors
+    colors <- c(mismatch = "#E07A5F", match = "#81B29A")
+    # Set plot layout
+    layout(
+      matrix(data = c(1, 2, 3), nrow = 1, ncol = 3),
+      widths = c(0.6, 0.6, 0.2), heights = c(1, 1)
+    )
+    # Plot majority
+    op <- par(mar = c(3, 5, 3, 3))
+    on.exit(par(op))
+    image(
+      seq_along(colnames(majority)), seq_along(rownames(majority)), t(majority),
+      col = colors, xlab = "", ylab = "", axes = FALSE, main = "Majority"
+    )
+    axis(
+      side = 1, at = seq_along(colnames(majority)),
+      labels = colnames(majority), cex.axis = 1, tick = FALSE
+    )
+    axis(
+      side = 2, at = seq_along(rownames(x)), labels = rownames(x), las = 1,
+      cex.axis = 0.7, tick = FALSE
+    )
+    # Plot IUPAC
+    image(
+      seq_along(colnames(iupac)), seq_along(rownames(iupac)), t(iupac),
+      col = colors, xlab = "", ylab = "", axes = FALSE, main = "IUPAC"
+    )
+    axis(
+      side = 1, at = seq_along(colnames(iupac)),
+      labels = colnames(iupac), cex.axis = 1, tick = FALSE
+    )
+    op <- par(mar = c(3, 1, 3, 3))
+    on.exit(par(op))
+    # Add a legend
+    image(matrix(-4:5, ncol = 10, nrow = 1),
+          col = c(rep("white", 4), colors, rep("white", 4)),
+          axes = FALSE, xlab = "", ylab = ""
+    )
+    text(0, 0.45, "mismatch", cex = 1)
+    text(0, 0.55, "match", cex = 1)
+  })
 }
-
 
 print_assay <- function(x) {
     # x assay object (one row)
-    if (any(grepl("match_matrix", names(x)))) {
-        x <- x[which(!grepl("match_matrix", names(x)))]
-    }
+    x <- x[which(!grepl("match_matrix", names(x)))]
     all <- x[which(!grepl("_fwd$|_rev$|_pr$", names(x)))]
     names(all) <- gsub("_all$", "", names(all))
     fwd <- x[which(grepl("_fwd$", names(x)))]
@@ -1624,32 +1633,4 @@ print_degenerates <- function(x) {
     })
     return(to_print)
 }
-
-print_match_matrix <- function(x) {
-    # assay obj (one row)
-    iupac <- x[, grep("iupac", colnames(x))]
-    majority <- x[, grep("majority", colnames(x))]
-    pm_majority <- majority[, which(colnames(majority) == "majority_all")]
-    pm_majority <- names(pm_majority)[which(pm_majority == TRUE)]
-    if (length(pm_majority) != 0) {
-        to_remove_majority <- match(pm_majority, rownames(majority))
-        mm_majority <- majority[-to_remove_majority, -ncol(majority)]
-    } else {
-        mm_majority <- majority
-    }
-    colnames(mm_majority) <- gsub("iupac", "", colnames(mm_majority))
-    pm_iupac <- iupac[, which(colnames(iupac) == "iupac_all")]
-    pm_iupac <- names(pm_iupac)[which(pm_iupac == TRUE)]
-    if (length(pm_majority) != 0) {
-        to_remove_iupac <- match(pm_iupac, rownames(iupac))
-        mm_iupac <- iupac[-to_remove_iupac, -ncol(iupac)]
-    } else {
-        mm_iupac <- iupac
-    }
-    colnames(mm_iupac) <- gsub("majority", "", colnames(mm_iupac))
-    result <- list(matches_perfectly_majority = pm_majority, mismatches_majority = mm_majority, matches_perfectly_iupac = pm_iupac,
-        mismatches_iupac = mm_iupac)
-    return(result)
-}
-
 

@@ -4,7 +4,8 @@ output: html_document
 params: 
   assay_selection: assay_selection
   sequence_profile: sequence_profile 
-  sequence_properties: sequence_properties 
+  sequence_properties: sequence_properties
+  comment: comment  
    
 ---
 
@@ -12,7 +13,13 @@ params:
 knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 ```
 <br><br>
-The assay was designed from an alignment of `r "blah"` sequences. The length of the alignment/region of interest was `r "blah"` nucleotides. The report was generated `r Sys.Date()`.
+**Alignment size:** `r nrow(assay_selection$match_matrix[[1]])` sequences
+<br>
+**Length of alignment/region of interest:** `r ncol(sequence_profile)` nucleotides
+<br>
+**Report generated:** `r Sys.Date()`
+<br>
+**Comment:** `r params$comment`
 <br><br>
 ```{r}
 assay_report <- print_assay_report(params$assay_selection)
@@ -33,118 +40,116 @@ assay_detail_plot(params$sequence_profile, params$assay_selection)
 **Table 1**. Assay info. Begin: Where the assay region starts (with regards to the alignment), End: Where the assay region ends. Tm difference, primers: Tm difference between the two primers (absolute value, in C). Tm difference, probe-primers: The Tm of the probe subtracted by the average Tm of the primer pair. Note that the Tm-differences are calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos. Degeneracy; total number of oligo variants in the assay.  
 <br>
 ```{r}
-if (any(grepl("^pm_", names(assay_report[[1]][[1]])))) {
-  knitr::kable(assay_report[[1]]$general, "html", digits = 2, col.names = c("Begin", "End", "Amplicon length", "Tm difference, primers", "Tm difference, probe-primers", "Degeneracy", "Perfect match (majority)", "Perfect match (IUPAC)")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), font_size = 11, full_width = TRUE)
-} else {
-  knitr::kable(assay_report[[1]]$general, "html", digits = 2, col.names = c("Begin", "End", "Amplicon length", "Tm difference, primers", "Tm difference, probe-primers", "Degeneracy")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), font_size = 11, full_width = TRUE)
+# Customise table options 
+custom_table <- function(x, col.names, full_width = TRUE) {
+  knitr::kable(x, "html", digits = 2, col.names = col.names, align = "l") %>%
+    kableExtra::kable_styling(
+      bootstrap_options = "basic", position = "left", 
+      font_size = 11, full_width = full_width
+    )
 }
+
+custom_table(
+  assay_report[[1]]$general, 
+  col.names = c(
+    "Begin", "End", "Amplicon length", "Tm difference, primers", 
+    "Tm difference, probe-primers", "Degeneracy", "Perfect match (majority)", 
+    "Perfect match (IUPAC)"
+  )
+)
 ```
 <br>
 **Table 2.** Forward primer, summary. 
 ```{r}
-if (any(grepl("^pm_", names(assay_report[[1]][[1]])))) {
-knitr::kable(assay_report[[1]]$forward, digits = 2, col.names = c("Begin", "End", "Length", "Sequence (majority)", "Sequence (IUPAC)", "Degenerates", "Degeneracy", "GC-content (majority)", "Tm (majority)", "Perfect matches (majority)", "Perfect matches (IUPAC)")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), font_size = 11, full_width = TRUE)
-} else {
-knitr::kable(assay_report[[1]]$forward, digits = 2, col.names = c("Begin", "End", "Length", "Sequence (majority)", "Sequence (IUPAC)", "Degenerates", "Degeneracy", "GC-content (majority)", "Tm (majority)")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), font_size = 11, full_width = TRUE)
-}
+custom_table(
+  assay_report[[1]]$forward, 
+  col.names = c(
+    "Begin", "End", "Length", "Sequence (majority)", "Sequence (IUPAC)", 
+    "Degenerates", "Degeneracy", "GC-content (majority)", "Tm (majority)", 
+    "Perfect matches (majority)", "Perfect matches (IUPAC)")
+)
 ```
 <br>
 **Table 3.** Forward primer, all variants.   
 ```{r}
-knitr::kable(assay_report[[2]]$fwd$all_variants, digits = 2, align = "l", col.names = c("Variant", "GC-content", "Tm")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), position = "left", font_size = 11, full_width = FALSE)
+custom_table(
+  assay_report[[2]]$fwd$all_variants,
+  col.names = c("Variant", "GC-content", "Tm"), full_width = FALSE
+)
 ```
 <br>
 **Table 4.** Forward primer, mean values. 
 ```{r}
-knitr::kable(assay_report[[2]]$fwd$mean_values, digits = 2, align = "l", col.names = "") %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), position = "left", font_size = 11, full_width = FALSE)
+custom_table(
+  assay_report[[2]]$fwd$mean_values, col.names = "", full_width = FALSE
+)
 ```
 <br>
 **Table 5.** Reverse primer, summary. 
 ```{r}
-if (any(grepl("^pm_", names(assay_report[[1]][[1]])))) {
-knitr::kable(assay_report[[1]]$reverse, digits = 2, col.names = c("Begin", "End", "Length", "Sequence (majority)", "Sequence (IUPAC)", "Degenerates", "Degeneracy", "GC-content (majority)", "Tm (majority)", "Perfect matches (majority)", "Perfect matches (IUPAC)")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), font_size = 11, full_width = TRUE)
-} else {
-knitr::kable(assay_report[[1]]$reverse, digits = 2, col.names = c("Begin", "End", "Length", "Sequence (majority)", "Sequence (IUPAC)", "Degenerates", "Degeneracy", "GC-content (majority)", "Tm (majority)")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), font_size = 11, full_width = TRUE)
-}
+custom_table(
+  assay_report[[1]]$reverse, 
+  col.names = c(
+    "Begin", "End", "Length", "Sequence (majority)", "Sequence (IUPAC)", 
+    "Degenerates", "Degeneracy", "GC-content (majority)", "Tm (majority)", 
+    "Perfect matches (majority)", "Perfect matches (IUPAC)")
+)
 ```
 <br>
 **Table 6.** Reverse primer, all variants. 
 ```{r}
-knitr::kable(assay_report[[2]]$rev$all_variants, digits = 2, col.names = c("Variant", "GC-content", "Tm")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), position = "left", font_size = 11, full_width = FALSE)
+custom_table(
+  assay_report[[2]]$rev$all_variants,
+  col.names = c("Variant", "GC-content", "Tm"), full_width = FALSE
+)
+
 ```
 <br>
 **Table 7.** Reverse primer, mean values.
 ```{r}
-knitr::kable(assay_report[[2]]$rev$mean_values, digits = 2, align = "l", col.names = "") %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), position = "left", font_size = 11, full_width = FALSE)
+custom_table(
+  assay_report[[2]]$rev$mean_values, col.names = "", full_width = FALSE
+)
 ```
 <br>
 **Table 8.** Probe, summary. 
 ```{r}
-if (any(grepl("probe", names(assay_report[[1]])))) {
-if (any(grepl("^pm_", names(assay_report[[1]][[1]])))) {
-knitr::kable(assay_report[[1]]$probe, digits = 2, col.names = c("Begin", "End", "Length", "Sequence (majority)", "Sequence (IUPAC)", "Degenerates", "Degeneracy", "GC-content (majority)", "Tm (majority)", "Sense", "Perfect matches (majority)", "Perfect matches (IUPAC)")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), font_size = 11, full_width = TRUE)
-} else { knitr::kable(assay_report[[1]]$probe, digits = 2, col.names = c("Begin", "End", "Length", "Sequence (majority)", "Sequence (IUPAC)", "Degenerates", "Degeneracy", "GC-content (majority)", "Tm (majority)")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), font_size = 11, full_width = TRUE)
+has_probe <- any(grepl("probe", names(assay_report[[1]])))
 
-}
+if (has_probe) {
+custom_table(
+  assay_report[[1]]$probe, 
+  col.names = c(
+    "Begin", "End", "Length", "Sequence (majority)", 
+    "Sequence (IUPAC)", "Degenerates", "Degeneracy", "GC-content (majority)", 
+    "Tm (majority)", "Sense", "Perfect matches (majority)", 
+    "Perfect matches (IUPAC)"
+  )
+)
 }
 ```
 <br>
 **Table 9.** Probe, all variants. 
 ```{r}
-if (any(grepl("probe", names(assay_report[[1]])))) {
-knitr::kable(assay_report[[2]]$pr$all_variants, digits = 2, align = "l", col.names = c("Variant", "GC-content", "Tm")) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), position = "left", font_size = 11, full_width = FALSE)
+if (has_probe) {
+  custom_table(
+  assay_report[[2]]$pr$all_variants,
+  col.names = c("Variant", "GC-content", "Tm"), full_width = FALSE
+)
 }
 ```
 <br>
 **Table 10.** Probe, mean values. 
 ```{r}
-if (any(grepl("probe", names(assay_report[[1]])))) {
-knitr::kable(assay_report[[2]]$pr$mean_values, digits = 2, col.names = "") %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped"), position = "left", font_size = 11, full_width = FALSE)
+if (has_probe) {
+ custom_table(
+   assay_report[[2]]$rev$mean_values, col.names = "", full_width = FALSE
+ )
 }
 ```
-<br>
-
-#### Match report 
-
-<br>
-**Table 11.** Perfectly matching sequences, majority oligos. 
-```{r}
-if (length(assay_report) == 3) {
-  knitr::kable(assay_report[[3]]$matches_perfectly_majority, col.names = "") %>% kableExtra::kable_styling(bootstrap_options = c("striped"), position = "left", font_size = 11, full_width = FALSE)
-}
+<br><br>
+```{r, fig.width=12, fig.height=12}
+plot_match_matrix(assay_selection)
 ```
-<br>
-**Table 12.** Mismatching sequences, majority oligos. TRUE = matching, FALSE = mismatching. 
-```{r}
-if (length(assay_report) == 3) {
-knitr::kable(assay_report[[3]]$mismatches_majority) %>% kableExtra::kable_styling(bootstrap_options = c("striped"), position = "left", font_size = 11, full_width = FALSE)
-}
-```
-<br>
-**Table 13** Perfectly matching sequences, IUPAC oligos.
-```{r}
-if (length(assay_report) == 3) {
-knitr::kable(assay_report[[3]]$matches_perfectly_iupac, col.names = "") %>% kableExtra::kable_styling(bootstrap_options = c("striped"), position = "left", font_size = 11, full_width = FALSE)
-}
-```
-<br>
-**Table 14.** Mismatching sequences, IUPAC oligos. TRUE = matching, FALSE = mismatching. 
-```{r}
-if (length(assay_report) == 3) {
-knitr::kable(assay_report[[3]]$mismatches_iupac) %>% kableExtra::kable_styling(bootstrap_options = c("striped"), position = "left", font_size = 11, full_width = FALSE)
-}
-```
+<br><br>
+**Fig. 3** Match reports. 

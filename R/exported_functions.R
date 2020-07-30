@@ -857,6 +857,8 @@ rp_save.rprimer_assay <- function(x, filename) {
 #'
 #' @param sequence_properties
 #'
+#' @param comment
+#'
 #' @return A html-report
 #'
 #' @details Details:
@@ -910,7 +912,8 @@ write_report <- function(
       params = list(
         assay_selection = assay_selection,
         sequence_profile = sequence_profile,
-        sequence_properties = sequence_properties
+        sequence_properties = sequence_properties,
+        comment = "enter comment here"
       )
     )
 }
