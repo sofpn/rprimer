@@ -1526,6 +1526,69 @@ assay_overview_plot <- function(x, y) {
 }
 
 
+
+#' Plot a match matrix
+#'
+#' @param assay_selection An object of class 'rprimer_assay', with only one row
+#'
+#' @return A visual representation of the match matrix
+#'
+#' @note This plot was inspired from the ############ package
+#'
+#' @noRd
+plot_match_matrix <- function(assay_selection) {
+  x <- assay_selection$match_matrix[[1]]
+  # Convert from logical to integer
+  x[] <- as.integer(x)
+  # Remove columns with "all"
+  x <- x[ , !grepl("_all", colnames(x))]
+  colnames(x) <- gsub("match_", "", colnames(x))
+  # Make subsets, one with majority and one with IUPAC
+  majority <- x[, grepl("majority", colnames(x))]
+  colnames(majority) <- gsub("majority_", "", colnames(majority))
+  iupac <- x[, grepl("iupac", colnames(x))]
+  colnames(iupac) <- gsub("iupac_", "", colnames(iupac))
+  # Set plot colors
+  colors <- c(mismatch = "#E07A5F", match = "#81B29A")
+  # Set plot layout
+  layout(
+    matrix(data = c(1, 2, 3), nrow = 1, ncol = 3),
+    widths = c(0.6, 0.6, 0.2), heights = c(1, 1)
+  )
+  # Plot majority
+  image(
+    seq_along(colnames(majority)), seq_along(rownames(majority)), t(majority),
+    col = colors, xlab = "", ylab = "", axes = FALSE, main = "Majority"
+  )
+  axis(
+    side = 1, at = seq_along(colnames(majority)),
+    labels = colnames(majority), cex.axis = 1, tick = FALSE
+  )
+  axis(
+    side = 2, at = seq_along(rownames(x)), labels = rownames(x), las = 1,
+    cex.axis = 0.3, tick = FALSE
+  )
+  # Plot IUPAC
+  image(
+    seq_along(colnames(iupac)), seq_along(rownames(iupac)), t(iupac),
+    col = colors, xlab = "", ylab = "", axes = FALSE, main = "IUPAC"
+  )
+  axis(
+    side = 1, at = seq_along(colnames(iupac)),
+    labels = colnames(iupac), cex.axis = 1, tick = FALSE
+  )
+  op <- par(mar = c(3, 1, 3, 3))
+  on.exit(par(op))
+  # Add a legend
+  image(matrix(-4:5, ncol = 10, nrow = 1),
+        col = c(rep("white", 4), colors, rep("white", 4)),
+        axes = FALSE, xlab = "", ylab = ""
+  )
+  text(0, 0.45, "mismatch", cex = 0.8)
+  text(0, 0.55, "match", cex = 0.8)
+}
+
+
 print_assay <- function(x) {
     # x assay object (one row)
     if (any(grepl("match_matrix", names(x)))) {

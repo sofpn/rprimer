@@ -1,3 +1,5 @@
+#par mar changes globally rp plot sequence barplot i markdwn rep
+
 # Import alignment ============================================================
 
 #' Read an alignment in fasta format
@@ -18,11 +20,13 @@
 #' n', 'h', 'd', 'v', 'b' and '-'. The alignment can be in either
 #' upper- or lowercase format.
 #'
+#' @note This function is based on ##########################################
+#'
 #' @return The alignment from the input
 #' file (a named list with class attribute 'rprimer_alignment').
 #' Each object (DNA sequence) will have the same name as its
 #' sequence name in the input file, except for the '>' symbol.
-#' Sequencees are will be presented as character vectors of length one,
+#' Sequences are will be presented as character vectors of length one,
 #' in lowercase format.
 #'
 #' @examples
