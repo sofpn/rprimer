@@ -3,7 +3,6 @@
 #vignette
 #readme github
 #read_fasdta_aln docum
-#non-tidy eval
 #pm om aln har hog gapfreq hur hantera (skriv detta i beskrivningen)
 
 # Import alignment ============================================================
@@ -427,7 +426,7 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #'
 #' Allawi, H. & SantaLucia, J. (1997)
 #' Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-#' Biochemistry, 34: 10581?\200?10594
+#' Biochemistry, 34: 10581?\200?10594 ###########################################################
 #' (Duplex initiation parameters are from here)
 #'
 #' SantaLucia, J (1998) A unified view of polymer,
@@ -477,7 +476,7 @@ get_oligos <- function(
     stop("No oligos were found.", call. = FALSE)
   # Check match to targets
   all_oligos <- check_match(all_oligos, target)
-  all_oligos <- dplyr::arrange(all_oligos, "begin")
+  all_oligos <- dplyr::arrange(all_oligos, all_oligos$begin)
   all_oligos <- tibble::new_tibble(
     all_oligos, nrow = nrow(all_oligos), class = "rprimer_oligo"
   )
@@ -508,7 +507,9 @@ get_oligos <- function(
 #' assays. An error message will return if no assays are found.
 #'
 #' @examples
-#' get_assays(example_rprimer_oligo, length = 60:150, max_tm_difference = 4)
+#' get_assays(example_rprimer_oligo, length = 60:150, max_tm_difference = 1.5)
+#'
+#' @export
 get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
     if (!inherits(x, "rprimer_oligo")) {
         stop("An rprimer_oligo object is expected.", call. = FALSE)
@@ -703,8 +704,8 @@ rp_plot <- function(x, ...) {
 #' @describeIn rp_plot Plot an object of class 'rprimer_alignment'.
 #' @export
 rp_plot.rprimer_alignment <- function(x, ...) {
-    op <- par(mar = c(5, 3, 3, 3))
-    on.exit(par(op))
+    op <- graphics::par(mar = c(5, 3, 3, 3))
+    on.exit(graphics::par(op))
     # Make a matrix of the alignment
     index <- seq_along(x)
     sequences_as_integers <- purrr::map(index, function(i) {
@@ -714,13 +715,15 @@ rp_plot.rprimer_alignment <- function(x, ...) {
         return(sequence)
     })
     to_plot <- do.call("rbind", sequences_as_integers)
-    plot(
+    graphics::plot(
       seq_len(ncol(to_plot)), rep(1, ncol(to_plot)),
       ylab = "", xlab = "position in consensus sequence", yaxt = "n",
       pch = NA, ylim = c(0, max(nrow(to_plot)) + 1)
     )
     invisible(
-      apply(to_plot, 1, function(x) lines(seq_along(x), x, col = "grey"))
+      apply(to_plot, 1, function(x) {
+        graphics::lines(seq_along(x), x, col = "grey")
+      })
     )
 }
 
@@ -755,8 +758,8 @@ rp_plot.rprimer_sequence_profile <- function(
     }
     if (!(is.logical(rc)))
         stop("rc must be set to TRUE or FALSE", call. = FALSE)
-    op <- par(mar = c(0.75, 4.57, 0.75, 0.75))
-    on.exit(par(op))
+    op <- graphics::par(mar = c(0.75, 4.57, 0.75, 0.75))
+    on.exit(graphics::par(op))
     # Get the data
     selection <- x[, from:to]
     selection <- selection[which(rownames(selection) != "-"), ]
@@ -770,11 +773,11 @@ rp_plot.rprimer_sequence_profile <- function(
 #' @describeIn rp_plot Plot an object of class 'rprimer_sequence_properties'.
 #' @export
 rp_plot.rprimer_sequence_properties <- function(x, ...) {
-    op <- par(
+    op <- graphics::par(
       mfrow = c(4, 1), mai = c(0.1, 1, 0.1, 1),
       xpd = FALSE, oma = c(4, 0, 1, 0), mar = c(0.2, 4.1, 0.2, 2.1)
     )
-    on.exit(par(op))
+    on.exit(graphics::par(op))
     sequence_detail_plot(x)
 }
 
@@ -827,7 +830,7 @@ rp_save.rprimer_alignment <- function(x, filename) {
 #' @describeIn rp_save Save an object of class 'rprimer_sequence_properties'.
 #' @export
 rp_save.rprimer_sequence_properties <- function(x, filename) {
-    write.csv(
+    utils::write.csv(
       x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE
     )
 }
@@ -838,7 +841,7 @@ rp_save.rprimer_oligo <- function(x, filename) {
     if (any(grepl("match_matrix", names(x)))) {
         x <- x[, which(names(x) != "match_matrix")]  # Can't save a list
     }
-    write.csv(
+    utils::write.csv(
       x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE
     )
 }
@@ -849,7 +852,7 @@ rp_save.rprimer_assay <- function(x, filename) {
     if (any(grepl("match_matrix", names(x)))) {
         x <- x[, which(names(x) != "match_matrix")]  # Can't save a list
     }
-    write.csv(
+    utils::write.csv(
       x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE
     )
 }

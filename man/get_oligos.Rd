@@ -135,7 +135,7 @@ are from here)
 
 Allawi, H. & SantaLucia, J. (1997)
 Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-Biochemistry, 34: 10581?\200?10594
+Biochemistry, 34: 10581?\200?10594 ###########################################################
 (Duplex initiation parameters are from here)
 
 SantaLucia, J (1998) A unified view of polymer,

@@ -1111,7 +1111,7 @@ init_5end <- function(x) {
 #'
 #' Allawi, H. & SantaLucia, J. (1997)
 #' Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-#' Biochemistry, 34: 10581?\200?10594
+#' Biochemistry, 34: 10581?\200?10594 ##############################################################
 #' (Duplex initiation parameters are from here)
 #'
 #' SantaLucia, J (1998) A unified view of polymer,
@@ -1217,7 +1217,7 @@ add_probe_to_match_matrix <- function(x) {
   match_matrix <- purrr::map(seq_len(nrow(x)), function(y) {
     match <- cbind(assays[[y]], probe[[y]])
     match <- match[ , -(5:6)]
-    majority_all <- rowSums(match[, c(1, 3, 5)]) #################################### PROBLEM!!!!
+    majority_all <- rowSums(match[, c(1, 3, 5)])
     iupac_all <- rowSums(match[, c(2, 4, 6)])
     majority_all <- ifelse(majority_all == 3, TRUE, FALSE)
     iupac_all <- ifelse(iupac_all == 3, TRUE, FALSE)
@@ -1335,9 +1335,9 @@ gc_running_average <- function(x, size = NULL) {
 #'
 #' @noRd
 rectangle <- function(from, to) {
-  rect(
+  graphics::rect(
     from, 0, to, 5, border = NA,
-    col = rgb(123, 149, 169, alpha = 100, maxColorValue = 200), xpd = NA
+    col = grDevices::rgb(123, 149, 169, alpha = 100, maxColorValue = 200), xpd = NA
   )
 }
 
@@ -1349,34 +1349,34 @@ rectangle <- function(from, to) {
 #'
 #' @noRd
 sequence_detail_plot <- function(x) {
-  identity_plot <- plot(
+  identity_plot <- graphics::plot(
     x$position, x$identity, type = "h", ylim = c(0, 1),
     ylab = "identity", xlab = "", xaxt = "n",
     col = ifelse(x$identity < 1, "gray80", "gray60")
   )
-  identity_line <- lines(running_average(x$identity))
-  entropy_plot <- plot(
+  identity_line <- graphics::lines(running_average(x$identity))
+  entropy_plot <- graphics::plot(
     x$position, x$entropy, type = "h",
     ylim = c(0, max(x$entropy, na.rm = TRUE) * 1.1),
     ylab = "shannon entropy",
     xlab = "", xaxt = "n", col = ifelse(x$entropy > 0, "gray80", "gray60")
   )
-  entropy_line <- lines(running_average(x$entropy))
-  gc_plot <- plot(
+  entropy_line <- graphics::lines(running_average(x$entropy))
+  gc_plot <- graphics::plot(
     x$position, pch = NA, ylab = "gc content", ylim = c(0, 1),
     xlab = "", xaxt = "n"
   )
-  clip(0, nrow(x), -1, 2)
-  abline(h = 0.5, col = "gray80")
-  gc_line <- lines(gc_running_average(x$majority))
-  gap_plot <- plot(
+  graphics::clip(0, nrow(x), -1, 2)
+  graphics::abline(h = 0.5, col = "gray80")
+  gc_line <- graphics::lines(gc_running_average(x$majority))
+  gap_plot <- graphics::plot(
     x$position, x$gaps, type = "h", ylim = c(0, 1), ylab = "gaps", xlab = "")
   identity_plot
   identity_line
   entropy_plot
   entropy_line
   gap_plot
-  mtext(
+  graphics::mtext(
     side = 1, outer = TRUE, "position in consensus sequence",
     line = 3, cex = 0.7
   )
@@ -1395,17 +1395,17 @@ sequence_detail_plot <- function(x) {
 sequence_barplot <- function(x, ...) {
   colors1 <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038")
   names(colors1) <- c("a", "c", "g", "t")
-  colors2 <- gray.colors(nrow(x) - 4, start = 0.6)
+  colors2 <- grDevices::gray.colors(nrow(x) - 4, start = 0.6)
   names(colors2) <- setdiff(rownames(x), names(colors1))
   colors <- c(colors1, colors2)
   # Make the plot
-  barplot(
+  graphics::barplot(
     x, space = 0, xaxt = "n", font.main = 1, border = "grey80",
     col = colors[rownames(x)], legend = TRUE, ylab = "Proportion",
     ylim = c(0, 1), ...,
     args.legend = list(
       x = "right", box.col = NA, border = "grey80",
-      bg = rgb(60, 60, 60, alpha = 50,
+      bg = grDevices::rgb(60, 60, 60, alpha = 50,
       maxColorValue = 200), inset = c(0, -0.3)
     )
   )
