@@ -1,15 +1,7 @@
 #to do:
 #vignette
-#fix classes
-#usethis::use_tests
 #readme github
 #pm om aln har hog gapfreq hur hantera (skriv detta i beskrivningen)
-#remove min length in class?
-#go trough documentation /items in fn docs as well?
-#one file for each fn
-#✖ adhere to style guide err messages
-# citation
-#do not use return
 
 # Import alignment ============================================================
 
