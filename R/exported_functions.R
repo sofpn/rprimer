@@ -1,9 +1,16 @@
 #to do:
-#document datasets
 #vignette
+#fix classes
+#usethis::use_tests
 #readme github
-#read_fasdta_aln docum
 #pm om aln har hog gapfreq hur hantera (skriv detta i beskrivningen)
+#remove min length in class?
+#go trough documentation /items in fn docs as well?
+#fix options
+#one file for each fn
+#redo package pcrdesign
+#✖ adhere to style guide
+# citation
 
 # Import alignment ============================================================
 
@@ -16,7 +23,7 @@
 #' alignment is to be read from (a character vector of length one).
 #'
 #' @details The file must contain one or more aligned
-#' DNA sequences in fasta format. Sequences in fasta format
+#' DNA sequences in fasta format. Sequences in fasta format always
 #' begins with a '>' symbol, followed by a single-line name.
 #' The sequence is present on the next line.
 #' All sequences (including gaps) must be of the same length,
@@ -25,7 +32,8 @@
 #' n', 'h', 'd', 'v', 'b' and '-'. The alignment can be in either
 #' upper- or lowercase format.
 #'
-#' @note This function is based on ##########################################
+#' @note This function is partly inspired by read.fasta from the
+#' seqinr package.
 #'
 #' @return The alignment from the input
 #' file (a named list with class attribute 'rprimer_alignment').
@@ -38,6 +46,12 @@
 #' read_fasta_alignment(
 #' system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 #' )
+#'
+#' @references  Charif, D. and Lobry, J.R. (2007)
+#' SeqinR 1.0-2: a contributed package to the R project for statistical
+#' computing devoted to biological sequences retrieval and analysis.
+#' Structural approaches to sequence evolution: Molecules, networks,
+#' populations, pp 207-232.
 #'
 #' @export
 read_fasta_alignment <- function(x) {

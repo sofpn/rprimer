@@ -5,12 +5,12 @@
 
 # Custom options
 .onLoad <- function(libname, pkgname) {
-    op <- options()  # set up options here
-    op.devtools <- list(devtools.path = "~/R-dev", devtools.install.args = "", devtools.name = "Sofia Persson", devtools.desc.author = "Persson Sofia <sofiapersson27@gmail.com>", 
+    op <- options()
+    op.devtools <- list(devtools.path = "~/R-dev", devtools.install.args = "", devtools.name = "Sofia Persson", devtools.desc.author = "Persson Sofia <sofiapersson27@gmail.com>",
         devtools.desc.license = "What license is it under?", devtools.desc.suggests = NULL, devtools.desc = list())
     toset <- !(names(op.devtools) %in% names(op))
-    if (any(toset)) 
+    if (any(toset))
         options(op.devtools[toset])
-    
+
     invisible()
 }
