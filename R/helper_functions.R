@@ -48,8 +48,7 @@ truncate_name <- function(name) {
 #' @return The complement sequence of x.
 #'
 #' @examples
-#' reverse_complement('cttgtr')
-#'
+#' reverse_complement("cttgtr")
 #' @noRd
 complement <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
@@ -60,7 +59,8 @@ complement <- function(x) {
     stop("x contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
   x <- strsplit(x, split = "")
   complement <- complement_lookup[unlist(x)]
@@ -70,72 +70,6 @@ complement <- function(x) {
 
 # Context: Import alignment ===================================================
 
-#' 'rprimer_alignment' constructor and validator
-#'
-#' \code{new_rprimer_alignment} creates an object of class
-#' 'rprimer_alignment'
-#'
-#' @param x An rprimer_alignment-like object.
-#'
-#' @details an rprimer_alignment object must must be a list and
-#' contain at least one DNA
-#' sequence, and all sequences must be a character vector of lentgh one.
-#' All sequences (including gaps) must be of the same length,
-#' and the alignment must beat least 200 bases long.
-#' All sequences must have unique names. Valid bases are
-#' a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-#' 'n', 'h', 'd', 'v', 'b' and '-')
-#'
-#' @return An rprimer_alignment object if the validation is succeeds.
-#' An error message if not.
-#'
-#' @noRd
-new_rprimer_alignment <- function(x = list()) {
-    # x must be a list
-    stopifnot(is.list(x))
-    # All sequences must be a character vector of length one
-    has_length_one <- purrr::map_lgl(x, ~is.character(.x) && length(.x) == 1)
-    if (any(has_length_one == FALSE)) {
-        stop(
-          "All sequences must be a character vector of length one",
-          call. = FALSE
-        )
-    }
-    # All sequences must contain the same number of characters
-    sequence_lengths <- purrr::map_int(x, nchar)
-    if (length(unique(sequence_lengths)) != 1) {
-        stop(
-        "The sequences does not appear to be aligned.
-        All sequences (including gaps) are not of the same length.",
-        call. = FALSE
-      )
-    }
-    # The alignment must be at least 200 bases long
-    if (unique(sequence_lengths) < 200) {
-        stop(paste(
-          "The alignment has", unique(sequence_lengths), "bases.
-          The minumum is 200."
-       ),
-       call. = FALSE)
-    }
-    # All sequence names must be unique
-    unique_name <- length(unique(names(x))) == length(x)
-    if (unique_name == FALSE) {
-        stop("All sequences must have unique names", call. = FALSE)
-    }
-    # All sequences must be in lowercase format and contain only valid bases
-    non_valid_base <- purrr::map_lgl(x, ~grepl("[^acgtrymkswnhdvb-]", .x))
-    if (any(non_valid_base)) {
-        stop(
-        "At least one sequence contain one or more invalid characters.
-         Valid characters are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-         'n', 'h', 'd', 'v', 'b' and '-')", call. = FALSE
-      )
-    }
-    # Set class attribute
-    x <- structure(x, class = "rprimer_alignment")
-    return(x)
-}
 
 # Context: Get sequence profile ===============================================
 
@@ -155,14 +89,14 @@ new_rprimer_alignment <- function(x = list()) {
 #'
 #' @noRd
 new_rprimer_sequence_profile <- function(x = matrix()) {
-    # Integrity checks
-    stopifnot(
-      is.matrix(x), is.double(x), max(x) <= 1, min(x) >= 0,
-      !is.null(rownames(x)), !is.null(colnames(x))
-    )
-    # Set class attribute
-    x <- structure(x, class = "rprimer_sequence_profile")
-    return(x)
+  # Integrity checks
+  stopifnot(
+    is.matrix(x), is.double(x), max(x) <= 1, min(x) >= 0,
+    !is.null(rownames(x)), !is.null(colnames(x))
+  )
+  # Set class attribute
+  x <- structure(x, class = "rprimer_sequence_profile")
+  return(x)
 }
 
 # Context: Get sequence properties ============================================
@@ -183,21 +117,22 @@ new_rprimer_sequence_profile <- function(x = matrix()) {
 #'
 #' @noRd
 majority_consensus <- function(x) {
-    if (!inherits(x, "rprimer_sequence_profile")) {
-        stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  if (!inherits(x, "rprimer_sequence_profile")) {
+    stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  }
+  # Function to identify the most common base at a position
+  find_most_common_base <- function(x, y) {
+    most_common <- rownames(x)[which(y == max(y))]
+    # If there are ties, the most common base will be randomly selected
+    if (length(most_common > 1)) {
+      most_common <- sample(most_common, 1)
     }
-    # Function to identify the most common base at a position
-    find_most_common_base <- function(x, y) {
-        most_common <- rownames(x)[which(y == max(y))]
-        # If there are ties, the most common base will be randomly selected
-        if (length(most_common > 1))
-            most_common <- sample(most_common, 1)
-        return(most_common)
-    }
-    # Get the consensus sequence at all positions
-    consensus <- apply(x, 2, function(y) find_most_common_base(x, y))
-    consensus <- unname(consensus)
-    return(consensus)
+    return(most_common)
+  }
+  # Get the consensus sequence at all positions
+  consensus <- apply(x, 2, function(y) find_most_common_base(x, y))
+  consensus <- unname(consensus)
+  return(consensus)
 }
 
 #' Convert DNA nucleotides into the corresponding iupac degenerate base
@@ -216,28 +151,27 @@ majority_consensus <- function(x) {
 #' @return the corresponding iupac base (a character vector of length one).
 #'
 #' @examples
-#' as_iupac('a,c')
-#' as_iupac('r')
-#' as_iupac('tg') # Will return NA since the bases are not separated by comma
-#'
+#' as_iupac("a,c")
+#' as_iupac("r")
+#' as_iupac("tg") # Will return NA since the bases are not separated by comma
 #' @noRd
 as_iupac <- function(x) {
-    if (!(is.character(x) && length(x) == 1)) {
-        stop(
-          "A character vector of length one is expected, e.g. 'a,c,t'",
-          call. = FALSE
-        )
-    }
-    x <- gsub(" ", "", x)
-    x <- unlist(strsplit(x, split = ","), use.names = FALSE)
-    x <- x[order(x)]
-    x <- unique(x)
-    bases <- c("a", "c", "g", "t", "-")  # accepted nucleotides
-    match <- x %in% bases
-    x <- x[!(match == FALSE)]  # exclude non accepted nucleotides
-    x <- paste(x, collapse = ",")
-    iupac <- unname(iupac_lookup[x]) # match with lookup table
-    return(iupac)
+  if (!(is.character(x) && length(x) == 1)) {
+    stop(
+      "A character vector of length one is expected, e.g. 'a,c,t'",
+      call. = FALSE
+    )
+  }
+  x <- gsub(" ", "", x)
+  x <- unlist(strsplit(x, split = ","), use.names = FALSE)
+  x <- x[order(x)]
+  x <- unique(x)
+  bases <- c("a", "c", "g", "t", "-") # accepted nucleotides
+  match <- x %in% bases
+  x <- x[!(match == FALSE)] # exclude non accepted nucleotides
+  x <- paste(x, collapse = ",")
+  iupac <- unname(iupac_lookup[x]) # match with lookup table
+  return(iupac)
 }
 
 #' Iupac consensus sequence
@@ -267,28 +201,28 @@ as_iupac <- function(x) {
 #'
 #' @noRd
 iupac_consensus <- function(x, threshold = 0) {
-    if (!inherits(x, "rprimer_sequence_profile")) {
-        stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
-    }
-    if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
-        stop(paste0(
-        "The threshold was set to ", threshold, ". Valid threshold values
+  if (!inherits(x, "rprimer_sequence_profile")) {
+    stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  }
+  if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
+    stop(paste0(
+      "The threshold was set to ", threshold, ". Valid threshold values
      are from 0 to 0.2"
-        ))
-    }
-    # Select only a, c, g, t and - to count in the iupac consensus sequence
-    bases <- c("a", "c", "g", "t", "-")
-    x <- x[rownames(x) %in% bases, ]
-    bases_to_include <- apply(x, 2, function(y) {
-      paste(rownames(x)[y >= threshold], collapse = ",")
-    })
-    bases_to_include <- unname(bases_to_include)
-    consensus <- purrr::map_chr(bases_to_include, ~as_iupac(.x))
-    if (any(is.na(consensus))) {
-        warning("The consensus sequence contain NAs.
-    Try to lower the threshold value.", call. = FALSE)  # Check if this works!
-    }
-    return(consensus)
+    ))
+  }
+  # Select only a, c, g, t and - to count in the iupac consensus sequence
+  bases <- c("a", "c", "g", "t", "-")
+  x <- x[rownames(x) %in% bases, ]
+  bases_to_include <- apply(x, 2, function(y) {
+    paste(rownames(x)[y >= threshold], collapse = ",")
+  })
+  bases_to_include <- unname(bases_to_include)
+  consensus <- purrr::map_chr(bases_to_include, ~ as_iupac(.x))
+  if (any(is.na(consensus))) {
+    warning("The consensus sequence contain NAs.
+    Try to lower the threshold value.", call. = FALSE) # Check if this works!
+  }
+  return(consensus)
 }
 
 #' Gap frequency
@@ -306,12 +240,12 @@ iupac_consensus <- function(x, threshold = 0) {
 #'
 #' @noRd
 gap_frequency <- function(x) {
-    if (!inherits(x, "rprimer_sequence_profile")) {
-        stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
-    }
-    gaps <- x[rownames(x) == "-", ]
-    gaps <- unname(gaps)
-    return(gaps)
+  if (!inherits(x, "rprimer_sequence_profile")) {
+    stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  }
+  gaps <- x[rownames(x) == "-", ]
+  gaps <- unname(gaps)
+  return(gaps)
 }
 
 #' Nucleotide identity
@@ -333,21 +267,21 @@ gap_frequency <- function(x) {
 #'
 #' @noRd
 nucleotide_identity <- function(x) {
-    if (!inherits(x, "rprimer_sequence_profile")) {
-        stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
-    }
-    # We want to assess identity based on DNA bases,
-    # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
-    # with the rows named a, c, g and t.
-    bases <- c("a", "c", "g", "t")
-    s <- x[rownames(x) %in% bases, ]
-    # Calculate relative proportions of the bases in s
-    s <- apply(s, 2, function(x) x / sum(x))
-    # Find the largest proportion at each position
-    identity <- apply(s, 2, max)
-    identity <- unname(identity)
-    identity[is.na(identity)] <- 0
-    return(identity)
+  if (!inherits(x, "rprimer_sequence_profile")) {
+    stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  }
+  # We want to assess identity based on DNA bases,
+  # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
+  # with the rows named a, c, g and t.
+  bases <- c("a", "c", "g", "t")
+  s <- x[rownames(x) %in% bases, ]
+  # Calculate relative proportions of the bases in s
+  s <- apply(s, 2, function(x) x / sum(x))
+  # Find the largest proportion at each position
+  identity <- apply(s, 2, max)
+  identity <- unname(identity)
+  identity[is.na(identity)] <- 0
+  return(identity)
 }
 
 #' Shannon entropy
@@ -375,24 +309,24 @@ nucleotide_identity <- function(x) {
 #'
 #' @noRd
 shannon_entropy <- function(x) {
-    if (!inherits(x, "rprimer_sequence_profile")) {
-        stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
-    }
-    # We want to assess identity based on DNA bases,
-    # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
-    # with the rows named a, c, g and t.
-    bases <- c("a", "c", "g", "t")
-    s <- x[rownames(x) %in% bases, ]
-    # Calculate relative proportions of the bases in s
-    s <- apply(s, 2, function(x) x / sum(x))
-    entropy <- apply(s[rownames(s) %in% bases, ], 2, function(x) {
-        ifelse(x == 0, 0, x * log2(x))
-    })
-    entropy <- -colSums(entropy)
-    entropy <- unname(entropy)
-    entropy <- abs(entropy)  # abs to avoid -0 (due to neg sums)
-    entropy[is.na(entropy)] <- 0
-    return(entropy)
+  if (!inherits(x, "rprimer_sequence_profile")) {
+    stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  }
+  # We want to assess identity based on DNA bases,
+  # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
+  # with the rows named a, c, g and t.
+  bases <- c("a", "c", "g", "t")
+  s <- x[rownames(x) %in% bases, ]
+  # Calculate relative proportions of the bases in s
+  s <- apply(s, 2, function(x) x / sum(x))
+  entropy <- apply(s[rownames(s) %in% bases, ], 2, function(x) {
+    ifelse(x == 0, 0, x * log2(x))
+  })
+  entropy <- -colSums(entropy)
+  entropy <- unname(entropy)
+  entropy <- abs(entropy) # abs to avoid -0 (due to neg sums)
+  entropy[is.na(entropy)] <- 0
+  return(entropy)
 }
 
 # Context: Get oligos =========================================================
@@ -413,27 +347,27 @@ shannon_entropy <- function(x) {
 #' @return A character vector where each element is a 'mer' of size n.
 #'
 #' @examples
-#' get_nmers(c('c', 'g', 't', 't', 'c', 'g'), n = 2)
-#'
+#' get_nmers(c("c", "g", "t", "t", "c", "g"), n = 2)
 #' @noRd
 get_nmers <- function(x, n = NULL) {
-    if (!is.character(x)) {
-        stop("x must be a character vector.", call. = FALSE)
+  if (!is.character(x)) {
+    stop("x must be a character vector.", call. = FALSE)
+  }
+  if (is.null(n)) {
+    n <- round(length(x) / 10)
+    if (n == 0) {
+      n <- 1
     }
-    if (is.null(n)) {
-        n <- round(length(x) / 10)
-        if (n == 0)
-            n <- 1
-    }
-    if (!is.numeric(n) || n < 1 || n > length(x)) {
-        stop("n must be an integer between 1 and length(x)", call. = FALSE)
-    }
-    begin <- 1:(length(x) - n + 1)
-    end <- begin + n - 1
-    nmer <- purrr::map_chr(
-      begin, ~paste(x[begin[[.x]]:end[[.x]]], collapse = "")
-    )
-    return(nmer)
+  }
+  if (!is.numeric(n) || n < 1 || n > length(x)) {
+    stop("n must be an integer between 1 and length(x)", call. = FALSE)
+  }
+  begin <- 1:(length(x) - n + 1)
+  end <- begin + n - 1
+  nmer <- purrr::map_chr(
+    begin, ~ paste(x[begin[[.x]]:end[[.x]]], collapse = "")
+  )
+  return(nmer)
 }
 
 #' Calculate GC content of a DNA sequence
@@ -449,26 +383,25 @@ get_nmers <- function(x, n = NULL) {
 #' in the calculation.
 #'
 #' @examples
-#' gc_content('acgttcc')
-#' gc_content('acgttcc--')
-#' gc_content('acgrn') # Will return an error because of an invalid base.
-#'
+#' gc_content("acgttcc")
+#' gc_content("acgttcc--")
+#' gc_content("acgrn") # Will return an error because of an invalid base.
 #' @noRd
 gc_content <- function(x) {
-    if (typeof(x) != "character" || length(x) != 1) {
-        stop("x must be a character vector of length one", call. = FALSE)
-    }
-    x <- tolower(x)
-    if (grepl("[^acgt-]", x)) {
-        stop("x contains at least one invalid base.
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("x must be a character vector of length one", call. = FALSE)
+  }
+  x <- tolower(x)
+  if (grepl("[^acgt-]", x)) {
+    stop("x contains at least one invalid base.
       x can only contain 'a', 'c', 'g', 't' and '-'", call. = FALSE)
-    }
-    x <- split_sequence(x)
-    gc_count <- length(which(x == "c" | x == "g"))
-    # Gaps will not be included in the total count
-    total_count <- length(which(x == "a" | x == "c" | x == "g" | x == "t"))
-    gc <- gc_count / total_count
-    return(gc)
+  }
+  x <- split_sequence(x)
+  gc_count <- length(which(x == "c" | x == "g"))
+  # Gaps will not be included in the total count
+  total_count <- length(which(x == "a" | x == "c" | x == "g" | x == "t"))
+  gc <- gc_count / total_count
+  return(gc)
 }
 
 #' Reverse complement
@@ -483,26 +416,26 @@ gc_content <- function(x) {
 #' @return The reverse complement. Non valid bases will return as NA.
 #'
 #' @examples
-#' reverse_complement('cttgtr')
-#'
+#' reverse_complement("cttgtr")
 #' @noRd
 reverse_complement <- function(x) {
-    if (typeof(x) != "character" || length(x) != 1) {
-        stop("x must be a character vector of length one", call. = FALSE)
-    }
-    x <- tolower(x)
-    if (grepl("[^acgtrymkswnhdvb-]", x)) {
-        stop("x contains at least one invalid base.
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("x must be a character vector of length one", call. = FALSE)
+  }
+  x <- tolower(x)
+  if (grepl("[^acgtrymkswnhdvb-]", x)) {
+    stop("x contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
-            call. = FALSE)
-    }
-    x <- strsplit(x, split = "")
-    complement <- complement_lookup[unlist(x)]
-    complement <- unname(complement)
-    rc <- rev(complement)
-    rc <- paste(rc, collapse = "")
-    return(rc)
+      call. = FALSE
+    )
+  }
+  x <- strsplit(x, split = "")
+  complement <- complement_lookup[unlist(x)]
+  complement <- unname(complement)
+  rc <- rev(complement)
+  rc <- paste(rc, collapse = "")
+  return(rc)
 }
 
 #' Calculate running, cumulative sums
@@ -528,23 +461,23 @@ reverse_complement <- function(x) {
 #'
 #' @examples
 #' running_sum(runif(100))
-#'
 #' @noRd
 running_sum <- function(x, n = NULL) {
-    if (!(is.numeric(x))) {
-        stop("A numeric vector is expected for x.", call. = FALSE)
+  if (!(is.numeric(x))) {
+    stop("A numeric vector is expected for x.", call. = FALSE)
+  }
+  if (is.null(n)) {
+    n <- round(length(x) / 10)
+    if (n == 0) {
+      n <- 1
     }
-    if (is.null(n)) {
-        n <- round(length(x) / 10)
-        if (n == 0)
-            n <- 1
-    }
-    if (!is.numeric(n) || n < 1 || n > length(x)) {
-        stop("n must be a number between 1 and length(x)", call. = FALSE)
-    }
-    cumul <- c(0, cumsum(x))
-    runsum <- cumul[(n + 1):length(cumul)] - cumul[1:(length(cumul) - n)]
-    return(runsum)
+  }
+  if (!is.numeric(n) || n < 1 || n > length(x)) {
+    stop("n must be a number between 1 and length(x)", call. = FALSE)
+  }
+  cumul <- c(0, cumsum(x))
+  runsum <- cumul[(n + 1):length(cumul)] - cumul[1:(length(cumul) - n)]
+  return(runsum)
 }
 
 #' Exclude oligos with a specific pattern
@@ -560,8 +493,7 @@ running_sum <- function(x, n = NULL) {
 #' have been replaced with \code{NA}.
 #'
 #' @examples
-#' exclude(c('cttgttatttt', 'cgattctg'), "a$|t$")
-#'
+#' exclude(c("cttgttatttt", "cgattctg"), "a$|t$")
 #' @noRd
 exclude <- function(x, pattern) {
   if (!is.character(x)) {
@@ -603,34 +535,34 @@ exclude <- function(x, pattern) {
 #' has been replaced with \code{NA}.
 #'
 #' @examples
-#' exclude_oligos(c('gtgtaaaaatatttt', 'cgattctg'))
-#'
+#' exclude_oligos(c("gtgtaaaaatatttt", "cgattctg"))
 #' @noRd
 exclude_oligos <- function(
-  x, avoid_3end_ta = FALSE, avoid_5end_g = FALSE, avoid_3end_runs = FALSE
-  ) {
-    if (any(!is.logical(c(avoid_3end_ta, avoid_5end_g, avoid_3end_runs)))) {
-      stop(
-        "avoid_3end_ta, avoid_5end_g and avoid_3end_runs
-        must be set to TRUE or FALSE", call. = FALSE)
-    }
-    # Remove oligos with at least 4 'runs' of the same dinucleotide
-    x <- exclude(x, "(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)\\1\\1\\1")
-    # Remove oligos with at least 5 'runs' of the same nucleotide
-    x <- exclude(x, "([a-z])\\1\\1\\1\\1")
-    if (avoid_3end_ta == TRUE) {
-        # Remove oligos with t or a at the 3' end
-        x <- exclude(x, "a$|t$")
-    }
-    if (avoid_5end_g == TRUE) {
-        # Remove oligos with g at the 5' end
-        x <- exclude(x, "^g")
-    }
-    if (avoid_3end_runs == TRUE) {
-        # Remove oligos with at least 3 'runs' of the same nucleotide in 3'
-        x <- exclude(x, "([a-z])\\1\\1$")
-    }
-    return(x)
+                           x, avoid_3end_ta = FALSE, avoid_5end_g = FALSE, avoid_3end_runs = FALSE) {
+  if (any(!is.logical(c(avoid_3end_ta, avoid_5end_g, avoid_3end_runs)))) {
+    stop(
+      "avoid_3end_ta, avoid_5end_g and avoid_3end_runs
+        must be set to TRUE or FALSE",
+      call. = FALSE
+    )
+  }
+  # Remove oligos with at least 4 'runs' of the same dinucleotide
+  x <- exclude(x, "(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)\\1\\1\\1")
+  # Remove oligos with at least 5 'runs' of the same nucleotide
+  x <- exclude(x, "([a-z])\\1\\1\\1\\1")
+  if (avoid_3end_ta == TRUE) {
+    # Remove oligos with t or a at the 3' end
+    x <- exclude(x, "a$|t$")
+  }
+  if (avoid_5end_g == TRUE) {
+    # Remove oligos with g at the 5' end
+    x <- exclude(x, "^g")
+  }
+  if (avoid_3end_runs == TRUE) {
+    # Remove oligos with at least 3 'runs' of the same nucleotide in 3'
+    x <- exclude(x, "([a-z])\\1\\1$")
+  }
+  return(x)
 }
 
 #' Exclude unwanted oligos
@@ -661,8 +593,7 @@ exclude_oligos <- function(
 #'
 #' @noRd
 exclude_unwanted_oligos <- function(
-  x, avoid_3end_ta, avoid_5end_g, avoid_3end_runs
-  ) {
+                                    x, avoid_3end_ta, avoid_5end_g, avoid_3end_runs) {
   x$majority <- exclude_oligos(
     x$majority,
     avoid_3end_ta = avoid_3end_ta,
@@ -697,23 +628,23 @@ exclude_unwanted_oligos <- function(
 #' @return the number of degenerate bases in \code{x} (an integer).
 #'
 #' @examples
-#' count_degenerates('cttnra')
-#'
+#' count_degenerates("cttnra")
 #' @noRd
 count_degenerates <- function(x) {
-    if (typeof(x) != "character" || length(x) != 1) {
-        stop("x must be a character vector of length one", call. = FALSE)
-    }
-    if (grepl("[^acgtrymkswnhdvb-]", x)) {
-        stop("x contains at least one invalid base.
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("x must be a character vector of length one", call. = FALSE)
+  }
+  if (grepl("[^acgtrymkswnhdvb-]", x)) {
+    stop("x contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
-            call. = FALSE)
-    }
-    nt <- c("a", "c", "g", "t", "-")
-    x <- split_sequence(x)
-    count <- length(x[!x %in% nt])
-    return(count)
+      call. = FALSE
+    )
+  }
+  nt <- c("a", "c", "g", "t", "-")
+  x <- split_sequence(x)
+  count <- length(x[!x %in% nt])
+  return(count)
 }
 
 #' Count the degeneracy of a DNA sequence
@@ -729,25 +660,25 @@ count_degenerates <- function(x) {
 #' @return the number of unique sequences of x (an integer).
 #'
 #' @examples
-#' count_degeneracy('cttnra')
-#'
+#' count_degeneracy("cttnra")
 #' @noRd
 count_degeneracy <- function(x) {
-    if (typeof(x) != "character" || length(x) != 1) {
-        stop("x must be a character vector of length one", call. = FALSE)
-    }
-    if (grepl("[^acgtrymkswnhdvb-]", x)) {
-        stop("x contains at least one invalid base.
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("x must be a character vector of length one", call. = FALSE)
+  }
+  if (grepl("[^acgtrymkswnhdvb-]", x)) {
+    stop("x contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
-            call. = FALSE)
-    }
-    x <- split_sequence(x)
-    # Find the number of nucleotides at each position in x
-    n_nucleotides <- degeneracy_lookup[x]
-    # Calculate the total number of DNA sequences in x
-    degeneracy <- prod(n_nucleotides)
-    return(degeneracy)
+      call. = FALSE
+    )
+  }
+  x <- split_sequence(x)
+  # Find the number of nucleotides at each position in x
+  n_nucleotides <- degeneracy_lookup[x]
+  # Calculate the total number of DNA sequences in x
+  degeneracy <- prod(n_nucleotides)
+  return(degeneracy)
 }
 
 #' Generate oligos of a specific length
@@ -766,15 +697,15 @@ count_degeneracy <- function(x) {
 #'
 #' @noRd
 generate_oligos <- function(
-  x,
-  oligo_length = 20,
-  max_gap_frequency = 0.1,
-  max_degenerates = 2,
-  max_degeneracy = 4
-) {
+                            x,
+                            oligo_length = 20,
+                            max_gap_frequency = 0.1,
+                            max_degenerates = 2,
+                            max_degeneracy = 4) {
   if (!inherits(x, "rprimer_sequence_properties")) {
     stop(
-      "An rprimer_sequence_properties object is expected for x.", call. = FALSE
+      "An rprimer_sequence_properties object is expected for x.",
+      call. = FALSE
     )
   }
   if (!(min(oligo_length) >= 6 && max(oligo_length) <= 30)) {
@@ -792,10 +723,10 @@ generate_oligos <- function(
   # Find all possible oligos of length y
   majority <- get_nmers(x$majority, n = oligo_length)
   iupac <- get_nmers(x$iupac, n = oligo_length)
-  majority_rc <- purrr::map_chr(majority, ~reverse_complement(.x))
-  iupac_rc <- purrr::map_chr(iupac, ~reverse_complement(.x))
-  degenerates <- purrr::map_int(iupac, ~count_degenerates(.x))
-  degeneracy <- purrr::map_dbl(iupac, ~count_degeneracy(.x))
+  majority_rc <- purrr::map_chr(majority, ~ reverse_complement(.x))
+  iupac_rc <- purrr::map_chr(iupac, ~ reverse_complement(.x))
+  degenerates <- purrr::map_int(iupac, ~ count_degenerates(.x))
+  degeneracy <- purrr::map_dbl(iupac, ~ count_degeneracy(.x))
   begin <- seq_along(majority)
   end <- seq_along(majority) + oligo_length - 1
   length <- oligo_length
@@ -867,12 +798,11 @@ generate_oligos <- function(
 #'
 #' @noRd
 add_gc_tm <- function(
-  oligos,
-  gc_range = c(0.45, 0.55),
-  tm_range = c(48, 70),
-  conc_oligo = 5e-07,
-  conc_na = 0.05
-  ) {
+                      oligos,
+                      gc_range = c(0.45, 0.55),
+                      tm_range = c(48, 70),
+                      conc_oligo = 5e-07,
+                      conc_na = 0.05) {
   if (!(min(gc_range) >= 0 && max(gc_range) <= 1)) {
     stop("gc_range must be between 0 and 1, e.g. c(0.45, 0.65)", call. = FALSE)
   }
@@ -880,7 +810,7 @@ add_gc_tm <- function(
     stop("tm_range must be between 20 and 90, e.g. c(55, 60)", call. = FALSE)
   }
   # Calculate GC content of all majority oligos
-  gc_majority <- purrr::map_dbl(oligos$majority, ~gc_content(.x))
+  gc_majority <- purrr::map_dbl(oligos$majority, ~ gc_content(.x))
   oligos <- tibble::add_column(oligos, gc_majority)
   # Exclude oligos with GC content outside the stated thresholds
   oligos <- oligos[oligos$gc_majority >= min(gc_range), ]
@@ -907,8 +837,7 @@ add_gc_tm <- function(
 #' @return A regular expression of x (e.g. '(c)(t)(t)(g)(t)(a|g)').
 #'
 #' @examples
-#' make_regex('cttrng')
-#'
+#' make_regex("cttrng")
 #' @noRd
 make_regex <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
@@ -918,7 +847,8 @@ make_regex <- function(x) {
     stop("x contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
   x <- split_sequence(x)
   # Go through each base of the DNA sequence
@@ -928,8 +858,8 @@ make_regex <- function(x) {
     all_bases <- unlist(strsplit(all_bases, split = ","))
     return(all_bases)
   })
-  regx <- purrr::map(regx, ~paste(.x, collapse = "|"))
-  regx <- purrr::map(regx, ~paste0("(", .x, ")"))
+  regx <- purrr::map(regx, ~ paste(.x, collapse = "|"))
+  regx <- purrr::map(regx, ~ paste0("(", .x, ")"))
   regx <- unlist(paste(regx, collapse = ""))
   return(regx)
 }
@@ -1011,7 +941,7 @@ nn_split <- function(x) {
   x <- split_sequence(x)
   from <- (seq_along(x) - 1)[-1]
   to <- seq_along(x)[-1]
-  nn <- purrr::map_chr(from, ~paste(x[from[[.x]]:to[[.x]]], collapse = ""))
+  nn <- purrr::map_chr(from, ~ paste(x[from[[.x]]:to[[.x]]], collapse = ""))
   return(nn)
 }
 
@@ -1029,8 +959,7 @@ nn_split <- function(x) {
 #' @return The corresponding values for dH or dS (in cal/M)
 #'
 #' @examples
-#' nn_lookup(c('ac', 'cc'), table = 'dS')
-#'
+#' nn_lookup(c("ac", "cc"), table = "dS")
 #' @noRd
 nn_lookup <- function(x, table) {
   valid_tables <- c("dH", "dS")
@@ -1040,7 +969,9 @@ nn_lookup <- function(x, table) {
   if (any(grepl("[^acgt]", x))) {
     stop(
       "x contain at least one invalid base.
-          Valid bases are a, c, g and t.", call. = FALSE)
+          Valid bases are a, c, g and t.",
+      call. = FALSE
+    )
   }
   if (table == "dH") {
     selected_table <- nearest_neighbor_lookup$dH
@@ -1067,12 +998,18 @@ nn_lookup <- function(x, table) {
 #'
 #' @noRd
 init_3end <- function(x) {
-  if (grepl("(t|a)$", x))
-    c(H = 2.3 * 1000, S = 4.1) else c(H = 0.1 * 1000, S = -2.8)
+  if (grepl("(t|a)$", x)) {
+    c(H = 2.3 * 1000, S = 4.1)
+  } else {
+    c(H = 0.1 * 1000, S = -2.8)
+  }
 }
 init_5end <- function(x) {
-  if (grepl("^(t|a)", x))
-    c(H = 2.3 * 1000, S = 4.1) else c(H = 0.1 * 1000, S = -2.8)
+  if (grepl("^(t|a)", x)) {
+    c(H = 2.3 * 1000, S = 4.1)
+  } else {
+    c(H = 0.1 * 1000, S = -2.8)
+  }
 }
 
 #' Melting temperature
@@ -1119,9 +1056,8 @@ init_5end <- function(x) {
 #' Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
 #'
 #' @examples
-#' tm('acggtgcctac')
-#' tm(c('acggtgcctac', 'acggtggctgc'))
-#'
+#' tm("acggtgcctac")
+#' tm(c("acggtgcctac", "acggtggctgc"))
 #' @noRd
 tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
   if (!is.double(conc_oligo) || conc_oligo < 2e-07 || conc_oligo > 2.0e-06) {
@@ -1133,8 +1069,8 @@ tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
   }
   x <- tolower(x)
   # Find initiation values
-  init_H <- purrr::map_dbl(x, ~init_5end(.x)[["H"]] + init_3end(.x)[["H"]])
-  init_S <- purrr::map_dbl(x, ~init_5end(.x)[["S"]] + init_3end(.x)[["S"]])
+  init_H <- purrr::map_dbl(x, ~ init_5end(.x)[["H"]] + init_3end(.x)[["H"]])
+  init_S <- purrr::map_dbl(x, ~ init_5end(.x)[["S"]] + init_3end(.x)[["S"]])
   nn <- purrr::map(x, nn_split)
   # Check oligo length
   oligo_length <- purrr::map_int(nn, length)
@@ -1151,7 +1087,7 @@ tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
   sumdH <- rowSums(dH_result) + init_H
   sumdS <- rowSums(dS_result) + init_S
   # Correct delta S for salt conc.
-  N <- nchar(x[[1]]) - 1  # Number of phosphates
+  N <- nchar(x[[1]]) - 1 # Number of phosphates
   sumdS <- sumdS + 0.368 * N * log(conc_na)
   tm <- sumdH / (sumdS + gas_constant * log(conc_oligo))
   tm <- tm - 273.15
@@ -1172,10 +1108,12 @@ combine_match_matrices <- function(x) {
   fwd <- x$match_matrix_fwd
   rev <- x$match_matrix_rev
   fwd <- purrr::map(fwd, function(x) {
-    colnames(x) <- paste0(colnames(x), "_fwd"); x
+    colnames(x) <- paste0(colnames(x), "_fwd")
+    x
   })
   rev <- purrr::map(rev, function(x) {
-    colnames(x) <- paste0(colnames(x), "_rev"); x
+    colnames(x) <- paste0(colnames(x), "_rev")
+    x
   })
   match_matrix <- purrr::map(seq_len(nrow(x)), function(y) {
     match <- cbind(fwd[[y]], rev[[y]])
@@ -1210,13 +1148,14 @@ combine_match_matrices <- function(x) {
 #' @noRd
 add_probe_to_match_matrix <- function(x) {
   assays <- x$match_matrix
-  probe <-  x$match_matrix_pr
+  probe <- x$match_matrix_pr
   probe <- purrr::map(probe, function(x) {
-    colnames(x) <- paste0(colnames(x), "_pr"); x
+    colnames(x) <- paste0(colnames(x), "_pr")
+    x
   })
   match_matrix <- purrr::map(seq_len(nrow(x)), function(y) {
     match <- cbind(assays[[y]], probe[[y]])
-    match <- match[ , -(5:6)]
+    match <- match[, -(5:6)]
     majority_all <- rowSums(match[, c(1, 3, 5)])
     iupac_all <- rowSums(match[, c(2, 4, 6)])
     majority_all <- ifelse(majority_all == 3, TRUE, FALSE)
@@ -1252,28 +1191,28 @@ add_probe_to_match_matrix <- function(x) {
 #' @return A tibble with position and running average of x.
 #'
 #' @examples
-#' running_average(c(1,3,2,1,3,4,5), size = 2)
+#' running_average(c(1, 3, 2, 1, 3, 4, 5), size = 2)
 #' running_average(c(10, 22.4, 14.2, 44, 32))
-#'
 #' @noRd
 running_average <- function(x, size = NULL) {
-    if (is.null(size)) {
-        size <- round(length(x)/100)
-        if (size == 0)
-            size <- 1
+  if (is.null(size)) {
+    size <- round(length(x) / 100)
+    if (size == 0) {
+      size <- 1
     }
-    stopifnot(is.numeric(x) && size <= length(x) && size >= 1)
-    sums <- c(0, cumsum(x))
-    average <- (sums[((size + 1):length(sums))] - sums[(1:(length(sums) - size))]) / size
-    # First, we set the position to get a trailed moving average
-    position <- (1 + size - 1):length(x)
-    # Then, to get a centered running average,
-    # we align each moving average to the midpoint of the range of observations
-    # that each average includes
-    midpoint <- size/2
-    position <- position - midpoint
-    df <- tibble::tibble(position, average)
-    return(df)
+  }
+  stopifnot(is.numeric(x) && size <= length(x) && size >= 1)
+  sums <- c(0, cumsum(x))
+  average <- (sums[((size + 1):length(sums))] - sums[(1:(length(sums) - size))]) / size
+  # First, we set the position to get a trailed moving average
+  position <- (1 + size - 1):length(x)
+  # Then, to get a centered running average,
+  # we align each moving average to the midpoint of the range of observations
+  # that each average includes
+  midpoint <- size / 2
+  position <- position - midpoint
+  df <- tibble::tibble(position, average)
+  return(df)
 }
 
 #' Calculate running average of GC content
@@ -1293,36 +1232,36 @@ running_average <- function(x, size = NULL) {
 #' @return A tibble with position and running average of x.
 #'
 #' @examples
-#' running_average(c('gtttgtttctt'), size = 2)
-#' running_average(c('cttggggtttctttggtt-ttagg'))
-#'
+#' running_average(c("gtttgtttctt"), size = 2)
+#' running_average(c("cttggggtttctttggtt-ttagg"))
 #' @seealso
 #' gc_content
 #'
 #' @noRd
 gc_running_average <- function(x, size = NULL) {
-    if (is.null(size)) {
-        size <- round(length(x)/100)
-        if (size == 0)
-            size <- 1
+  if (is.null(size)) {
+    size <- round(length(x) / 100)
+    if (size == 0) {
+      size <- 1
     }
-    stopifnot(is.character(x) && size <= length(x) && size >= 1)
-    begins <- 1:(length(x) - size + 1)
-    ends <- begins + size - 1
-    frame <- 1:(length(x) - size + 1)
-    average <- purrr::map_dbl(frame, function(y) {
-        string <- paste(x[begins[[y]]:ends[[y]]], collapse = "")
-        return(gc_content(string))
-    })
-    # First, we set the position to get a trailed moving average
-    position <- (1 + size - 1):length(x)
-    # Then, to get a centered running average,
-    # we align each moving average to the midpoint of the range of observations
-    # that each average includes
-    midpoint <- size/2
-    position <- position - midpoint
-    df <- tibble::tibble(position, average)
-    return(df)
+  }
+  stopifnot(is.character(x) && size <= length(x) && size >= 1)
+  begins <- 1:(length(x) - size + 1)
+  ends <- begins + size - 1
+  frame <- 1:(length(x) - size + 1)
+  average <- purrr::map_dbl(frame, function(y) {
+    string <- paste(x[begins[[y]]:ends[[y]]], collapse = "")
+    return(gc_content(string))
+  })
+  # First, we set the position to get a trailed moving average
+  position <- (1 + size - 1):length(x)
+  # Then, to get a centered running average,
+  # we align each moving average to the midpoint of the range of observations
+  # that each average includes
+  midpoint <- size / 2
+  position <- position - midpoint
+  df <- tibble::tibble(position, average)
+  return(df)
 }
 
 #' Draw a rectangle
@@ -1336,7 +1275,8 @@ gc_running_average <- function(x, size = NULL) {
 #' @noRd
 rectangle <- function(from, to) {
   graphics::rect(
-    from, 0, to, 5, border = NA,
+    from, 0, to, 5,
+    border = NA,
     col = grDevices::rgb(123, 149, 169, alpha = 100, maxColorValue = 200), xpd = NA
   )
 }
@@ -1350,27 +1290,32 @@ rectangle <- function(from, to) {
 #' @noRd
 sequence_detail_plot <- function(x) {
   identity_plot <- graphics::plot(
-    x$position, x$identity, type = "h", ylim = c(0, 1),
+    x$position, x$identity,
+    type = "h", ylim = c(0, 1),
     ylab = "identity", xlab = "", xaxt = "n",
     col = ifelse(x$identity < 1, "gray80", "gray60")
   )
   identity_line <- graphics::lines(running_average(x$identity))
   entropy_plot <- graphics::plot(
-    x$position, x$entropy, type = "h",
+    x$position, x$entropy,
+    type = "h",
     ylim = c(0, max(x$entropy, na.rm = TRUE) * 1.1),
     ylab = "shannon entropy",
     xlab = "", xaxt = "n", col = ifelse(x$entropy > 0, "gray80", "gray60")
   )
   entropy_line <- graphics::lines(running_average(x$entropy))
   gc_plot <- graphics::plot(
-    x$position, pch = NA, ylab = "gc content", ylim = c(0, 1),
+    x$position,
+    pch = NA, ylab = "gc content", ylim = c(0, 1),
     xlab = "", xaxt = "n"
   )
   graphics::clip(0, nrow(x), -1, 2)
   graphics::abline(h = 0.5, col = "gray80")
   gc_line <- graphics::lines(gc_running_average(x$majority))
   gap_plot <- graphics::plot(
-    x$position, x$gaps, type = "h", ylim = c(0, 1), ylab = "gaps", xlab = "")
+    x$position, x$gaps,
+    type = "h", ylim = c(0, 1), ylab = "gaps", xlab = ""
+  )
   identity_plot
   identity_line
   entropy_plot
@@ -1400,13 +1345,16 @@ sequence_barplot <- function(x, ...) {
   colors <- c(colors1, colors2)
   # Make the plot
   graphics::barplot(
-    x, space = 0, xaxt = "n", font.main = 1, border = "grey80",
+    x,
+    space = 0, xaxt = "n", font.main = 1, border = "grey80",
     col = colors[rownames(x)], legend = TRUE, ylab = "Proportion",
     ylim = c(0, 1), ...,
     args.legend = list(
       x = "right", box.col = NA, border = "grey80",
-      bg = grDevices::rgb(60, 60, 60, alpha = 50,
-      maxColorValue = 200), inset = c(0, -0.3)
+      bg = grDevices::rgb(60, 60, 60,
+        alpha = 50,
+        maxColorValue = 200
+      ), inset = c(0, -0.3)
     )
   )
 }

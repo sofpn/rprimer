@@ -6,97 +6,12 @@
 #pm om aln har hog gapfreq hur hantera (skriv detta i beskrivningen)
 #remove min length in class?
 #go trough documentation /items in fn docs as well?
-#fix options
 #one file for each fn
-#redo package pcrdesign
-#✖ adhere to style guide
+#✖ adhere to style guide err messages
 # citation
+#do not use return
 
 # Import alignment ============================================================
-
-#' Read an alignment in fasta format
-#'
-#' \code{read_fasta_alignment} reads a fasta file with aligned DNA
-#' sequences.
-#'
-#' @param x The name of the file of which the
-#' alignment is to be read from (a character vector of length one).
-#'
-#' @details The file must contain one or more aligned
-#' DNA sequences in fasta format. Sequences in fasta format always
-#' begins with a '>' symbol, followed by a single-line name.
-#' The sequence is present on the next line.
-#' All sequences (including gaps) must be of the same length,
-#' and the minimum length of the alignment is 200.
-#' Valid nucleotides are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-#' n', 'h', 'd', 'v', 'b' and '-'. The alignment can be in either
-#' upper- or lowercase format.
-#'
-#' @note This function is partly inspired by read.fasta from the
-#' seqinr package.
-#'
-#' @return The alignment from the input
-#' file (a named list with class attribute 'rprimer_alignment').
-#' Each object (DNA sequence) will have the same name as its
-#' sequence name in the input file, except for the '>' symbol.
-#' Sequences are will be presented as character vectors of length one,
-#' in lowercase format.
-#'
-#' @examples
-#' read_fasta_alignment(
-#' system.file('extdata', 'example_alignment.txt', package = 'rprimer')
-#' )
-#'
-#' @references  Charif, D. and Lobry, J.R. (2007)
-#' SeqinR 1.0-2: a contributed package to the R project for statistical
-#' computing devoted to biological sequences retrieval and analysis.
-#' Structural approaches to sequence evolution: Molecules, networks,
-#' populations, pp 207-232.
-#'
-#' @export
-read_fasta_alignment <- function(x) {
-    if (!is.character(x) || length(x) != 1) {
-        stop(
-          "A filename (character vector of length one) is expected",
-          call. = FALSE
-        )
-    }
-    # Check if we have permission to read the file named x, and stop if not
-    access <- file.access(x, mode = 4)
-    if (access != 0) {
-        stop(paste("File", x, "was not found/is not readable"), call. = FALSE)
-    }
-    # Import the fasta file
-    infile <- readLines(x, warn = FALSE)
-    # Identify where all the sequence names are
-    index <- grep(">", infile)
-    # Stop if the file does not appear to be in fasta format
-    if (length(index) == 0L) {
-        stop(
-          "The file does not appear to be in fasta format
-          (no line starts with '>').", call. = FALSE
-        )
-    }
-    # Identify where the sequences start
-    begin <- index + 1
-    # Identify where the sequences end
-    end <- index - 1
-    # Remove the first 'end', as there is no sequence above the first sequence
-    end <- c(end[-1], length(infile))
-    # Make a list with all sequences
-    sequences <- purrr::map(seq_along(index), function(i) {
-        sequence <- paste(infile[begin[[i]]:end[[i]]], collapse = "")
-        sequence <- tolower(sequence)
-        return(sequence)
-    })
-    # Get the name of each sequence
-    name <- infile[index]
-    name <- gsub(">", "", name)
-    names(sequences) <- name
-    # Assign and validate a class attribute (rprimer_alignment)
-    sequences <- new_rprimer_alignment(sequences)
-    return(sequences)
-}
 
 #' Remove positions with high gap frequency
 #'
@@ -108,8 +23,7 @@ read_fasta_alignment <- function(x) {
 #'
 #' @param threshold A number between 0.5 and <1 (the default is 0.5).
 #'
-#' @details Gaps are recognised as "-". The alignment (with gaps removed)
-#' must contain at least 200 bases (an error message will return if not).
+#' @details Gaps are recognised as "-".
 #' Note that the positions will
 #' not be kept from the input alignment. The positions in the new
 #' alignment will always start at 1, and increase by 1 for every new
@@ -132,7 +46,7 @@ remove_gaps <- function(x, threshold = 0.5) {
           treshold must be between 0.5 and <1"
         ), call. = FALSE)
     }
-    if (!inherits(x, "rprimer_alignment")) {
+    if (!is.rprimer_alignment(x)) {
         stop("An rprimer_alignment object is expected.", call. = FALSE)
     }
     splitted <- purrr::map(x, split_sequence)
@@ -179,7 +93,7 @@ remove_gaps <- function(x, threshold = 0.5) {
 #'
 #' @export
 select_roi <- function(x, from = 1, to = NULL) {
-    if (!inherits(x, "rprimer_alignment")) {
+    if (!is.rprimer_alignment(x)) {
         stop("An rprimer_alignment object is expected.", call. = FALSE)
     }
     splitted <- purrr::map(x, split_sequence)

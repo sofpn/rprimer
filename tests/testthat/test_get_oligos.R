@@ -67,35 +67,35 @@ test_that("running_sum works", {
 })
 
 test_that("exclude returns an error when it should", {
- expect_error(exclude(12))
- expect_error(exclude("cgg", pattern = 12))
+  expect_error(exclude(12))
+  expect_error(exclude("cgg", pattern = 12))
 })
 
 test_that("exclude works", {
- expect_true(is.na(exclude("at", "t$")))
- expect_true(is.na(exclude("attt", "(t)\\1\\1")))
+  expect_true(is.na(exclude("at", "t$")))
+  expect_true(is.na(exclude("attt", "(t)\\1\\1")))
 })
 
 test_that("exclude_oligos returns an error when it should", {
- expect_error(exclude_oligos(0))
- expect_error(exclude_oligos("ctgtt", avoid_5end_g = 0))
- expect_error(exclude_oligos("ctgtt", avoid_3end_ta = NULL))
+  expect_error(exclude_oligos(0))
+  expect_error(exclude_oligos("ctgtt", avoid_5end_g = 0))
+  expect_error(exclude_oligos("ctgtt", avoid_3end_ta = NULL))
 })
 
 test_that("exclude_oligos works", {
- oligos <- c("cttgttta", "ggttccggtc")
- expect_equal(
-   exclude_oligos(oligos, avoid_3end_ta = FALSE, avoid_5end_g = TRUE),
-   c("cttgttta", NA)
+  oligos <- c("cttgttta", "ggttccggtc")
+  expect_equal(
+    exclude_oligos(oligos, avoid_3end_ta = FALSE, avoid_5end_g = TRUE),
+    c("cttgttta", NA)
   )
- expect_true(is.na(exclude_oligos("cgtgtgtgt")))
- expect_true(is.na(exclude_oligos("cggggg")))
+  expect_true(is.na(exclude_oligos("cgtgtgtgt")))
+  expect_true(is.na(exclude_oligos("cggggg")))
 })
 
 test_that("count_degenerates returns an error when it should", {
- expect_error(cound_degenerates("cx"))
- expect_error(cound_degenerates(0))
- expect_error(cound_degenerates(c("ca", "ca")))
+  expect_error(cound_degenerates("cx"))
+  expect_error(cound_degenerates(0))
+  expect_error(cound_degenerates(c("ca", "ca")))
 })
 
 # test_that("exclide_unwanted_oligos returns an error when it should", {
@@ -103,8 +103,8 @@ test_that("count_degenerates returns an error when it should", {
 # })
 
 test_that("count_degenerates works", {
- expect_equal(count_degenerates("cgtcg"), 0)
- expect_equal(count_degenerates("cgtcgnyr"), 3)
+  expect_equal(count_degenerates("cgtcg"), 0)
+  expect_equal(count_degenerates("cgtcgnyr"), 3)
 })
 
 test_that("count_degeneracy returns an error when it should", {
@@ -129,8 +129,8 @@ test_that("nn_split works", {
 })
 
 test_that("nn_lookup returns an error when it should", {
- expect_error(nn_lookup("cg", dH))
- expect_error(nn_lookup("cr", "dH"))
+  expect_error(nn_lookup("cg", dH))
+  expect_error(nn_lookup("cr", "dH"))
 })
 
 test_that("nn_lookup works", {
@@ -189,11 +189,11 @@ test_that("generate_oligos returns an error when it should", {
 })
 
 test_that("generate_oligos works", {
- oligos <- generate_oligos(example_rprimer_sequence_properties)
- expect_false(any(oligos$degenerates > 2))
- expect_false(any(oligos$degeneracy > 4))
- expect_false(any(oligos$length != 20))
- expect_equal(length(unique(oligos$majority)), nrow(oligos))
+  oligos <- generate_oligos(example_rprimer_sequence_properties)
+  expect_false(any(oligos$degenerates > 2))
+  expect_false(any(oligos$degeneracy > 4))
+  expect_false(any(oligos$length != 20))
+  expect_equal(length(unique(oligos$majority)), nrow(oligos))
 })
 
 test_that("add_gc_tm returns an error when it should", {
@@ -218,7 +218,7 @@ test_that("make_regex returns an error when it should", {
 })
 
 test_that("make_regex works", {
-  expect_equal(make_regex("cgtggnr"),  "(c)(g)(t)(g)(g)(a|c|g|t)(a|g)")
+  expect_equal(make_regex("cgtggnr"), "(c)(g)(t)(g)(g)(a|c|g|t)(a|g)")
 })
 
 test_that("check_match returns an error when it should", {
@@ -250,8 +250,9 @@ test_that("get_oligos returns an error when it should", {
 })
 
 test_that("get_oligos works", {
- oligos <- get_oligos(
-   example_rprimer_sequence_properties, target = example_rprimer_alignment
+  oligos <- get_oligos(
+    example_rprimer_sequence_properties,
+    target = example_rprimer_alignment
   )
- expect_s3_class(oligos, class = "rprimer_oligo")
+  expect_s3_class(oligos, class = "rprimer_oligo")
 })

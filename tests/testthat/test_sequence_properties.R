@@ -87,7 +87,7 @@ test_that("shannon_entropy works", {
   bases <- c("a", "c", "g", "t")
   s <- example_rprimer_sequence_profile[
     which(rownames(example_rprimer_sequence_profile) %in% bases),
-    ]
+  ]
   s <- new_rprimer_sequence_profile(s)
   expect_equal(shannon_entropy(s), entropy)
 })

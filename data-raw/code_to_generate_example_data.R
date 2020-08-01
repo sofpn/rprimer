@@ -21,15 +21,14 @@
 #  gc_range = c(0.45, 0.56),
 #  tm_range = c(48, 65),
 #  avoid_3end_ta = TRUE
-#)
+# )
 
-#example_rprimer_assay <- get_assays(
+# example_rprimer_assay <- get_assays(
 #  example_rprimer_oligo, length = 60:150, max_tm_difference = 1.5
-#)
+# )
 
-#save(example_rprimer_alignment, file = "example_rprimer_alignment.RData")
-#save(example_rprimer_sequence_profile, file = "example_rprimer_sequence_profile.RData")
-#save(example_rprimer_sequence_properties, file = "example_rprimer_sequence_properties.RData")
-#save(example_rprimer_oligo, file = "example_rprimer_oligo.RData")
-#save(example_rprimer_assay, file = "example_rprimer_assay.RData")
-
+# save(example_rprimer_alignment, file = "example_rprimer_alignment.RData")
+# save(example_rprimer_sequence_profile, file = "example_rprimer_sequence_profile.RData")
+# save(example_rprimer_sequence_properties, file = "example_rprimer_sequence_properties.RData")
+# save(example_rprimer_oligo, file = "example_rprimer_oligo.RData")
+# save(example_rprimer_assay, file = "example_rprimer_assay.RData")

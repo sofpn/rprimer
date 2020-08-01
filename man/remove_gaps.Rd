@@ -22,8 +22,7 @@ are removed.
 higher than a stated threshold in an alignment of DNA sequences.
 }
 \details{
-Gaps are recognised as "-". The alignment (with gaps removed)
-must contain at least 200 bases (an error message will return if not).
+Gaps are recognised as "-".
 Note that the positions will
 not be kept from the input alignment. The positions in the new
 alignment will always start at 1, and increase by 1 for every new

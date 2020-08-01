@@ -1,7 +1,7 @@
 context("sequence profile")
 
 test_that("sequence_profile stops when it should", {
- expect_error(sequence_profile(unclass(example_rprimer_alignment)))
+  expect_error(sequence_profile(unclass(example_rprimer_alignment)))
 })
 
 test_that("sequence_profile works as it should", {
