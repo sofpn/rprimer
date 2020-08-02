@@ -68,37 +68,6 @@ complement <- function(x) {
   return(complement)
 }
 
-# Context: Import alignment ===================================================
-
-
-# Context: Get sequence profile ===============================================
-
-#' 'rprimer_sequence_profile' constructor and validator
-#'
-#' \code{new_rprimer_sequence_profile} creates an object of class
-#' 'rprimer_sequence_profile'
-#'
-#' @param x An rprimer_sequence_profile-like object.
-#'
-#' @details an rprimer_sequence_profile object must be a matrix of type
-#' 'double'. Each element must have a value between 0 and 1. The matrix
-#' must have both rownames and colnames.
-#'
-#' @return An rprimer_sequence_profile object if the validation is succeeds.
-#' An error message if not.
-#'
-#' @noRd
-new_rprimer_sequence_profile <- function(x = matrix()) {
-  # Integrity checks
-  stopifnot(
-    is.matrix(x), is.double(x), max(x) <= 1, min(x) >= 0,
-    !is.null(rownames(x)), !is.null(colnames(x))
-  )
-  # Set class attribute
-  x <- structure(x, class = "rprimer_sequence_profile")
-  return(x)
-}
-
 # Context: Get sequence properties ============================================
 
 #' Majority consensus sequence
@@ -106,7 +75,7 @@ new_rprimer_sequence_profile <- function(x = matrix()) {
 #' \code{majority_consensus} returns the majority consensus sequence of an
 #' alignment of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_sequence_profile', i.e.
+#' @param x A nucleotide profile of class 'rprimer_profile', i.e.
 #' a numeric m x n matrix, where m is the number of nucleotides in the
 #' alignment, and n is the number of positions in the alignment.
 #'
@@ -117,8 +86,8 @@ new_rprimer_sequence_profile <- function(x = matrix()) {
 #'
 #' @noRd
 majority_consensus <- function(x) {
-  if (!inherits(x, "rprimer_sequence_profile")) {
-    stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  if (!inherits(x, "rprimer_profile")) {
+    stop("An rprimer_profile object is expected.", call. = FALSE)
   }
   # Function to identify the most common base at a position
   find_most_common_base <- function(x, y) {
@@ -179,7 +148,7 @@ as_iupac <- function(x) {
 #' \code{iupac_consensus} returns the iupac consensus sequence from an
 #' alignment of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_sequence_profile', i.e.
+#' @param x A nucleotide profile of class 'rprimer_profile', i.e.
 #' a numeric m x n matrix, where m is the number of nucleotides in the
 #' alignment, and n is the number of positions in the alignment.
 #'
@@ -201,8 +170,8 @@ as_iupac <- function(x) {
 #'
 #' @noRd
 iupac_consensus <- function(x, threshold = 0) {
-  if (!inherits(x, "rprimer_sequence_profile")) {
-    stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  if (!inherits(x, "rprimer_profile")) {
+    stop("An rprimer_profile object is expected.", call. = FALSE)
   }
   if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
     stop(paste0(
@@ -230,7 +199,7 @@ iupac_consensus <- function(x, threshold = 0) {
 #' \code{gap_frequency} returns the gap frequency at each position in an
 #' alignment of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_sequence_profile', i.e.
+#' @param x A nucleotide profile of class 'rprimer_profile', i.e.
 #' a numeric m x n matrix, where m is the number of nucleotides in the
 #' alignment, and n is the number of positions in the alignment.
 #'
@@ -240,8 +209,8 @@ iupac_consensus <- function(x, threshold = 0) {
 #'
 #' @noRd
 gap_frequency <- function(x) {
-  if (!inherits(x, "rprimer_sequence_profile")) {
-    stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  if (!inherits(x, "rprimer_profile")) {
+    stop("An rprimer_profile object is expected.", call. = FALSE)
   }
   gaps <- x[rownames(x) == "-", ]
   gaps <- unname(gaps)
@@ -253,7 +222,7 @@ gap_frequency <- function(x) {
 #' #' \code{nucleotide_identity} returns the nucleotide identity from an
 #' alignment of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_sequence_profile', i.e.
+#' @param x A nucleotide profile of class 'rprimer_profile', i.e.
 #' a numeric m x n matrix, where m is the number of nucleotides in the
 #' alignment, and n is the number of positions in the alignment.
 #'
@@ -267,8 +236,8 @@ gap_frequency <- function(x) {
 #'
 #' @noRd
 nucleotide_identity <- function(x) {
-  if (!inherits(x, "rprimer_sequence_profile")) {
-    stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  if (!inherits(x, "rprimer_profile")) {
+    stop("An rprimer_profile object is expected.", call. = FALSE)
   }
   # We want to assess identity based on DNA bases,
   # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
@@ -289,7 +258,7 @@ nucleotide_identity <- function(x) {
 #' #' \code{shannon_entropy} returns the shannon entropy from an
 #' alignment of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_sequence_profile', i.e.
+#' @param x A nucleotide profile of class 'rprimer_profile', i.e.
 #' a numeric m x n matrix, where m is the number of nucleotides in the
 #' alignment, and n is the number of positions in the alignment.
 #'
@@ -309,8 +278,8 @@ nucleotide_identity <- function(x) {
 #'
 #' @noRd
 shannon_entropy <- function(x) {
-  if (!inherits(x, "rprimer_sequence_profile")) {
-    stop("An rprimer_sequence_profile object is expected.", call. = FALSE)
+  if (!inherits(x, "rprimer_profile")) {
+    stop("An rprimer_profile object is expected.", call. = FALSE)
   }
   # We want to assess identity based on DNA bases,
   # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
@@ -683,7 +652,7 @@ count_degeneracy <- function(x) {
 
 #' Generate oligos of a specific length
 #'
-#' @param x An object of class 'rprimer_sequence_properties'
+#' @param x An object of class 'rprimer_properties'
 #'
 #' @param oligo_length An integer. The minimum allowed
 #' value is 6 and the maximum allowed value is 30. The default is 20.
@@ -702,9 +671,9 @@ generate_oligos <- function(
                             max_gap_frequency = 0.1,
                             max_degenerates = 2,
                             max_degeneracy = 4) {
-  if (!inherits(x, "rprimer_sequence_properties")) {
+  if (!inherits(x, "rprimer_properties")) {
     stop(
-      "An rprimer_sequence_properties object is expected for x.",
+      "An rprimer_properties object is expected for x.",
       call. = FALSE
     )
   }
@@ -1283,7 +1252,7 @@ rectangle <- function(from, to) {
 
 #' Sequence detail plot
 #'
-#' @param x An object of class 'rprimer_sequence_properties'
+#' @param x An object of class 'rprimer_properties'
 #'
 #' @return A visual representation of \code{x}
 #'

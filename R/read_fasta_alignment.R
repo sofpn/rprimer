@@ -59,7 +59,7 @@ read_fasta_alignment <- function(x) {
   if (length(index) == 0L) {
     stop(
       "The file does not appear to be in fasta format. \n
-       \\u2716  No line starts with '>'.", call. = FALSE
+      No line starts with '>'.", call. = FALSE
     )
   }
   # Identify where the sequences start

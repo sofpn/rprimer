@@ -12,18 +12,18 @@
 
 #' A sequence profile from hepatitis E virus sequences
 #'
-#' @format A numeric matrix with class attribute 'rprimer_sequence_profile'.
+#' @format A numeric matrix with class attribute 'rprimer__profile'.
 #'
 #' @source The sequences were collected from NCBI GenBank,
 #' by quering “[a-z]”[porgn:__txid1678143].
 #' Only sequences with more than 6000 bases were included.
 #' \url{https://www.ncbi.nlm.nih.gov/}
-"example_rprimer_sequence_profile"
+"example_rprimer_profile"
 
 #' Sequence properties of hepatitis E virus sequences
 #'
 #' @format A data frame (tibble) with class attribute ´
-#' rprimer_sequence_properties'.
+#' rprimer_properties'.
 #' \describe{
 #'   \item{position}{position in the alignment}
 #'   \item{majority}{majority consensus sequence}
@@ -37,7 +37,7 @@
 #' by quering “[a-z]”[porgn:__txid1678143].
 #' Only sequences with more than 6000 bases were included.
 #' \url{https://www.ncbi.nlm.nih.gov/}
-"example_rprimer_sequence_properties"
+"example_rprimer_properties"
 
 
 #' Oligos genrerated from hepatitis E virus sequences

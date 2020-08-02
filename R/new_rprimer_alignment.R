@@ -1,13 +1,18 @@
-#' 'rprimer_alignment' constructor
+#' Construct, subset and check 'rprimer_alignment' objects
 #'
-#' Create an object of class rprimer_alignment'
+#' * 'new_rprimer_alignment()' constructs and validate an rprimer_alignment-
+#'     object
+#' * 'is_rprimer_alignment()' checks if an object has class attribute
+#'     'rprimer_alignment'
+#' * '`[.rprimer_alignment()`' subsets an object of class 'rprimer_alignment'
 #'
 #' @param x An rprimer_alignment-like object.
 #'
 #' @details
 #' An rprimer_alignment object must must be a list and
 #' contain at least one DNA
-#' sequence, and all sequences must be a character vector of lentgh one.
+#' sequence, and all sequences must be a character vector of lentgh one,
+#' in lowercase format.
 #' All sequences (including gaps) must be of the same length.
 #' All sequences must have unique names. Valid bases are
 #' a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
@@ -26,7 +31,7 @@ new_rprimer_alignment <- function(x = list()) {
   if (any(has_length_one == FALSE)) {
     stop(
       "All sequences must be a character vector of length one. \n
-       \\u2716 At least one sequence is not a character vector/is not of length one.",
+      At least one sequence is not a character vector/is not of length one.",
       call. = FALSE
     )
   }
@@ -35,7 +40,7 @@ new_rprimer_alignment <- function(x = list()) {
   if (length(unique(sequence_lengths)) != 1) {
     stop(
       "The sequences does not appear to be aligned. \n
-       \\u2716 All sequences (including gaps) are not of the same length.",
+      All sequences (including gaps) are not of the same length.",
       call. = FALSE
     )
   }
@@ -48,22 +53,33 @@ new_rprimer_alignment <- function(x = list()) {
   non_valid_base <- purrr::map_lgl(x, ~ grepl("[^acgtrymkswnhdvb-]", .x))
   if (any(non_valid_base)) {
     stop(
-      "\\u2716 At least one sequence contain one or more invalid characters. \n
-       \\u2139 Valid characters are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-       'n', 'h', 'd', 'v', 'b' and '-'",
+      "At least one sequence contain one or more invalid characters. \n
+      Valid characters are: \n
+      'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w', 'n', 'h', 'd',
+      'v', 'b' and '-'",
       call. = FALSE
     )
   }
   # Set class attribute
   x <- structure(x, class = "rprimer_alignment")
-  return(x)
+  x
 }
 
 #' @describeIn new_rprimer_alignment
+#'
+#' @param x An rprimer_alignment object.
+#'
+#' @retun \code{TRUE} or \code{FALSE}.
+#'
 #' @noRd
 is.rprimer_alignment <- function(x) inherits(x, "rprimer_alignment")
 
 #' @describeIn new_rprimer_alignment
+#'
+#' @param x An rprimer_alignment object.
+#'
+#' @return A subset.
+#'
 #' @noRd
 `[.rprimer_alignment` <- function(x, i, ...) {
   new_rprimer_alignment(NextMethod())
