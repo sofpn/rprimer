@@ -31,7 +31,7 @@ new_rprimer_profile <- function(x = matrix()) {
 #'
 #' @param x An rprimer_profile object.
 #'
-#' @retun \code{TRUE} or \code{FALSE}.
+#' @return \code{TRUE} or \code{FALSE}.
 #'
 #' @noRd
 is.rprimer_profile <- function(x) inherits(x, "rprimer_profile")

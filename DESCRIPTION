@@ -14,7 +14,10 @@ Imports:
     purrr,
     tibble,
     magrittr,
-    dplyr
+    dplyr,
+    grDevices,
+    utils,
+    graphics
 Suggests: 
     knitr,
     rmarkdown,

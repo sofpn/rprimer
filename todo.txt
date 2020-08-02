@@ -1,6 +1,0 @@
-#to do:
-#vignette
-#readme github
-#pm om aln har hog gapfreq hur hantera (skriv detta i beskrivningen)
-#test worklow
-#reanme example datasets

@@ -69,7 +69,7 @@ new_rprimer_alignment <- function(x = list()) {
 #'
 #' @param x An rprimer_alignment object.
 #'
-#' @retun \code{TRUE} or \code{FALSE}.
+#' @return \code{TRUE} or \code{FALSE}.
 #'
 #' @noRd
 is.rprimer_alignment <- function(x) inherits(x, "rprimer_alignment")

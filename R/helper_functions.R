@@ -1235,9 +1235,9 @@ gc_running_average <- function(x, size = NULL) {
 
 #' Draw a rectangle
 #'
-#' @from Where (at the x-axis) the rectangle starts.
+#' @param from Where (at the x-axis) the rectangle starts.
 #'
-#' @to Where (at the x-axis) the rectangle ends.
+#' @param to Where (at the x-axis) the rectangle ends.
 #'
 #' @return A rectangle.
 #'

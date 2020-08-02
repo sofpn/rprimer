@@ -169,27 +169,27 @@ test_that("tm works", {
 
 test_that("generate_oligos returns an error when it should", {
   expect_error(
-    generate_oligos(example_rprimer_sequence_properties, oligo_length = NA)
+    generate_oligos(example_rprimer_properties, oligo_length = NA)
   )
   expect_error(
-    generate_oligos(example_rprimer_sequence_properties, oligo_length = 4)
+    generate_oligos(example_rprimer_properties, oligo_length = 4)
   )
   expect_error(
-    generate_oligos(example_rprimer_sequence_properties, max_gap_frequency = 6)
+    generate_oligos(example_rprimer_properties, max_gap_frequency = 6)
   )
   expect_error(
-    generate_oligos(example_rprimer_sequence_properties, max_degenerates = 30)
+    generate_oligos(example_rprimer_properties, max_degenerates = 30)
   )
   expect_error(
-    generate_oligos(example_rprimer_sequence_properties, max_degeneracy = 65)
+    generate_oligos(example_rprimer_properties, max_degeneracy = 65)
   )
   expect_error(
-    generate_oligos(unclass(example_rprimer_sequence_properties))
+    generate_oligos(unclass(example_rprimer_properties))
   )
 })
 
 test_that("generate_oligos works", {
-  oligos <- generate_oligos(example_rprimer_sequence_properties)
+  oligos <- generate_oligos(example_rprimer_properties)
   expect_false(any(oligos$degenerates > 2))
   expect_false(any(oligos$degeneracy > 4))
   expect_false(any(oligos$length != 20))
@@ -197,7 +197,7 @@ test_that("generate_oligos works", {
 })
 
 test_that("add_gc_tm returns an error when it should", {
-  oligos <- generate_oligos(example_rprimer_sequence_properties)
+  oligos <- generate_oligos(example_rprimer_properties)
   expect_error(add_gc_tm(oligos, gc_range = c(0.45, 1.1)))
   expect_error(add_gc_tm(oligos, tm_range = c(15, 50)))
   expect_error(add_gc_tm(oligos, gc_range = c(0.45, 1.1)))
@@ -206,7 +206,7 @@ test_that("add_gc_tm returns an error when it should", {
 })
 
 test_that("add_gc_tm works", {
-  oligos <- add_gc_tm(generate_oligos(example_rprimer_sequence_properties))
+  oligos <- add_gc_tm(generate_oligos(example_rprimer_properties))
   expect_true("gc_majority" %in% colnames(oligos))
   expect_true("tm_majority" %in% colnames(oligos))
 })
@@ -222,12 +222,12 @@ test_that("make_regex works", {
 })
 
 test_that("check_match returns an error when it should", {
-  oligos <- add_gc_tm(generate_oligos(example_rprimer_sequence_properties))
+  oligos <- add_gc_tm(generate_oligos(example_rprimer_properties))
   expect_error(check_match(oligos, unclass(example_rprimer_alignment)))
 })
 
 test_that("check_match works", {
-  oligos <- add_gc_tm(generate_oligos(example_rprimer_sequence_properties))
+  oligos <- add_gc_tm(generate_oligos(example_rprimer_properties))
   oligos <- check_match(oligos, example_rprimer_alignment)
   expect_true(
     all(c("pm_majority", "pm_iupac", "match_matrix") %in% colnames(oligos))
@@ -243,7 +243,7 @@ test_that("check_match works", {
 test_that("get_oligos returns an error when it should", {
   expect_error(
     get_oligos(
-      unclass(example_rprimer_sequence_properties),
+      unclass(example_rprimer_properties),
       target = example_rprimer_alignment
     )
   )
@@ -251,7 +251,7 @@ test_that("get_oligos returns an error when it should", {
 
 test_that("get_oligos works", {
   oligos <- get_oligos(
-    example_rprimer_sequence_properties,
+    example_rprimer_properties,
     target = example_rprimer_alignment
   )
   expect_s3_class(oligos, class = "rprimer_oligo")
