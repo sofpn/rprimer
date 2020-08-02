@@ -86,3 +86,7 @@ is.rprimer_alignment <- function(x) inherits(x, "rprimer_alignment")
 `[.rprimer_alignment` <- function(x, i, ...) {
   new_rprimer_alignment(NextMethod())
 }
+#####################################################################
+`[.rprimer_alignment<-` <- function(x, i, ...) {
+  new_rprimer_alignment(NextMethod())
+}
