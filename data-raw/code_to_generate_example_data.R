@@ -32,3 +32,5 @@ example_rprimer_assay <- get_assays(
  save(example_rprimer_properties, file = "example_rprimer_properties.RData")
  save(example_rprimer_oligo, file = "example_rprimer_oligo.RData")
  save(example_rprimer_assay, file = "example_rprimer_assay.RData")
+
+ tools::resaveRdaFiles(".")

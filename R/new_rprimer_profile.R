@@ -1,3 +1,5 @@
+#  fix dim etc etc
+
 #' Construct, subset and check 'rprimer_profile' objects
 #'
 #' * 'new_rprimer_profile()' constructs and validate an rprimer_profile-
@@ -40,9 +42,8 @@ is.rprimer_profile <- function(x) inherits(x, "rprimer_profile")
 #'
 #' @param x An rprimer_profile object.
 #'
-#' @return A subset.
+#' @return
 #'
 #' @noRd
-`[.rprimer_profile` <- function(x, i, ...) {
-  new_rprimer_profile(NextMethod())
-}
+### See adv R for details!
+# dim etc

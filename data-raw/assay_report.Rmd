@@ -46,7 +46,7 @@ print_assay_report <- function(x) {
   names(fwd) <- gsub("_fwd$", "", names(fwd))
   rev <- x[which(grepl("_rev$", names(x)))]
   names(rev) <- gsub("_rev$", "", names(rev))
-  if (any(grepl("_pr", names(x)))) {
+  if (any(grepl("_pr$", names(x)))) {
     pr <- x[which(grepl("_pr$", names(x)))]
     names(pr) <- gsub("_pr$", "", names(pr))
     assay <- list(general = all, forward = fwd, reverse = rev, probe = pr)
@@ -77,8 +77,9 @@ plot_assay_overview <- function(x, y) {
     sequence_detail_plot(x)
     rectangle(y$begin_fwd, y$end_fwd)
     rectangle(y$begin_rev, y$end_rev)
-    if (any(grepl("_pr$", names(x))))
-        rectangle(y$begin_pr, y$end_pr)
+    if (any(grepl("_pr$", names(y)))) { 
+      rectangle(y$begin_pr, y$end_pr)
+    }
 }
 
 # x - an object of class rprimer_sequence_profile 
@@ -335,12 +336,6 @@ plot_match_matrix(assay_selection)
 <br><br>
 **Fig. 3.** Matching and mismatching target sequences.
 <br><br>
-The assay was designed from the following target sequences. 
+The assay was designed from the following target sequences: 
 <br><br>
-Perfectly matching sequences:
-<br><br>
-`r rownames(assay_selection$match_matrix[[1]][which(rowSums(assay_selection$match_matrix[[1]]) == ncol(assay_selection$match_matrix[[1]])), ])`.
-Sequences with at least one mismatch: 
-<br><br>
-`r rownames(assay_selection$match_matrix[[1]][which(rowSums(assay_selection$match_matrix[[1]]) != ncol(assay_selection$match_matrix[[1]])), ])`.
-
+`r rownames(assay_selection$match_matrix[[1]])`.

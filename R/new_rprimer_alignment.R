@@ -1,3 +1,5 @@
+# fix head, tail, c, etc ect
+
 #' Construct, subset and check 'rprimer_alignment' objects
 #'
 #' * 'new_rprimer_alignment()' constructs and validate an rprimer_alignment-
