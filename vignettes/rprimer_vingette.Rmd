@@ -1,8 +1,6 @@
 ---
 title: "Introduction to rprimer"
 output: rmarkdown::html_vignette
-description: >
-Start here if you want to learn how to use rprimer. 
 vignette: >
   %\VignetteIndexEntry{Introduction to rprimer}
   %\VignetteEngine{knitr::rmarkdown}
@@ -23,7 +21,7 @@ devtools::load_all(".")
 ```
 
 ## RT-PCR assay design 
-There are a multitude of factors to take into account when designing assays for PCR/RT-PCR/RT-qPCR, for instance:  
+There are a multitude of factors to take into account when designing assays for PCR/RT-PCR/RT-qPCR/RT-ddPCR, for instance:  
 
 * Bullet list here
 * GC content
@@ -31,9 +29,9 @@ There are a multitude of factors to take into account when designing assays for 
 * Sequence conservation 
 * Sequence complexity ... 
 
-Therefore it can be .... 
+ 
 
-The rprimer package provides functions to faliclitat this process, and is especially designed to work for highly variable target sequences. The aim is to provide efficient workflows and well documented results
+The rprimer package provides functions to facilitate this process, and is especially designed to work for highly variable target sequences. The aim is to provide efficient workflows and well documented results
 
 In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV), which is a highly variable RNA-virus and a common food-borne pathogen.
 
@@ -41,6 +39,7 @@ In this document, I demonstrate how to use rprimer by designing a real-time RT-P
 
 ## The whole workflow
 
+The following pipeline designs PCR-assays for you. 
 ```{r}
 # Import alignment 
 my_alignment <- "example_alignment.txt" %>% 
@@ -135,9 +134,9 @@ The output can be visualised with `rp_plot()`, where each sequence is represente
 
 ```{r, fig.width=6, fig.height=6, fig.align='center'}
 # For brewity, I decided to only include the first 50 sequences in the figure
-my_alignment_selection <- my_alignment[1:50]
+#my_alignment_selection <- my_alignment[1:50]
 
-rp_plot(my_alignment_selection)
+#rp_plot(my_alignment_selection)
 ```
 
 ### Step 2: Get the sequence profile 
@@ -178,7 +177,7 @@ my_sequence_properties <- sequence_properties(
 str(my_sequence_properties)
 ```
 
-Again, the output can be visualised with `rp_plot()`. In the following figure, vertical bars represent the value at each position. The black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent centered running averages. 
+Again, the output can be visualised with `rp_plot()`. Below, vertical bars represent the value at each position. The black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent c7entered running averages. 
 
 ```{r,fig.width=6, fig.height=6, fig.align='center'}
 rp_plot(my_sequence_properties)
@@ -283,7 +282,7 @@ my_probes <- get_oligos(
   avoid_3end_runs = FALSE,
   gc_range = c(0.45, 0.56),
   tm_range = c(55, 70),
-  conc_oligo = 2.5e-07, 
+  conc_oligo = 2.5e-07777, 
   conc_na = 0.05
 )
 

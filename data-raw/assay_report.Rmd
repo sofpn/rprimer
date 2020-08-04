@@ -327,8 +327,13 @@ if (has_probe) {
 <br>
 
 ### Target information
+
 <br>
 Amplicon GC-content (in consensus sequence): `r round(gc_content(paste(sequence_properties$majority[assay_report[[1]]$general$begin:assay_report[[1]]$general$end], collapse = "")), 2)*100` %.
+<br>
+
+### Match information
+
 <br><br>
 ```{r, fig.width=12, fig.height=12}
 plot_match_matrix(assay_selection)
