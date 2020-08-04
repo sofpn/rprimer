@@ -1,8 +1,10 @@
 ---
-title: "rprimer_vingette"
+title: "Introduction to rprimer"
 output: rmarkdown::html_vignette
+description: >
+Start here if you want to learn how to use rprimer. 
 vignette: >
-  %\VignetteIndexEntry{rprimer_vingette}
+  %\VignetteIndexEntry{Introduction to rprimer}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,12 +22,24 @@ library(magrittr)
 devtools::load_all(".")
 ```
 
-## Introduction 
-*rprimer* provides functions for designing primers, probes and assays for PCR and reverse transcription (RT) PCR for highly variable target sequences. In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV).
+## RT-PCR assay design 
+There are a multitude of factors to take into account when designing assays for PCR/RT-PCR/RT-qPCR, for instance:  
+
+* Bullet list here
+* GC content
+* Melting temperature
+* Sequence conservation 
+* Sequence complexity ... 
+
+Therefore it can be .... 
+
+The rprimer package provides functions to faliclitat this process, and is especially designed to work for highly variable target sequences. The aim is to provide efficient workflows and well documented results
+
+In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV), which is a highly variable RNA-virus and a common food-borne pathogen.
 
 **describe more: tm, perfect matches**
 
-## Quick start 
+## The whole workflow
 
 ```{r}
 # Import alignment 
@@ -113,9 +127,9 @@ my_alignment <- remove_gaps(my_alignment, threshold = 0.5)  %>%
   select_roi(., from = 4000, to = 6000)
 ```
 
-* `remove_gaps()` removes positions with a gap proportion higher than the stated `threshold` (the default is 0.5, i.e. 50 %). However, this should be done with caution; removing positions with high gap frequency may lead to placement of primers or probes in insertion-rich regions.
+* `remove_gaps()` removes positions with a gap proportion higher than the stated `threshold` (the default is 0.5, i.e. 50 %). 
 
-* `select_roi()` selects a region of interest (ROI) within the alignment. Note that the positions are re-calculated in the output. In the above example, position 1 in ROI corresponds to position 4000 in the original alignment. 
+* `select_roi()` selects a region of interest (ROI) within the alignment. 
 
 The output can be visualised with `rp_plot()`, where each sequence is represented as a horizontal line. 
 
@@ -250,7 +264,9 @@ str(my_assays[ , -ncol(my_assays)])
 ```
 
 ### Step 6: Add probes 
-Probe candidates can be generated with `get_oligos()`, and added to assays with `add_probes()`. Here, `tm_difference` is the acceptable difference in Tm between the primers and probe. It is calculated by subtracting the Tm of the probe with the average Tm of the primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair. Note that the Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
+Probes can be generated with `get_oligos()`, and added to assays with `add_probes()`. 
+
+Here, `tm_difference` is the acceptable difference in Tm between the primers and probe. It is calculated by subtracting the Tm of the probe with the average Tm of the primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair. Note that the Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
 
 Candidate assays are displayed in a tibble (see below). An error message will return if no assays are found.   
 
