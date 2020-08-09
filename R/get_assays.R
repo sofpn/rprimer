@@ -134,3 +134,82 @@ get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
   assays <- tibble::new_tibble(assays, class = "rprimer_assay")
   assays
 }
+
+
+#' Combine match matrices
+#'
+#' @param x A tibble with assays
+#'
+#' @return A tibble with assays, with information on perfect matches    #### Not tested!!!!
+#' for fwd and rev primers combined.
+#'
+#' @noRd
+combine_match_matrices <- function(x) {
+  fwd <- x$match_matrix_fwd
+  rev <- x$match_matrix_rev
+  fwd <- purrr::map(fwd, function(x) {
+    colnames(x) <- paste0(colnames(x), "_fwd")
+    x
+  })
+  rev <- purrr::map(rev, function(x) {
+    colnames(x) <- paste0(colnames(x), "_rev")
+    x
+  })
+  match_matrix <- purrr::map(seq_len(nrow(x)), function(y) {
+    match <- cbind(fwd[[y]], rev[[y]])
+    majority_all <- rowSums(match[, c(1, 3)])
+    iupac_all <- rowSums(match[, c(2, 4)])
+    majority_all <- ifelse(majority_all == 2, TRUE, FALSE)
+    iupac_all <- ifelse(iupac_all == 2, TRUE, FALSE)
+    match <- cbind(match, majority_all, iupac_all)
+    return(match)
+  })
+  match_percentage <- purrr::map(match_matrix, ~ colMeans(.x[, 5:6]))
+  match_percentage <- do.call("rbind", match_percentage)
+  match_percentage <- tibble::as_tibble(match_percentage)
+  names(match_percentage) <- paste0("pm_", names(match_percentage))
+  x <- dplyr::bind_cols(x, match_percentage)
+  match_matrix <- tibble::tibble(match_matrix)
+  x <- dplyr::bind_cols(x, match_matrix)
+  drop <- c("match_matrix_fwd", "match_matrix_rev")
+  x <- x[, !(names(x) %in% drop)]
+  return(x)
+}
+
+#' Add probes to match matrices
+#'
+#' @param x A tibble with assays (with probes)
+#'
+#' @return A tibble with assays, with information on perfect matches    #### Not tested!!!! ######### PROBLEM!
+#' for fwd and rev primers and probes combined.
+#'
+#' @noRd
+add_probe_to_match_matrix <- function(x) {
+  assays <- x$match_matrix
+  probe <- x$match_matrix_pr
+  probe <- purrr::map(probe, function(x) {
+    colnames(x) <- paste0(colnames(x), "_pr")
+    x
+  })
+  match_matrix <- purrr::map(seq_len(nrow(x)), function(y) {
+    match <- cbind(assays[[y]], probe[[y]])
+    match <- match[, -(5:6)]
+    majority_all <- rowSums(match[, c(1, 3, 5)])
+    iupac_all <- rowSums(match[, c(2, 4, 6)])
+    majority_all <- ifelse(majority_all == 3, TRUE, FALSE)
+    iupac_all <- ifelse(iupac_all == 3, TRUE, FALSE)
+    match <- cbind(match, majority_all, iupac_all)
+    return(match)
+  })
+  match_percentage <- purrr::map(match_matrix, ~ colMeans(.x[, 7:8]))
+  match_percentage <- do.call("rbind", match_percentage)
+  match_percentage <- tibble::as_tibble(match_percentage)
+  names(match_percentage) <- paste0("pm_", names(match_percentage))
+  drop <- c("match_matrix_pr", "match_matrix", "pm_majority_all", "pm_iupac_all")
+  x <- x[, !(names(x) %in% drop)]
+  x <- dplyr::bind_cols(x, match_percentage)
+  match_matrix <- tibble::tibble(match_matrix)
+  x <- dplyr::bind_cols(x, match_matrix)
+  return(x)
+}
+

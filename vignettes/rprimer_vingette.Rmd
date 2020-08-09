@@ -1,8 +1,6 @@
 ---
 title: "Introduction to rprimer"
 output: rmarkdown::html_vignette
-description: >
-Start here if you want to learn how to use rprimer. 
 vignette: >
   %\VignetteIndexEntry{Introduction to rprimer}
   %\VignetteEngine{knitr::rmarkdown}
@@ -23,7 +21,7 @@ devtools::load_all(".")
 ```
 
 ## RT-PCR assay design 
-There are a multitude of factors to take into account when designing assays for PCR/RT-PCR/RT-qPCR, for instance:  
+There are a multitude of factors to take into account when designing assays for PCR/RT-PCR/RT-qPCR/RT-ddPCR, for instance:  
 
 * Bullet list here
 * GC content
@@ -31,9 +29,9 @@ There are a multitude of factors to take into account when designing assays for 
 * Sequence conservation 
 * Sequence complexity ... 
 
-Therefore it can be .... 
+ 
 
-The rprimer package provides functions to faliclitat this process, and is especially designed to work for highly variable target sequences. The aim is to provide efficient workflows and well documented results
+rprimer provides functions to automate this process.
 
 In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV), which is a highly variable RNA-virus and a common food-borne pathogen.
 
@@ -42,21 +40,21 @@ In this document, I demonstrate how to use rprimer by designing a real-time RT-P
 ## The whole workflow
 
 ```{r}
-# Import alignment 
+# Step 1: Import alignment 
 my_alignment <- "example_alignment.txt" %>% 
   read_fasta_alignment %>%
   remove_gaps(., threshold = 0.5)  %>% 
   select_roi(., from = 4000, to = 6000) 
 
-# Get the sequence profile 
+# Step 2: Get the sequence profile 
 my_sequence_profile <- sequence_profile(my_alignment)
 
-# Get sequence properties 
+# Step 3: Get sequence properties 
 my_sequence_properties <- sequence_properties(
   my_sequence_profile, iupac_threshold = 0.05 
 ) 
 
-# Get primers and probes 
+# Step 4: Get primers
 my_primers <- get_oligos(
   my_sequence_properties, 
   target = my_alignment,
@@ -73,6 +71,10 @@ my_primers <- get_oligos(
   conc_na = 0.05   
 )
 
+# Step 5: Get assays 
+my_assays <- get_assays(my_primers, length = 65:120, max_tm_difference = 1.5) 
+ 
+# Step 6: Get probes 
 my_probes <- get_oligos(
   my_sequence_properties,
   target = my_alignment,
@@ -89,24 +91,24 @@ my_probes <- get_oligos(
   conc_na = 0.05
 )
 
-# Get assays from primers and probes
-my_assays <- get_assays(my_primers, length = 65:120, max_tm_difference = 1.5) %>%
-  add_probes(., my_probes, tm_difference = c(-2, 10))  
+# Step 7: Add probes to assays
+my_assays <- add_probes(my_assays, my_probes, tm_difference = c(-2, 10))  
 
-# Save all assay candidates 
+# Step 8: Save the data generated (if you want to)
+# rp_save(my_alignment, filename = "my_alignment")
+# rp_save(my_sequence_properties, filename = "my_sequence_properties")
 # rp_save(my_assays, filename = "my_assays")
 
-# Select a favourite assay
+# Step 9: Select a favourite assay and generate a report 
 selected_assay <- my_assays[1, ]
 
-# Save it in a detailed html-report 
 # write_report(
 # filename = "my_assay_report",
 # selected_assay,
 # my_alignment,
 # my_sequence_profile,
 # my_sequence_properties,
-# comment = "enter your comments here"
+# comment = "my new hepatitis E virus assay :)"
 # )
 ```
 
@@ -135,9 +137,9 @@ The output can be visualised with `rp_plot()`, where each sequence is represente
 
 ```{r, fig.width=6, fig.height=6, fig.align='center'}
 # For brewity, I decided to only include the first 50 sequences in the figure
-my_alignment_selection <- my_alignment[1:50]
+#my_alignment_selection <- my_alignment[1:50]
 
-rp_plot(my_alignment_selection)
+#rp_plot(my_alignment_selection)
 ```
 
 ### Step 2: Get the sequence profile 
@@ -178,7 +180,7 @@ my_sequence_properties <- sequence_properties(
 str(my_sequence_properties)
 ```
 
-Again, the output can be visualised with `rp_plot()`. In the following figure, vertical bars represent the value at each position. The black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent centered running averages. 
+Again, the output can be visualised with `rp_plot()`. Here, vertical bars represent the value at each position. The black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent centered running averages. 
 
 ```{r,fig.width=6, fig.height=6, fig.align='center'}
 rp_plot(my_sequence_properties)
@@ -195,11 +197,13 @@ rp_plot(my_sequence_properties)
 
 * `max_degeneracy` The maximum number of degenerate variants of each oligo. The default is 4. 
 
-* `avoid_3end_ta` If oligos with a T or an A at the 3' end should be avoided (recommended for primers). The default is `TRUE`.
+* `avoid_3end_ta` If oligos with a T or an A at the 3' end should be avoided (recommended for primers to enhance specificity). The default is `TRUE`.
+
+* `avoid_3end_runs` If oligos with more than two runs of the same nucleotide at the 3' end should be excluded (recommended for primers to avoid mispriming). The default is `TRUE`.
+
+* `avoid_gc_rich_3end` If oligos with more than three G or C within the last five bases of the 3' end should be excluded (recommended for primers to avoid mispriming). The default is `TRUE`.
 
 * `avoid_5end_g` If oligos with a G at the 5' end should be avoided (recommended for probes). The default is `FALSE`.
-
-* `avoid_3end_runs` If oligos with more than two runs of the same nucleotide at the 3' end should be excluded (recommended for primers). The default is `TRUE`
 
 * `gc_range` GC-content-range (proportion, not %). The default is 0.45-0.55. 
 
@@ -210,8 +214,11 @@ rp_plot(my_sequence_properties)
 * `conc_na` Sodium ion concentration (for Tm calculation). The default is 0.05 M (50 mM).
 
 In addition, `get_oligos()` avoids oligos:
+
 * With more than than three consecutive runs of the same dinucleotide (e.g. "TATATATA")
+
 * With more than four consecutive runs of the same nucleotide (e.g. "AAAAA")
+
 * That are duplicated (to prevent binding at several places on the genome)
 
 ```{r}
@@ -223,8 +230,8 @@ my_primers <- get_oligos(
   max_degenerates = 1,
   max_degeneracy = 2,
   avoid_3end_ta = TRUE,
-  avoid_5end_g = FALSE,
   avoid_3end_runs = TRUE,
+  avoid_5end_g = FALSE,
   gc_range = c(0.45, 0.56),
   tm_range = c(55, 65),
   conc_oligo = 5e-07, 
@@ -268,7 +275,7 @@ Probes can be generated with `get_oligos()`, and added to assays with `add_probe
 
 Here, `tm_difference` is the acceptable difference in Tm between the primers and probe. It is calculated by subtracting the Tm of the probe with the average Tm of the primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair. Note that the Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
 
-Candidate assays are displayed in a tibble (see below). An error message will return if no assays are found.   
+Assays are displayed in a tibble (see below). An error message will return if no assays are found.   
 
 ```{r}
 my_probes <- get_oligos(
@@ -279,8 +286,8 @@ my_probes <- get_oligos(
   max_degenerates = 1,
   max_degeneracy = 2,
   avoid_3end_ta = FALSE,
-  avoid_5end_g = TRUE,
   avoid_3end_runs = FALSE,
+  avoid_5end_g = TRUE,
   gc_range = c(0.45, 0.56),
   tm_range = c(55, 70),
   conc_oligo = 2.5e-07, 
@@ -305,20 +312,22 @@ Alignments, sequence properties, primer, probe and assay candidates can be expor
 ### Step 9: Select an assay and generate a report 
 For each assay, a report can be generated by calling `write_report()`. You can either select one assay and generate a report, or generate reports for all assays (see code example below). 
 
+Let's say that I want the assay that has the highest perfect match score. 
+
+...... etc....
+
 ```{r}
-# It is also possible to sort the assays, by e.g. perfect match percentage 
 my_assays <- dplyr::arrange(my_assays, pm_majority_all)
 
-# Select a specific assay, e.g. the one that matches the most 
 selected_assay <- my_assays[1, ] # Select an assay 
 
-#write_report(
+# write_report(
 #  filename = "my_assay",
 #  selected_assay,
 #  my_sequence_profile,
 #  my_sequence_properties,
 #  comment = "my new hepatitis E virus assay :)" 
-#)
+# )
 
 # It is also possible to write reports for ALL assays , show \w loop 
 
