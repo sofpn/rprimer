@@ -205,7 +205,7 @@ plot_assay_details(params$sequence_profile, params$assay_selection)
 <br><br>
 **Fig. 2.** Proportion of each nucleotide in the alignment at the oligo binding sites. Sequences are displayed from 5'- to 3'-end. 
 <br><br>
-**Table 1**. Assay info. Begin: Where the assay region starts (with regards to the alignment/region of interest), End: Where the assay region ends. Tm difference, primers: Tm difference between the two primers (absolute value, in C). Tm difference, probe-primers: Tm of the probe subtracted by the average Tm of the primer pair. Note that tm-differences are calculated from majority oligos and may therefore be misleading for degenerate (IUPAC) oligos. Degeneracy; total number of oligo variants in the assay. Perfect match; *proportion* of perfectly matching sequences. 
+**Table 1**. Assay info. Begin: Where the assay region starts (with regards to the alignment/region of interest), End: Where the assay region ends. Tm difference, primers: Tm difference between the two primers (absolute value, in C). Tm difference, probe-primers: Tm of the probe subtracted by the average Tm of the primer pair. Note that tm-differences are calculated from majority oligos and may therefore be misleading for degenerate (IUPAC) oligos. Degeneracy: Total number of oligo variants in the assay. Perfect match: *proportion* of perfectly matching sequences. 
 <br>
 ```{r}
 # Customise table options 

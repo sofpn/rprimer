@@ -33,7 +33,7 @@ There are a multitude of factors to take into account when designing assays for 
 
 rprimer provides functions to automate this process.
 
-In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV), which is a highly variable RNA-virus and a common food-borne pathogen.
+In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV).
 
 **describe more: tm, perfect matches**
 
@@ -58,13 +58,14 @@ my_sequence_properties <- sequence_properties(
 my_primers <- get_oligos(
   my_sequence_properties, 
   target = my_alignment,
-  max_gap_frequency = 0.01, 
+  max_gap_frequency = 0.05, 
   length = 18:22,
   max_degenerates = 1,
   max_degeneracy = 2, 
-  avoid_3end_ta = TRUE, 
+  avoid_3end_ta = TRUE, ####################
+  avoid_3end_runs = TRUE,
+  avoid_gc_rich_3end = FALSE,
   avoid_5end_g = FALSE,
-  avoid_3end_runs = TRUE, 
   gc_range = c(0.45, 0.56),
   tm_range = c(55, 70), 
   conc_oligo = 5e-07, 
@@ -78,13 +79,14 @@ my_assays <- get_assays(my_primers, length = 65:120, max_tm_difference = 1.5)
 my_probes <- get_oligos(
   my_sequence_properties,
   target = my_alignment,
-  max_gap_frequency = 0.01,
+  max_gap_frequency = 0.05,
   length = 18:24,
   max_degenerates = 1,
   max_degeneracy = 2,
   avoid_3end_ta = FALSE,
-  avoid_5end_g = TRUE,
   avoid_3end_runs = FALSE,
+  avoid_gc_rich_3end = FALSE,
+  avoid_5end_g = TRUE,
   gc_range = c(0.45, 0.56),
   tm_range = c(55, 70),
   conc_oligo = 2.5e-07, 
@@ -231,6 +233,7 @@ my_primers <- get_oligos(
   max_degeneracy = 2,
   avoid_3end_ta = TRUE,
   avoid_3end_runs = TRUE,
+  avoid_gc_rich_3end = FALSE, #####
   avoid_5end_g = FALSE,
   gc_range = c(0.45, 0.56),
   tm_range = c(55, 65),

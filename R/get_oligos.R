@@ -606,9 +606,11 @@ exclude_oligos <- function(x,
                            avoid_3end_runs = FALSE,
                            avoid_gc_rich_3end = TRUE,
                            avoid_5end_g = FALSE) {
-  if (any(!is.logical(c(avoid_3end_ta, avoid_5end_g, avoid_3end_runs)))) {
+  if (any(!is.logical(
+    c(avoid_3end_ta, avoid_3end_runs, avoid_gc_rich_3end, avoid_5end_g)
+    ))) {
     stop(
-      "avoid_3end_ta, avoid_5end_g and avoid_3end_runs
+      "avoid_3end_ta, avoid_5end_g, avoid_gc_rich_3end and avoid_3end_runs
         must be set to TRUE or FALSE",
       call. = FALSE
     )
@@ -626,7 +628,8 @@ exclude_oligos <- function(x,
     x <- exclude(x, "([a-z])\\1\\1$")
   }
   if (avoid_gc_rich_3end == TRUE) {
-    x <- exclude(x, "") #"(^([^(g|c)]*(g|c)){3,}[^(g|c)]*$)"
+    x <- x
+   # x <- exclude(x, "") #"(^([^(g|c)]*(g|c)){3,}[^(g|c)]*$)"
   }
   if (avoid_5end_g == TRUE) {
     # Remove oligos with g at the 5' end
@@ -674,10 +677,10 @@ exclude_oligos <- function(x,
 #'
 #' @noRd
 exclude_unwanted_oligos <- function(x,
-                                    avoid_3end_ta = FALSE,
-                                    avoid_3end_runs = FALSE,
-                                    avoid_gc_rich_3end = TRUE,
-                                    avoid_5end_g = FALSE) {
+                                    avoid_3end_ta,
+                                    avoid_3end_runs,
+                                    avoid_gc_rich_3end,
+                                    avoid_5end_g) {
   x$majority <- exclude_oligos(
     x$majority,
     avoid_3end_ta = avoid_3end_ta,
