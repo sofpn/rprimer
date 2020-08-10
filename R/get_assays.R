@@ -77,7 +77,7 @@
 #' @export
 get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
   if (!inherits(x, "rprimer_oligo")) {
-    stop("'x' must be an rprimer_oligo object.", call. = FALSE)
+    stop("'x' must be an rprimer_oligo object.", call. = FALSE) ################################ is.rprimer
   }
   if (!(max_tm_difference > 0 && max_tm_difference < 30)) {
     stop("'max_tm_difference' must be between 0 and 30", call. = FALSE)
@@ -162,7 +162,7 @@ combine_match_matrices <- function(x) {
     majority_all <- ifelse(majority_all == 2, TRUE, FALSE)
     iupac_all <- ifelse(iupac_all == 2, TRUE, FALSE)
     match <- cbind(match, majority_all, iupac_all)
-    return(match)
+    match
   })
   match_percentage <- purrr::map(match_matrix, ~ colMeans(.x[, 5:6]))
   match_percentage <- do.call("rbind", match_percentage)
@@ -173,7 +173,7 @@ combine_match_matrices <- function(x) {
   x <- dplyr::bind_cols(x, match_matrix)
   drop <- c("match_matrix_fwd", "match_matrix_rev")
   x <- x[, !(names(x) %in% drop)]
-  return(x)
+  x
 }
 
 #' Add probes to match matrices
@@ -210,6 +210,5 @@ add_probe_to_match_matrix <- function(x) {
   x <- dplyr::bind_cols(x, match_percentage)
   match_matrix <- tibble::tibble(match_matrix)
   x <- dplyr::bind_cols(x, match_matrix)
-  return(x)
+  x
 }
-

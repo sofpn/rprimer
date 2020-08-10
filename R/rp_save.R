@@ -22,9 +22,9 @@
 #'
 #' @export
 rp_save <- function(x, filename) {
-  if (!is.character(filename) || length(filename) != 1) {
+  if (!is.character(filename)) {
     stop(
-      "filename must be a character vector of length one", call. = FALSE
+      "'filename' must be a character vector.", call. = FALSE
     )
   }
   object_name <- as.character(substitute(x))

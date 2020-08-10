@@ -229,7 +229,7 @@ nn_split <- function(x) {
   from <- (seq_along(x) - 1)[-1]
   to <- seq_along(x)[-1]
   nn <- purrr::map_chr(from, ~ paste(x[from[[.x]]:to[[.x]]], collapse = ""))
-  return(nn)
+  nn
 }
 
 #' Calculate dH or dS of nearest neighbors using lookup tables
@@ -271,7 +271,7 @@ nn_lookup <- function(x, table) {
   } else {
     result <- matrix(matching, ncol = ncol(x), byrow = FALSE)
   }
-  return(result)
+  result
 }
 
 #' Initiation of DNA sequences for Tm calculation
@@ -348,11 +348,11 @@ init_5end <- function(x) {
 #' @noRd
 tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
   if (!is.double(conc_oligo) || conc_oligo < 2e-07 || conc_oligo > 2.0e-06) {
-    stop("The oligo concentration must be between
+    stop("'conc_oligo' must be between
            0.2e-07 M (20 nM) and 2e-06 M (2000 nM)", call. = FALSE)
   }
   if (!is.double(conc_na) || conc_na < 0.01 || conc_na > 1) {
-    stop("The Na+ concentration must be between 0.01 and 1 M", call. = FALSE)
+    stop("'conc_na' must be between 0.01 and 1 M", call. = FALSE)
   }
   x <- tolower(x)
   # Find initiation values
@@ -378,9 +378,8 @@ tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
   sumdS <- sumdS + 0.368 * N * log(conc_na)
   tm <- sumdH / (sumdS + gas_constant * log(conc_oligo))
   tm <- tm - 273.15
-  return(tm)
+  tm
 }
-
 
 #' Divide a DNA sequence into n-sized chunks
 #'
@@ -402,7 +401,7 @@ tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
 #' @noRd
 get_nmers <- function(x, n = NULL) {
   if (!is.character(x)) {
-    stop("x must be a character vector.", call. = FALSE)
+    stop("'x' must be a character vector.", call. = FALSE)
   }
   if (is.null(n)) {
     n <- round(length(x) / 10)
@@ -411,14 +410,14 @@ get_nmers <- function(x, n = NULL) {
     }
   }
   if (!is.numeric(n) || n < 1 || n > length(x)) {
-    stop("n must be an integer between 1 and length(x)", call. = FALSE)
+    stop("'n' must be an integer between 1 and length(x)", call. = FALSE)
   }
   begin <- 1:(length(x) - n + 1)
   end <- begin + n - 1
   nmer <- purrr::map_chr(
     begin, ~ paste(x[begin[[.x]]:end[[.x]]], collapse = "")
   )
-  return(nmer)
+  nmer
 }
 
 #' Calculate GC content of a DNA sequence
@@ -440,11 +439,11 @@ get_nmers <- function(x, n = NULL) {
 #' @noRd
 gc_content <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
-    stop("x must be a character vector of length one", call. = FALSE)
+    stop("'x' must be a character vector of length one", call. = FALSE)
   }
   x <- tolower(x)
   if (grepl("[^acgt-]", x)) {
-    stop("x contains at least one invalid base.
+    stop("'x' contains at least one invalid base.
       x can only contain 'a', 'c', 'g', 't' and '-'", call. = FALSE)
   }
   x <- split_sequence(x)
@@ -452,7 +451,7 @@ gc_content <- function(x) {
   # Gaps will not be included in the total count
   total_count <- length(which(x == "a" | x == "c" | x == "g" | x == "t"))
   gc <- gc_count / total_count
-  return(gc)
+  gc
 }
 
 #' Reverse complement
@@ -471,11 +470,11 @@ gc_content <- function(x) {
 #' @noRd
 reverse_complement <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
-    stop("x must be a character vector of length one", call. = FALSE)
+    stop("'x' must be a character vector of length one", call. = FALSE)
   }
   x <- tolower(x)
   if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("x contains at least one invalid base.
+    stop("'x' contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
          call. = FALSE
@@ -486,7 +485,7 @@ reverse_complement <- function(x) {
   complement <- unname(complement)
   rc <- rev(complement)
   rc <- paste(rc, collapse = "")
-  return(rc)
+  rc
 }
 
 #' Calculate running, cumulative sums
@@ -515,7 +514,7 @@ reverse_complement <- function(x) {
 #' @noRd
 running_sum <- function(x, n = NULL) {
   if (!(is.numeric(x))) {
-    stop("A numeric vector is expected for x.", call. = FALSE)
+    stop("'x' must be a numeric vector.", call. = FALSE)
   }
   if (is.null(n)) {
     n <- round(length(x) / 10)
@@ -524,11 +523,11 @@ running_sum <- function(x, n = NULL) {
     }
   }
   if (!is.numeric(n) || n < 1 || n > length(x)) {
-    stop("n must be a number between 1 and length(x)", call. = FALSE)
+    stop("'n' must be a number between 1 and length(x)", call. = FALSE)
   }
   cumul <- c(0, cumsum(x))
   runsum <- cumul[(n + 1):length(cumul)] - cumul[1:(length(cumul) - n)]
-  return(runsum)
+  runsum
 }
 
 #' Exclude oligos with a specific pattern
@@ -548,14 +547,14 @@ running_sum <- function(x, n = NULL) {
 #' @noRd
 exclude <- function(x, pattern) {
   if (!is.character(x)) {
-    stop("x must be a character vector", call. = FALSE)
+    stop("'x' must be a character vector", call. = FALSE)
   }
   if (!is.character(pattern) || length(pattern) != 1) {
-    stop("pattern must be a character vector of length one", call. = FALSE)
+    stop("'pattern' must be a character vector of length one", call. = FALSE)
   }
   regex <- pattern
   x[grepl(regex, x)] <- NA
-  return(x)
+  x
 }
 
 #' Exclude oligos
@@ -610,15 +609,15 @@ exclude_oligos <- function(x,
     c(avoid_3end_ta, avoid_3end_runs, avoid_gc_rich_3end, avoid_5end_g)
     ))) {
     stop(
-      "avoid_3end_ta, avoid_5end_g, avoid_gc_rich_3end and avoid_3end_runs
-        must be set to TRUE or FALSE",
+      "'avoid_3end_ta', 'avoid_5end_g', 'avoid_gc_rich_3end' and
+      'avoid_3end_runs' must be set to TRUE or FALSE",
       call. = FALSE
     )
   }
   # Remove oligos with at least 4 'runs' of the same dinucleotide
   x <- exclude(x, "(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)\\1\\1\\1")
   # Remove oligos with at least 5 'runs' of the same nucleotide
-  x <- exclude(x, "([a-z])\\1\\1\\1\\1")
+  x <- exclude(x, "([a-z])\\1\\1\\1\\1")''
   if (avoid_3end_ta == TRUE) {
     # Remove oligos with t or a at the 3' end
     x <- exclude(x, "a$|t$")
@@ -635,7 +634,7 @@ exclude_oligos <- function(x,
     # Remove oligos with g at the 5' end
     x <- exclude(x, "^g")
   }
-  return(x)
+  x
 }
 
 #' Exclude unwanted oligos
@@ -699,7 +698,7 @@ exclude_unwanted_oligos <- function(x,
   invalid_oligos <- is.na(x$majority) & is.na(x$majority_rc)
   # Remove them
   x <- x[!invalid_oligos, ]
-  return(x)
+  x
 }
 
 #' Count the number of degenerate bases in a DNA sequence
@@ -719,10 +718,10 @@ exclude_unwanted_oligos <- function(x,
 #' @noRd
 count_degenerates <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
-    stop("x must be a character vector of length one", call. = FALSE)
+    stop("'x' must be a character vector of length one", call. = FALSE)
   }
   if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("x contains at least one invalid base.
+    stop("'x' contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
          call. = FALSE
@@ -731,7 +730,7 @@ count_degenerates <- function(x) {
   nt <- c("a", "c", "g", "t", "-")
   x <- split_sequence(x)
   count <- length(x[!x %in% nt])
-  return(count)
+  count
 }
 
 #' Count the degeneracy of a DNA sequence
@@ -751,10 +750,10 @@ count_degenerates <- function(x) {
 #' @noRd
 count_degeneracy <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
-    stop("x must be a character vector of length one", call. = FALSE)
+    stop("'x' must be a character vector of length one", call. = FALSE)
   }
   if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("x contains at least one invalid base.
+    stop("'x' contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
          call. = FALSE
@@ -765,7 +764,7 @@ count_degeneracy <- function(x) {
   n_nucleotides <- degeneracy_lookup[x]
   # Calculate the total number of DNA sequences in x
   degeneracy <- prod(n_nucleotides)
-  return(degeneracy)
+  degeneracy
 }
 
 #' Generate oligos of a specific length
@@ -783,29 +782,28 @@ count_degeneracy <- function(x) {
 #' @return A tibble with all possible oligos
 #'
 #' @noRd
-generate_oligos <- function(
-  x,
-  oligo_length = 20,
-  max_gap_frequency = 0.1,
-  max_degenerates = 2,
-  max_degeneracy = 4) {
-  if (!inherits(x, "rprimer_properties")) {
+generate_oligos <- function(x,
+                            oligo_length = 20,
+                            max_gap_frequency = 0.1,
+                            max_degenerates = 2,
+                            max_degeneracy = 4) {
+  if (!is.rprimer_properties(x)) {
     stop(
-      "An rprimer_properties object is expected for x.",
+      "'x' must be an rprimer_properties object.",
       call. = FALSE
     )
   }
   if (!(min(oligo_length) >= 14 && max(oligo_length) <= 30)) {
-    stop("oligo_length must be between 14 and 30", call. = FALSE)
+    stop("'oligo_length' must be between 14 and 30", call. = FALSE)
   }
   if (!(max_gap_frequency >= 0 && max_gap_frequency <= 1)) {
-    stop("max_gap_frequency must be between 0 and 1", call. = FALSE)
+    stop("'max_gap_frequency' must be between 0 and 1", call. = FALSE)
   }
   if (!(max_degenerates <= 6 && max_degenerates >= 0)) {
-    stop("max_degenerates must be between 0 and 6", call. = FALSE)
+    stop("'max_degenerates' must be between 0 and 6", call. = FALSE)
   }
   if (!(max_degeneracy >= 1 && max_degeneracy <= 64)) {
-    stop("max_degeneracy must be between 1 and 64", call. = FALSE)
+    stop("'max_degeneracy' must be between 1 and 64", call. = FALSE)
   }
   # Find all possible oligos of length y
   majority <- get_nmers(x$majority, n = oligo_length)
@@ -817,11 +815,9 @@ generate_oligos <- function(
   begin <- seq_along(majority)
   end <- seq_along(majority) + oligo_length - 1
   length <- oligo_length
-
   # Identify oligos with high gap frequency
   gap_bin <- ifelse(x$gaps > max_gap_frequency, 1L, 0L)
   gap_penalty <- running_sum(gap_bin, n = oligo_length)
-
   oligos <- tibble::tibble(
     begin, end, length, majority, iupac,
     majority_rc, iupac_rc, degenerates, degeneracy
@@ -835,7 +831,7 @@ generate_oligos <- function(
   # Identify and exclude oligos that are duplicated
   unique_oligos <- match(oligos$majority, unique(oligos$majority))
   oligos <- oligos[unique_oligos, ]
-  return(oligos)
+  oligos
 }
 
 #' Calculate GC content and tm of oligos
@@ -884,17 +880,20 @@ generate_oligos <- function(
 #' @return A tibble (a data frame) with oligo candidates.
 #'
 #' @noRd
-add_gc_tm <- function(
-  oligos,
-  gc_range = c(0.45, 0.55),
-  tm_range = c(48, 70),
-  conc_oligo = 5e-07,
-  conc_na = 0.05) {
+add_gc_tm <- function(oligos,
+                      gc_range = c(0.45, 0.55),
+                      tm_range = c(48, 70),
+                      conc_oligo = 5e-07,
+                      conc_na = 0.05) {
   if (!(min(gc_range) >= 0 && max(gc_range) <= 1)) {
-    stop("gc_range must be between 0 and 1, e.g. c(0.45, 0.65)", call. = FALSE)
+    stop(
+      "'gc_range' must be between 0 and 1, e.g. c(0.45, 0.65)", call. = FALSE
+    )
   }
   if (!(min(tm_range) >= 20 && max(tm_range) <= 90)) {
-    stop("tm_range must be between 20 and 90, e.g. c(55, 60)", call. = FALSE)
+    stop(
+      "'tm_range' must be between 20 and 90, e.g. c(55, 60)", call. = FALSE
+    )
   }
   # Calculate GC content of all majority oligos
   gc_majority <- purrr::map_dbl(oligos$majority, ~ gc_content(.x))
@@ -908,7 +907,7 @@ add_gc_tm <- function(
   # Exclude oligos with Tm outside the stated thresholds
   oligos <- oligos[oligos$tm_majority >= min(tm_range), ]
   oligos <- oligos[oligos$tm_majority <= max(tm_range), ]
-  return(oligos)
+  oligos
 }
 
 #' Convert a DNA sequence to a regular expression
@@ -948,7 +947,7 @@ make_regex <- function(x) {
   regx <- purrr::map(regx, ~ paste(.x, collapse = "|"))
   regx <- purrr::map(regx, ~ paste0("(", .x, ")"))
   regx <- unlist(paste(regx, collapse = ""))
-  return(regx)
+  regx
 }
 
 #' Check if oligos matches their targets
@@ -969,7 +968,7 @@ make_regex <- function(x) {
 #'
 #' @noRd
 check_match <- function(x, y) {
-  if (!inherits(y, "rprimer_alignment")) {
+  if (!is.rprimer_alignment(y)) {
     stop("An rprimer_alignment object is expected for y.", call. = FALSE)
   }
   majority <- ifelse(
@@ -1001,6 +1000,6 @@ check_match <- function(x, y) {
   x <- dplyr::bind_cols(x, match_percentage)
   match_matrix <- tibble::tibble(match_matrix)
   x <- dplyr::bind_cols(x, match_matrix)
-  return(x)
+  x
 }
 

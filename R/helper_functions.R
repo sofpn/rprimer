@@ -10,7 +10,7 @@
 split_sequence <- function(x) {
   stopifnot(is.character(x), length(x) == 1)
   x <- unlist(strsplit(x, split = ""), use.names = FALSE)
-  return(x)
+  x
 }
 
 #' Truncate the name of a sequence in fasta format
@@ -31,7 +31,7 @@ truncate_name <- function(name) {
   name <- unlist(name, use.names = FALSE)
   name <- name[[1]]
   name <- gsub(">", "", name)
-  return(name)
+  name
 }
 
 #' Complement
@@ -49,12 +49,12 @@ truncate_name <- function(name) {
 #' reverse_complement("cttgtr")
 #' @noRd
 complement <- function(x) {
-  if (typeof(x) != "character" || length(x) != 1) {
-    stop("x must be a character vector of length one", call. = FALSE)
+  if (typeof(x) != "character") {
+    stop("'x' must be a character vector.", call. = FALSE)
   }
   x <- tolower(x)
   if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("x contains at least one invalid base.
+    stop("'x' contains at least one invalid base.
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
       call. = FALSE
@@ -63,6 +63,6 @@ complement <- function(x) {
   x <- strsplit(x, split = "")
   complement <- complement_lookup[unlist(x)]
   complement <- unname(complement)
-  return(complement)
+  complement
 }
 

@@ -66,8 +66,8 @@
 #'
 #' @export
 sequence_properties <- function(x, iupac_threshold = 0) {
-  if (!inherits(x, "rprimer_profile")) {
-    stop("'x' must be an rprimer_profile object.", call. = FALSE)
+  if (!is.rprimer_profile(x)) {
+    stop("'x' must be an rprimer_profile object", call. = FALSE)
   }
   position <- seq_len(ncol(x))
   majority <- majority_consensus(x)
@@ -101,8 +101,8 @@ sequence_properties <- function(x, iupac_threshold = 0) {
 #'
 #' @noRd
 majority_consensus <- function(x) {
-  if (!inherits(x, "rprimer_profile")) {
-    stop("An rprimer_profile object is expected.", call. = FALSE)
+  if (!is.rprimer_profile(x)) {
+    stop("'x' must be an rprimer_profile object", call. = FALSE)
   }
   # Function to identify the most common base at a position
   find_most_common_base <- function(x, y) {
@@ -116,7 +116,7 @@ majority_consensus <- function(x) {
   # Get the consensus sequence at all positions
   consensus <- apply(x, 2, function(y) find_most_common_base(x, y))
   consensus <- unname(consensus)
-  return(consensus)
+  consensus
 }
 
 #' Convert DNA nucleotides into the corresponding iupac degenerate base
@@ -142,7 +142,7 @@ majority_consensus <- function(x) {
 as_iupac <- function(x) {
   if (!(is.character(x) && length(x) == 1)) {
     stop(
-      "A character vector of length one is expected, e.g. 'a,c,t'",
+      "'x' must be a character vector of length one, e.g. 'a,c,t'",
       call. = FALSE
     )
   }
@@ -155,7 +155,7 @@ as_iupac <- function(x) {
   x <- x[!(match == FALSE)] # exclude non accepted nucleotides
   x <- paste(x, collapse = ",")
   iupac <- unname(iupac_lookup[x]) # match with lookup table
-  return(iupac)
+  iupac
 }
 
 #' Iupac consensus sequence
@@ -185,13 +185,13 @@ as_iupac <- function(x) {
 #'
 #' @noRd
 iupac_consensus <- function(x, threshold = 0) {
-  if (!inherits(x, "rprimer_profile")) {
-    stop("An rprimer_profile object is expected.", call. = FALSE)
+  if (!is.rprimer_profile(x)) {
+    stop("'x' must be an rprimer_profile object", call. = FALSE)
   }
   if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
     stop(paste0(
-      "The threshold was set to ", threshold, ". Valid threshold values
-     are from 0 to 0.2"
+      "'treshold' must be between 0 and 0.2. \n
+      You've set it to ", threshold, "."
     ))
   }
   # Select only a, c, g, t and - to count in the iupac consensus sequence
@@ -206,7 +206,7 @@ iupac_consensus <- function(x, threshold = 0) {
     warning("The consensus sequence contain NAs.
     Try to lower the threshold value.", call. = FALSE) # Check if this works!
   }
-  return(consensus)
+  consensus
 }
 
 #' Gap frequency
@@ -224,12 +224,12 @@ iupac_consensus <- function(x, threshold = 0) {
 #'
 #' @noRd
 gap_frequency <- function(x) {
-  if (!inherits(x, "rprimer_profile")) {
-    stop("An rprimer_profile object is expected.", call. = FALSE)
+  if (!is.rprimer_profile(x)) {
+    stop("'x' must be an rprimer_profile object", call. = FALSE)
   }
   gaps <- x[rownames(x) == "-", ]
   gaps <- unname(gaps)
-  return(gaps)
+  gaps
 }
 
 #' Nucleotide identity
@@ -251,8 +251,8 @@ gap_frequency <- function(x) {
 #'
 #' @noRd
 nucleotide_identity <- function(x) {
-  if (!inherits(x, "rprimer_profile")) {
-    stop("An rprimer_profile object is expected.", call. = FALSE)
+  if (!is.rprimer_profile(x)) {
+    stop("'x' must be an rprimer_profile object", call. = FALSE)
   }
   # We want to assess identity based on DNA bases,
   # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
@@ -265,7 +265,7 @@ nucleotide_identity <- function(x) {
   identity <- apply(s, 2, max)
   identity <- unname(identity)
   identity[is.na(identity)] <- 0
-  return(identity)
+  identity
 }
 
 #' Shannon entropy
@@ -310,6 +310,15 @@ shannon_entropy <- function(x) {
   entropy <- unname(entropy)
   entropy <- abs(entropy) # abs to avoid -0 (due to neg sums)
   entropy[is.na(entropy)] <- 0
-  return(entropy)
+  entropy
 }
+
+#' Check if an object has class attribute rprimer_properties
+#'
+#' @param x An rprimer_properties-like object.
+#'
+#' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @noRd
+is.rprimer_properties <- function(x) inhertits(x, "rprimer_properties")
 
