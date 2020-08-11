@@ -9,7 +9,7 @@
 #' @param threshold A number between 0.5 and <1 (the default is 0.5).
 #'
 #' @return
-#' An alignment (an list of class 'rprimer_alignment'), where
+#' An alignment (an object class 'rprimer_alignment'), where
 #' all positions with a gap proportion higher than the stated threshold
 #' are removed.
 #'
