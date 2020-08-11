@@ -1,6 +1,6 @@
 #' Write assay report
 #'
-#' @param filename (a character vector of length one)
+#' @param filename (a character vector of length one).
 #'
 #' @param assay_selection An object of class 'rprimer_assay', with one row.
 #'
@@ -10,7 +10,7 @@
 #'
 #' @param comment
 #' Optional. Comments that should be included in the report.
-#' A character vector of length one. The default is \code{NULL}
+#' A character vector of length one. The default is \code{NULL}.
 #'
 #' @return A html-document with detailed assay information.
 #'
