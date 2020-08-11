@@ -7,9 +7,9 @@
 #' @param y Candidate probes (an object of class 'rprimer_oligo').
 #'
 #' @param tm_difference
-#' The Tm-difference range between primers and probe.
-#' The default values are \code{c(0, 20)}.The minimum allowed
-#' value is -20 and the maxiumum allowed value  is 20.
+#' Acceptable Tm difference between primers and probe.
+#' The minimum allowed value is -20 and the maxiumum allowed value is 20. 
+#' The default are \code{c(0, 20)}.
 #'
 #' @details
 #' The Tm-difference is calculated by subtracting the
@@ -18,7 +18,7 @@
 #' means that the Tm of the probe is lower than the average Tm of the
 #' primer pair.
 #'
-#' The Tm-difference is calculated from the majority oligos, and
+#' Note that the Tm-difference is calculated from the majority oligos, and
 #' may thus be misleading for degenerate (iupac) oligos.
 #'
 #' @return Assays with probes. A tibble (a data frame) of
@@ -41,7 +41,7 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
   }
   if (!(min(tm_difference) >= -20 && max(tm_difference) <= 20)) {
     stop(
-      "'tm_difference' must be between -30 and 30, e.g. c(-1, 5)", ### Add more
+      "'tm_difference' must be between -20 and 20, e.g. c(-1, 5)",
       call. = FALSE
     )
   }
