@@ -1,8 +1,8 @@
 #' Split sequence
 #'
-#' @param x A character vector of length one
+#' @param x A character vector of length one.
 #'
-#' @return A character vector of length \code{nchar(x)}
+#' @return A character vector of length \code{nchar(x)}.
 #'
 #' @example split_sequence("cgtttg")
 #'
