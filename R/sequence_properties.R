@@ -6,10 +6,10 @@
 #' @param x A nucleotide profile of class 'rprimer_profile'.
 #'
 #' @param iupac_threshold
-#' A number between 0 and 0.2 (the default is 0).
+#' A number between >0 and 0.2. 
 #' At each position, all nucleotides with a proportion
 #' higher than or equal to the stated threshold will be included in
-#' the iupac consensus sequence.
+#' the iupac consensus sequence. The default is NULL. Then, all nucleotides #####################################
 #'
 #' @section
 #' Majority consensus sequence:
@@ -65,7 +65,7 @@
 #' sequence_properties(example_rprimer_profile)
 #'
 #' @export
-sequence_properties <- function(x, iupac_threshold = 0) {
+sequence_properties <- function(x, iupac_threshold = NULL) {
   if (!is.rprimer_profile(x)) {
     stop("'x' must be an rprimer_profile object", call. = FALSE)
   }
@@ -140,11 +140,8 @@ majority_consensus <- function(x) {
 #' as_iupac("tg") # Will return NA since the bases are not separated by comma
 #' @noRd
 as_iupac <- function(x) {
-  if (!(is.character(x) && length(x) == 1)) {
-    stop(
-      "'x' must be a character vector of length one, e.g. 'a,c,t'",
-      call. = FALSE
-    )
+  if (!(is.character(x)) {
+    stop("'x' must be a character vector, e.g. 'a,c,t'", call. = FALSE)
   }
   x <- gsub(" ", "", x)
   x <- unlist(strsplit(x, split = ","), use.names = FALSE)
@@ -169,7 +166,7 @@ as_iupac <- function(x) {
 #'
 #' @param threshold A number between 0 and 0.2 (the default is 0).
 #' At each position, all nucleotides with a proportion higher than
-#' or equal to the stated threshold will be included in the iupac consensus
+#' or equal to the stated threshold will be included in the iupac consensus ######################
 #' sequence.
 #'
 #' @details Note that \code{iupac_consensus} only
@@ -184,9 +181,12 @@ as_iupac <- function(x) {
 #' sequecnce is determined.
 #'
 #' @noRd
-iupac_consensus <- function(x, threshold = 0) {
+iupac_consensus <- function(x, threshold = NULL) {
   if (!is.rprimer_profile(x)) {
     stop("'x' must be an rprimer_profile object", call. = FALSE)
+  }
+  if (is.null(iupac_threshold)) {
+    iupac_treshold = 0
   }
   if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
     stop(paste0(
@@ -198,13 +198,13 @@ iupac_consensus <- function(x, threshold = 0) {
   bases <- c("a", "c", "g", "t", "-")
   x <- x[rownames(x) %in% bases, ]
   bases_to_include <- apply(x, 2, function(y) {
-    paste(rownames(x)[y >= threshold], collapse = ",")
+    paste(rownames(x)[y >= threshold], collapse = ",") ####################################### or >
   })
   bases_to_include <- unname(bases_to_include)
   consensus <- purrr::map_chr(bases_to_include, ~ as_iupac(.x))
   if (any(is.na(consensus))) {
     warning("The consensus sequence contain NAs.
-    Try to lower the threshold value.", call. = FALSE) # Check if this works!
+    Try to lower the threshold value.", call. = FALSE) 
   }
   consensus
 }
