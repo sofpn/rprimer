@@ -209,3 +209,12 @@ add_probe_to_match_matrix <- function(x) {
   x <- dplyr::bind_cols(x, match_matrix)
   x
 }
+
+#' Check if an object has class attribute rprimer_assay
+#'
+#' @param x An rprimer_assay-like object.
+#'
+#' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @noRd
+is.rprimer_assay <- function(x) inhertits(x, "rprimer_assay")
