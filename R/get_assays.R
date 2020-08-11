@@ -5,10 +5,8 @@
 #' @param x An object of class 'rprimer_oligo'.
 #'
 #' @param length
-#' Desired amplicon length,
-#' ranging from 40 to 5000 base pairs. The
-#' default is \code{65:120}, which means that assays with amplicon lengths from
-#' 65 to 120 base-pairs will be considered as acceptable.
+#' Amplicon length. Can range from 40 to 5000 base pairs. The
+#' default is \code{65:120}.
 #'
 #' @param max_tm_difference
 #' Maximum Tm difference (in C) between the two primers
@@ -76,8 +74,8 @@
 #'
 #' @export
 get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
-  if (!inherits(x, "rprimer_oligo")) {
-    stop("'x' must be an rprimer_oligo object.", call. = FALSE) ################################ is.rprimer
+  if (!is.rprimer_oligo(x)) {
+    stop("'x' must be an rprimer_oligo object.", call. = FALSE) 
   }
   if (!(max_tm_difference > 0 && max_tm_difference < 30)) {
     stop("'max_tm_difference' must be between 0 and 30", call. = FALSE)
@@ -135,13 +133,12 @@ get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
   assays
 }
 
-
 #' Combine match matrices
 #'
-#' @param x A tibble with assays
+#' @param x A tibble with assays.
 #'
-#' @return A tibble with assays, with information on perfect matches    #### Not tested!!!!
-#' for fwd and rev primers combined.
+#' @return A tibble with assays, with information on perfect matches   
+#' for forward and reverse primers.
 #'
 #' @noRd
 combine_match_matrices <- function(x) {
@@ -178,10 +175,10 @@ combine_match_matrices <- function(x) {
 
 #' Add probes to match matrices
 #'
-#' @param x A tibble with assays (with probes)
+#' @param x A tibble with assays (with probes).
 #'
-#' @return A tibble with assays, with information on perfect matches    #### Not tested!!!! ######### PROBLEM!
-#' for fwd and rev primers and probes combined.
+#' @return A tibble with assays, with information on perfect matches    
+#' for forward and reverse primers and probes.
 #'
 #' @noRd
 add_probe_to_match_matrix <- function(x) {
