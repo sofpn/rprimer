@@ -1003,3 +1003,11 @@ check_match <- function(x, y) {
   x
 }
 
+#' Check if an object has class attribute rprimer_oligo
+#'
+#' @param x An rprimer_oligo-like object.
+#'
+#' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @noRd
+is.rprimer_oligo <- function(x) inhertits(x, "rprimer_oligo")
