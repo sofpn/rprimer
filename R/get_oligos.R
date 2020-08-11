@@ -314,33 +314,7 @@ init_5end <- function(x) {
 #' @param conc_na The sodium ion concentration in M, ranging
 #' from 0.01 M to 1 M. The default value is 0.05 M (50 mM).
 #'
-#' @details \code{x} cannot contain other characters than
-#' 'a', 'c', 'g', 't' and '-'. All oligos must be of equal length.
-#'
-#' @section Calculation of Tm:
-#'
-#' No symmetry correction is done
-#' (oligos are not expected to be self-complementary).
-#'
-#' We assume that the oligo concentration is much higher
-#' than the target concentration.
-#'
 #' @return The melting temperature(s) of x.
-#'
-#' @references
-#'
-#' SantaLucia, J, et al. (1996)
-#' Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
-#' Biochemistry, 35: 3555-3562 (Formula and salt correction are from here)
-#'
-#' Allawi, H. & SantaLucia, J. (1997)
-#' Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-#' Biochemistry, 34: 10581?\200?10594
-#' (Duplex initiation parameters are from here)
-#'
-#' SantaLucia, J (1998) A unified view of polymer,
-#' dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
-#' Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
 #'
 #' @examples
 #' tm("acggtgcctac")
@@ -617,7 +591,7 @@ exclude_oligos <- function(x,
   # Remove oligos with at least 4 'runs' of the same dinucleotide
   x <- exclude(x, "(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)\\1\\1\\1")
   # Remove oligos with at least 5 'runs' of the same nucleotide
-  x <- exclude(x, "([a-z])\\1\\1\\1\\1")''
+  x <- exclude(x, "([a-z])\\1\\1\\1\\1")
   if (avoid_3end_ta == TRUE) {
     # Remove oligos with t or a at the 3' end
     x <- exclude(x, "a$|t$")

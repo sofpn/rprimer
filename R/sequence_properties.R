@@ -6,10 +6,12 @@
 #' @param x A nucleotide profile of class 'rprimer_profile'.
 #'
 #' @param iupac_threshold
-#' A number between >0 and 0.2. 
+#' A number between greater than 0 and less or equal to 0.2.
 #' At each position, all nucleotides with a proportion
 #' higher than or equal to the stated threshold will be included in
-#' the iupac consensus sequence. The default is NULL. Then, all nucleotides #####################################
+#' the iupac consensus sequence. The default is \code{NULL},
+#' which means that all nucleotides that are present at the
+#' position in matter will be included.
 #'
 #' @section
 #' Majority consensus sequence:
@@ -19,8 +21,8 @@
 #'
 #' @section
 #' IUPAC consensus sequence:
-#' The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
-#' Note that the IUPAC consensus sequence only
+#' The consensus sequence expressed in iupac format (i.e. with wobble bases)
+#' Note that the iupac consensus sequence only
 #' takes 'a', 'c', 'g', 't' and '-' as input. Degenerate bases
 #' present in the alignment will be skipped. If a position only contains
 #' degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
@@ -32,7 +34,7 @@
 #' @section Identity:
 #' The nucleotide identity is the proportion of
 #' the most common base. Gaps (-),
-#' as well as nucleotides other than a, c, g and t, are excluded from the
+#' as well as nucleotides other than a, c, g and t are excluded from the
 #' calculation.
 #'
 #' @section Entropy:
@@ -45,24 +47,16 @@
 #' A value of \code{0} indicate no variability and a high value
 #' indicate high variability.
 #' Gaps (-), as well as bases other than
-#' a, c, g and t, are excluded from the calculation.
+#' a, c, g and t are excluded from the calculation.
 #'
 #' @return
 #' A tibble (data frame) of class 'rprimer_properties',
 #' with information about majority and iupac consensus sequence, gap frequency,
 #' nucleotide identity and shannon entropy.
 #'
-#' \describe{
-#'   \item{position}{position in the alignment}
-#'   \item{majority}{majority consensus sequence}
-#'   \item{iupac}{iupac consensus sequence}
-#'   \item{gaps}{proportion of gaps}
-#'   \item{identity}{proportion of the most common nucleotide}
-#'   \item{entropy}{Shannon entropy}
-#' }
-#'
 #' @examples
 #' sequence_properties(example_rprimer_profile)
+#' sequence_properties(example_rprimer_profile, threshold = 0.1)
 #'
 #' @export
 sequence_properties <- function(x, iupac_threshold = NULL) {
@@ -90,14 +84,9 @@ sequence_properties <- function(x, iupac_threshold = NULL) {
 #' \code{majority_consensus} returns the majority consensus sequence of an
 #' alignment of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_profile', i.e.
-#' a numeric m x n matrix, where m is the number of nucleotides in the
-#' alignment, and n is the number of positions in the alignment.
+#' @inheritParams sequence_properties
 #'
-#' @details If there are ties (two or more bases occur with the same frequency)
-#' , the consensus base will be randomly selected among these bases.
-#'
-#' @return the majority consensus sequence (a character vector of length n).
+#' @return The majority consensus sequence (a character vector of length n).
 #'
 #' @noRd
 majority_consensus <- function(x) {
@@ -124,7 +113,7 @@ majority_consensus <- function(x) {
 #' \code{as_iupac} takes several DNA nucleotides as input,
 #' and returns the degenerate base in iupac format.
 #'
-#' @param x a character vector of length one containing DNA
+#' @param x A character vector of length one, containing DNA
 #' nucleotides (valid bases are a, c, g, t, or -). Each base must
 #' be separated by a comma (,), e.g. 'a,c,g'.
 #' Characters other than a, c, g, t and - will be ignored. However, when
@@ -132,7 +121,7 @@ majority_consensus <- function(x) {
 #' or if the bases are not separated by ',',
 #' \code{as_iupac} will return NA.
 #'
-#' @return the corresponding iupac base (a character vector of length one).
+#' @return The corresponding iupac base.
 #'
 #' @examples
 #' as_iupac("a,c")
@@ -140,7 +129,7 @@ majority_consensus <- function(x) {
 #' as_iupac("tg") # Will return NA since the bases are not separated by comma
 #' @noRd
 as_iupac <- function(x) {
-  if (!(is.character(x)) {
+  if (!(is.character(x))) {
     stop("'x' must be a character vector, e.g. 'a,c,t'", call. = FALSE)
   }
   x <- gsub(" ", "", x)
@@ -160,20 +149,7 @@ as_iupac <- function(x) {
 #' \code{iupac_consensus} returns the iupac consensus sequence from an
 #' alignment of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_profile', i.e.
-#' a numeric m x n matrix, where m is the number of nucleotides in the
-#' alignment, and n is the number of positions in the alignment.
-#'
-#' @param threshold A number between 0 and 0.2 (the default is 0).
-#' At each position, all nucleotides with a proportion higher than
-#' or equal to the stated threshold will be included in the iupac consensus ######################
-#' sequence.
-#'
-#' @details Note that \code{iupac_consensus} only
-#' takes 'a', 'c', 'g', 't' and '-' as input. Degenerate bases
-#' present in the alignment will be skipped. If a position only contains
-#' degenerate/invalid bases the iupac consensus character will be NA at that
-#' position.
+#' @inheritParams sequence_properties
 #'
 #' @return The consensus sequence (a character vector of length n).
 #'
@@ -186,7 +162,7 @@ iupac_consensus <- function(x, threshold = NULL) {
     stop("'x' must be an rprimer_profile object", call. = FALSE)
   }
   if (is.null(iupac_threshold)) {
-    iupac_treshold = 0
+    iupac_treshold <- 0
   }
   if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
     stop(paste0(
@@ -198,13 +174,13 @@ iupac_consensus <- function(x, threshold = NULL) {
   bases <- c("a", "c", "g", "t", "-")
   x <- x[rownames(x) %in% bases, ]
   bases_to_include <- apply(x, 2, function(y) {
-    paste(rownames(x)[y >= threshold], collapse = ",") ####################################### or >
+    paste(rownames(x)[y > threshold], collapse = ",")
   })
   bases_to_include <- unname(bases_to_include)
   consensus <- purrr::map_chr(bases_to_include, ~ as_iupac(.x))
   if (any(is.na(consensus))) {
     warning("The consensus sequence contain NAs.
-    Try to lower the threshold value.", call. = FALSE) 
+    Try to lower the threshold value.", call. = FALSE)
   }
   consensus
 }
@@ -214,13 +190,9 @@ iupac_consensus <- function(x, threshold = NULL) {
 #' \code{gap_frequency} returns the gap frequency at each position in an
 #' alignment of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_profile', i.e.
-#' a numeric m x n matrix, where m is the number of nucleotides in the
-#' alignment, and n is the number of positions in the alignment.
+#' @inheritParams sequence_properties
 #'
-#' @details Gaps are recognised as "-".
-#'
-#' @return the gap frequency (a numeric vector of length n).
+#' @return The gap frequency (a numeric vector of length n).
 #'
 #' @noRd
 gap_frequency <- function(x) {
@@ -234,19 +206,12 @@ gap_frequency <- function(x) {
 
 #' Nucleotide identity
 #'
-#' #' \code{nucleotide_identity} returns the nucleotide identity from an
+#' \code{nucleotide_identity} returns the nucleotide identity from an
 #' alignment of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_profile', i.e.
-#' a numeric m x n matrix, where m is the number of nucleotides in the
-#' alignment, and n is the number of positions in the alignment.
+#' @inheritParams sequence_properties
 #'
-#' @details The nucleotide identity is the proportion of
-#' the most common base at each position in the alignment.  Gaps (-),
-#' as well as nucleotides other than a, c, g and t, are excluded from the
-#' calculation.
-#'
-#' @return the nucleotide identity (a numeric vector of length n).
+#' @return The nucleotide identity (a numeric vector of length n).
 #' The nucleotide identity can range from > 0 to 1.
 #'
 #' @noRd
@@ -273,28 +238,14 @@ nucleotide_identity <- function(x) {
 #' #' \code{shannon_entropy} returns the shannon entropy from an
 #' alignment of DNA sequences.
 #'
-#' @param x A nucleotide profile of class 'rprimer_profile', i.e.
-#' a numeric m x n matrix, where m is the number of nucleotides in the
-#' alignment, and n is the number of positions in the alignment.
+#' @inheritParams sequence_properties
 #'
-#' @details Shannon entropy is a measurement of
-#' variability, and it is here calculated at each position in the alignment.
-#' First, for each nucleotide that occurs at the position in matter,
-#'  \code{p*log2(p)}, is calculated, where p is the proportion of
-#' that nucleotide. Then, the shannon entropy is calculated by summarising
-#' these values for each nucleotide at the position in matter,
-#' followed by multiplication by -1.
-#' A value of 0 indicate no variability and a high value
-#' indicate high variability.
-#' Gaps (-), as well as nucleotides other than
-#' a, c, g and t, are excluded from the calculation.
-#'
-#' @return the shannon entropy (a numeric vector of length n).
+#' @return The shannon entropy (a numeric vector of length n).
 #'
 #' @noRd
 shannon_entropy <- function(x) {
-  if (!inherits(x, "rprimer_profile")) {
-    stop("An rprimer_profile object is expected.", call. = FALSE)
+  if (!is.rprimer_profile(x)) {
+    stop("'x' must be an rprimer_profile object", call. = FALSE)
   }
   # We want to assess identity based on DNA bases,
   # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
@@ -321,4 +272,3 @@ shannon_entropy <- function(x) {
 #'
 #' @noRd
 is.rprimer_properties <- function(x) inhertits(x, "rprimer_properties")
-
