@@ -1,5 +1,5 @@
 ---
-title: "Design report (rprimer)"
+title: "Design report"
 output: html_document
 params: 
   assay_selection: assay_selection
@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 # Custom functions needed to generate this report 
 
-# add graphics:: , etc. 
+# Detect G-repeats ########################## ADD HERE 
 
 # x - a DNA sequence (e.g. "cggttrt")
 expand_degenerate <- function(x) {
@@ -197,7 +197,7 @@ assay_report <- print_assay_report(params$assay_selection)
 plot_assay_overview(params$sequence_properties, params$assay_selection)
 ```
 <br><br>
-**Fig. 1.** Overview of the alignment/region of interest used for assay design, with the assay region indicated in blue. Identity: Proportion of the most frequently occuring base. Entropy: Shannon entropy, a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. GC: GC-content. Gaps: Proportion of gaps. Vertical bars represent the value at each position. Black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent centered running averages.   
+**Fig. 1.** Assay location (blue) and target information. *Identity:* Proportion of the most frequently occuring base. *Entropy:* Shannon entropy, a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. *GC:* GC-content. *Gaps:* Proportion of gaps. Vertical bars represent the value at each position. Black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). Horizontal lines represent centered running averages.   
 <br><br>
 ```{r, fig.width=12, fig.height=6}
 plot_assay_details(params$sequence_profile, params$assay_selection)
@@ -205,7 +205,7 @@ plot_assay_details(params$sequence_profile, params$assay_selection)
 <br><br>
 **Fig. 2.** Proportion of each nucleotide in the alignment at the oligo binding sites. Sequences are displayed from 5'- to 3'-end. 
 <br><br>
-**Table 1**. Assay info. Begin: Where the assay region starts (with regards to the alignment/region of interest), End: Where the assay region ends. Tm difference, primers: Tm difference between the two primers (absolute value, in C). Tm difference, probe-primers: Tm of the probe subtracted by the average Tm of the primer pair. Note that tm-differences are calculated from majority oligos and may therefore be misleading for degenerate (IUPAC) oligos. Degeneracy: Total number of oligo variants in the assay. Perfect match: *proportion* of perfectly matching sequences. 
+**Table 1**. Assay information. *Begin:* Where the assay region starts (with regards to the alignment/region of interest), *End:Ä Where the assay region ends. ÄTm difference, primers:* Tm difference between the two primers (absolute value, in C). *Tm difference, probe-primers:* Tm of the probe subtracted by the average Tm of the primer pair. Note that tm-differences are calculated from majority oligos and may therefore be misleading for degenerate (IUPAC) oligos. *Degeneracy:* Total number of oligo variants in the assay. *Perfect match:* Proportion of perfectly matching sequences. 
 <br>
 ```{r}
 # Customise table options 
@@ -328,7 +328,10 @@ if (has_probe) {
 
 ### Target information
 <br>
-Amplicon GC-content (in consensus sequence): `r round(gc_content(paste(sequence_properties$majority[assay_report[[1]]$general$begin:assay_report[[1]]$general$end], collapse = "")), 2)*100` %.
+Amplicon sequence (consensus sequence): `r paste(sequence_properties$majority[assay_report[[1]]$general$begin:assay_report[[1]]$general$end], collapse = "")`,
+Amplicon GC-content (consensus sequence): `r round(gc_content(paste(sequence_properties$majority[assay_report[[1]]$general$begin:assay_report[[1]]$general$end], collapse = "")), 2)*100` %.
+Presence of G-repeats in amplicon (more than 3 consecutive G:s): **ADD FUNCTION** 
+G repeats in the amplicon sequence can prevent strand dissociation and thus reduce amplification efficiency (ref: S. Bustin, J. Hugget 2017).
 <br><br>
 ```{r, fig.width=12, fig.height=12}
 plot_match_matrix(assay_selection)
