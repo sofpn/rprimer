@@ -44,13 +44,13 @@ write_report <- function(filename = "my_assay_report",
       call. = FALSE
     )
   }
-  if (!is.rprimer_profile(x)) {
+  if (!is.rprimer_profile(sequence_profile)) {
     stop(
       "'sequence_profile' must be an rprimer_profile object.",
       call. = FALSE
     )
   }
-  if (!is.rprimer_properties(x)) {
+  if (!is.rprimer_properties(sequence_properties)) {
     stop(
       "'sequence_properties' must be an rprimer_properties object.",
       call. = FALSE

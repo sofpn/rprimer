@@ -151,6 +151,14 @@ as_iupac <- function(x) {
 #'
 #' @inheritParams sequence_properties
 #'
+#' @param threshold
+#' A number between greater than 0 and less or equal to 0.2.
+#' At each position, all nucleotides with a proportion
+#' higher than or equal to the stated threshold will be included in
+#' the iupac consensus sequence. The default is \code{NULL},
+#' which means that all nucleotides that are present at the
+#' position in matter will be included.
+#'
 #' @return The consensus sequence (a character vector of length n).
 #'
 #' @seealso \code{as_iupac} for further info on how the iupac consensus
@@ -161,8 +169,8 @@ iupac_consensus <- function(x, threshold = NULL) {
   if (!is.rprimer_profile(x)) {
     stop("'x' must be an rprimer_profile object", call. = FALSE)
   }
-  if (is.null(iupac_threshold)) {
-    iupac_treshold <- 0
+  if (is.null(threshold)) {
+    threshold <- 0
   }
   if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
     stop(paste0(
@@ -271,4 +279,4 @@ shannon_entropy <- function(x) {
 #' @return \code{TRUE} or \code{FALSE}.
 #'
 #' @noRd
-is.rprimer_properties <- function(x) inhertits(x, "rprimer_properties")
+is.rprimer_properties <- function(x) inherits(x, "rprimer_properties")

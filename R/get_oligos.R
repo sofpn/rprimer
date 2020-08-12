@@ -589,7 +589,7 @@ exclude_oligos <- function(x,
     )
   }
   # Remove oligos with at least 4 'runs' of the same dinucleotide
-  x <- exclude(x, "(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)\\1\\1\\1")
+  # x <- exclude(x, "(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)\\1\\1\\1") #############
   # Remove oligos with at least 5 'runs' of the same nucleotide
   x <- exclude(x, "([a-z])\\1\\1\\1\\1")
   if (avoid_3end_ta == TRUE) {
@@ -984,4 +984,4 @@ check_match <- function(x, y) {
 #' @return \code{TRUE} or \code{FALSE}.
 #'
 #' @noRd
-is.rprimer_oligo <- function(x) inhertits(x, "rprimer_oligo")
+is.rprimer_oligo <- function(x) inherits(x, "rprimer_oligo")
