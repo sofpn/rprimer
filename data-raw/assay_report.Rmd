@@ -14,7 +14,12 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 # Custom functions needed to generate this report 
 
-# Detect G-repeats ########################## ADD HERE 
+# Detect G-repeats ########################## ADD HERE
+find_g_repeats <- function(x) {
+  out <- grepl("g\\1\\1", x)
+  if (out == TRUE) yes 
+  else no
+}
 
 # x - a DNA sequence (e.g. "cggttrt")
 expand_degenerate <- function(x) {
