@@ -28,7 +28,7 @@
 #' @param max_degeneracy
 #' Maximum number of degenerate variants.
 #' The minimum allowed value is 1 and the maximum
-#' allowed value is 64 (default is 4).
+#' allowed value is 16 (default is 4).
 #'
 #' @param x One or more DNA sequences (a character vector).
 #'
@@ -47,8 +47,8 @@
 #'
 #' @param avoid_gc_rich_3end
 #' \code{TRUE} or \code{FALSE}.
-#' If oligos with more than three G or C within the last five bases of the 3' end
-#' should be replaced with \code{NA}
+#' If oligos with more than three G or C within the last five bases of the 3'
+#' end should be replaced with \code{NA}
 #' (recommended for primers).
 #' The default is \code{TRUE}.
 #'
@@ -101,6 +101,8 @@
 #' A tibble (a data frame) of class 'rprimer_oligo', with all oligo
 #' candidates. An error message will return if no oligos are found.
 #'
+#' The tibble contains the following information:
+#'
 #' \describe{
 #'   \item{begin}{position where the oligo begins}
 #'   \item{end}{position where the oligo ends}
@@ -147,8 +149,8 @@
 #' are from here)
 #'
 #' Allawi, H. & SantaLucia, J. (1997)
-#' Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-#' Biochemistry, 34: 10581?\200?10594 ###########################################################
+#' Thermodynamics and NMR of Internal G-T Mismatches in DNA.
+#' Biochemistry, 36, 34: 10581–10594
 #' (Duplex initiation parameters are from here)
 #'
 #' SantaLucia, J (1998) A unified view of polymer,
@@ -206,155 +208,6 @@ get_oligos <- function(x,
   all_oligos
 }
 
-#' Split a DNA sequence into nearest neighbors
-#'
-#' \code{nn_split} splits an oligo sequence into nearest neighbors
-#' (for calculation of deltaG, deltaH and Tm)
-#'
-#' @param x a DNA sequence with at least two bases, e.g. 'ctta'
-#' (a character vector of length one).
-#'
-#' @return The nearest neighbors of x (a character vector).
-#'
-#' @example
-#' nn_split('ccgtncg')
-#'
-#' @noRd
-nn_split <- function(x) {
-  if (!(!is.na(x) && is.character(x) && nchar(x) > 1)) {
-    stop("x must be a character vector of length one,
-      with at least two characters (e.g. 'caaggnt')", call. = FALSE)
-  }
-  x <- split_sequence(x)
-  from <- (seq_along(x) - 1)[-1]
-  to <- seq_along(x)[-1]
-  nn <- purrr::map_chr(from, ~ paste(x[from[[.x]]:to[[.x]]], collapse = ""))
-  nn
-}
-
-#' Calculate dH or dS of nearest neighbors using lookup tables
-#'
-#' @param x A character vector with nearest-neighbor pairs
-#' of DNA sequences (e.g. \code{c('ct', 'tt', 'ta')})
-#'
-#' @param table The lookup table that should be used.
-#' Either 'dH' (entropy) or 'dS' (enthalpy).
-#'
-#' @details \code{x} cannot contain other characters than
-#' 'a', 'c', 'g', 't' and '-'.
-#'
-#' @return The corresponding values for dH or dS (in cal/M)
-#'
-#' @examples
-#' nn_lookup(c("ac", "cc"), table = "dS")
-#' @noRd
-nn_lookup <- function(x, table) {
-  valid_tables <- c("dH", "dS")
-  if (!is.character(table) || !table %in% valid_tables) {
-    stop("table must be set to either 'dH' or 'dS'", call. = FALSE)
-  }
-  if (any(grepl("[^acgt]", x))) {
-    stop(
-      "x contain at least one invalid base.
-          Valid bases are a, c, g and t.",
-      call. = FALSE
-    )
-  }
-  if (table == "dH") {
-    selected_table <- nearest_neighbor_lookup$dH
-  } else {
-    selected_table <- nearest_neighbor_lookup$dS
-  }
-  matching <- selected_table[match(x, nearest_neighbor_lookup$bases)]
-  if (is.null(ncol(x))) {
-    result <- matching
-  } else {
-    result <- matrix(matching, ncol = ncol(x), byrow = FALSE)
-  }
-  result
-}
-
-#' Initiation of DNA sequences for Tm calculation
-#'
-#' @param x One or more DNA sequences (a character vector).
-#'
-#' @details \code{x} cannot contain other characters than
-#' 'a', 'c', 'g', 't' and '-'.
-#'
-#' @return The initiaion values for x.
-#'
-#' @noRd
-init_3end <- function(x) {
-  if (grepl("(t|a)$", x)) {
-    c(H = 2.3 * 1000, S = 4.1)
-  } else {
-    c(H = 0.1 * 1000, S = -2.8)
-  }
-}
-init_5end <- function(x) {
-  if (grepl("^(t|a)", x)) {
-    c(H = 2.3 * 1000, S = 4.1)
-  } else {
-    c(H = 0.1 * 1000, S = -2.8)
-  }
-}
-
-#' Melting temperature
-#'
-#' \code{tm} calculates the melting temperature of one or
-#' more perfectly matching DNA duplexes (i.e. oligo-target duplexes),
-#' using the nearest neigbour method.
-#'
-#' @param x One or more DNA sequences (a character vector).
-#'
-#' @param conc_oligo The concentration of oligonucleotide in M,
-#' ranging from 0.2e-07 M (20 nM) to 2.0e-06 M (2000 nM).
-#' The default value is 5e-07 M (500 nM).
-#'
-#' @param conc_na The sodium ion concentration in M, ranging
-#' from 0.01 M to 1 M. The default value is 0.05 M (50 mM).
-#'
-#' @return The melting temperature(s) of x.
-#'
-#' @examples
-#' tm("acggtgcctac")
-#' tm(c("acggtgcctac", "acggtggctgc"))
-#' @noRd
-tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
-  if (!is.double(conc_oligo) || conc_oligo < 2e-07 || conc_oligo > 2.0e-06) {
-    stop("'conc_oligo' must be between
-           0.2e-07 M (20 nM) and 2e-06 M (2000 nM)", call. = FALSE)
-  }
-  if (!is.double(conc_na) || conc_na < 0.01 || conc_na > 1) {
-    stop("'conc_na' must be between 0.01 and 1 M", call. = FALSE)
-  }
-  x <- tolower(x)
-  # Find initiation values
-  init_H <- purrr::map_dbl(x, ~ init_5end(.x)[["H"]] + init_3end(.x)[["H"]])
-  init_S <- purrr::map_dbl(x, ~ init_5end(.x)[["S"]] + init_3end(.x)[["S"]])
-  nn <- purrr::map(x, nn_split)
-  # Check oligo length
-  oligo_length <- purrr::map_int(nn, length)
-  # I made a matrix based tm-calculation,
-  # which means that all oligos must be of the same length
-  if (length(unique(oligo_length)) != 1) {
-    stop("All oligos must be of equal length", call. = FALSE)
-  }
-  # Find nearest neighbor values for dH and dS
-  nn <- do.call("rbind", nn)
-  dH_result <- nn_lookup(nn, "dH")
-  dS_result <- nn_lookup(nn, "dS")
-  # Sum dH and dS
-  sumdH <- rowSums(dH_result) + init_H
-  sumdS <- rowSums(dS_result) + init_S
-  # Correct delta S for salt conc.
-  N <- nchar(x[[1]]) - 1 # Number of phosphates
-  sumdS <- sumdS + 0.368 * N * log(conc_na)
-  tm <- sumdH / (sumdS + gas_constant * log(conc_oligo))
-  tm <- tm - 273.15
-  tm
-}
-
 #' Divide a DNA sequence into n-sized chunks
 #'
 #' \code{get_nmers} divides a character vector into chunks of size \code{n},
@@ -372,6 +225,7 @@ tm <- function(x, conc_oligo = 5e-07, conc_na = 0.05) {
 #'
 #' @examples
 #' get_nmers(c("c", "g", "t", "t", "c", "g"), n = 2)
+#'
 #' @noRd
 get_nmers <- function(x, n = NULL) {
   if (!is.character(x)) {
@@ -410,6 +264,7 @@ get_nmers <- function(x, n = NULL) {
 #' gc_content("acgttcc")
 #' gc_content("acgttcc--")
 #' gc_content("acgrn") # Will return an error because of an invalid base.
+#'
 #' @noRd
 gc_content <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
@@ -432,23 +287,23 @@ gc_content <- function(x) {
 #'
 #' \code{reverse_complement} finds the reverse complement of a DNA seuquence.
 #'
-#' @param x a DNA sequence (a character vector of length one, e.g. 'cttgg').
+#' @param x A DNA sequence (a character vector of length one, e.g. 'cttgg').
 #'
 #' @details For \code{x}, valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm',
 #' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
 #'
-#' @return The reverse complement. Non valid bases will return as NA.
+#' @return The reverse complement. Non valid bases will return as \code{NA}.
 #'
 #' @examples
 #' reverse_complement("cttgtr")
 #' @noRd
 reverse_complement <- function(x) {
-  if (typeof(x) != "character" || length(x) != 1) {
-    stop("'x' must be a character vector of length one", call. = FALSE)
+  if (typeof(x) != "character") {
+    stop("'x' must be a character vector", call. = FALSE)
   }
   x <- tolower(x)
   if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("'x' contains at least one invalid base.
+    stop("'x' contains at least one invalid base. \n
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
          call. = FALSE
@@ -497,7 +352,7 @@ running_sum <- function(x, n = NULL) {
     }
   }
   if (!is.numeric(n) || n < 1 || n > length(x)) {
-    stop("'n' must be a number between 1 and length(x)", call. = FALSE)
+    stop("'n' must be a number between 1 and length(x).", call. = FALSE)
   }
   cumul <- c(0, cumsum(x))
   runsum <- cumul[(n + 1):length(cumul)] - cumul[1:(length(cumul) - n)]
@@ -509,7 +364,7 @@ running_sum <- function(x, n = NULL) {
 #' \code{exclude} replaces oligos with a specific pattern
 #' with \code{NA}.
 #'
-#' @param x One or more oligo sequences (a character vector).
+#' @param oligos One or more oligo sequences (a character vector).
 #'
 #' @param pattern A regular expression.
 #'
@@ -519,16 +374,16 @@ running_sum <- function(x, n = NULL) {
 #' @examples
 #' exclude(c("cttgttatttt", "cgattctg"), "a$|t$")
 #' @noRd
-exclude <- function(x, pattern) {
-  if (!is.character(x)) {
-    stop("'x' must be a character vector", call. = FALSE)
+exclude <- function(oligos, pattern) {
+  if (!is.character(oligos)) {
+    stop("'oligos' must be a character vector.", call. = FALSE)
   }
-  if (!is.character(pattern) || length(pattern) != 1) {
-    stop("'pattern' must be a character vector of length one", call. = FALSE)
+  if (!is.character(pattern)) {
+    stop("'pattern' must be a character vector.", call. = FALSE)
   }
   regex <- pattern
-  x[grepl(regex, x)] <- NA
-  x
+  oligos[grepl(regex, oligos)] <- NA
+  oligos
 }
 
 #' Exclude oligos
@@ -537,32 +392,9 @@ exclude <- function(x, pattern) {
 #' mono- or dinucleotides with \code{NA}. If selected, it also replaces oligos
 #' with 5'-end g or 3'-end t or a with \code{NA}.
 #'
-#' @param x One or more DNA sequences (a character vector).
+#' @param oligos One or more oligos (a character vector).
 #'
-#' @param avoid_3end_ta
-#' \code{TRUE} or \code{FALSE}.
-#' If oligos with t or a at the 3' end
-#' should be replaced with \code{NA}
-#' (recommended for primers). The default is \code{TRUE}.
-#'
-#' @param avoid_3end_runs
-#' \code{TRUE} or \code{FALSE}.
-#' If oligos with more than two runs
-#' of the same nucleotide at the 3' end should be replaced with \code{NA}
-#' (recommended for primers).
-#' The default is \code{TRUE}.
-#'
-#' @param avoid_gc_rich_3end
-#' \code{TRUE} or \code{FALSE}.
-#' If oligos with more than three G or C within the last five bases of the 3' end
-#' should be replaced with \code{NA}
-#' (recommended for primers).
-#' The default is \code{TRUE}.
-#'
-#' @param avoid_5end_g
-#' \code{TRUE} or \code{FALSE}.If oligos with g
-#' at the 5' end should be replaced with \code{NA}
-#' (recommended for probes). The default is \code{FALSE}.
+#' @inheritParams get_oligos
 #'
 #' @details An oligo is replaced with \code{NA} if
 #' - It has more than three runs of the same dinucleotide (e.g. 'tatatata')
@@ -574,7 +406,7 @@ exclude <- function(x, pattern) {
 #' @examples
 #' exclude_oligos(c("gtgtaaaaatatttt", "cgattctg"))
 #' @noRd
-exclude_oligos <- function(x,
+exclude_oligos <- function(oligos,
                            avoid_3end_ta = FALSE,
                            avoid_3end_runs = FALSE,
                            avoid_gc_rich_3end = TRUE,
@@ -589,26 +421,32 @@ exclude_oligos <- function(x,
     )
   }
   # Remove oligos with at least 4 'runs' of the same dinucleotide
-  # x <- exclude(x, "(at|ta|ac|ca|ag|ga|gt|tg|cg|gc|tc|ct)\\1\\1\\1") #############
+  oligos <- exclude(
+    oligos,
+    "(at){4,}|(ta){4,}|(ac){4,}|(ca){4,}|(ag){4,}|(ga){4,}|(gt){4,}|(tg){4,}|(cg){4,}|(gc){4,}|(tc){4,}|(ct){4,})"
+  )
   # Remove oligos with at least 5 'runs' of the same nucleotide
-  x <- exclude(x, "([a-z])\\1\\1\\1\\1")
+  oligos <- exclude(oligos, "([a-z])\\1\\1\\1\\1")
   if (avoid_3end_ta == TRUE) {
     # Remove oligos with t or a at the 3' end
-    x <- exclude(x, "a$|t$")
+    oligos <- exclude(oligos, "a$|t$")
   }
   if (avoid_3end_runs == TRUE) {
     # Remove oligos with at least 3 'runs' of the same nucleotide in 3'
-    x <- exclude(x, "([a-z])\\1\\1$")
+    oligos <- exclude(oligos, "([a-z])\\1\\1$")
   }
   if (avoid_gc_rich_3end == TRUE) {
-    x <- x
-   # x <- exclude(x, "") #"(^([^(g|c)]*(g|c)){3,}[^(g|c)]*$)"
+    temp <- purrr::map(oligos, ~ split_sequence(.x))
+    temp <- purrr::map(temp, ~ .x[(length(.x) - 4):length(.x)])
+    temp <- purrr::map(temp, ~ paste(.x, collapse = ""))
+    gc <- purrr::map_dbl(temp, ~ gc_content(.x))
+    oligos[which(gc < 4/6)] <- NA
   }
   if (avoid_5end_g == TRUE) {
     # Remove oligos with g at the 5' end
-    x <- exclude(x, "^g")
+    oligos <- exclude(oligos, "^g")
   }
-  x
+  oligos
 }
 
 #' Exclude unwanted oligos
@@ -691,11 +529,11 @@ exclude_unwanted_oligos <- function(x,
 #' count_degenerates("cttnra")
 #' @noRd
 count_degenerates <- function(x) {
-  if (typeof(x) != "character" || length(x) != 1) {
-    stop("'x' must be a character vector of length one", call. = FALSE)
+  if (typeof(x) != "character") {
+    stop("'x' must be a character vector.", call. = FALSE)
   }
   if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("'x' contains at least one invalid base.
+    stop("'x' contains at least one invalid base. \n
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
          call. = FALSE
@@ -714,20 +552,22 @@ count_degenerates <- function(x) {
 #'
 #' @param x a DNA sequence (a character vector of length one, e.g. 'cttgg').
 #'
-#' @details Valid bases for \code{x} are 'a', 'c', 'g', 't', 'r', 'y', 'm',
+#' @details
+#' Valid bases for \code{x} are 'a', 'c', 'g', 't', 'r', 'y', 'm',
 #' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
 #'
-#' @return the number of unique sequences of x (an integer).
+#' @return The number of unique sequences of x (an integer).
 #'
 #' @examples
 #' count_degeneracy("cttnra")
+#'
 #' @noRd
 count_degeneracy <- function(x) {
-  if (typeof(x) != "character" || length(x) != 1) {
-    stop("'x' must be a character vector of length one", call. = FALSE)
+  if (typeof(x) != "character") {
+    stop("'x' must be a character vector.", call. = FALSE)
   }
   if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("'x' contains at least one invalid base.
+    stop("'x' contains at least one invalid base. \n
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
          call. = FALSE
@@ -743,15 +583,7 @@ count_degeneracy <- function(x) {
 
 #' Generate oligos of a specific length
 #'
-#' @param x An object of class 'rprimer_properties'
-#'
-#' @param oligo_length An integer. The minimum allowed
-#' value is 14 and the maximum allowed value is 30. The default is 20.
-#'
-#' @param max_gap_frequency Maximum allowed gap frequency.
-#' A number between 0 and 1 (default is 0.1, which means that only
-#' positions with a gap frequency equal to or less than 0.1 will be
-#' considered as an oligo region).
+#' @inheritParams get_oligos
 #'
 #' @return A tibble with all possible oligos
 #'
@@ -776,8 +608,8 @@ generate_oligos <- function(x,
   if (!(max_degenerates <= 6 && max_degenerates >= 0)) {
     stop("'max_degenerates' must be between 0 and 6", call. = FALSE)
   }
-  if (!(max_degeneracy >= 1 && max_degeneracy <= 64)) {
-    stop("'max_degeneracy' must be between 1 and 64", call. = FALSE)
+  if (!(max_degeneracy >= 1 && max_degeneracy <= 16)) {
+    stop("'max_degeneracy' must be between 1 and 16", call. = FALSE)
   }
   # Find all possible oligos of length y
   majority <- get_nmers(x$majority, n = oligo_length)
@@ -812,44 +644,7 @@ generate_oligos <- function(x,
 #'
 #' @param oligos A tibble with oligos.
 #'
-#' @param gc_range The GC-content range of each oligo. Can range between
-#' 0 and 1. The default is \code{c(0.45, 0.55)}.
-#'
-#' @param tm_range The Tm-range of each oligo. Can range between 20 and 90.
-#' The default is \code{c(48, 70)}.
-#'
-#' @param conc_oligo The concentration of oligonucleotide in M,
-#' ranging from 0.2e-07 M (20 nM) to 2e-06 M (2000 nM).
-#' The default value is 5e-07 M (500 nM) (for Tm calculation)
-#'
-#' @param conc_na The sodium ion concentration in M, ranging
-#' from 0.01 M to 1 M. The default value is 0.05 M (50 mM)
-#' (for Tm calculation).
-#'
-#' @section Excluded oligos:
-#' The function excludes oligos with
-#' more than than three consecutive runs of the same dinucleotide
-#' (e.g. 'tatatata'), oligos with more than four consecutive runs of the
-#' same nucleotide, and oligos that are duplicated.
-#'
-#' @section Tm:
-#' The melting temperature is calculated using the nearest-neigbour method.
-#' The oligo concentration is set to 500 nM and the sodium ion concentration
-#' is set to 50 mM.
-#'
-#' Assumptions for Tm calculation:
-#'
-#' Oligos are not expected to be self-complementary, so no symmetry
-#' correction is done.
-#'
-#' We assume that the oligo concentration is much higher
-#' than the target concentration.
-#'
-#' See references for table values and equations.
-#'
-#' #Warning:
-#' GC-content and Tm are calculated based on the majority oligos, and
-#' may thus be misleading for degenerate (iupac) oligos.
+#' @inheritParams get_oligos
 #'
 #' @return A tibble (a data frame) with oligo candidates.
 #'
@@ -876,7 +671,11 @@ add_gc_tm <- function(oligos,
   oligos <- oligos[oligos$gc_majority >= min(gc_range), ]
   oligos <- oligos[oligos$gc_majority <= max(gc_range), ]
   # Calculate Tm of all majority oligos
-  tm_majority <- tm(oligos$majority, conc_oligo = conc_oligo, conc_na = conc_na)
+  if (nrow(oligos) > 0L) {
+    tm_majority <- tm(oligos$majority, conc_oligo = conc_oligo, conc_na = conc_na)
+  } else {
+    tm_majority <- NA
+  }
   oligos <- tibble::add_column(oligos, tm_majority)
   # Exclude oligos with Tm outside the stated thresholds
   oligos <- oligos[oligos$tm_majority >= min(tm_range), ]
@@ -901,10 +700,10 @@ add_gc_tm <- function(oligos,
 #' @noRd
 make_regex <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
-    stop("x must be a character vector of length one", call. = FALSE)
+    stop("'x' must be a character vector of length one", call. = FALSE)
   }
   if (grepl("[^acgtryswkmbdhvn-]", x)) {
-    stop("x contains at least one invalid base.
+    stop("'x' contains at least one invalid base. \n
       Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
       'n', 'h', 'd', 'v', 'b' and '-'",
          call. = FALSE
@@ -943,7 +742,7 @@ make_regex <- function(x) {
 #' @noRd
 check_match <- function(x, y) {
   if (!is.rprimer_alignment(y)) {
-    stop("An rprimer_alignment object is expected for y.", call. = FALSE)
+    stop("'y' must be an rprimer_alignment object.", call. = FALSE)
   }
   majority <- ifelse(
     !is.na(x$majority), x$majority,
