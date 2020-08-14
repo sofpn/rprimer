@@ -35,8 +35,6 @@ rprimer provides functions to automate this process.
 
 In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV).
 
-**describe more: tm, perfect matches**
-
 ## The whole workflow
 
 ```{r}
@@ -107,13 +105,13 @@ my_assays <- add_probes(my_assays, my_probes, tm_difference = c(-2, 10))
 # You can either select one assay and generate a report...
 selected_assay <- my_assays[1, ]
 
-write_report(
- filename = "my_assay_report",
- selected_assay,
- my_sequence_profile,
- my_sequence_properties,
- comment = "my new hepatitis E virus assay :)"
-)
+# write_report(
+#  filename = "my_assay_report",
+#  selected_assay,
+#  my_sequence_profile,
+#  my_sequence_properties,
+#  comment = "my new hepatitis E virus assay :)"
+# )
 
 # ...or write several reports, e.g. one for each assay candidate:
 # purrr::walk(seq_len(nrow(my_assays)), function(i) {
@@ -152,10 +150,8 @@ my_alignment <- remove_gaps(my_alignment, threshold = 0.5)  %>%
 The output can be visualised with `rp_plot()`, where each sequence is represented as a horizontal line. 
 
 ```{r, fig.width=6, fig.height=6, fig.align='center'}
-# For brewity, I decided to only include the first 50 sequences in the figure
-#my_alignment_selection <- my_alignment[1:50]
-
-#rp_plot(my_alignment_selection)
+# For brevity, I decided to only include the first 50 sequences in the figure
+#rp_plot(my_alignment[1:50]) #fix problem here w\ S3 class subsetting
 ```
 
 ### Step 2: Get the sequence profile 
