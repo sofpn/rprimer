@@ -1,6 +1,4 @@
-# fix head, tail, c, etc ect
-
-#' Construct, subset and check 'rprimer_alignment' objects
+#' Construct, subset and check rprimer_alignment objects
 #'
 #' * 'new_rprimer_alignment()' constructs and validate an rprimer_alignment-
 #'     object
@@ -14,7 +12,7 @@
 #' @details
 #' An rprimer_alignment object must must be a list and
 #' contain at least one DNA
-#' sequence, and all sequences must be a character vector of lentgh one,
+#' sequence, and all sequences must be a character vector of length one,
 #' in lowercase format.
 #' All sequences (including gaps) must be of the same length.
 #' All sequences must have unique names. Valid bases are
@@ -95,6 +93,7 @@ is.rprimer_alignment <- function(x) inherits(x, "rprimer_alignment")
 #' @return A subset.
 #'
 #' @noRd
-`[<-.rprimer_alignment` <- function(x, i, ...) {
+`[<-.rprimer_alignment` <- function(x, i, value) {
+  stopifnot(is.rprimer_alignment(value))
   new_rprimer_alignment(NextMethod())
 }

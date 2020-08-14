@@ -70,6 +70,6 @@ a, c, g and t are excluded from the calculation.
 
 \examples{
 sequence_properties(example_rprimer_profile)
-sequence_properties(example_rprimer_profile, threshold = 0.1)
+sequence_properties(example_rprimer_profile, iupac_threshold = 0.1)
 
 }

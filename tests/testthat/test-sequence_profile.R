@@ -10,7 +10,7 @@ test_that("sequence_profile works as it should", {
     dim(res)[[2]],
     nchar(example_rprimer_alignment[[1]])
   )
-  expect_s3_class(res, "rprimer_sequence_profile")
+  expect_s3_class(res, "rprimer_profile")
   expect_true(is.numeric(res))
   expect_false(any(res > 1))
   expect_false(any(res < 0))

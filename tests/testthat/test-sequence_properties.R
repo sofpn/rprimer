@@ -19,7 +19,7 @@ test_that("as_iupac returns an error when it should", {
 test_that("as_iupac works", {
   expect_true(is.na(as_iupac("cg")))
   expect_equal(as_iupac("c,g"), "s")
-  expect_equal(as_iupac("c,g, g"), "s")
+  expect_equal(as_iupac("c,g,g"), "s")
   expect_equal(as_iupac("c , g"), "s")
   expect_equal(as_iupac("c,g, w"), "s")
   expect_equal(as_iupac("-"), "-")

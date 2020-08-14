@@ -46,3 +46,12 @@ and rprimer_assay will be saved as .csv-files.
 \item \code{rprimer_assay}: Save an object of class 'rprimer_assay'.
 }}
 
+\examples{
+\dontrun{
+  rp_save(example_rprimer_alignment, 'my_alignment')
+  rp_save(example_rprimer_properties, 'my_sequence_properties')
+  rp_save(example_rprimer_oligo, 'my_oligos')
+  rp_save(example_rprimer_assay, 'my_assays')
+}
+
+}

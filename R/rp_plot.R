@@ -1,6 +1,6 @@
-#' Plot an rprimer-object (generic)
+#' Plot an rprimer object (generic)
 #'
-#' @param x An rprimer-object (see methods for details).
+#' @param x An rprimer object (see methods for details).
 #'
 #' @param ...
 #' Additional arguments that should be passed to the plot, when
@@ -202,15 +202,17 @@ rectangle <- function(from, to) {
   graphics::rect(
     from, 0, to, 5,
     border = NA,
-    col = grDevices::rgb(123, 149, 169, alpha = 100, maxColorValue = 200), xpd = NA
+    col = grDevices::rgb(
+      123, 149, 169, alpha = 100, maxColorValue = 200
+    ), xpd = NA
   )
 }
 
 #' Sequence detail plot
 #'
-#' @param x An object of class 'rprimer_properties'
+#' @param x An object of class 'rprimer_properties'.
 #'
-#' @return A visual representation of \code{x}
+#' @return A visual representation of \code{x}.
 #'
 #' @noRd
 sequence_detail_plot <- function(x) {

@@ -55,7 +55,7 @@
 #'
 #' @examples
 #' sequence_properties(example_rprimer_profile)
-#' sequence_properties(example_rprimer_profile, threshold = 0.1)
+#' sequence_properties(example_rprimer_profile, iupac_threshold = 0.1)
 #'
 #' @export
 sequence_properties <- function(x, iupac_threshold = NULL) {
@@ -128,8 +128,11 @@ majority_consensus <- function(x) {
 #' as_iupac("tg") # Will return NA since the bases are not separated by comma
 #' @noRd
 as_iupac <- function(x) {
-  if (!(is.character(x))) {
-    stop("'x' must be a character vector, e.g. 'a,c,t'.", call. = FALSE)
+  if (!(is.character(x) && length(x) == 1)) {
+    stop(
+      "'x' must be a character vector of length one, e.g. 'a,c,t'.",
+      call. = FALSE
+    )
   }
   x <- gsub(" ", "", x)
   x <- unlist(strsplit(x, split = ","), use.names = FALSE)

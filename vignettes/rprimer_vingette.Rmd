@@ -15,9 +15,9 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-#library(rprimer)
+library(rprimer)
 library(magrittr)
-devtools::load_all(".")
+#devtools::load_all(".")
 ```
 
 ## RT-PCR assay design 

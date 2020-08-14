@@ -17,7 +17,7 @@
 #'   rp_save(example_rprimer_alignment, 'my_alignment')
 #'   rp_save(example_rprimer_properties, 'my_sequence_properties')
 #'   rp_save(example_rprimer_oligo, 'my_oligos')
-#'   rp_save(example_rprimer_assay, 'my_assays)
+#'   rp_save(example_rprimer_assay, 'my_assays')
 #' }
 #'
 #' @export
