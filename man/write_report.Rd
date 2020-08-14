@@ -13,7 +13,7 @@ write_report(
 )
 }
 \arguments{
-\item{filename}{(a character vector of length one)}
+\item{filename}{(a character vector of length one).}
 
 \item{assay_selection}{An object of class 'rprimer_assay', with one row.}
 
@@ -22,7 +22,7 @@ write_report(
 \item{sequence_properties}{An object of class 'rprimer_properties.}
 
 \item{comment}{Optional. Comments that should be included in the report.
-A character vector of length one. The default is \code{NULL}}
+A character vector of length one. The default is \code{NULL}.}
 }
 \value{
 A html-document with detailed assay information.

@@ -1,6 +1,6 @@
 #' Write assay report
 #'
-#' @param filename (a character vector of length one)
+#' @param filename (a character vector of length one).
 #'
 #' @param assay_selection An object of class 'rprimer_assay', with one row.
 #'
@@ -10,7 +10,7 @@
 #'
 #' @param comment
 #' Optional. Comments that should be included in the report.
-#' A character vector of length one. The default is \code{NULL}
+#' A character vector of length one. The default is \code{NULL}.
 #'
 #' @return A html-document with detailed assay information.
 #'
@@ -18,13 +18,11 @@
 #' rmarkdown and kableExtra are needed for this function to work.
 #'
 #' @export
-write_report <- function(
-  filename = "my_assay_report",
-  assay_selection,
-  sequence_profile,
-  sequence_properties,
-  comment = NULL
-) {
+write_report <- function(filename = "my_assay_report",
+                         assay_selection,
+                         sequence_profile,
+                         sequence_properties,
+                         comment = NULL) {
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop(
       "rmkardown is needed for this function to work. \n
@@ -38,7 +36,7 @@ write_report <- function(
     )
   }
   if (typeof(filename) != "character" || length(filename) != 1) {
-    stop("'filename' must be a character vector of length one.", call. = FALSE)
+    stop("'filename' must be a character vector.", call. = FALSE)
   }
   if (!inherits(assay_selection, "rprimer_assay")) {
     stop(
@@ -46,20 +44,20 @@ write_report <- function(
       call. = FALSE
     )
   }
-  if (!inherits(sequence_profile, "rprimer_profile")) {
+  if (!is.rprimer_profile(sequence_profile)) {
     stop(
       "'sequence_profile' must be an rprimer_profile object.",
       call. = FALSE
     )
   }
-  if (!inherits(sequence_properties, "rprimer_properties")) {
+  if (!is.rprimer_properties(sequence_properties)) {
     stop(
       "'sequence_properties' must be an rprimer_properties object.",
       call. = FALSE
     )
     if (is.null(comment)) comment <- ""
     if (!is.character(comment)) {
-      stop("'comment' must be a character vector of length one.")
+      stop("'comment' must be a character vector.")
     }
   }
   filename <- paste0(filename, ".html")

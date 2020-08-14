@@ -16,9 +16,9 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 # x - a DNA sequence (e.g. "cggttrt")
 find_g_repeats <- function(x) {
-  out <- grepl("g\\1\\1", x)
-  if (out == TRUE) yes 
-  else no
+  out <- grepl("(g)\\1\\1\\1", x)
+  if (out == TRUE) "Yes" 
+  else "No"
 }
 
 # x - a DNA sequence (e.g. "cggttrt")
@@ -119,7 +119,7 @@ plot_assay_details <- function(x, y) {
 # x - a matrix 
 split_matrix <- function(x) {
   n <- nrow(x)
-  out <- split.data.frame(x, rep(seq_len(ceiling(n/100)), each = 50)[1:n])
+  out <- split.data.frame(x, rep(seq_len(ceiling(n / 100)), each = 50)[1:n])
   return(out)
 }
 
@@ -210,7 +210,7 @@ plot_assay_details(params$sequence_profile, params$assay_selection)
 <br><br>
 **Fig. 2.** Proportion of each nucleotide in the alignment at the oligo binding sites. Sequences are displayed from 5'- to 3'-end. 
 <br><br>
-**Table 1**. Assay information. *Begin:* Where the assay region starts (with regards to the alignment/region of interest), *End:* Where the assay region ends. *Tm difference, primers:* Tm difference between the two primers (absolute value, in C). *Tm difference, probe-primers:* Tm of the probe subtracted by the average Tm of the primer pair. Note that tm-differences are calculated from majority oligos and may therefore be misleading for degenerate (IUPAC) oligos. *Degeneracy:* Total number of oligo variants in the assay. *Perfect match:* Proportion of perfectly matching sequences. 
+**Table 1**. General assay information. *Begin:* Where the assay region starts (with regards to the alignment/region of interest). *End:* Where the assay region ends. *Tm difference, primers:* Tm difference between the two primers (absolute value, in C). *Tm difference, probe-primers:* Tm of the probe minus the average Tm of the primer pair. Note that Tm-differences are calculated from majority oligos. They may therefore be misleading for degenerate (IUPAC) oligos. *Degeneracy:* Total number of oligo variants in the assay. *Perfect match:* Proportion of perfectly matching sequences. 
 <br>
 ```{r}
 # Customise table options 
@@ -331,24 +331,32 @@ if (has_probe) {
 ```
 <br>
 
-### Target information
+### Amplicon region information (consensus sequence)
 
 ```{r}
 # Get the consensus amplicon sequence 
 consensus <- paste(sequence_properties$majority[assay_report[[1]]$general$begin:assay_report[[1]]$general$end], collapse = "")
 ```
 <br>
-Amplicon sequence (consensus sequence): `r consensus`,
-Amplicon GC-content (consensus sequence): `r round(gc_content(consensus, 2)*100` %.
-Presence of G repeats in amplicon (more than 3 consecutive G:s in consensus sequence): `r find_g_repeats(consensus)` 
-G repeats can prevent strand dissociation and thus reduce amplification efficiency (ref: S. Bustin, J. Hugget 2017).
+Amplicon sequence: `r consensus`
+<br>
+Amplicon GC-content: `r round(gc_content(consensus), 2)*100` %
+<br>
+Presence of G repeats (at least four consecutive G:s): `r find_g_repeats(consensus)` 
+<br>
 <br><br>
+
+### Match information (in silico specificity)
+
 ```{r, fig.width=12, fig.height=12}
 plot_match_matrix(assay_selection)
 ```
 <br><br>
 **Fig. 3.** Matching and mismatching target sequences.
 <br><br>
+
+### Target sequences 
+
 The assay was designed from the following target sequences: 
 <br><br>
 `r rownames(assay_selection$match_matrix[[1]])`.

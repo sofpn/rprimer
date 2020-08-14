@@ -7,9 +7,9 @@
 #' @param y Candidate probes (an object of class 'rprimer_oligo').
 #'
 #' @param tm_difference
-#' The Tm-difference range between primers and probe.
-#' The default values are \code{c(0, 20)}.The minimum allowed
-#' value is -20 and the maxiumum allowed value  is 20.
+#' Acceptable Tm difference between primers and probe.
+#' The minimum allowed value is -20 and the maxiumum allowed value is 20.
+#' The default are \code{c(0, 20)}.
 #'
 #' @details
 #' The Tm-difference is calculated by subtracting the
@@ -18,7 +18,7 @@
 #' means that the Tm of the probe is lower than the average Tm of the
 #' primer pair.
 #'
-#' The Tm-difference is calculated from the majority oligos, and
+#' Note that the Tm-difference is calculated from the majority oligos, and
 #' may thus be misleading for degenerate (iupac) oligos.
 #'
 #' @return Assays with probes. A tibble (a data frame) of
@@ -33,15 +33,18 @@
 #'
 #' @export
 add_probes <- function(x, y, tm_difference = c(0, 20)) {
-  if (!inherits(x, "rprimer_assay")) {
+  if (!is.rprimer_assay(x)) {
     stop("'x' must be an rprimer_assay object.", call. = FALSE)
+  }
+  if (any(grepl("_pr$", names(x)))) {
+    stop("'x' appear to have probes already.", call. = FALSE)
   }
   if (!inherits(y, "rprimer_oligo")) {
     stop("'y' must be an rprimer_oligo object.", call. = FALSE)
   }
   if (!(min(tm_difference) >= -20 && max(tm_difference) <= 20)) {
     stop(
-      "'tm_difference' must be between -30 and 30, e.g. c(-1, 5)", ### Add more
+      "'tm_difference' must be between -20 and 20, e.g. c(-1, 5)",
       call. = FALSE
     )
   }
@@ -50,11 +53,11 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
   # For each assay, take all probes that bind whithin the assay region
   probe_candidates <- purrr::map(seq_len(nrow(assays)), function(i) {
     # The probe has to begin after the fwd primer ends
-    # and we want at least one base inbetween (hence the + 1)
-    from <- assays$end_fwd[[i]] + 1
+    # and we want at least one base inbetween (hence the + 2)
+    from <- assays$end_fwd[[i]] + 2
     # The probe has to end before the rev primer begins
     # and we want at least one base inbetween
-    to <- assays$begin_rev[[i]] - 1
+    to <- assays$begin_rev[[i]] - 2
     # Take all probes that begin and end 'within' the assay region
     probe <- probes[probes$begin >= from & probes$end <= to, ]
     probe

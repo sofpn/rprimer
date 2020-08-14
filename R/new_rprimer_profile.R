@@ -1,4 +1,7 @@
-#  fix dim etc etc
+# When implementing a matrix/array class, you should implement these methods:
+# dim (gets you nrow and ncol), t, dimnames (gets you rownames and colnames),
+# dimnames<- (gets you colnames<-, rownames<-), cbind, rbind.
+
 
 #' Construct, subset and check 'rprimer_profile' objects
 #'
@@ -38,12 +41,3 @@ new_rprimer_profile <- function(x = matrix()) {
 #' @noRd
 is.rprimer_profile <- function(x) inherits(x, "rprimer_profile")
 
-#' @describeIn new_rprimer_profile
-#'
-#' @param x An rprimer_profile object.
-#'
-#' @return
-#'
-#' @noRd
-### See adv R for details!
-# dim etc

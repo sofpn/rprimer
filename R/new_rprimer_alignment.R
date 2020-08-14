@@ -7,6 +7,7 @@
 #' * 'is_rprimer_alignment()' checks if an object has class attribute
 #'     'rprimer_alignment'
 #' * '`[.rprimer_alignment()`' subsets an object of class 'rprimer_alignment'
+#' * '`[<-.rprimer_alignment()`' subsets an object of class 'rprimer_alignment'
 #'
 #' @param x An rprimer_alignment-like object.
 #'
@@ -86,7 +87,14 @@ is.rprimer_alignment <- function(x) inherits(x, "rprimer_alignment")
 `[.rprimer_alignment` <- function(x, i, ...) {
   new_rprimer_alignment(NextMethod())
 }
-#####################################################################
-#`[.rprimer_alignment<-` <- function(x, i, ...) {
-#  new_rprimer_alignment(NextMethod())
-#}
+
+#' @describeIn new_rprimer_alignment
+#'
+#' @param x An rprimer_alignment object.
+#'
+#' @return A subset.
+#'
+#' @noRd
+`[<-.rprimer_alignment` <- function(x, i, ...) {
+  new_rprimer_alignment(NextMethod())
+}

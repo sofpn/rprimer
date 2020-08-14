@@ -9,10 +9,8 @@ get_assays(x, length = 65:120, max_tm_difference = 1)
 \arguments{
 \item{x}{An object of class 'rprimer_oligo'.}
 
-\item{length}{Desired amplicon length,
-ranging from 40 to 5000 base pairs. The
-default is \code{65:120}, which means that assays with amplicon lengths from
-65 to 120 base-pairs will be considered as acceptable.}
+\item{length}{Amplicon length. Can range from 40 to 5000 base pairs. The
+default is \code{65:120}.}
 
 \item{max_tm_difference}{Maximum Tm difference (in C) between the two primers
 (absolute value). A number between 0 and 30. The default is 1.}

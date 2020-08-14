@@ -11,9 +11,9 @@ add_probes(x, y, tm_difference = c(0, 20))
 
 \item{y}{Candidate probes (an object of class 'rprimer_oligo').}
 
-\item{tm_difference}{The Tm-difference range between primers and probe.
-The default values are \code{c(0, 20)}.The minimum allowed
-value is -20 and the maxiumum allowed value  is 20.}
+\item{tm_difference}{Acceptable Tm difference between primers and probe.
+The minimum allowed value is -20 and the maxiumum allowed value is 20. 
+The default are \code{c(0, 20)}.}
 }
 \value{
 Assays with probes. A tibble (a data frame) of
@@ -31,7 +31,7 @@ primer pair. Thus, a negative Tm-difference
 means that the Tm of the probe is lower than the average Tm of the
 primer pair.
 
-The Tm-difference is calculated from the majority oligos, and
+Note that the Tm-difference is calculated from the majority oligos, and
 may thus be misleading for degenerate (iupac) oligos.
 }
 \examples{

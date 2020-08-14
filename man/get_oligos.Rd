@@ -12,8 +12,9 @@ get_oligos(
   max_degenerates = 2,
   max_degeneracy = 4,
   avoid_3end_ta = TRUE,
-  avoid_5end_g = FALSE,
   avoid_3end_runs = TRUE,
+  avoid_gc_rich_3end = TRUE,
+  avoid_5end_g = FALSE,
   gc_range = c(0.45, 0.55),
   tm_range = c(48, 70),
   conc_oligo = 5e-07,
@@ -27,7 +28,7 @@ get_oligos(
 (an object of class 'rprimer_alignment').}
 
 \item{length}{Oligo length. The minimum allowed
-value is 6 and the maximum allowed value is 30.
+value is 14 and the maximum allowed value is 30.
 The default is \code{18:22}.}
 
 \item{max_gap_frequency}{Maximum allowed gap frequency.
@@ -45,15 +46,24 @@ allowed value is 64 (default is 4).}
 
 \item{avoid_3end_ta}{\code{TRUE} or \code{FALSE}.
 If oligos with t or a at the 3' end
-should be replaced with \code{NA}. The default is \code{FALSE}.}
-
-\item{avoid_5end_g}{\code{TRUE} or \code{FALSE}.If oligos with g
-at the 5' end should be replaced with \code{NA}. The default is \code{FALSE}.}
+should be replaced with \code{NA}
+(recommended for primers). The default is \code{TRUE}.}
 
 \item{avoid_3end_runs}{\code{TRUE} or \code{FALSE}.
 If oligos with more than two runs
-of the same nucleotide at the 3' end should be replaced with \code{NA}.
-The default is \code{FALSE}.}
+of the same nucleotide at the 3' end should be replaced with \code{NA}
+(recommended for primers).
+The default is \code{TRUE}.}
+
+\item{avoid_gc_rich_3end}{\code{TRUE} or \code{FALSE}.
+If oligos with more than three G or C within the last five bases of the 3' end
+should be replaced with \code{NA}
+(recommended for primers).
+The default is \code{TRUE}.}
+
+\item{avoid_5end_g}{\code{TRUE} or \code{FALSE}.If oligos with g
+at the 5' end should be replaced with \code{NA}
+(recommended for probes). The default is \code{FALSE}.}
 
 \item{gc_range}{Oligo GC-content range (proportion) Can range between
 0 and 1. The default is \code{c(0.45, 0.55)}.}
@@ -135,8 +145,9 @@ max_gap_frequency = 0.1,
 max_degenerates = 2,
 max_degeneracy = 4,
 avoid_3end_ta = TRUE,
-avoid_5end_g = FALSE,
 avoid_3end_runs = TRUE,
+avoid_gc_rich_3end = TRUE,
+avoid_5end_g = FALSE,
 gc_range = c(0.45, 0.55),
 tm_range = c(48, 70)
 )

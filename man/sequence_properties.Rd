@@ -4,15 +4,17 @@
 \alias{sequence_properties}
 \title{Get sequence properties}
 \usage{
-sequence_properties(x, iupac_threshold = 0)
+sequence_properties(x, iupac_threshold = NULL)
 }
 \arguments{
 \item{x}{A nucleotide profile of class 'rprimer_profile'.}
 
-\item{iupac_threshold}{A number between 0 and 0.2 (the default is 0).
+\item{iupac_threshold}{A number between >0 and 0.2.
 At each position, all nucleotides with a proportion
 higher than or equal to the stated threshold will be included in
-the iupac consensus sequence.}
+the iupac consensus sequence. The default is \code{NULL},
+which means that all nucleotides that are present at the
+position in matter will be included.}
 }
 \value{
 A tibble (data frame) of class 'rprimer_properties',

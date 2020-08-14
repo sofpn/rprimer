@@ -5,10 +5,8 @@
 #' @param x An object of class 'rprimer_oligo'.
 #'
 #' @param length
-#' Desired amplicon length,
-#' ranging from 40 to 5000 base pairs. The
-#' default is \code{65:120}, which means that assays with amplicon lengths from
-#' 65 to 120 base-pairs will be considered as acceptable.
+#' Amplicon length. Can range from 40 to 5000 base pairs. The
+#' default is \code{65:120}.
 #'
 #' @param max_tm_difference
 #' Maximum Tm difference (in C) between the two primers
@@ -21,6 +19,8 @@
 #' @return
 #' A tibble (a data frame) of class 'rprimer_assay' with all candidate
 #' assays. An error message will return if no assays are found.
+#'
+#' The tibble contains the following information:
 #'
 #'  \describe{
 #'   \item{begin}{position where the assay begins}
@@ -76,7 +76,7 @@
 #'
 #' @export
 get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
-  if (!inherits(x, "rprimer_oligo")) {
+  if (!is.rprimer_oligo(x)) {
     stop("'x' must be an rprimer_oligo object.", call. = FALSE)
   }
   if (!(max_tm_difference > 0 && max_tm_difference < 30)) {
@@ -134,3 +134,89 @@ get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
   assays <- tibble::new_tibble(assays, class = "rprimer_assay")
   assays
 }
+
+#' Combine match matrices
+#'
+#' @param x A tibble with assays.
+#'
+#' @return A tibble with assays, with information on perfect matches
+#' for forward and reverse primers.
+#'
+#' @noRd
+combine_match_matrices <- function(x) {
+  fwd <- x$match_matrix_fwd
+  rev <- x$match_matrix_rev
+  fwd <- purrr::map(fwd, function(x) {
+    colnames(x) <- paste0(colnames(x), "_fwd")
+    x
+  })
+  rev <- purrr::map(rev, function(x) {
+    colnames(x) <- paste0(colnames(x), "_rev")
+    x
+  })
+  match_matrix <- purrr::map(seq_len(nrow(x)), function(y) {
+    match <- cbind(fwd[[y]], rev[[y]])
+    majority_all <- rowSums(match[, c(1, 3)])
+    iupac_all <- rowSums(match[, c(2, 4)])
+    majority_all <- ifelse(majority_all == 2, TRUE, FALSE)
+    iupac_all <- ifelse(iupac_all == 2, TRUE, FALSE)
+    match <- cbind(match, majority_all, iupac_all)
+    match
+  })
+  match_percentage <- purrr::map(match_matrix, ~ colMeans(.x[, 5:6]))
+  match_percentage <- do.call("rbind", match_percentage)
+  match_percentage <- tibble::as_tibble(match_percentage)
+  names(match_percentage) <- paste0("pm_", names(match_percentage))
+  x <- dplyr::bind_cols(x, match_percentage)
+  match_matrix <- tibble::tibble(match_matrix)
+  x <- dplyr::bind_cols(x, match_matrix)
+  drop <- c("match_matrix_fwd", "match_matrix_rev")
+  x <- x[, !(names(x) %in% drop)]
+  x
+}
+
+#' Add probes to match matrices
+#'
+#' @param x A tibble with assays (with probes).
+#'
+#' @return A tibble with assays, with information on perfect matches
+#' for forward and reverse primers and probes.
+#'
+#' @noRd
+add_probe_to_match_matrix <- function(x) {
+  assays <- x$match_matrix
+  probe <- x$match_matrix_pr
+  probe <- purrr::map(probe, function(x) {
+    colnames(x) <- paste0(colnames(x), "_pr")
+    x
+  })
+  match_matrix <- purrr::map(seq_len(nrow(x)), function(y) {
+    match <- cbind(assays[[y]], probe[[y]])
+    match <- match[, -(5:6)]
+    majority_all <- rowSums(match[, c(1, 3, 5)])
+    iupac_all <- rowSums(match[, c(2, 4, 6)])
+    majority_all <- ifelse(majority_all == 3, TRUE, FALSE)
+    iupac_all <- ifelse(iupac_all == 3, TRUE, FALSE)
+    match <- cbind(match, majority_all, iupac_all)
+    return(match)
+  })
+  match_percentage <- purrr::map(match_matrix, ~ colMeans(.x[, 7:8]))
+  match_percentage <- do.call("rbind", match_percentage)
+  match_percentage <- tibble::as_tibble(match_percentage)
+  names(match_percentage) <- paste0("pm_", names(match_percentage))
+  drop <- c("match_matrix_pr", "match_matrix", "pm_majority_all", "pm_iupac_all")
+  x <- x[, !(names(x) %in% drop)]
+  x <- dplyr::bind_cols(x, match_percentage)
+  match_matrix <- tibble::tibble(match_matrix)
+  x <- dplyr::bind_cols(x, match_matrix)
+  x
+}
+
+#' Check if an object has class attribute rprimer_assay
+#'
+#' @param x An rprimer_assay-like object.
+#'
+#' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @noRd
+is.rprimer_assay <- function(x) inherits(x, "rprimer_assay")
