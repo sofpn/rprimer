@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 # x - a DNA sequence (e.g. "cggttrt")
 find_g_repeats <- function(x) {
-  out <- grepl("(g)\\1\\1", x)
+  out <- grepl("(g)\\1\\1\\1", x)
   if (out == TRUE) "Yes" 
   else "No"
 }
@@ -338,11 +338,13 @@ if (has_probe) {
 consensus <- paste(sequence_properties$majority[assay_report[[1]]$general$begin:assay_report[[1]]$general$end], collapse = "")
 ```
 <br>
-**Amplicon sequence:** `r consensus`
+**Sequence:** `r consensus`
 <br>
-**Amplicon GC-content:** `r round(gc_content(consensus), 2)*100` %
+**Length:** `r nchar(consensus)`
 <br>
-**Presence of G repeats in amplicon (more than 3 consecutive G:s):** `r find_g_repeats(consensus)` 
+**GC-content:** `r round(gc_content(consensus), 2)*100` %
+<br>
+**Does the amplicon contain more than 3 consecutive G:s?** `r find_g_repeats(consensus)` 
 <br><br>
 The data is based on the majority consensus sequence. 
 
