@@ -7,9 +7,9 @@
 sequence_properties(x, iupac_threshold = NULL)
 }
 \arguments{
-\item{x}{A nucleotide profile of class 'rprimer_profile'.}
+\item{x}{A sequence profile (an object of class 'rprimer_profile').}
 
-\item{iupac_threshold}{A number between >0 and 0.2.
+\item{iupac_threshold}{A number between greater than 0 and less or equal to 0.2.
 At each position, all nucleotides with a proportion
 higher than or equal to the stated threshold will be included in
 the iupac consensus sequence. The default is \code{NULL},
@@ -20,19 +20,9 @@ position in matter will be included.}
 A tibble (data frame) of class 'rprimer_properties',
 with information about majority and iupac consensus sequence, gap frequency,
 nucleotide identity and shannon entropy.
-
-\describe{
-  \item{position}{position in the alignment}
-  \item{majority}{majority consensus sequence}
-  \item{iupac}{iupac consensus sequence}
-  \item{gaps}{proportion of gaps}
-  \item{identity}{proportion of the most common nucleotide}
-  \item{entropy}{Shannon entropy}
-}
 }
 \description{
-\code{sequence_properties} returns sequence information from an alignment
-of DNA sequences.
+\code{sequence_properties} returns sequence information from a sequence profile
 }
 \section{Majority consensus sequence}{
 
@@ -43,8 +33,8 @@ the consensus nucleotide will be randomly selected among these bases.
 
 \section{IUPAC consensus sequence}{
 
-The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
-Note that the IUPAC consensus sequence only
+The consensus sequence expressed in iupac format (i.e. with wobble bases)
+Note that the iupac consensus sequence only
 takes 'a', 'c', 'g', 't' and '-' as input. Degenerate bases
 present in the alignment will be skipped. If a position only contains
 degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
@@ -60,7 +50,7 @@ Gaps are recognised as "-" in the sequence profile.
 
 The nucleotide identity is the proportion of
 the most common base. Gaps (-),
-as well as nucleotides other than a, c, g and t, are excluded from the
+as well as nucleotides other than a, c, g and t are excluded from the
 calculation.
 }
 
@@ -75,10 +65,11 @@ followed by multiplication by \code{-1}.
 A value of \code{0} indicate no variability and a high value
 indicate high variability.
 Gaps (-), as well as bases other than
-a, c, g and t, are excluded from the calculation.
+a, c, g and t are excluded from the calculation.
 }
 
 \examples{
 sequence_properties(example_rprimer_profile)
+sequence_properties(example_rprimer_profile, threshold = 0.1)
 
 }

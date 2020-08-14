@@ -12,7 +12,7 @@ add_probes(x, y, tm_difference = c(0, 20))
 \item{y}{Candidate probes (an object of class 'rprimer_oligo').}
 
 \item{tm_difference}{Acceptable Tm difference between primers and probe.
-The minimum allowed value is -20 and the maxiumum allowed value is 20. 
+The minimum allowed value is -20 and the maxiumum allowed value is 20.
 The default are \code{c(0, 20)}.}
 }
 \value{

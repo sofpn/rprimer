@@ -56,10 +56,10 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
     # and we want at least one base inbetween (hence the + 2)
     from <- assays$end_fwd[[i]] + 2
     # The probe has to end before the rev primer begins
-    # and we want at least one base inbetween
+    # and we want at least one base in-between
     to <- assays$begin_rev[[i]] - 2
     # Take all probes that begin and end 'within' the assay region
-    probe <- probes[probes$begin >= from & probes$end <= to, ]
+    probe <- probes[which(probes$begin >= from & probes$end <= to), ]
     probe
   })
   # For each assay, we check how many probe candidates we have

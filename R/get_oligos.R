@@ -436,11 +436,12 @@ exclude_oligos <- function(oligos,
     oligos <- exclude(oligos, "([a-z])\\1\\1$")
   }
   if (avoid_gc_rich_3end == TRUE) {
-    temp <- purrr::map(oligos, ~ split_sequence(.x))
-    temp <- purrr::map(temp, ~ .x[(length(.x) - 4):length(.x)])
-    temp <- purrr::map(temp, ~ paste(.x, collapse = ""))
-    gc <- purrr::map_dbl(temp, ~ gc_content(.x))
-    oligos[which(gc < 4/6)] <- NA
+   # temp <- purrr::map(oligos, ~ split_sequence(.x))
+  #  temp <- purrr::map(temp, ~ .x[(length(.x) - 4):length(.x)])
+  #  temp <- purrr::map(temp, ~ paste(.x, collapse = ""))
+  #  gc <- purrr::map_dbl(temp, ~ gc_content(.x))
+  #  oligos[which(gc < 4/6)] <- NA
+  oligos <- oligos
   }
   if (avoid_5end_g == TRUE) {
     # Remove oligos with g at the 5' end

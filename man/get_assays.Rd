@@ -19,6 +19,8 @@ default is \code{65:120}.}
 A tibble (a data frame) of class 'rprimer_assay' with all candidate
 assays. An error message will return if no assays are found.
 
+The tibble contains the following information:
+
  \describe{
   \item{begin}{position where the assay begins}
   \item{end}{position where the assay ends}

@@ -42,7 +42,7 @@ allowed value is 6 (default is 2).}
 
 \item{max_degeneracy}{Maximum number of degenerate variants.
 The minimum allowed value is 1 and the maximum
-allowed value is 64 (default is 4).}
+allowed value is 16 (default is 4).}
 
 \item{avoid_3end_ta}{\code{TRUE} or \code{FALSE}.
 If oligos with t or a at the 3' end
@@ -56,8 +56,8 @@ of the same nucleotide at the 3' end should be replaced with \code{NA}
 The default is \code{TRUE}.}
 
 \item{avoid_gc_rich_3end}{\code{TRUE} or \code{FALSE}.
-If oligos with more than three G or C within the last five bases of the 3' end
-should be replaced with \code{NA}
+If oligos with more than three G or C within the last five bases of the 3'
+end should be replaced with \code{NA}
 (recommended for primers).
 The default is \code{TRUE}.}
 
@@ -82,6 +82,8 @@ from 0.01 M to 1 M. The default value is 0.05 M (50 mM)
 \value{
 A tibble (a data frame) of class 'rprimer_oligo', with all oligo
 candidates. An error message will return if no oligos are found.
+
+The tibble contains the following information:
 
 \describe{
   \item{begin}{position where the oligo begins}
@@ -162,8 +164,8 @@ Biochemistry, 35: 3555-3562 (Formula and salt correction method
 are from here)
 
 Allawi, H. & SantaLucia, J. (1997)
-Thermodynamics and NMR of Internal G·T Mismatches in DNA.
-Biochemistry, 34: 10581?\200?10594 ###########################################################
+Thermodynamics and NMR of Internal G-T Mismatches in DNA.
+Biochemistry, 36, 34: 10581–10594
 (Duplex initiation parameters are from here)
 
 SantaLucia, J (1998) A unified view of polymer,

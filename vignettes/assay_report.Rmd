@@ -16,9 +16,9 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
 
 # x - a DNA sequence (e.g. "cggttrt")
 find_g_repeats <- function(x) {
-  out <- grepl("g\\1\\1", x)
-  if (out == TRUE) yes 
-  else no
+  out <- grepl("(g)\\1\\1", x)
+  if (out == TRUE) "Yes" 
+  else "No"
 }
 
 # x - a DNA sequence (e.g. "cggttrt")
@@ -187,7 +187,7 @@ plot_match_matrix <- function(assay_selection) {
 <br>
 **Length of alignment/region of interest:** `r ncol(sequence_profile)` nucleotides
 <br>
-**Report generated:** `r Sys.Date()`
+**Report generated:** `r Sys.time()` 
 <br>
 **Comment:** `r params$comment`
 <br><br>
@@ -331,18 +331,23 @@ if (has_probe) {
 ```
 <br>
 
-### Target information
+### Amplicon information 
 
 ```{r}
 # Get the consensus amplicon sequence 
 consensus <- paste(sequence_properties$majority[assay_report[[1]]$general$begin:assay_report[[1]]$general$end], collapse = "")
 ```
 <br>
-Amplicon sequence (consensus sequence): `r consensus`,
-Amplicon GC-content (consensus sequence): `r round(gc_content(consensus, 2)*100` %.
-Presence of G repeats in amplicon (more than 3 consecutive G:s in consensus sequence): `r find_g_repeats(consensus)` 
-G repeats can prevent strand dissociation and thus reduce amplification efficiency (ref: S. Bustin, J. Hugget 2017).
+**Amplicon sequence:** `r consensus`
+<br>
+**Amplicon GC-content:** `r round(gc_content(consensus), 2)*100` %
+<br>
+**Presence of G repeats in amplicon (more than 3 consecutive G:s):** `r find_g_repeats(consensus)` 
 <br><br>
+The data is based on the majority consensus sequence. 
+
+### Match information (in silico inclusivity)
+
 ```{r, fig.width=12, fig.height=12}
 plot_match_matrix(assay_selection)
 ```
