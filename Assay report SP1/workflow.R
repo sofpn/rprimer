@@ -64,7 +64,7 @@ my_assays <- add_probes(my_assays, my_probes, tm_difference = c(-3, 1))
 
 # Step 9: Generate a report
 
-# Valj SP1=)
+# Valj SP1=)=)
 selected_assay <- my_assays[
   which(my_assays$majority_rev == "aggggttggttggatgaatatag")
 , ]
