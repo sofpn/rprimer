@@ -5,7 +5,7 @@
 \alias{rp_plot.rprimer_alignment}
 \alias{rp_plot.rprimer_profile}
 \alias{rp_plot.rprimer_properties}
-\title{Plot an rprimer-object (generic)}
+\title{Plot an rprimer object (generic)}
 \usage{
 rp_plot(x, ...)
 
@@ -16,7 +16,7 @@ rp_plot(x, ...)
 \method{rp_plot}{rprimer_properties}(x, ...)
 }
 \arguments{
-\item{x}{An rprimer-object (see methods for details).}
+\item{x}{An rprimer object (see methods for details).}
 
 \item{...}{Additional arguments that should be passed to the plot, when
 plotting an object of class 'rprimer_profile'.}
@@ -32,7 +32,7 @@ as reverse complement or not. The default is \code{FALSE}.}
 A plot.
 }
 \description{
-Plot an rprimer-object (generic)
+Plot an rprimer object (generic)
 }
 \section{Methods (by class)}{
 \itemize{

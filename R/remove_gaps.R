@@ -29,6 +29,9 @@ remove_gaps <- function(x, threshold = 0.5) {
   if (!is.rprimer_alignment(x)) {
     stop("'x' must be an rprimer_alignment object.", call. = FALSE)
   }
+  # Catch sequence names
+  sequence_names <- names(x)
+  # Do a strsplit
   splitted <- purrr::map(x, split_sequence)
   # Make a matrix
   matr <- do.call("rbind", splitted)
@@ -38,10 +41,14 @@ remove_gaps <- function(x, threshold = 0.5) {
   matr <- gsub("[a-z]", 0, matr)
   # Convert to integer
   matr <- apply(matr, 2, as.integer)
+  # Calculate gap frequency
+  gaps <- colMeans(matr)
+  # Get the indexes of the positions that should be kept
+  index <- which(gaps <= threshold)
   # Keep positions with gap frequency below or at threshold
-  splitted <- purrr::map(splitted, ~.x[which(colMeans(matr) <= threshold)])
+  splitted <- purrr::map(seq_along(splitted), ~ splitted[[.x]][index])
   # And paste them together
   x <- purrr::map(splitted, paste, collapse = "")
+  names(x) <- sequence_names
   x <- new_rprimer_alignment(x)
-  x
 }
