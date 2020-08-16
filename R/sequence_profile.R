@@ -26,7 +26,7 @@ sequence_profile <- function(x) {
   matr <- do.call("rbind", splitted)
   # Get all unique bases in the dataset and sort them in alphabetical order
   bases <- unique(sort(unlist(apply(matr, 1, unique), use.names = FALSE)))
-  # Count the occurence of each base at each position
+  # Count the occurrence of each base at each position
   count_base <- function(x, base) length(x[which(x == base)])
   counts <- apply(matr, 2, function(x) {
     purrr::map_int(bases, ~count_base(x, base = .x))

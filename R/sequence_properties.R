@@ -218,8 +218,12 @@ gap_frequency <- function(x) {
   if (!is.rprimer_profile(x)) {
     stop("'x' must be an rprimer_profile object.", call. = FALSE)
   }
-  gaps <- x[rownames(x) == "-", ]
-  gaps <- unname(gaps)
+  if ("-" %in% rownames(x)) {
+    gaps <- x[rownames(x) == "-", ]
+    gaps <- unname(gaps)
+  } else {
+    gaps <- rep(0, ncol(x))
+  }
   gaps
 }
 
