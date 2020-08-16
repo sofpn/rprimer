@@ -96,7 +96,7 @@ The tibble contains the following information:
   \item{degenerates}{number of degenerate bases}
   \item{degeneracy}{number of variants}
   \item{gc_majority}{gc-content (majority sequence), proportion}
-  \item{tm_majority}{melting temperature (majority sequcence),
+  \item{tm_majority}{melting temperature (majority sequence),
   degrees Celcius}
   \item{pm_majority}{proportion of perfectly matching sequences,
   (to the target alignment) majority sequence}
@@ -122,7 +122,7 @@ same nucleotide
 
 \section{Tm}{
 
-The melting temperature is calculated using the nearest-neigbour method.
+The melting temperature is calculated using the nearest-neighbour method.
 
 * Oligos are not expected to be self-complementary, so no symmetry
 correction is done

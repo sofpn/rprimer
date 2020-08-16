@@ -40,7 +40,7 @@
 #'   \item{gc_majority_fwd}{gc-content of the forward primer
 #'   (majority sequence), proportion}
 #'   \item{tm_majority_fwd}{melting temperature of the forward primer
-#'   (majority sequcence), degrees Celcius}
+#'   (majority sequence), degrees Celcius}
 #'   \item{pm_majority_fwd}{proportion of sequences in the target alignment
 #'   that matches perfectly with the forward primer, majority sequence}
 #'   \item{pm_iupac_fwd}{proportion of sequences in the target alignment
@@ -56,7 +56,7 @@
 #'   \item{gc_majority_rev}{gc-content of the reverse primer
 #'   (majority sequence), proportion}
 #'   \item{tm_majority_rev}{melting temperature of the reverse primer
-#'   (majority sequcence), degrees Celcius}
+#'   (majority sequence), degrees Celcius}
 #'   \item{pm_majority_rev}{proportion of sequences in the target alignment
 #'   that matches perfectly with the reverse primer, majority sequence}
 #'   \item{pm_iupac_rev}{proportion of sequences in the target alignment

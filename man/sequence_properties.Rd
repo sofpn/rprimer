@@ -19,14 +19,14 @@ position in matter will be included.}
 \value{
 A tibble (data frame) of class 'rprimer_properties',
 with information about majority and iupac consensus sequence, gap frequency,
-nucleotide identity and shannon entropy.
+nucleotide identity and Shannon entropy.
 }
 \description{
 \code{sequence_properties} returns sequence information from a sequence profile
 }
 \section{Majority consensus sequence}{
 
-The most frequently occuring nucleotide.
+The most frequently occurring nucleotide.
 If two or more bases occur with the same frequency,
 the consensus nucleotide will be randomly selected among these bases.
 }
@@ -43,7 +43,7 @@ position.
 
 \section{Gaps}{
 
-Gaps are recognised as "-" in the sequence profile.
+Gaps are recognized as "-" in the sequence profile.
 }
 
 \section{Identity}{
@@ -59,7 +59,7 @@ calculation.
 Shannon entropy is a measurement of
 variability. First, for each nucleotide that occurs at a specific position,
 \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
-that nucleotide. Then, the shannon entropy is calculated by summarising
+that nucleotide. Then, the Shannon entropy is calculated by summarizing
 these values for each nucleotide at the position in matter,
 followed by multiplication by \code{-1}.
 A value of \code{0} indicate no variability and a high value

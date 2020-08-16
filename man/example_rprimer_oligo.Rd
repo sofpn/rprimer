@@ -3,7 +3,7 @@
 \docType{data}
 \name{example_rprimer_oligo}
 \alias{example_rprimer_oligo}
-\title{Oligos genrerated from hepatitis E virus sequences}
+\title{Oligos generated from hepatitis E virus sequences}
 \format{
 A data frame (tibble) with class attribute ´rprimer_oligo'.
 \describe{
@@ -17,7 +17,7 @@ A data frame (tibble) with class attribute ´rprimer_oligo'.
   \item{degenerates}{number of degenerate bases}
   \item{degeneracy}{number of variants}
   \item{gc_majority}{gc-content (majority sequence), proportion}
-  \item{tm_majority}{melting temperature (majority sequcence),
+  \item{tm_majority}{melting temperature (majority sequence),
   degrees Celcius}
   \item{pm_majority}{proportion of perfectly matching sequences,
   (to the target alignment) majority sequence}
@@ -29,7 +29,7 @@ A data frame (tibble) with class attribute ´rprimer_oligo'.
 }
 \source{
 The sequences were collected from NCBI GenBank,
-by quering “[a-z]”[porgn:__txid1678143].
+by querying “[a-z]”[porgn:__txid1678143].
 Only sequences with more than 6000 bases were included.
 \url{https://www.ncbi.nlm.nih.gov/}
 }
@@ -37,6 +37,6 @@ Only sequences with more than 6000 bases were included.
 example_rprimer_oligo
 }
 \description{
-Oligos genrerated from hepatitis E virus sequences
+Oligos generated from hepatitis E virus sequences
 }
 \keyword{datasets}

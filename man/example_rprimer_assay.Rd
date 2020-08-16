@@ -24,7 +24,7 @@ A data frame (tibble) with class attribute ´rprimer_assay'.
   \item{gc_majority_fwd}{gc-content of the forward primer
   (majority sequence), proportion}
   \item{tm_majority_fwd}{melting temperature of the forward primer
-  (majority sequcence), degrees Celcius}
+  (majority sequence), degrees Celcius}
   \item{pm_majority_fwd}{proportion of sequences in the target alignment
   that matches perfectly with the forward primer, majority sequence}
   \item{pm_iupac_fwd}{proportion of sequences in the target alignment
@@ -40,7 +40,7 @@ A data frame (tibble) with class attribute ´rprimer_assay'.
   \item{gc_majority_rev}{gc-content of the reverse primer
   (majority sequence), proportion}
   \item{tm_majority_rev}{melting temperature of the reverse primer
-  (majority sequcence), degrees Celcius}
+  (majority sequence), degrees Celcius}
   \item{pm_majority_rev}{proportion of sequences in the target alignment
   that matches perfectly with the reverse primer, majority sequence}
   \item{pm_iupac_rev}{proportion of sequences in the target alignment
@@ -57,7 +57,7 @@ A data frame (tibble) with class attribute ´rprimer_assay'.
 }
 \source{
 The sequences were collected from NCBI GenBank,
-by quering “[a-z]”[porgn:__txid1678143].
+by querying “[a-z]”[porgn:__txid1678143].
 Only sequences with more than 6000 bases were included.
 \url{https://www.ncbi.nlm.nih.gov/}
 }

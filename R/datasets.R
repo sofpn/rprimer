@@ -5,7 +5,7 @@
 #' @format A list with class attribute 'rprimer_alignment'.
 #'
 #' @source The sequences were collected from NCBI GenBank,
-#' by quering “[a-z]”[porgn:__txid1678143].
+#' by querying “[a-z]”[porgn:__txid1678143].
 #' Only sequences with more than 6000 bases were included.
 #' \url{https://www.ncbi.nlm.nih.gov/}
 "example_rprimer_alignment"
@@ -15,7 +15,7 @@
 #' @format A numeric matrix with class attribute 'rprimer__profile'.
 #'
 #' @source The sequences were collected from NCBI GenBank,
-#' by quering “[a-z]”[porgn:__txid1678143].
+#' by querying “[a-z]”[porgn:__txid1678143].
 #' Only sequences with more than 6000 bases were included.
 #' \url{https://www.ncbi.nlm.nih.gov/}
 "example_rprimer_profile"
@@ -34,13 +34,13 @@
 #' }
 #'
 #' @source The sequences were collected from NCBI GenBank,
-#' by quering “[a-z]”[porgn:__txid1678143].
+#' by querying “[a-z]”[porgn:__txid1678143].
 #' Only sequences with more than 6000 bases were included.
 #' \url{https://www.ncbi.nlm.nih.gov/}
 "example_rprimer_properties"
 
 
-#' Oligos genrerated from hepatitis E virus sequences
+#' Oligos generated from hepatitis E virus sequences
 #'
 #' @format A data frame (tibble) with class attribute ´rprimer_oligo'.
 #' \describe{
@@ -54,7 +54,7 @@
 #'   \item{degenerates}{number of degenerate bases}
 #'   \item{degeneracy}{number of variants}
 #'   \item{gc_majority}{gc-content (majority sequence), proportion}
-#'   \item{tm_majority}{melting temperature (majority sequcence),
+#'   \item{tm_majority}{melting temperature (majority sequence),
 #'   degrees Celcius}
 #'   \item{pm_majority}{proportion of perfectly matching sequences,
 #'   (to the target alignment) majority sequence}
@@ -65,7 +65,7 @@
 #' }
 #'
 #' @source The sequences were collected from NCBI GenBank,
-#' by quering “[a-z]”[porgn:__txid1678143].
+#' by querying “[a-z]”[porgn:__txid1678143].
 #' Only sequences with more than 6000 bases were included.
 #' \url{https://www.ncbi.nlm.nih.gov/}
 "example_rprimer_oligo"
@@ -91,7 +91,7 @@
 #'   \item{gc_majority_fwd}{gc-content of the forward primer
 #'   (majority sequence), proportion}
 #'   \item{tm_majority_fwd}{melting temperature of the forward primer
-#'   (majority sequcence), degrees Celcius}
+#'   (majority sequence), degrees Celcius}
 #'   \item{pm_majority_fwd}{proportion of sequences in the target alignment
 #'   that matches perfectly with the forward primer, majority sequence}
 #'   \item{pm_iupac_fwd}{proportion of sequences in the target alignment
@@ -107,7 +107,7 @@
 #'   \item{gc_majority_rev}{gc-content of the reverse primer
 #'   (majority sequence), proportion}
 #'   \item{tm_majority_rev}{melting temperature of the reverse primer
-#'   (majority sequcence), degrees Celcius}
+#'   (majority sequence), degrees Celcius}
 #'   \item{pm_majority_rev}{proportion of sequences in the target alignment
 #'   that matches perfectly with the reverse primer, majority sequence}
 #'   \item{pm_iupac_rev}{proportion of sequences in the target alignment
@@ -123,7 +123,7 @@
 #' }
 #'
 #' @source The sequences were collected from NCBI GenBank,
-#' by quering “[a-z]”[porgn:__txid1678143].
+#' by querying “[a-z]”[porgn:__txid1678143].
 #' Only sequences with more than 6000 bases were included.
 #' \url{https://www.ncbi.nlm.nih.gov/}
 "example_rprimer_assay"

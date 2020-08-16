@@ -52,7 +52,7 @@ Install rprimer by calling:
 
 ## Quick start
 
-The primer, probe and assay design workflow is summarised below. 
+The primer, probe and assay design workflow is summarized below. 
 
 ```{r}
 # Step 1: Import alignment 
@@ -153,7 +153,7 @@ my_alignment <- remove_gaps(my_alignment, threshold = 0.5)  %>%
 
 * `select_roi()` selects a region of interest (ROI) within the alignment. 
 
-The output can be visualised with `rp_plot()`, where each sequence is represented as a horizontal line. 
+The output can be visualized with `rp_plot()`, where each sequence is represented as a horizontal line. 
 
 ```{r, fig.width=6, fig.height=6, fig.align='center'}
 # For brevity, I decided to only include the first 50 sequences in the figure
@@ -180,13 +180,13 @@ rp_plot(my_sequence_profile, from = 1, to = 30, rc = FALSE)
 ### Step 3: Get sequence properties 
 `sequence_properties()` takes a sequence profile as input and returns a tibble (a data frame) with the following sequence properties: 
 
-* *Majority*. The majority consensus sequence (the most frequently occuring nucleotide). 
+* *Majority*. The majority consensus sequence (the most frequently occurring nucleotide). 
 
 * *Iupac*. The IUPAC-consensus sequence, which includes wobble bases according to the IUPAC-nomenclature. All nucleotides with a proportion higher than or equal to `iupac_threshold` will be included in the IUPAC-consensus sequence.  
 
 * *Gaps*. The proportion of gaps.  
 
-* *Identity*. The proportion of the most frequently occuring base.
+* *Identity*. The proportion of the most frequently occurring base.
 
 * *Entropy*. The Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. 
 
@@ -205,7 +205,7 @@ rp_plot(my_sequence_properties)
 ```
 
 ### Step 4: Find primers 
-`get_oligos()` takes sequece properties as input and searches for oligos that fulfil the following criteria: 
+`get_oligos()` takes sequence properties as input and searches for oligos that fulfill the following criteria: 
 
 * `max_gap_frequency` Maximum allowed gap frequency. The default is 0.1, which means that only positions with a  gap frequency of <=0.1 will be considered.
 
@@ -259,7 +259,7 @@ my_primers <- get_oligos(
 
 ```
 
-Candidate oligos are displayed in a tibble. Oligo sequences are displayed in both majortiy and IUPAC format, and as reverse complements (rc). `NA` means that the oligo was excluded due to e.g. a terminal A or T (if `avoid_3end_ta = TRUE`). An error message will return if no oligos are found. 
+Candidate oligos are displayed in a tibble. Oligo sequences are displayed in both majority and IUPAC format, and as reverse complements (rc). `NA` means that the oligo was excluded due to e.g. a terminal A or T (if `avoid_3end_ta = TRUE`). An error message will return if no oligos are found. 
 
 I found 52 primers in my example. Most of them are located around position 1300, which is the most conserved region in my ROI. I only allowed one degenerate base in each primer, and no more than two variants of each primer. More primers can be found by increasing `max_degenerates` and `max_degeneracy`, or by increasing the `iupac_threshold` in the `sequence_properties()` function. 
 

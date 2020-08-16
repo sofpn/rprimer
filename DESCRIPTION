@@ -1,30 +1,37 @@
-Package: rprimer
 Type: Package
-Title: Find PCR Assays from a Multiple Sequence Alignment 
+Package: rprimer
+Title: Design PCR Assays from Multiple Sequence Alignments
 Version: 0.0.9000
-Author: Sofia Persson
-Maintainer: Sofia Persson <sofiapersson27@gmail.com>
-Description: Find (RT)-PCR assay regions from a multiple sequence 
-    alignment of DNA sequences.
-Depends: R (>= 3.6.0)
+Authors@R: 
+    person(given = "Sofia",
+           family = "Persson",
+           role = c("aut", "cre"),
+           email = "sofiapersson27@gmail.com",
+           comment = c(ORCID = "0000-0003-2611-3030"))
+Description: The rpimer package provides functions to design
+    primers, probes and PCR assays from a multiple sequence alignment of
+    DNA sequences.
 License: GPL-3
-Encoding: UTF-8
-LazyData: true
+URL: https://github.com/sofpn/rprimer
+BugReports: https://github.com/sofpn/rprimer/issues
+Depends: 
+    R (>= 3.6.0)
 Imports: 
+    dplyr,
+    graphics,
+    grDevices,
     purrr,
     tibble,
-    dplyr,
-    grDevices,
-    utils,
-    graphics
+    utils
 Suggests: 
+    covr,
+    kableExtra,
     knitr,
     magrittr,
     rmarkdown,
-    kableExtra,
-    testthat,
-    covr
-VignetteBuilder: knitr
+    testthat
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+LazyData: true
 RoxygenNote: 7.1.1
-URL: https://github.com/sofpn/rprimer
-BugReports: https://github.com/sofpn/rprimer/issues

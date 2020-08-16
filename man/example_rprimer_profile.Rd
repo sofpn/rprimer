@@ -9,7 +9,7 @@ A numeric matrix with class attribute 'rprimer__profile'.
 }
 \source{
 The sequences were collected from NCBI GenBank,
-by quering “[a-z]”[porgn:__txid1678143].
+by querying “[a-z]”[porgn:__txid1678143].
 Only sequences with more than 6000 bases were included.
 \url{https://www.ncbi.nlm.nih.gov/}
 }
