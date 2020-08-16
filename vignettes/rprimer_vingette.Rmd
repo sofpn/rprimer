@@ -21,11 +21,6 @@ library(magrittr)
 ```
 
 ## Introduction 
-to do: 
--regex check - several times occur? 
--write tests 
--update description
--add orcid
 
 rprimer is designed to automate primer, probe and PCR assay design as much as possible. 
 
