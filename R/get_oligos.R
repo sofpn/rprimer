@@ -652,17 +652,19 @@ generate_oligos <- function(x,
   gap_penalty <- running_sum(gap_bin, n = oligo_length)
   oligos <- tibble::tibble(
     begin, end, length, majority, iupac,
-    majority_rc, iupac_rc, degenerates, degeneracy
+    majority_rc, iupac_rc, degenerates, degeneracy, gap_penalty
   )
+  # Identify and exclude oligos that are duplicated
+  unique_oligos <- match(oligos$majority, unique(oligos$majority))
+  oligos <- oligos[unique_oligos, ]
   # Exclude oligos with too high gap frequency
-  oligos <- oligos[gap_penalty == 0, ]
+  oligos <- oligos[oligos$gap_penalty == 0, ]
   # Exclude oligos with too many degenerate bases
   oligos <- oligos[oligos$degenerates <= max_degenerates, ]
   # Exclude oligos with too high degeneracy
   oligos <- oligos[oligos$degeneracy <= max_degeneracy, ]
-  # Identify and exclude oligos that are duplicated
-  unique_oligos <- match(oligos$majority, unique(oligos$majority))
-  oligos <- oligos[unique_oligos, ]
+  # Remove the gap_penalty column
+  oligos <- dplyr::select(oligos, -gap_penalty)
   oligos
 }
 

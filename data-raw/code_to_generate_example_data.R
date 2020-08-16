@@ -1,6 +1,6 @@
 # Code to generate example data
 
-infile <- "example_alignment.txt"
+infile <- "example_alignment_100seq.txt"
 
 example_rprimer_alignment <- read_fasta_alignment(infile) %>%
  remove_gaps(., threshold = 0.5)
