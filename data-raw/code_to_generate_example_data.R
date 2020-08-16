@@ -1,9 +1,10 @@
 # Code to generate example data
 
-infile <- "example_alignment_100seq.txt"
+infile <- "example_alignment.txt"
 
 example_rprimer_alignment <- read_fasta_alignment(infile) %>%
- remove_gaps(., threshold = 0.5)
+ remove_gaps(., threshold = 0.5) %>%
+  select_roi(., from = 4000, to = 6000)
 
 example_rprimer_profile <- sequence_profile(example_rprimer_alignment)
 
