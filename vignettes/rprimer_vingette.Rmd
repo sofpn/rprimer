@@ -1,8 +1,8 @@
 ---
-title: "Introduction to rprimer"
+title: "Getting started with rprimer"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to rprimer}
+  %\VignetteIndexEntry{Getting started with rprimer}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,23 +20,39 @@ library(magrittr)
 #devtools::load_all(".")
 ```
 
-## RT-PCR assay design 
-There are a multitude of factors to take into account when designing primers, probes and PCR*-assays, for instance:  
+## Introduction 
+to do: 
+-regex check - several times occur? 
+-write tests 
+-update description
+-add orcid
 
-* Bullet list here
+rprimer is designed to automate primer, probe and PCR assay design as much as possible. 
+
+There are a multitude of factors to take into account when designing primers, probes and PCR-assays, for instance:  
+
 * GC content
 * Melting temperature
 * Sequence conservation 
 * Sequence complexity ... 
 
- 
+## Installation
 
-rprimer aims to automate this process.
+Install rprimer by calling:
 
-In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV).
+```{r}
 
+# if (!requireNamespace("devtools", quietly = TRUE)) {
+#    install.packages("devtools")
+# }
+# devtools::install_github("sofpn/rprimer")
 
-## The whole workflow
+# library(rprimer)
+```
+
+## Quick start
+
+The primer, probe and assay design workflow is summarised below. 
 
 ```{r}
 # Step 1: Import alignment 
@@ -100,7 +116,6 @@ my_assays <- add_probes(my_assays, my_probes, tm_difference = c(-2, 10))
 # rp_save(my_sequence_properties, filename = "my_sequence_properties")
 # rp_save(my_assays, filename = "my_assays")
 
-
 # Step 9: Generate a report
 
 # You can either select one assay and generate a report...
@@ -113,21 +128,11 @@ selected_assay <- my_assays[1, ]
 #  my_sequence_properties,
 #  comment = "my new hepatitis E virus assay :)"
 # )
-
-# ...or write several reports, e.g. one for each assay candidate:
-# purrr::walk(seq_len(nrow(my_assays)), function(i) {
-#  write_report(
-#    filename = paste0("my_assay_report_", i),
-#    my_assays[i, ],
-#    my_sequence_profile,
-#    my_sequence_properties,
-#    comment = paste("my new hepatitis E virus assay, number", i)
-#  )
-#})
-
 ```
 
 ## Details  
+
+Below, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV).
 
 ### Step 1: Import alignment 
 Prepare a .txt-file with an alignment of the sequences of interest (in fasta-format), and import it using `read_fasta_alignment()`. In this example, I use an alignment with 621 HEV sequences that I have collected from GenBank. 

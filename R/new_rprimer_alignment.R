@@ -23,6 +23,8 @@
 #' An rprimer_alignment object if the validation is succeeds.
 #' An error message if not.
 #'
+#' @keywords internal
+#'
 #' @noRd
 new_rprimer_alignment <- function(x = list()) {
   # x must be a list
@@ -81,6 +83,8 @@ is.rprimer_alignment <- function(x) inherits(x, "rprimer_alignment")
 #'
 #' @return A subset.
 #'
+#' @keywords internal
+#'
 #' @noRd
 `[.rprimer_alignment` <- function(x, i, ...) {
   new_rprimer_alignment(NextMethod())
@@ -91,6 +95,8 @@ is.rprimer_alignment <- function(x) inherits(x, "rprimer_alignment")
 #' @param x An rprimer_alignment object.
 #'
 #' @return A subset.
+#'
+#' @keywords internal
 #'
 #' @noRd
 `[<-.rprimer_alignment` <- function(x, i, value) {

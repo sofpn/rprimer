@@ -142,6 +142,8 @@ get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
 #' @return A tibble with assays, with information on perfect matches
 #' for forward and reverse primers.
 #'
+#' @keywords internal
+#'
 #' @noRd
 combine_match_matrices <- function(x) {
   fwd <- x$match_matrix_fwd
@@ -181,6 +183,8 @@ combine_match_matrices <- function(x) {
 #'
 #' @return A tibble with assays, with information on perfect matches
 #' for forward and reverse primers and probes.
+#'
+#' @keywords internal
 #'
 #' @noRd
 add_probe_to_match_matrix <- function(x) {

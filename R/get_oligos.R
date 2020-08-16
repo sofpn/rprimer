@@ -226,6 +226,8 @@ get_oligos <- function(x,
 #' @examples
 #' get_nmers(c("c", "g", "t", "t", "c", "g"), n = 2)
 #'
+#' @keywords internal
+#'
 #' @noRd
 get_nmers <- function(x, n = NULL) {
   if (!is.character(x)) {
@@ -265,6 +267,8 @@ get_nmers <- function(x, n = NULL) {
 #' gc_content("acgttcc--")
 #' gc_content("acgrn") # Will return an error because of an invalid base.
 #'
+#' @keywords internal
+#'
 #' @noRd
 gc_content <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
@@ -296,6 +300,9 @@ gc_content <- function(x) {
 #'
 #' @examples
 #' reverse_complement("cttgtr")
+#'
+#' @keywords internal
+#'
 #' @noRd
 reverse_complement <- function(x) {
   if (typeof(x) != "character") {
@@ -340,6 +347,9 @@ reverse_complement <- function(x) {
 #'
 #' @examples
 #' running_sum(runif(100))
+#'
+#' @keywords internal
+#'
 #' @noRd
 running_sum <- function(x, n = NULL) {
   if (!(is.numeric(x))) {
@@ -373,6 +383,9 @@ running_sum <- function(x, n = NULL) {
 #'
 #' @examples
 #' exclude(c("cttgttatttt", "cgattctg"), "a$|t$")
+#'
+#' @keywords internal
+#'
 #' @noRd
 exclude <- function(oligos, pattern) {
   if (!is.character(oligos)) {
@@ -405,6 +418,9 @@ exclude <- function(oligos, pattern) {
 #'
 #' @examples
 #' exclude_oligos(c("gtgtaaaaatatttt", "cgattctg"))
+#'
+#' @keywords internal
+#'
 #' @noRd
 exclude_oligos <- function(oligos,
                            avoid_3end_ta = FALSE,
@@ -487,6 +503,8 @@ exclude_oligos <- function(oligos,
 #' @return A tibble where unwanted oligos
 #' has been replaced with \code{NA}.
 #'
+#' @keywords internal
+#'
 #' @noRd
 exclude_unwanted_oligos <- function(x,
                                     avoid_3end_ta,
@@ -528,6 +546,9 @@ exclude_unwanted_oligos <- function(x,
 #'
 #' @examples
 #' count_degenerates("cttnra")
+#'
+#' @keywords internal
+#'
 #' @noRd
 count_degenerates <- function(x) {
   if (typeof(x) != "character") {
@@ -562,6 +583,8 @@ count_degenerates <- function(x) {
 #' @examples
 #' count_degeneracy("cttnra")
 #'
+#' @keywords internal
+#'
 #' @noRd
 count_degeneracy <- function(x) {
   if (typeof(x) != "character") {
@@ -586,7 +609,9 @@ count_degeneracy <- function(x) {
 #'
 #' @inheritParams get_oligos
 #'
-#' @return A tibble with all possible oligos
+#' @return A tibble with all possible oligos.
+#'
+#' @keywords internal
 #'
 #' @noRd
 generate_oligos <- function(x,
@@ -649,6 +674,8 @@ generate_oligos <- function(x,
 #'
 #' @return A tibble (a data frame) with oligo candidates.
 #'
+#' @keywords internal
+#'
 #' @noRd
 add_gc_tm <- function(oligos,
                       gc_range = c(0.45, 0.55),
@@ -698,6 +725,9 @@ add_gc_tm <- function(oligos,
 #'
 #' @examples
 #' make_regex("cttrng")
+#'
+#' @keywords internal
+#'
 #' @noRd
 make_regex <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
@@ -739,6 +769,8 @@ make_regex <- function(x) {
 #' sequences for each oligo, and a column named
 #' 'match_report', which contains a matrix with information about
 #' which sequences the oligo matches perfectly to.
+#'
+#' @keywords internal
 #'
 #' @noRd
 check_match <- function(x, y) {
@@ -782,6 +814,8 @@ check_match <- function(x, y) {
 #' @param x An rprimer_oligo-like object.
 #'
 #' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @keywords internal
 #'
 #' @noRd
 is.rprimer_oligo <- function(x) inherits(x, "rprimer_oligo")

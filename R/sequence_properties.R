@@ -87,6 +87,8 @@ sequence_properties <- function(x, iupac_threshold = NULL) {
 #'
 #' @return The majority consensus sequence (a character vector of length n).
 #'
+#' @keywords internal
+#'
 #' @noRd
 majority_consensus <- function(x) {
   if (!is.rprimer_profile(x)) {
@@ -126,6 +128,9 @@ majority_consensus <- function(x) {
 #' as_iupac("a,c")
 #' as_iupac("r")
 #' as_iupac("tg") # Will return NA since the bases are not separated by comma
+#'
+#' @keywords internal
+#'
 #' @noRd
 as_iupac <- function(x) {
   if (!(is.character(x) && length(x) == 1)) {
@@ -166,6 +171,8 @@ as_iupac <- function(x) {
 #' @seealso \code{as_iupac} for further info on how the iupac consensus
 #' sequecnce is determined.
 #'
+#' @keywords internal
+#'
 #' @noRd
 iupac_consensus <- function(x, threshold = NULL) {
   if (!is.rprimer_profile(x)) {
@@ -204,6 +211,8 @@ iupac_consensus <- function(x, threshold = NULL) {
 #'
 #' @return The gap frequency (a numeric vector of length n).
 #'
+#' @keywords internal
+#'
 #' @noRd
 gap_frequency <- function(x) {
   if (!is.rprimer_profile(x)) {
@@ -223,6 +232,8 @@ gap_frequency <- function(x) {
 #'
 #' @return The nucleotide identity (a numeric vector of length n).
 #' The nucleotide identity can range from > 0 to 1.
+#'
+#' @keywords internal
 #'
 #' @noRd
 nucleotide_identity <- function(x) {
@@ -252,6 +263,8 @@ nucleotide_identity <- function(x) {
 #'
 #' @return The Shannon entropy (a numeric vector of length n).
 #'
+#' @keywords internal
+#'
 #' @noRd
 shannon_entropy <- function(x) {
   if (!is.rprimer_profile(x)) {
@@ -279,6 +292,8 @@ shannon_entropy <- function(x) {
 #' @param x An 'rprimer_properties'-like object.
 #'
 #' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @keywords internal
 #'
 #' @noRd
 is.rprimer_properties <- function(x) inherits(x, "rprimer_properties")

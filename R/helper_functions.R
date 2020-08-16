@@ -6,6 +6,8 @@
 #'
 #' @example split_sequence("cgtttg")
 #'
+#' @keywords internal
+#'
 #' @noRd
 split_sequence <- function(x) {
   stopifnot(is.character(x), length(x) == 1)
@@ -24,6 +26,8 @@ split_sequence <- function(x) {
 #'
 #' @example
 #' truncate_name('AB856243.1 Hepatitis E virus')
+#'
+#' @keywords internal
 #'
 #' @noRd
 truncate_name <- function(name) {
@@ -45,8 +49,8 @@ truncate_name <- function(name) {
 #'
 #' @return The complement sequence of x.
 #'
-#' @examples
-#' reverse_complement("cttgtr")
+#' @keywords internal
+#'
 #' @noRd
 complement <- function(x) {
   if (typeof(x) != "character") {
@@ -65,4 +69,3 @@ complement <- function(x) {
   complement <- unname(complement)
   complement
 }
-

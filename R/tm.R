@@ -11,6 +11,8 @@
 #' @example
 #' nn_split('ccgtncg')
 #'
+#' @keywords internal
+#'
 #' @noRd
 nn_split <- function(x) {
   if (!(!is.na(x) && is.character(x) && nchar(x) > 1)) {
@@ -39,6 +41,8 @@ nn_split <- function(x) {
 #'
 #' @examples
 #' nn_lookup(c("ac", "cc"), table = "dS")
+#'
+#' @keywords internal
 #'
 #' @noRd
 nn_lookup <- function(x, table) {
@@ -76,6 +80,8 @@ nn_lookup <- function(x, table) {
 #'
 #' @return The initiaion values for x.
 #'
+#' @keywords internal
+#'
 #' @noRd
 init_3end <- function(x) {
   if (grepl("(t|a)$", x)) {
@@ -107,6 +113,8 @@ init_5end <- function(x) {
 #' @examples
 #' tm("acggtgcctac")
 #' tm(c("acggtgcctac", "acggtggctgc"))
+#'
+#' @keywords internal
 #'
 #' @noRd
 tm <- function(oligos, conc_oligo = 5e-07, conc_na = 0.05) {

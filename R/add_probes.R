@@ -28,7 +28,9 @@
 #'
 #' @examples
 #' add_probes(
-#' example_rprimer_assay, example_rprimer_oligo, tm_difference = c(-2, 10)
+#' example_rprimer_assay,
+#' example_rprimer_oligo,
+#' tm_difference = c(-2, 10)
 #' )
 #'
 #' @export
@@ -37,7 +39,7 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
     stop("'x' must be an rprimer_assay object.", call. = FALSE)
   }
   if (any(grepl("_pr$", names(x)))) {
-    stop("'x' appear to have probes already.", call. = FALSE)
+    stop("'x' appears to have probes already.", call. = FALSE)
   }
   if (!inherits(y, "rprimer_oligo")) {
     stop("'y' must be an rprimer_oligo object.", call. = FALSE)

@@ -9,8 +9,6 @@
 #'     object
 #' * 'is_rprimer_profile()' checks if an object has class attribute
 #'     'rprimer_profile'
-#' * '`[.rprimer_profile()`' subsets an object of class 'rprimer_profile'
-#' * `[<-.rprimer_profile()`' subsets an object of class 'rprimer_profile'
 #'
 #' @param x An rprimer_profile-like object.
 #'
@@ -20,6 +18,8 @@
 #'
 #' @return An rprimer_profile object if the validation is succeeds.
 #' An error message if not.
+#'
+#' @keywords internal
 #'
 #' @noRd
 new_rprimer_profile <- function(x = matrix()) {
@@ -39,30 +39,7 @@ new_rprimer_profile <- function(x = matrix()) {
 #'
 #' @return \code{TRUE} or \code{FALSE}.
 #'
+#' @keywords internal
+#'
 #' @noRd
 is.rprimer_profile <- function(x) inherits(x, "rprimer_profile")
-
-
-#' @describeIn new_rprimer_profile
-#'
-#' @param x An rprimer_profile object.
-#'
-#' @return A subset.
-#'
-#' @noRd
-`[.rprimer_profile` <- function(x, i, ...) {
-  new_rprimer_profile(NextMethod())
-}
-
-#' @describeIn new_rprimer_profile
-#'
-#' @param x An rprimer_profile object.
-#'
-#' @return A subset.
-#'
-#' @noRd
-`[<-.rprimer_profile` <- function(x, i, value) {
-  stopifnot(is.rprimer_profile(value))
-  new_rprimer_profile(NextMethod())
-}
-
