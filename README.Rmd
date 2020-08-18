@@ -54,7 +54,7 @@ my_sequence_properties <- infile %>%
 
 * `sequence_profile()` takes an alignment as input and returns a matrix with the proportion of each nucleotide at each position in the alignment.
 * `sequence_properties()` takes a sequence profile as input and returns a tibble (a data frame) with information on majority and iupac consensus sequence, gap frequency, nucleotide identity and Shannon entropy.
-
+ 
 These data can be visualized with `rp_plot()`:
 
 ```{r}
