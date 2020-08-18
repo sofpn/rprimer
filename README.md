@@ -12,18 +12,11 @@ much as possible.
 
 ## Installation
 
-You can install the released version of rprimer from
-[CRAN](https://CRAN.R-project.org) with:
-
-``` r
-# install.packages("rprimer") # Not released yet. 
-```
-
-And the development version from [GitHub](https://github.com/) with:
+You can install the development version of rprimer from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-# devtools::install_github("sofpn/rprimer")
+devtools::install_github("sofpn/rprimer")
 ```
 
 ## Example
@@ -31,17 +24,13 @@ And the development version from [GitHub](https://github.com/) with:
 The primer, probe and assay design workflow is summarized below.
 
 ``` r
-devtools::load_all(".")
-#> Loading rprimer
-#> Welcome! :)
+library(rprimer)
 
 # Step 1: Import alignment 
-my_alignment <- system.file(
-  'extdata', 'example_alignment.txt', package = 'rprimer'
-  ) %>%
+my_alignment <- "example_alignment.txt" %>% 
   read_fasta_alignment %>%
-  remove_gaps(., threshold = 0.5)  %>% 
-  select_roi(., from = 1000, to = 6000) 
+   remove_gaps(., threshold = 0.5)  %>% 
+    select_roi(., from = 4000, to = 6000) 
 
 # Step 2: Get the sequence profile 
 my_sequence_profile <- sequence_profile(my_alignment)
@@ -70,7 +59,7 @@ my_primers <- get_oligos(
 )
 
 # Step 5: Get assays 
-my_assays <- get_assays(my_primers, length = 60:70, max_tm_difference = 1) 
+my_assays <- get_assays(my_primers, length = 65:75, max_tm_difference = 1.5) 
  
 # Step 6: Get probes 
 my_probes <- get_oligos(
@@ -91,15 +80,16 @@ my_probes <- get_oligos(
 )
 
 # Step 7: Add probes to assays
-my_assays <- add_probes(my_assays, my_probes, tm_difference = c(0, 5))  
+my_assays <- add_probes(my_assays, my_probes, tm_difference = c(-1, 5))  
 
 # Step 8: Save the data (if you want to)
 # rp_save(my_alignment, filename = "my_alignment")
 # rp_save(my_sequence_properties, filename = "my_sequence_properties")
 # rp_save(my_assays, filename = "my_assays")
 
-# Step 9: Select an assay and generate a detailed report
+# Step 9: Generate a report
 
+# You can either select one assay and generate a report...
 selected_assay <- my_assays[1, ]
 
 # write_report(
@@ -107,7 +97,7 @@ selected_assay <- my_assays[1, ]
 #  selected_assay,
 #  my_sequence_profile,
 #  my_sequence_properties,
-#  comment = "my new assay :)"
+#  comment = "my new hepatitis E virus assay :)"
 # )
 ```
 

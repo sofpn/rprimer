@@ -164,7 +164,7 @@ my_sequence_profile <- sequence_profile(my_alignment)
 my_sequence_profile[, 1:6]
 ```
 
-The sequence profile can be visualised with `rp_plot`. A specific region can be selected with `from` and `to`. The `rc` option regulates whether the sequence should be displayed as a reverse complement or not (the default is `FALSE`).
+The sequence profile can be visualized with `rp_plot()`. A specific region can be selected with `from` and `to`. The `rc` option regulates whether the sequence should be displayed as a reverse complement or not (the default is `FALSE`).
 
 ```{r, fig.width=6, fig.height=6, fig.align='center'}
 # The first 30 positions of the sequence profile  
@@ -268,7 +268,7 @@ str(my_primers[, -ncol(my_primers)])
 
 * `length` Amplicon length. The default is 65-120.
 
-* `max_tm_difference` The maximum Tm difference between the two primers (absolute value, in Celcius). The default is 1. Note that Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
+* `max_tm_difference` The maximum Tm difference between the two primers (absolute value, in C). The default is 1. Note that Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
 
 ```{r}
 my_assays <- get_assays(my_primers, length = 65:120, max_tm_difference = 1.5)
