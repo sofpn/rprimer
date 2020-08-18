@@ -128,19 +128,9 @@ selected_assay <- my_assays[1, ]
 Below, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV).
 
 ### Step 1: Import alignment 
-Prepare a .txt-file with an alignment of the sequences of interest (in fasta-format), and import it using `read_fasta_alignment()`. In this example, I use an alignment with 621 HEV sequences that I have collected from GenBank. 
-
-```{r}
-my_alignment <- "example_alignment.txt" %>% 
-  read_fasta_alignment
-```
+Prepare a .txt-file with an alignment of the sequences of interest (in fasta-format), and import it using `read_fasta_alignment()`. In this example, I use an alignment with 100 HEV sequences that I have collected from GenBank. 
 
 From here, it is possible to either proceed directly to Step 2, or to process the alignment using `remove_gaps()` and/or `select_roi()`:
-
-```{r}
-my_alignment <- remove_gaps(my_alignment, threshold = 0.5)  %>%
-  select_roi(., from = 4000, to = 6000)
-```
 
 * `remove_gaps()` removes positions with a gap proportion higher than the stated `threshold` (the default is 0.5, i.e. 50 %). 
 
@@ -156,8 +146,6 @@ rp_plot(my_alignment)
 `sequence_profile()` takes an alignment as input and returns a matrix with the proportion of each nucleotide at each position in the alignment. 
 
 ```{r}
-my_sequence_profile <- sequence_profile(my_alignment)
-
 # The first 6 positions of the sequence profile
 my_sequence_profile[, 1:6]
 ```
@@ -183,13 +171,8 @@ rp_plot(my_sequence_profile, from = 1, to = 30, rc = FALSE)
 * *Entropy*. The Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. 
 
 ```{r}
-my_sequence_properties <- sequence_properties(
-  my_sequence_profile, iupac_threshold = 0.05
-)
-
 str(my_sequence_properties)
 ```
-
 Again, the output can be visualised with `rp_plot()`. Here, vertical bars represent the value at each position. The black bars in the two uppermost figures represent values of 1 and 0, respectively (i.e. positions with complete conservation). The horizontal lines represent centered running averages. 
 
 ```{r,fig.width=6, fig.height=6, fig.align='center'}
@@ -231,26 +214,6 @@ In addition, `get_oligos()` avoids oligos:
 
 * That are duplicated (to prevent binding at several places on the genome)
 
-```{r}
-my_primers <- get_oligos(
-  my_sequence_properties,
-  target = my_alignment,
-  max_gap_frequency = 0.01,
-  length = 18:22,
-  max_degenerates = 1,
-  max_degeneracy = 2,
-  avoid_3end_ta = TRUE,
-  avoid_3end_runs = TRUE,
-  avoid_gc_rich_3end = TRUE, 
-  avoid_5end_g = FALSE,
-  gc_range = c(0.45, 0.56),
-  tm_range = c(55, 65),
-  conc_oligo = 5e-07, 
-  conc_na = 0.05
-)
-
-```
-
 Candidate oligos are displayed in a tibble. Oligo sequences are displayed in both majority and IUPAC format, and as reverse complements (rc). `NA` means that the oligo was excluded due to e.g. a terminal A or T (if `avoid_3end_ta = TRUE`). An error message will return if no oligos are found. 
 
 I found 52 primers in my example. Most of them are located around position 1300, which is the most conserved region in my ROI. I only allowed one degenerate base in each primer, and no more than two variants of each primer. More primers can be found by increasing `max_degenerates` and `max_degeneracy`, or by increasing the `iupac_threshold` in the `sequence_properties()` function. 
@@ -267,10 +230,6 @@ str(my_primers[, -ncol(my_primers)])
 * `length` Amplicon length. The default is 65-120.
 
 * `max_tm_difference` The maximum Tm difference between the two primers (absolute value, in C). The default is 1. Note that Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
-
-```{r}
-my_assays <- get_assays(my_primers, length = 65:120, max_tm_difference = 1.5)
-```
 
 Candidate assays are displayed in a tibble (see below). An error message will return if no assays are found. Three different combinations of forward and reverse primer were found in this example. `total_degeneracy` is the sum of the number of variants of the forward primer and reverse primer. 
 
@@ -289,24 +248,6 @@ Here, `tm_difference` is the acceptable difference in Tm between the primers and
 Assays are displayed in a tibble (see below). An error message will return if no assays are found.   
 
 ```{r}
-my_probes <- get_oligos(
-  my_sequence_properties,
-  target = my_alignment,
-  max_gap_frequency = 0.01,
-  length = 18:24,
-  max_degenerates = 1,
-  max_degeneracy = 2,
-  avoid_3end_ta = FALSE,
-  avoid_3end_runs = FALSE,
-  avoid_5end_g = TRUE,
-  gc_range = c(0.45, 0.56),
-  tm_range = c(55, 70),
-  conc_oligo = 2.5e-07, 
-  conc_na = 0.05
-)
-
-my_assays <- add_probes(my_assays, my_probes, tm_difference = c(0, 10))
-
 str(my_assays[ , -ncol(my_assays)])
 
 ```
