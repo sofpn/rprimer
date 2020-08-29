@@ -24,14 +24,13 @@ sequence_profile <- function(x) {
   splitted <- purrr::map(x, split_sequence)
   # Make a matrix
   matr <- do.call("rbind", splitted)
-  # Get all unique bases in the dataset and sort them in alphabetical order
+  # Get all unique bases in and sort them in alphabetical order
   bases <- unique(sort(unlist(apply(matr, 1, unique), use.names = FALSE)))
   # Count the occurrence of each base at each position
-  count_base <- function(x, base) length(x[which(x == base)])
   counts <- apply(matr, 2, function(x) {
-    purrr::map_int(bases, ~count_base(x, base = .x))
+    purrr::map_int(bases, ~length(x[x == .x]))
   })
-  # Present the data as proportions instead of counts
+  # Present as proportions instead of counts
   proportions <- counts / nrow(matr)
   # Base as rowname
   rownames(proportions) <- bases

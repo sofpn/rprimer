@@ -1,11 +1,4 @@
-#' Construct, subset and check rprimer_alignment objects
-#'
-#' * 'new_rprimer_alignment()' constructs and validate an rprimer_alignment-
-#'     object
-#' * 'is_rprimer_alignment()' checks if an object has class attribute
-#'     'rprimer_alignment'
-#' * '`[.rprimer_alignment()`' subsets an object of class 'rprimer_alignment'
-#' * '`[<-.rprimer_alignment()`' subsets an object of class 'rprimer_alignment'
+#' Construct, check, extract, replace rprimer_alignment objects
 #'
 #' @param x An rprimer_alignment-like object.
 #'
@@ -22,8 +15,6 @@
 #' @return
 #' An rprimer_alignment object if the validation is succeeds.
 #' An error message if not.
-#'
-#' @keywords internal
 #'
 #' @noRd
 new_rprimer_alignment <- function(x = list()) {
@@ -78,27 +69,11 @@ new_rprimer_alignment <- function(x = list()) {
 is.rprimer_alignment <- function(x) inherits(x, "rprimer_alignment")
 
 #' @describeIn new_rprimer_alignment
-#'
-#' @param x An rprimer_alignment object.
-#'
-#' @return A subset.
-#'
-#' @keywords internal
-#'
-#' @noRd
 `[.rprimer_alignment` <- function(x, i, ...) {
   new_rprimer_alignment(NextMethod())
 }
 
 #' @describeIn new_rprimer_alignment
-#'
-#' @param x An rprimer_alignment object.
-#'
-#' @return A subset.
-#'
-#' @keywords internal
-#'
-#' @noRd
 `[<-.rprimer_alignment` <- function(x, i, value) {
   stopifnot(is.rprimer_alignment(value))
   new_rprimer_alignment(NextMethod())

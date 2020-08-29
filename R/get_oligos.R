@@ -230,8 +230,8 @@ get_oligos <- function(x,
 #'
 #' @noRd
 get_nmers <- function(x, n = NULL) {
-  if (!is.character(x)) {
-    stop("'x' must be a character vector.", call. = FALSE)
+  if (!(is.character(x))) {
+    stop("'x' must be a character vector", call. = FALSE)
   }
   if (is.null(n)) {
     n <- round(length(x) / 10)
@@ -436,7 +436,7 @@ exclude_oligos <- function(oligos,
       call. = FALSE
     )
   }
-  # Remove oligos with at least 4 'runs' of the same dinucleotide
+  # Remove oligos with at least 4 'runs' of the same dinucleotide ##################
   oligos <- exclude(
     oligos,
     "(at){4,}|(ta){4,}|(ac){4,}|(ca){4,}|(ag){4,}|(ga){4,}|(gt){4,}|(tg){4,}|(cg){4,}|(gc){4,}|(tc){4,}|(ct){4,})"
@@ -453,7 +453,7 @@ exclude_oligos <- function(oligos,
   }
   if (avoid_gc_rich_3end == TRUE) {
    # temp <- purrr::map(oligos, ~ split_sequence(.x))
-  #  temp <- purrr::map(temp, ~ .x[(length(.x) - 4):length(.x)])
+  #  temp <- purrr::map(temp, ~ .x[(length(.x) - 4):length(.x)]) ######################
   #  temp <- purrr::map(temp, ~ paste(.x, collapse = ""))
   #  gc <- purrr::map_dbl(temp, ~ gc_content(.x))
   #  oligos[which(gc < 4/6)] <- NA
@@ -648,7 +648,7 @@ generate_oligos <- function(x,
   end <- seq_along(majority) + oligo_length - 1
   length <- oligo_length
   # Identify oligos with high gap frequency
-  gap_bin <- ifelse(x$gaps > max_gap_frequency, 1L, 0L)
+  gap_bin <- ifelse(x$gaps > max_gap_frequency, 1L, 0L) ###################
   gap_penalty <- running_sum(gap_bin, n = oligo_length)
   oligos <- tibble::tibble(
     begin, end, length, majority, iupac,

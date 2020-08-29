@@ -23,7 +23,7 @@ in lowercase format.
 DNA sequences in fasta format.
 }
 \details{
-The file must be a .txt file and contain one or more aligned
+The file must be in .txt format and contain one or more aligned
 DNA sequences in fasta format. Sequences in fasta format always
 begins with a '>' symbol, followed by a single-line name, with the
 sequence present on the next line.
@@ -32,20 +32,9 @@ Valid nucleotides are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
 n', 'h', 'd', 'v', 'b' and '-'. The alignment can be in either
 upper- or lowercase format.
 }
-\note{
-This function is partly inspired by \code{seqinr::read.fasta}
-(see references).
-}
 \examples{
 read_fasta_alignment(
 system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 )
 
-}
-\references{
-Charif, D. and Lobry, J.R. (2007)
-SeqinR 1.0-2: a contributed package to the R project for statistical
-computing devoted to biological sequences retrieval and analysis.
-Structural approaches to sequence evolution: Molecules, networks,
-populations, pp 207-232.
 }

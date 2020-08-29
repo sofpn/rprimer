@@ -54,10 +54,10 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
   }
   assays <- x
   probes <- y
-  # For each assay, take all probes that bind whithin the assay region
+  # For each assay, take all probes that bind within the assay region
   probe_candidates <- purrr::map(seq_len(nrow(assays)), function(i) {
     # The probe has to begin after the fwd primer ends
-    # and we want at least one base inbetween (hence the + 2)
+    # and we want at least one base between (hence the + 2)
     from <- assays$end_fwd[[i]] + 2
     # The probe has to end before the rev primer begins
     # and we want at least one base in-between
@@ -68,7 +68,7 @@ add_probes <- function(x, y, tm_difference = c(0, 20)) {
   })
   # For each assay, we check how many probe candidates we have
   number_of_probes <- purrr::map_int(probe_candidates, nrow)
-  # Then, we need to pick all the assays that can harbour a probe.
+  # Then, we need to pick all the assays that can harbor a probe.
   # For assays that has n number of probes, we need to
   # repeat that row n times.
   rows_to_select <- purrr::map(
