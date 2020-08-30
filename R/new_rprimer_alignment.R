@@ -23,7 +23,7 @@ new_rprimer_alignment <- function(x = list()) {
   # x must be a list
   stopifnot(is.list(x))
   # All sequences must be a character vector of length one
-  has_length_one <- purrr::map_lgl(x, ~ is.character(.x) && length(.x) == 1)
+  has_length_one <- purrr::map_lgl(x, ~is.character(.x) && length(.x) == 1)
   if (any(has_length_one == FALSE)) {
     stop(
       "All sequences must be a character vector of length one. \n
@@ -46,7 +46,7 @@ new_rprimer_alignment <- function(x = list()) {
     stop("All sequences must have unique names.", call. = FALSE)
   }
   # All sequences must be in lowercase format and contain only valid bases
-  non_valid_base <- purrr::map_lgl(x, ~ grepl("[^acgtrymkswnhdvb-]", .x))
+  non_valid_base <- purrr::map_lgl(x, ~grepl("[^acgtrymkswnhdvb-]", .x))
   if (any(non_valid_base)) {
     stop(
       "At least one sequence contain one or more invalid characters. \n

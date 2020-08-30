@@ -280,7 +280,12 @@ sequence_detail_plot <- function(x) {
 sequence_barplot <- function(x, ...) {
   base_cols <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038", "white")
   names(base_cols) <- c("a", "c", "g", "t", "-")
-  gray_cols <- grDevices::gray.colors(nrow(x) - 5, start = 0.6) ######## ALL POSSIBLE WBBL BASES HERE
+  gray_cols <- grDevices::gray.colors(nrow(x) - 5, start = 0.6)
+
+  # 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w', 'n', 'h', 'd',
+  #'v', '
+
+  ######## ALL POSSIBLE WBBL BASES HERE
   names(gray_cols) <- setdiff(rownames(x), c("a", "c", "g", "t", "-"))
   cols <- c(base_cols, gray_cols)
   # Make the plot

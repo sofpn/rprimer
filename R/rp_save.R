@@ -58,7 +58,7 @@ rp_save.rprimer_properties <- function(x, filename) {
 #' @export
 rp_save.rprimer_oligo <- function(x, filename) {
   if (any(grepl("match_matrix", names(x)))) {
-    x <- x[, names(x) != "match_matrix"]  # Can't save a list
+    x <- x[, names(x) != "match_matrix"]
   }
   utils::write.csv(
     x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE
@@ -70,7 +70,7 @@ rp_save.rprimer_oligo <- function(x, filename) {
 #' @export
 rp_save.rprimer_assay <- function(x, filename) {
   if (any(grepl("match_matrix", names(x)))) {
-    x <- x[, names(x) != "match_matrix"]  # Can't save a list
+    x <- x[, names(x) != "match_matrix"]
   }
   utils::write.csv(
     x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE
