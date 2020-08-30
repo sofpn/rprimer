@@ -203,7 +203,7 @@ get_oligos <- function(x,
   all_oligos <- check_match(all_oligos, target)
   all_oligos <- dplyr::arrange(all_oligos, all_oligos$begin)
   all_oligos <- tibble::new_tibble(
-    all_oligos, nrow = nrow(all_oligos), class = "rprimer_oligo"
+    nrow = nrow(all_oligos), class = "rprimer_oligo"
   )
   all_oligos
 }
@@ -275,10 +275,6 @@ gc_content <- function(x) {
     stop("'x' must be a character vector of length one", call. = FALSE)
   }
   x <- tolower(x)
-  if (grepl("[^acgt-]", x)) {
-    stop("'x' contains at least one invalid base.
-      x can only contain 'a', 'c', 'g', 't' and '-'", call. = FALSE)
-  }
   x <- split_sequence(x)
   gc_count <- length(which(x == "c" | x == "g"))
   # Gaps will not be included in the total count

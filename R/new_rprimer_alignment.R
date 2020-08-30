@@ -66,14 +66,24 @@ new_rprimer_alignment <- function(x = list()) {
 #' @return \code{TRUE} or \code{FALSE}.
 #'
 #' @noRd
+#'
+#' @export
 is.rprimer_alignment <- function(x) inherits(x, "rprimer_alignment")
 
 #' @describeIn new_rprimer_alignment
+#'
+#' @noRd
+#'
+#' @export
 `[.rprimer_alignment` <- function(x, i, ...) {
   new_rprimer_alignment(NextMethod())
 }
 
 #' @describeIn new_rprimer_alignment
+#'
+#' @noRd
+#'
+#' @export
 `[<-.rprimer_alignment` <- function(x, i, value) {
   stopifnot(is.rprimer_alignment(value))
   new_rprimer_alignment(NextMethod())

@@ -1,16 +1,16 @@
 #' Get sequence properties
 #'
-#' \code{sequence_properties} returns sequence information from a sequence profile
+#' \code{sequence_properties} returns sequence information from
+#' a sequence profile
 #'
 #' @param x A sequence profile (an object of class 'rprimer_profile').
 #'
 #' @param iupac_threshold
-#' A number between greater than 0 and less or equal to 0.2.
+#' Optional. A number, higher than 0 and less or equal to 0.2.
 #' At each position, all nucleotides with a proportion
-#' higher than or equal to the stated threshold will be included in
+#' \code{>= iupac_threshold} will be included in
 #' the iupac consensus sequence. The default is \code{NULL},
-#' which means that all nucleotides that are present at the
-#' position in matter will be included.
+#' which means that all nucleotides that are present will be included.
 #'
 #' @section
 #' Majority consensus sequence:
@@ -49,8 +49,8 @@
 #' a, c, g and t are excluded from the calculation.
 #'
 #' @return
-#' A tibble (data frame) of class 'rprimer_properties',
-#' with information about majority and iupac consensus sequence, gap frequency,
+#' A tibble (a data frame) of class 'rprimer_properties',
+#' with information on majority and iupac consensus sequence, gap frequency,
 #' nucleotide identity and Shannon entropy.
 #'
 #' @examples
@@ -68,11 +68,16 @@ sequence_properties <- function(x, iupac_threshold = NULL) {
   gaps <- gap_frequency(x)
   identity <- nucleotide_identity(x)
   entropy <- shannon_entropy(x)
-  sequence_properties <- tibble::tibble(
-    position, majority, iupac, gaps, identity, entropy
-  )
   sequence_properties <- tibble::new_tibble(
-    sequence_properties, nrow = nrow(sequence_properties),
+    list(
+      "position" = position,
+      "majority" = majority,
+      "iupac" = iupac,
+      "gaps" = gaps,
+      "identity" = identity,
+      "entropy" = entropy
+    ),
+    nrow = length(position),
     class = "rprimer_properties"
   )
   sequence_properties
@@ -96,7 +101,7 @@ majority_consensus <- function(x) {
   }
   # Function to identify the most common base at a position
   find_most_common_base <- function(x, y) {
-    most_common <- rownames(x)[which(y == max(y))]
+    most_common <- rownames(x)[y == max(y)]
     # If there are ties, the most common base will be randomly selected
     if (length(most_common > 1)) {
       most_common <- sample(most_common, 1)
@@ -183,7 +188,7 @@ iupac_consensus <- function(x, threshold = NULL) {
   }
   if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
     stop(paste0(
-      "'treshold' must be between 0 and 0.2. \n
+      "'treshold' must be higher than 0 and less or equal to 0.2. \n
       You've set it to ", threshold, "."
     ))
   }
@@ -244,14 +249,14 @@ nucleotide_identity <- function(x) {
   if (!is.rprimer_profile(x)) {
     stop("'x' must be an rprimer_profile object.", call. = FALSE)
   }
-  # We want to assess identity based on DNA bases,
-  # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
+  # I want to assess identity based on DNA bases,
+  # i.e. ignore gaps and degenerate positions, so I make a subset (s) of x
   # with the rows named a, c, g and t.
   bases <- c("a", "c", "g", "t")
   s <- x[rownames(x) %in% bases, ]
   # Calculate relative proportions of the bases in s
   s <- apply(s, 2, function(x) x / sum(x))
-  # Find the largest proportion at each position
+  # Find the greatest proportion at each position
   identity <- apply(s, 2, max)
   identity <- unname(identity)
   identity[is.na(identity)] <- 0
@@ -274,14 +279,14 @@ shannon_entropy <- function(x) {
   if (!is.rprimer_profile(x)) {
     stop("'x' must be an rprimer_profile object.", call. = FALSE)
   }
-  # We want to assess identity based on DNA bases,
-  # i.e. ignore gaps and degenerate positions, so we make a subset (s) of x
+  # I want to assess entrpoy from DNA bases,
+  # i.e. ignore gaps and degenerate positions, so I make a subset (s) of x
   # with the rows named a, c, g and t.
   bases <- c("a", "c", "g", "t")
   s <- x[rownames(x) %in% bases, ]
-  # Calculate relative proportions of the bases in s
+  # Calculate proportions of the bases in s
   s <- apply(s, 2, function(x) x / sum(x))
-  entropy <- apply(s[rownames(s) %in% bases, ], 2, function(x) {
+  entropy <- apply(s, 2, function(x) {
     ifelse(x == 0, 0, x * log2(x))
   })
   entropy <- -colSums(entropy)

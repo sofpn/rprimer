@@ -9,20 +9,20 @@ sequence_properties(x, iupac_threshold = NULL)
 \arguments{
 \item{x}{A sequence profile (an object of class 'rprimer_profile').}
 
-\item{iupac_threshold}{A number between greater than 0 and less or equal to 0.2.
+\item{iupac_threshold}{Optional. A number, higher than 0 and less or equal to 0.2.
 At each position, all nucleotides with a proportion
-higher than or equal to the stated threshold will be included in
+\code{>= iupac_threshold} will be included in
 the iupac consensus sequence. The default is \code{NULL},
-which means that all nucleotides that are present at the
-position in matter will be included.}
+which means that all nucleotides that are present will be included.}
 }
 \value{
-A tibble (data frame) of class 'rprimer_properties',
-with information about majority and iupac consensus sequence, gap frequency,
+A tibble (a data frame) of class 'rprimer_properties',
+with information on majority and iupac consensus sequence, gap frequency,
 nucleotide identity and Shannon entropy.
 }
 \description{
-\code{sequence_properties} returns sequence information from a sequence profile
+\code{sequence_properties} returns sequence information from
+a sequence profile
 }
 \section{Majority consensus sequence}{
 

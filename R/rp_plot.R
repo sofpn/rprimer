@@ -96,7 +96,7 @@ rp_plot.rprimer_profile <- function(
 rp_plot.rprimer_properties <- function(x, ...) {
   op <- graphics::par(
     mfrow = c(4, 1), mai = c(0.1, 1, 0.1, 1),
-    xpd = FALSE, oma = c(4, 0, 1, 0), mar = c(0.2, 4.1, 0.2, 2.1)
+    oma = c(4, 0, 1, 0), mar = c(0.2, 4.1, 0.2, 2.1)
   )
   on.exit(graphics::par(op))
   sequence_detail_plot(x)
@@ -129,15 +129,17 @@ running_average <- function(x, size = NULL) {
   stopifnot(is.numeric(x) && size <= length(x) && size >= 1)
   sums <- c(0, cumsum(x))
   average <- (sums[((size + 1):length(sums))] - sums[(1:(length(sums) - size))]) / size
-  # First, we set the position to get a trailed moving average
-  position <- (1 + size - 1):length(x)
-  # Then, to get a centered running average,
-  # we align each moving average to the midpoint of the range of observations
+  # Set the position to get a trailed moving average
+  position <- seq(size, length(x))
+  # To get a centered running average,
+  # I align each moving average to the midpoint of the range of observations
   # that each average includes
-  midpoint <- size / 2
-  position <- position - midpoint
+  if (size > 1) {
+    midpoint <- size / 2
+    position <- position - midpoint
+  }
   df <- tibble::tibble(position, average)
-  return(df)
+  df
 }
 
 #' Calculate running average of GC content
@@ -171,22 +173,24 @@ gc_running_average <- function(x, size = NULL) {
     }
   }
   stopifnot(is.character(x) && size <= length(x) && size >= 1)
-  begins <- 1:(length(x) - size + 1)
+  begins <- seq_len(length(x) - size + 1)
   ends <- begins + size - 1
-  frame <- 1:(length(x) - size + 1)
-  average <- purrr::map_dbl(frame, function(y) {
-    string <- paste(x[begins[[y]]:ends[[y]]], collapse = "")
-    return(gc_content(string))
+  # Calculate gc content of chunks of x
+  average <- purrr::map2_dbl(begins, ends, function(y, z) {
+    string <- paste(x[y:z], collapse = "")
+    gc_content(string)
   })
-  # First, we set the position to get a trailed moving average
-  position <- (1 + size - 1):length(x)
-  # Then, to get a centered running average,
-  # we align each moving average to the midpoint of the range of observations
+  # Set the position to get a trailed moving average
+  position <- seq(size, length(x))
+  # To get a centered running average,
+  # I align each moving average to the midpoint of the range of observations
   # that each average includes
-  midpoint <- size / 2
-  position <- position - midpoint
+  if (size > 1) {
+    midpoint <- size / 2
+    position <- position - midpoint
+  }
   df <- tibble::tibble(position, average)
-  return(df)
+  df
 }
 
 #' Draw a rectangle
@@ -216,38 +220,33 @@ rectangle <- function(from, to) {
 #'
 #' @noRd
 sequence_detail_plot <- function(x) {
-  identity_plot <- graphics::plot(
+  graphics::plot(
     x$position, x$identity,
     type = "h", ylim = c(0, 1),
     ylab = "identity", xlab = "", xaxt = "n",
     col = ifelse(x$identity < 1, "gray80", "gray60")
   )
-  identity_line <- graphics::lines(running_average(x$identity))
-  entropy_plot <- graphics::plot(
+  graphics::lines(running_average(x$identity))
+  graphics::plot(
     x$position, x$entropy,
     type = "h",
     ylim = c(0, max(x$entropy, na.rm = TRUE) * 1.1),
     ylab = "shannon entropy",
     xlab = "", xaxt = "n", col = ifelse(x$entropy > 0, "gray80", "gray60")
   )
-  entropy_line <- graphics::lines(running_average(x$entropy))
-  gc_plot <- graphics::plot(
-    x$position,
+  graphics::lines(running_average(x$entropy))
+  graphics::plot(
+    x$position, rep(0.5, length(x$position)),
     pch = NA, ylab = "gc content", ylim = c(0, 1),
     xlab = "", xaxt = "n"
   )
-  graphics::clip(0, nrow(x), -1, 2)
+  graphics::clip(0, max(x$position, na.rm = TRUE), 0, 3)
   graphics::abline(h = 0.5, col = "gray80")
   gc_line <- graphics::lines(gc_running_average(x$majority))
-  gap_plot <- graphics::plot(
+  graphics::plot(
     x$position, x$gaps,
     type = "h", ylim = c(0, 1), ylab = "gaps", xlab = ""
   )
-  identity_plot
-  identity_line
-  entropy_plot
-  entropy_line
-  gap_plot
   graphics::mtext(
     side = 1, outer = TRUE, "position",
     line = 3, cex = 0.7

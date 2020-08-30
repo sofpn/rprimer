@@ -24,12 +24,12 @@ library(magrittr)
 
 rprimer is designed to automate primer, probe and PCR assay design as much as possible. 
 
-There are a multitude of factors to take into account when designing primers, probes and PCR-assays, for instance:  
+There are several factors to take into account when designing primers, probes and PCR-assays, for instance:  
 
 * GC content
 * Melting temperature
 * Sequence conservation 
-* Sequence complexity ... 
+* ....
 
 ## Installation
 
@@ -119,7 +119,7 @@ selected_assay <- my_assays[1, ]
 #  selected_assay,
 #  my_sequence_profile,
 #  my_sequence_properties,
-#  comment = "my new hepatitis E virus assay :)"
+#  comment = "my new RT-qPCR assay :)"
 # )
 ```
 
