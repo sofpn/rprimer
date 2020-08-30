@@ -1,4 +1,4 @@
-#' Construct, check, extract, replace rprimer_alignment objects
+#' Construct rprimer_alignment objects
 #'
 #' @param x An rprimer_alignment-like object.
 #'
@@ -15,6 +15,8 @@
 #' @return
 #' An rprimer_alignment object if the validation is succeeds.
 #' An error message if not.
+#'
+#' @keywords internal
 #'
 #' @noRd
 new_rprimer_alignment <- function(x = list()) {
@@ -59,32 +61,27 @@ new_rprimer_alignment <- function(x = list()) {
   x
 }
 
-#' @describeIn new_rprimer_alignment
-#'
-#' @param x An rprimer_alignment object.
-#'
-#' @return \code{TRUE} or \code{FALSE}.
-#'
-#' @noRd
+#' Check if an object is an rprimer_alignment
 #'
 #' @export
-is.rprimer_alignment <- function(x) inherits(x, "rprimer_alignment")
+is.rprimer_alignment <- function(x) {
+  inherits(x, "rprimer_alignment")
+}
 
-#' @describeIn new_rprimer_alignment
-#'
-#' @noRd
+#' Extract elements in an rprimer_alignment object
 #'
 #' @export
 `[.rprimer_alignment` <- function(x, i, ...) {
   new_rprimer_alignment(NextMethod())
 }
 
-#' @describeIn new_rprimer_alignment
-#'
-#' @noRd
+#' Replace elements in an rprimer_alignment object
 #'
 #' @export
 `[<-.rprimer_alignment` <- function(x, i, value) {
   stopifnot(is.rprimer_alignment(value))
   new_rprimer_alignment(NextMethod())
 }
+
+
+# also [[. and [[.<- ?

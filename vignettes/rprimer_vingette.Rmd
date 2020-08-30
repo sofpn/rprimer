@@ -22,14 +22,14 @@ library(magrittr)
 
 ## Introduction 
 
-rprimer is designed to automate primer, probe and PCR assay design as much as possible. 
-
 There are several factors to take into account when designing primers, probes and PCR-assays, for instance:  
 
 * GC content
 * Melting temperature
 * Sequence conservation 
 * ....
+
+The purpose of rprimer is to automate primer, probe and PCR assay design as much as possible. 
 
 ## Installation
 

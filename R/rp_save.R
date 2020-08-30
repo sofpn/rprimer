@@ -35,6 +35,7 @@ rp_save <- function(x, filename) {
 }
 
 #' @describeIn rp_save Save an object of class 'rprimer_alignment'.
+#'
 #' @export
 rp_save.rprimer_alignment <- function(x, filename) {
   seq_names <- purrr::map_chr(names(x), ~paste0(">", .x))
@@ -44,6 +45,7 @@ rp_save.rprimer_alignment <- function(x, filename) {
 }
 
 #' @describeIn rp_save Save an object of class 'rprimer_properties'.
+#'
 #' @export
 rp_save.rprimer_properties <- function(x, filename) {
   utils::write.csv(
@@ -52,10 +54,11 @@ rp_save.rprimer_properties <- function(x, filename) {
 }
 
 #' @describeIn rp_save Save an object of class 'rprimer_oligo'.
+#'
 #' @export
 rp_save.rprimer_oligo <- function(x, filename) {
   if (any(grepl("match_matrix", names(x)))) {
-    x <- x[, which(names(x) != "match_matrix")]  # Can't save a list
+    x <- x[, names(x) != "match_matrix"]  # Can't save a list
   }
   utils::write.csv(
     x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE
@@ -63,10 +66,11 @@ rp_save.rprimer_oligo <- function(x, filename) {
 }
 
 #' @describeIn rp_save Save an object of class 'rprimer_assay'.
+#'
 #' @export
 rp_save.rprimer_assay <- function(x, filename) {
   if (any(grepl("match_matrix", names(x)))) {
-    x <- x[, which(names(x) != "match_matrix")]  # Can't save a list
+    x <- x[, names(x) != "match_matrix"]  # Can't save a list
   }
   utils::write.csv(
     x, file = paste0(filename, ".csv"), quote = FALSE, row.names = FALSE

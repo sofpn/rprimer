@@ -23,6 +23,7 @@ rp_plot <- function(x, ...) {
 }
 
 #' @describeIn rp_plot Plot an object of class 'rprimer_alignment'.
+#'
 #' @export
 rp_plot.rprimer_alignment <- function(x, ...) {
   op <- graphics::par(mar = c(5, 3, 3, 3))
@@ -92,6 +93,7 @@ rp_plot.rprimer_profile <- function(
 }
 
 #' @describeIn rp_plot Plot an object of class 'rprimer_properties'.
+#'
 #' @export
 rp_plot.rprimer_properties <- function(x, ...) {
   op <- graphics::par(
@@ -118,6 +120,9 @@ rp_plot.rprimer_properties <- function(x, ...) {
 #' @examples
 #' running_average(c(1, 3, 2, 1, 3, 4, 5), size = 2)
 #' running_average(c(10, 22.4, 14.2, 44, 32))
+#'
+#' @keywords internal
+#'
 #' @noRd
 running_average <- function(x, size = NULL) {
   if (is.null(size)) {
@@ -161,8 +166,11 @@ running_average <- function(x, size = NULL) {
 #' @examples
 #' running_average(c("gtttgtttctt"), size = 2)
 #' running_average(c("cttggggtttctttggtt-ttagg"))
+#'
 #' @seealso
 #' gc_content
+#'
+#' @keywords internal
 #'
 #' @noRd
 gc_running_average <- function(x, size = NULL) {
@@ -201,6 +209,8 @@ gc_running_average <- function(x, size = NULL) {
 #'
 #' @return A rectangle.
 #'
+#' @keywords internal
+#'
 #' @noRd
 rectangle <- function(from, to) {
   graphics::rect(
@@ -217,6 +227,8 @@ rectangle <- function(from, to) {
 #' @param x An object of class 'rprimer_properties'.
 #'
 #' @return A visual representation of \code{x}.
+#'
+#' @keywords internal
 #'
 #' @noRd
 sequence_detail_plot <- function(x) {
@@ -262,24 +274,25 @@ sequence_detail_plot <- function(x) {
 #'
 #' @return A barplot.
 #'
+#' @keywords internal
+#'
 #' @noRd
 sequence_barplot <- function(x, ...) {
-  colors1 <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038")
-  names(colors1) <- c("a", "c", "g", "t")
-  colors2 <- grDevices::gray.colors(nrow(x) - 4, start = 0.6)
-  names(colors2) <- setdiff(rownames(x), names(colors1))
-  colors <- c(colors1, colors2)
+  base_cols <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038", "white")
+  names(base_cols) <- c("a", "c", "g", "t", "-")
+  gray_cols <- grDevices::gray.colors(nrow(x) - 5, start = 0.6) ######## ALL POSSIBLE WBBL BASES HERE
+  names(gray_cols) <- setdiff(rownames(x), c("a", "c", "g", "t", "-"))
+  cols <- c(base_cols, gray_cols)
   # Make the plot
   graphics::barplot(
     x,
     space = 0, xaxt = "n", font.main = 1, border = "grey80",
-    col = colors[rownames(x)], legend = TRUE, ylab = "Proportion",
+    col = cols[rownames(x)], legend = TRUE, ylab = "Proportion",
     ylim = c(0, 1), ...,
     args.legend = list(
       x = "right", box.col = NA, border = "grey80",
-      bg = grDevices::rgb(60, 60, 60,
-                          alpha = 50,
-                          maxColorValue = 200
+      bg = grDevices::rgb(
+        60, 60, 60, alpha = 50, maxColorValue = 200
       ), inset = c(0, -0.3)
     )
   )

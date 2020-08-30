@@ -33,13 +33,24 @@ new_rprimer_profile <- function(x = matrix()) {
   return(x)
 }
 
-#' @describeIn new_rprimer_profile
+#' Check if an object is an rprimer profile
 #'
-#' @param x An rprimer_profile object.
-#'
-#' @return \code{TRUE} or \code{FALSE}.
-#'
-#' @keywords internal
-#'
-#' @noRd
+#' @export
 is.rprimer_profile <- function(x) inherits(x, "rprimer_profile")
+
+
+#' Extract elements in an rprimer_profile object
+#'
+#' @export
+`[.rprimer_profile` <- function(x, i, ...) {
+  new_rprimer_profile(NextMethod())
+}
+
+#' Replace elements in an rprimer_profile object
+#'
+#' @export
+`[<-.rprimer_profile` <- function(x, i, value) {
+  stopifnot(is.rprimer_profile(value))
+  new_rprimer_profile(NextMethod())
+}
+
