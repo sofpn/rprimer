@@ -34,7 +34,7 @@ rp_save <- function(x, filename) {
   UseMethod("rp_save")
 }
 
-#' @describeIn rp_save Save an object of class 'rprimer_alignment'.
+#' @describeIn rp_save Save an rprimer_alignment object.
 #'
 #' @export
 rp_save.rprimer_alignment <- function(x, filename) {
@@ -44,7 +44,7 @@ rp_save.rprimer_alignment <- function(x, filename) {
   close(my_file)
 }
 
-#' @describeIn rp_save Save an object of class 'rprimer_properties'.
+#' @describeIn rp_save Save an rprimer_properties object.
 #'
 #' @export
 rp_save.rprimer_properties <- function(x, filename) {
@@ -53,7 +53,7 @@ rp_save.rprimer_properties <- function(x, filename) {
   )
 }
 
-#' @describeIn rp_save Save an object of class 'rprimer_oligo'.
+#' @describeIn rp_save Save an rprimer_oligo object.
 #'
 #' @export
 rp_save.rprimer_oligo <- function(x, filename) {
@@ -65,7 +65,7 @@ rp_save.rprimer_oligo <- function(x, filename) {
   )
 }
 
-#' @describeIn rp_save Save an object of class 'rprimer_assay'.
+#' @describeIn rp_save Save an'rprimer_assay' object.
 #'
 #' @export
 rp_save.rprimer_assay <- function(x, filename) {

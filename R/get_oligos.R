@@ -3,11 +3,11 @@
 #' \code{get_oligos} identifies oligos (primers and probes) from
 #' sequence properties.
 #'
-#' @param x an object of class 'rprimer_properties'.
+#' @param x an rprimer_properties object.
 #'
 #' @param target
 #' The intended target. An alignment of DNA sequences
-#' (an object of class 'rprimer_alignment').
+#' (an rprimer_alignment object).
 #'
 #' @param max_gap_frequency
 #' Maximum allowed gap frequency.
@@ -203,25 +203,25 @@ get_oligos <- function(x,
   all_oligos <- check_match(all_oligos, target)
   all_oligos <- dplyr::arrange(all_oligos, all_oligos$begin)
   all_oligos <- tibble::new_tibble(
-    nrow = nrow(all_oligos), class = "rprimer_oligo"
+    all_oligos, nrow = nrow(all_oligos), class = "rprimer_oligo"
   )
   all_oligos
 }
 
+# Helpers =====================================================================
+
 #' Divide a DNA sequence into n-sized chunks
 #'
-#' \code{get_nmers} divides a character vector into chunks of size \code{n},
-#' in steps of one.
+#' \code{get_nmers} divides a character vector into chunks of size \code{n}.
 #'
 #' @param x A character vector.
 #'
-#' @param n The desired size of each 'chunk'/'mer'. An integer between
+#' @param n Chunk-size. An integer between
 #' \code{1} and \code{length(x)}. The default is \code{NULL}.
-#' In that case, n will be set to
-#' the nearest integer to \code{length(x)/10}. However, if the nearest integer
-#' is zero, \code{n} will be set to one.
+#' In that case, it will be set to
+#' the nearest nonzero integer to \code{length(x)/10}.
 #'
-#' @return A character vector where each element is a 'mer' of size n.
+#' @return A character vector.
 #'
 #' @examples
 #' get_nmers(c("c", "g", "t", "t", "c", "g"), n = 2)
@@ -287,7 +287,7 @@ gc_content <- function(x) {
 #'
 #' \code{reverse_complement} finds the reverse complement of a DNA seuquence.
 #'
-#' @param x A DNA sequence (a character vector of length one, e.g. 'cttgg').
+#' @param x A DNA sequence (a character vector of length one).
 #'
 #' @details For \code{x}, valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm',
 #' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
@@ -322,7 +322,7 @@ reverse_complement <- function(x) {
 
 #' Calculate running, cumulative sums
 #'
-#' \code{running_sum} calculates 'running' sums within a numeric vector. Each
+#' \code{running_sum} calculates 'running' sums of a numeric vector. Each
 #' sum is calculated in a size of \code{n}, in steps of 1 (i.e., if
 #' \code{n = 20}, the sum will be calculated from element 1 to 20,
 #' then from element 2 to 21, then from element 3 to 22, etc.)
@@ -330,15 +330,10 @@ reverse_complement <- function(x) {
 #' @param x A numeric vector.
 #'
 #' @param n The size of each sum that is to be calculated, an integer between
-#' 1 and \code{length(x)}.
+#' 1 and \code{length(x)}. The default is \code{NULL}. In that case,
+#' it will be set to the nearest nonzero integer to \code{length(x)/10}.
 #'
-#' @details The default of \conde{n} is \code{NULL}. In that case,
-#' \code{n} will be set to
-#' the nearest integer to \code{length(x)/10}. However, if
-#' \code{length(x)/10} is zero, \code{n} will be
-#' set to 1.
-#'
-#' @return The running sums of \code{x}, in steps of 1, in size of \code{n}
+#' @return The running sums of \code{x}
 #' (a numeric vector of length \code{length(x) - n + 1}).
 #'
 #' @examples
@@ -807,7 +802,7 @@ check_match <- function(x, y) {
   x
 }
 
-#' Check if an object has class attribute rprimer_oligo
+#' Check if an object is an rprimer_oligo
 #'
 #' @param x An rprimer_oligo-like object.
 #'

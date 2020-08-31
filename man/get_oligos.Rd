@@ -25,7 +25,7 @@ get_oligos(
 \item{x}{One or more DNA sequences (a character vector).}
 
 \item{target}{The intended target. An alignment of DNA sequences
-(an object of class 'rprimer_alignment').}
+(an rprimer_alignment object).}
 
 \item{length}{Oligo length. The minimum allowed
 value is 14 and the maximum allowed value is 30.

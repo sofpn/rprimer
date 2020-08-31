@@ -83,6 +83,8 @@ sequence_properties <- function(x, iupac_threshold = NULL) {
   sequence_properties
 }
 
+# Helpers =====================================================================
+
 #' Majority consensus sequence
 #'
 #' \code{majority_consensus} returns the majority consensus sequence of an
@@ -164,12 +166,11 @@ as_iupac <- function(x) {
 #' @inheritParams sequence_properties
 #'
 #' @param threshold
-#' A number between greater than 0 and less or equal to 0.2.
+#' Optional. A number, higher than 0 and less or equal to 0.2.
 #' At each position, all nucleotides with a proportion
-#' higher than or equal to the stated threshold will be included in
+#' \code{>= iupac_threshold} will be included in
 #' the iupac consensus sequence. The default is \code{NULL},
-#' which means that all nucleotides that are present at the
-#' position in matter will be included.
+#' which means that all nucleotides that are present will be included.
 #'
 #' @return The consensus sequence (a character vector of length n).
 #'
@@ -265,7 +266,7 @@ nucleotide_identity <- function(x) {
 
 #' Shannon entropy
 #'
-#' #' \code{shannon_entropy} returns the Shannon entropy from an
+#' \code{shannon_entropy} returns the Shannon entropy from an
 #' alignment of DNA sequences.
 #'
 #' @inheritParams sequence_properties
@@ -296,7 +297,7 @@ shannon_entropy <- function(x) {
   entropy
 }
 
-#' Check if an object has class attribute rprimer_properties
+#' Check if an object is as rprimer_properties-object
 #'
 #' @param x An 'rprimer_properties'-like object.
 #'

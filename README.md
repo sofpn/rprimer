@@ -31,7 +31,9 @@ example, I use an alignment with 100 HEV sequences that I have collected
 from GenBank, which is provided with the package.
 
 ``` r
-# Enter the filename of your alignment
+# Enter the filename of your alignment, e.g. "my_alignment.txt"
+
+# Here I use the alignment provided with the package 
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 
 # Import the alignment and get sequence information
@@ -197,15 +199,8 @@ Assays are displayed in a tibble (see below). An error message will
 return if no assays are found.
 
 ``` r
-my_assays <- get_assays(
-  my_primers, 
-  length = 60:90, 
-  max_tm_difference = 2
-  ) %>%
-  add_probes(
-    ., my_probes, 
-    tm_difference = c(-3, 5)
-  )
+my_assays <- get_assays(my_primers, length = 60:90, max_tm_difference = 2) %>%
+  add_probes(., my_probes, tm_difference = c(-3, 5))
 ```
 
 ## Save the data (if you want to)
@@ -246,7 +241,7 @@ It is also possible to generate reports for all assays, for instance:
 #    my_assays[i, ],
 #    my_sequence_profile,
 #    my_sequence_properties,
-#   comment = paste("my new hepatitis E virus assay, number", i)
+#   comment = paste("my new RT-qPCR assay, number", i)
 #  )
 #})
 ```

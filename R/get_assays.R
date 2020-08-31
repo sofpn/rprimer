@@ -216,7 +216,7 @@ add_probe_to_match_matrix <- function(x) {
   x
 }
 
-#' Check if an object has class attribute rprimer_assay
+#' Check if an object is an rprimer_assay
 #'
 #' @param x An rprimer_assay-like object.
 #'

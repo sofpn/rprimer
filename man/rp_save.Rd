@@ -37,13 +37,13 @@ and rprimer_assay will be saved as .csv-files.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{rprimer_alignment}: Save an object of class 'rprimer_alignment'.
+\item \code{rprimer_alignment}: Save an rprimer_alignment object.
 
-\item \code{rprimer_properties}: Save an object of class 'rprimer_properties'.
+\item \code{rprimer_properties}: Save an rprimer_properties object.
 
-\item \code{rprimer_oligo}: Save an object of class 'rprimer_oligo'.
+\item \code{rprimer_oligo}: Save an rprimer_oligo object.
 
-\item \code{rprimer_assay}: Save an object of class 'rprimer_assay'.
+\item \code{rprimer_assay}: Save an'rprimer_assay' object.
 }}
 
 \examples{

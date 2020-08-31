@@ -82,6 +82,3 @@ is.rprimer_alignment <- function(x) {
   stopifnot(is.rprimer_alignment(value))
   new_rprimer_alignment(NextMethod())
 }
-
-
-# also [[. and [[.<- ?
