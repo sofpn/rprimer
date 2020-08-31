@@ -137,15 +137,18 @@ rectangle <- function(from, to) {
 #'
 #' @noRd
 sequence_detail_plot <- function(x) {
+  if (all(is.na(x[nrow(x), ]))) {
+    stop("Selected positions are out of range.", call. = FALSE)
+  }
   graphics::plot(
-    x$position, x$identity,
+    seq_along(x$position), x$identity,
     type = "h", ylim = c(0, 1),
     ylab = "identity", xlab = "", xaxt = "n",
     col = ifelse(x$identity < 1, "gray80", "gray60")
   )
   graphics::lines(running_average(x$identity))
   graphics::plot(
-    x$position, x$entropy,
+    seq_along(x$position), x$entropy,
     type = "h",
     ylim = c(0, max(x$entropy, na.rm = TRUE) * 1.1),
     ylab = "shannon entropy",
@@ -153,7 +156,7 @@ sequence_detail_plot <- function(x) {
   )
   graphics::lines(running_average(x$entropy))
   graphics::plot(
-    x$position, rep(0.5, length(x$position)),
+    seq_along(x$position), rep(0.5, length(x$position)),
     pch = NA, ylab = "gc content", ylim = c(0, 1),
     xlab = "", xaxt = "n"
   )
@@ -161,8 +164,20 @@ sequence_detail_plot <- function(x) {
   graphics::abline(h = 0.5, col = "gray80")
   gc_line <- graphics::lines(gc_running_average(x$majority))
   graphics::plot(
-    x$position, x$gaps,
-    type = "h", ylim = c(0, 1), ylab = "gaps", xlab = ""
+    seq_along(x$position), x$gaps,
+    type = "h", ylim = c(0, 1), ylab = "gaps", xlab = "", xaxt = "n"
+  )
+  axis(
+    side = 1,
+    at = seq(
+      1, length(x$position) + 1,
+      by = 10^round(log10(length(x$position)/10))
+    ) - 1,
+    labels = seq(
+      x$position[[1]],
+      x$position[[length(x$position)]] + 1,
+      10^round(log10(length(x$position)/10))
+    ) - 1
   )
   graphics::mtext(
     side = 1, outer = TRUE, "position",
