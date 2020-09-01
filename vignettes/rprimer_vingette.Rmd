@@ -51,7 +51,6 @@ Prepare a .txt-file with an alignment of the sequences of interest (in fasta-for
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
-
 my_alignment <- read_fasta_alignment(infile)
 ```
 
@@ -162,7 +161,6 @@ I found 52 primers in my example. Most of them are located around position 1300,
 **present match matrices separately**
 
 ```{r}
-
 my_primers <- get_oligos(
   my_sequence_properties,
   target = my_alignment,
@@ -196,7 +194,6 @@ Candidate assays are displayed in a tibble (see below). An error message will re
 **present less ugly output**
 
 ```{r}
-
 my_assays <- get_assays(my_primers, length = 60:90, max_tm_difference = 2) 
 
 str(my_assays[ , -ncol(my_assays)])
@@ -231,7 +228,6 @@ my_probes <- get_oligos(
 my_assays <- add_probes(my_assays, my_probes, tm_difference = c(-1, 5))
 
 str(my_assays[ , -ncol(my_assays)])
-
 ```
 
 ### Step 8: Save results 
@@ -285,8 +281,89 @@ The assay report contain more detailed information about the assay, and the outp
 ![](design_report1.png)
 ![](design_report2.png)
 ![](design_report3.png)
+
 ### Summarised workflow 
 
-Here is the entire workflow (to copy-paste):
+Here is the entire workflow (to copy and modify):
 
-ADD
+```{r}
+# Enter the filename of your alignment, e.g. "my_alignment.txt"
+# Here I use the alignment provided with the package 
+infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
+
+# Import the alignment and get sequence information
+my_sequence_properties <- infile %>%
+  read_fasta_alignment %>%
+  remove_gaps(., threshold = 0.5)  %>%
+  {select_roi(., from = 4000, to = 6000) ->> my_alignment} %>%
+  {sequence_profile(.) ->> my_sequence_profile} %>%
+  sequence_properties(., iupac_threshold = 0.1)
+
+# Get primers 
+my_primers <- get_oligos(
+  my_sequence_properties,
+  target = my_alignment,
+  max_gap_frequency = 0.05,
+  length = 18:22,
+  max_degenerates = 1,
+  max_degeneracy = 2,
+  avoid_3end_ta = TRUE,
+  avoid_3end_runs = TRUE,
+  avoid_gc_rich_3end = TRUE,
+  avoid_5end_g = FALSE,
+  gc_range = c(0.45, 0.60),
+  tm_range = c(55, 70),
+  conc_oligo = 5e-07,
+  conc_na = 0.05
+)
+
+# Get probes 
+my_probes <- get_oligos(
+  my_sequence_properties,
+  target = my_alignment,
+  max_gap_frequency = 0.05,
+  length = 18:24,
+  max_degenerates = 2,
+  max_degeneracy = 4,
+  avoid_3end_ta = FALSE,
+  avoid_3end_runs = FALSE,
+  avoid_gc_rich_3end = FALSE,
+  avoid_5end_g = TRUE,
+  gc_range = c(0.45, 0.60),
+  tm_range = c(55, 70),
+  conc_oligo = 2.5e-07,
+  conc_na = 0.05
+)
+
+# Get assays and add probes 
+my_assays <- get_assays(my_primers, length = 60:90, max_tm_difference = 2) %>%
+  add_probes(., my_probes, tm_difference = c(-3, 5))
+
+# Save the data 
+# rp_save(my_alignment, filename = "my_alignment")
+# rp_save(my_sequence_properties, filename = "my_sequence_properties")
+# rp_save(my_assays, filename = "my_assays")
+
+# Select assay and generate report 
+my_assays <- dplyr::arrange(my_assays, pm_majority_all)
+selected_assay <- my_assays[1, ]
+
+# write_report(
+#  filename = "my_assay",
+#  selected_assay,
+#  my_sequence_profile,
+#  my_sequence_properties,
+#  comment = "my new RT-qPCR assay :)"
+
+# Or generate reports for all assays 
+# purrr::walk(seq_len(nrow(my_assays)), function(i) {
+#  write_report(
+#    filename = paste0("my_assay_report_", i),
+#    my_assays[i, ],
+#    my_sequence_profile,
+#    my_sequence_properties,
+#   comment = paste("my new RT-qPCR assay, number", i)
+#  )
+#})
+```
+
