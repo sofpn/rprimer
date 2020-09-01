@@ -34,3 +34,14 @@ Write assay report
 Details:
 rmarkdown and kableExtra are needed for this function to work.
 }
+\examples{
+\dontrun{
+write_report("my_report",
+example_rprimer_assay[1, ],
+example_rprimer_profile,
+example_rprimer_properties,
+comment = "My specific comment"
+)
+}
+
+}
