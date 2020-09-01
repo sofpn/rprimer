@@ -63,12 +63,27 @@ new_rprimer_alignment <- function(x = list()) {
 
 #' Check if an object is an rprimer_alignment
 #'
-#' @export
+#' @param x An R object.
+#'
+#' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @keywords internal
+#'
+#' @noRd
 is.rprimer_alignment <- function(x) {
   inherits(x, "rprimer_alignment")
 }
 
 #' Extract elements in an rprimer_alignment object
+#'
+#' @param x
+#' Object from which to extract element(s).
+#'
+#' @param i
+#' Indices specifying elements to extract.
+#'
+#' @param ...
+#' Indices specifying elements to extract.
 #'
 #' @export
 `[.rprimer_alignment` <- function(x, i, ...) {
@@ -76,6 +91,15 @@ is.rprimer_alignment <- function(x) {
 }
 
 #' Replace elements in an rprimer_alignment object
+#'
+#' @param x
+#' Object from which to replace element(s) from.
+#'
+#' @param i
+#' Indices specifying elements to replace.
+#'
+#' @param value
+#' Typically an array-like object of a similar class as x.
 #'
 #' @export
 `[<-.rprimer_alignment` <- function(x, i, value) {

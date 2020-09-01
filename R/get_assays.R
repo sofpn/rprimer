@@ -2,7 +2,7 @@
 #'
 #' \code{get_assays} combines forward and reverse primers to (RT)-PCR assays.
 #'
-#' @param x An object of class 'rprimer_oligo'.
+#' @param x An 'rprimer_oligo' object.
 #'
 #' @param length
 #' Amplicon length. Can range from 40 to 5000 base pairs. The
@@ -10,14 +10,14 @@
 #'
 #' @param max_tm_difference
 #' Maximum Tm difference (in C) between the two primers
-#' (absolute value). A number between 0 and 30. The default is 1.
+#' (an absolute value). A number between 0 and 30. The default is 1.
 #'
 #' @details
 #' The Tm-difference is calculated from the majority oligos, and
 #' may thus be misleading for degenerate (iupac) oligos.
 #'
 #' @return
-#' A tibble (a data frame) of class 'rprimer_assay' with all candidate
+#' A tibble (a data frame) of class 'rprimer_assay', with all candidate
 #' assays. An error message will return if no assays are found.
 #'
 #' The tibble contains the following information:
@@ -135,6 +135,21 @@ get_assays <- function(x, length = 65:120, max_tm_difference = 1) {
   assays
 }
 
+# Helpers =====================================================================
+
+#' Check if an object is an rprimer_assay
+#'
+#' @param x An R object.
+#'
+#' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+is.rprimer_assay <- function(x) {
+  inherits(x, "rprimer_assay")
+}
+
 #' Combine match matrices
 #'
 #' @param x A tibble with assays.
@@ -215,12 +230,3 @@ add_probe_to_match_matrix <- function(x) {
   x <- dplyr::bind_cols(x, match_matrix)
   x
 }
-
-#' Check if an object is an rprimer_assay
-#'
-#' @param x An rprimer_assay-like object.
-#'
-#' @return \code{TRUE} or \code{FALSE}.
-#'
-#' @noRd
-is.rprimer_assay <- function(x) inherits(x, "rprimer_assay")

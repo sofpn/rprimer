@@ -11,9 +11,9 @@
 #'
 #' @param max_gap_frequency
 #' Maximum allowed gap frequency.
-#' A number between 0 and 1 (default is 0.1, which means that
-#' positions with a gap frequency of maximum 0.1 will be
-#' considered as an oligo region).
+#' A number between 0 and 1. The default is 0.1, which means that
+#' positions with a gap frequency above 0.1 will not be
+#' considered as an oligo region.
 #'
 #' @param length
 #' Oligo length. The minimum allowed
@@ -210,6 +210,19 @@ get_oligos <- function(x,
 
 # Helpers =====================================================================
 
+#' Check if an object is an rprimer_oligo
+#'
+#' @param x An R object.
+#'
+#' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+is.rprimer_oligo <- function(x) {
+  inherits(x, "rprimer_oligo")
+}
+
 #' Divide a DNA sequence into n-sized chunks
 #'
 #' \code{get_nmers} divides a character vector into chunks of size \code{n}.
@@ -272,9 +285,16 @@ get_nmers <- function(x, n = NULL) {
 #' @noRd
 gc_content <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
-    stop("'x' must be a character vector of length one", call. = FALSE)
+    stop("'x' must be a character vector of length one.", call. = FALSE)
   }
   x <- tolower(x)
+  if (grepl("[^acgt-]", x)) {
+    stop("'x' contains at least one invalid base. \n
+      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
+      'n', 'h', 'd', 'v', 'b' and '-'",
+         call. = FALSE
+    )
+  }
   x <- split_sequence(x)
   gc_count <- length(which(x == "c" | x == "g"))
   # Gaps will not be included in the total count
@@ -484,8 +504,8 @@ exclude_oligos <- function(oligos,
 #' (recommended for primers).
 #'
 #' @param avoid_5end_g
-#' \code{TRUE} or \code{FALSE}.If oligos with g
-#' at the 5' end should be replaced with \code{NA}
+#' \code{TRUE} or \code{FALSE}. If oligos with g
+#' at the 5' end should be replaced with \code{NA}.
 #'
 #' @details An oligo is replaced with \code{NA} if
 #' - It has more than three runs of the same dinucleotide (e.g. 'tatatata')
@@ -639,7 +659,7 @@ generate_oligos <- function(x,
   end <- seq_along(majority) + oligo_length - 1
   length <- oligo_length
   # Identify oligos with high gap frequency
-  gap_bin <- ifelse(x$gaps > max_gap_frequency, 1L, 0L) ###################
+  gap_bin <- ifelse(x$gaps > max_gap_frequency, 1L, 0L)
   gap_penalty <- running_sum(gap_bin, n = oligo_length)
   oligos <- tibble::tibble(
     begin, end, length, majority, iupac,
@@ -801,14 +821,3 @@ check_match <- function(x, y) {
   x <- dplyr::bind_cols(x, match_matrix)
   x
 }
-
-#' Check if an object is an rprimer_oligo
-#'
-#' @param x An rprimer_oligo-like object.
-#'
-#' @return \code{TRUE} or \code{FALSE}.
-#'
-#' @keywords internal
-#'
-#' @noRd
-is.rprimer_oligo <- function(x) inherits(x, "rprimer_oligo")

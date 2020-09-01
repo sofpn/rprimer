@@ -118,12 +118,6 @@ test_that("count_degeneracy works", {
   expect_equal(count_degeneracy("cgtcgnyr"), 16)
 })
 
-test_that("nn_split returns an error when it should", {
-  expect_error(nn_split(NA))
-  expect_error(nn_split(c(1, 2, 3)))
-  expect_error(nn_split("c"))
-})
-
 test_that("nn_split works", {
   expect_equal(nn_split("cgtc"), c("cg", "gt", "tc"))
 })

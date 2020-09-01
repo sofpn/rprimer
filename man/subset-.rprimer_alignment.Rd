@@ -6,6 +6,13 @@
 \usage{
 \method{[}{rprimer_alignment}(x, i) <- value
 }
+\arguments{
+\item{x}{Object from which to replace element(s) from.}
+
+\item{i}{Indices specifying elements to replace.}
+
+\item{value}{Typically an array-like object of a similar class as x.}
+}
 \description{
 Replace elements in an rprimer_alignment object
 }

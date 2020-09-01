@@ -167,7 +167,7 @@ sequence_detail_plot <- function(x) {
     seq_along(x$position), x$gaps,
     type = "h", ylim = c(0, 1), ylab = "gaps", xlab = "", xaxt = "n"
   )
-  axis(
+  graphics::axis(
     side = 1,
     at = seq(
       1, length(x$position) + 1,

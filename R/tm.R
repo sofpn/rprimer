@@ -15,10 +15,10 @@
 #'
 #' @noRd
 nn_split <- function(x) {
-  if (!(!is.na(x) && is.character(x) && nchar(x) > 1)) {
-    stop("'x' must be a character vector of length one,
-      with at least two characters (e.g. 'caaggnt')", call. = FALSE)
-  }
+  #if (!is.na(x) || !is.character(x) || !(nchar(x) > 1)) {
+  #  stop("'x' must be a character vector of length one,
+  #    with at least two characters (e.g. 'caaggnt')", call. = FALSE)
+  #}
   x <- split_sequence(x)
   from <- (seq_along(x) - 1)[-1]
   to <- seq_along(x)[-1]

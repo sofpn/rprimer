@@ -6,6 +6,13 @@
 \usage{
 \method{[}{rprimer_alignment}(x, i, ...)
 }
+\arguments{
+\item{x}{Object from which to extract element(s).}
+
+\item{i}{Indices specifying elements to extract.}
+
+\item{...}{Indices specifying elements to extract.}
+}
 \description{
 Extract elements in an rprimer_alignment object
 }

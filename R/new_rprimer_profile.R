@@ -1,14 +1,4 @@
-# When implementing a matrix/array class, you should implement these methods:
-# dim (gets you nrow and ncol), t, dimnames (gets you rownames and colnames),
-# dimnames<- (gets you colnames<-, rownames<-), cbind, rbind.
-
-
-#' Construct, subset and check 'rprimer_profile' objects
-#'
-#' * 'new_rprimer_profile()' constructs and validate an rprimer_profile-
-#'     object
-#' * 'is_rprimer_profile()' checks if an object has class attribute
-#'     'rprimer_profile'
+#' Construct rprimer_profile objects
 #'
 #' @param x An rprimer_profile-like object.
 #'
@@ -33,7 +23,15 @@ new_rprimer_profile <- function(x = matrix()) {
   return(x)
 }
 
-#' Check if an object is an rprimer profile
+#' Check if an object is an rprimer_profile
 #'
-#' @export
-is.rprimer_profile <- function(x) inherits(x, "rprimer_profile")
+#' @param x An R object.
+#'
+#' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+is.rprimer_profile <- function(x) {
+  inherits(x, "rprimer_profile")
+}

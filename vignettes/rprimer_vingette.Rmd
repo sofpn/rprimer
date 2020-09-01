@@ -14,9 +14,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-#library(rprimer)
-devtools::load_all(".")
+```{r setup, message = FALSE, warning = FALSE}
+library(rprimer)
+#devtools::load_all(".")
 library(magrittr)
 ```
 
@@ -35,7 +35,7 @@ In this document, I demonstrate how to use rprimer by designing a real-time RT-P
 
 ## Installation
 
-Install rprimer by calling:
+rprimer can be installed by calling: 
 
 ```{r}
 # if (!requireNamespace("devtools", quietly = TRUE)) {
@@ -104,7 +104,7 @@ rp_plot(my_sequence_profile, from = 1, to = 30, rc = FALSE)
 * *Entropy*. The Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. 
 
 ```{r}
-my_sequence_properties <- sequence_properties(my_sequence_profile)
+my_sequence_properties <- sequence_properties(my_sequence_profile, iupac_threshold = 0.1)
 
 str(my_sequence_properties)
 ```
@@ -113,10 +113,11 @@ Again, the output can be visualised with `rp_plot()`. Here, vertical bars repres
 ```{r,fig.width=6, fig.height=6, fig.align='center'}
 rp_plot(my_sequence_properties)
 ```
+<br>
 You can also select a region to have a closer look, for instance: 
 
-```{r}
-rp_plot(my_sequence_properties[300:500, ]) # Select position 300-500
+```{r,fig.width=6, fig.height=6, fig.align='center'}
+rp_plot(my_sequence_properties[200:500, ]) # Select position 300-500
 ```
 
 ### Step 4: Find primers 
@@ -167,8 +168,8 @@ my_primers <- get_oligos(
   target = my_alignment,
   max_gap_frequency = 0.05,
   length = 18:22,
-  max_degenerates = 2,
-  max_degeneracy = 4,
+  max_degenerates = 1,
+  max_degeneracy = 2,
   avoid_3end_ta = TRUE,
   avoid_3end_runs = TRUE,
   avoid_gc_rich_3end = TRUE,
@@ -176,23 +177,6 @@ my_primers <- get_oligos(
   gc_range = c(0.45, 0.60),
   tm_range = c(55, 70),
   conc_oligo = 5e-07,
-  conc_na = 0.05
-)
-
-my_probes <- get_oligos(
-  my_sequence_properties,
-  target = my_alignment,
-  max_gap_frequency = 0.05,
-  length = 18:24,
-  max_degenerates = 2,
-  max_degeneracy = 4,
-  avoid_3end_ta = FALSE,
-  avoid_3end_runs = FALSE,
-  avoid_gc_rich_3end = FALSE,
-  avoid_5end_g = TRUE,
-  gc_range = c(0.45, 0.60),
-  tm_range = c(55, 70),
-  conc_oligo = 2.5e-07,
   conc_na = 0.05
 )
 
@@ -213,8 +197,7 @@ Candidate assays are displayed in a tibble (see below). An error message will re
 
 ```{r}
 
-my_assays <- get_assays(my_primers, length = 60:90, max_tm_difference = 2) %>%
-  add_probes(., my_probes, tm_difference = c(-3, 5))
+my_assays <- get_assays(my_primers, length = 60:90, max_tm_difference = 2) 
 
 str(my_assays[ , -ncol(my_assays)])
 ```
@@ -227,6 +210,26 @@ Here, `tm_difference` is the acceptable difference in Tm between the primers and
 Assays are displayed in a tibble (see below). An error message will return if no assays are found.   
 
 ```{r}
+
+my_probes <- get_oligos(
+  my_sequence_properties,
+  target = my_alignment,
+  max_gap_frequency = 0.05,
+  length = 18:24,
+  max_degenerates = 2,
+  max_degeneracy = 4,
+  avoid_3end_ta = FALSE,
+  avoid_3end_runs = FALSE,
+  avoid_gc_rich_3end = FALSE,
+  avoid_5end_g = TRUE,
+  gc_range = c(0.45, 0.60),
+  tm_range = c(55, 70),
+  conc_oligo = 2.5e-07,
+  conc_na = 0.05
+)
+
+my_assays <- add_probes(my_assays, my_probes, tm_difference = c(-1, 5))
+
 str(my_assays[ , -ncol(my_assays)])
 
 ```

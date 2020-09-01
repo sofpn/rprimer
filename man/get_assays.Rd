@@ -7,16 +7,16 @@
 get_assays(x, length = 65:120, max_tm_difference = 1)
 }
 \arguments{
-\item{x}{An object of class 'rprimer_oligo'.}
+\item{x}{An 'rprimer_oligo' object.}
 
 \item{length}{Amplicon length. Can range from 40 to 5000 base pairs. The
 default is \code{65:120}.}
 
 \item{max_tm_difference}{Maximum Tm difference (in C) between the two primers
-(absolute value). A number between 0 and 30. The default is 1.}
+(an absolute value). A number between 0 and 30. The default is 1.}
 }
 \value{
-A tibble (a data frame) of class 'rprimer_assay' with all candidate
+A tibble (a data frame) of class 'rprimer_assay', with all candidate
 assays. An error message will return if no assays are found.
 
 The tibble contains the following information:
