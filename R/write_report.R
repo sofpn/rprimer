@@ -17,6 +17,16 @@
 #' @details Details:
 #' rmarkdown and kableExtra are needed for this function to work.
 #'
+#' @examples
+#' \dontrun{
+#' write_report("my_report",
+#' example_rprimer_assay[1, ],
+#' example_rprimer_profile,
+#' example_rprimer_properties,
+#' comment = "My specific comment"
+#' )
+#' }
+#'
 #' @export
 write_report <- function(filename = "my_assay_report",
                          assay_selection,
@@ -62,7 +72,7 @@ write_report <- function(filename = "my_assay_report",
   }
   filename <- paste0(filename, ".html")
   rmarkdown::render(
-    input = "assay_report.Rmd",
+    input = system.file('extdata', 'assay_report.Rmd', package = 'rprimer'),
     output_file = filename,
     params = list(
       assay_selection = assay_selection,

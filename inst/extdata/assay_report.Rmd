@@ -52,7 +52,10 @@ custom_table <- function(x, col.names, full_width = TRUE) {
     )
 }
 
-custom_table(
+has_probe <- any(grepl("probe", names(assay_report[[1]])))
+
+if (has_probe) {
+  custom_table(
   assay_report[[1]]$general, 
   col.names = c(
     "Begin", "End", "Amplicon length", "Tm difference, primers", 
@@ -60,6 +63,17 @@ custom_table(
     "Perfect match (IUPAC)"
   )
 )
+} else {
+  custom_table(
+  assay_report[[1]]$general, 
+  col.names = c(
+    "Begin", "End", "Amplicon length", "Tm difference, primers", 
+     "Degeneracy", "Perfect match (majority)", 
+    "Perfect match (IUPAC)"
+  )
+)
+}
+
 ```
 <br>
 **Table 2.** Forward primer, summary.
@@ -124,7 +138,6 @@ custom_table(
 **Table 8.** Probe, summary. 
 <br>
 ```{r}
-has_probe <- any(grepl("probe", names(assay_report[[1]])))
 
 if (has_probe) {
 custom_table(

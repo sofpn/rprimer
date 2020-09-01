@@ -1,5 +1,4 @@
-
-# Custom functions needed to generate report
+# Custom functions needed to generate the assay report
 
 # x - a DNA sequence (e.g. "cggttrt")
 find_g_repeats <- function(x) {
@@ -78,18 +77,18 @@ plot_assay_overview <- function(x, y) {
 # y - an object of class rprimer_assay (one row)
 plot_assay_details <- function(x, y) {
   x <- x[which(rownames(x) != "-"), ]
-  fwd <- x[, y$begin_fwd:y$end_fwd] #seq_len
-  rev <- x[, y$begin_rev:y$end_rev] #seq-len
+  fwd <- x[, y$begin_fwd:y$end_fwd]
+  rev <- x[, y$begin_rev:y$end_rev]
   rev <- rev[, ncol(rev):1]
   rownames(rev) <- unname(complement_lookup[rownames(rev)])
-  if (any(grepl("_pr", names(y)))) {
+  if (any(grepl("_pr$", names(y)))) {
     pr <- x[, y$begin_pr:y$end_pr]
     if (y$sense_pr == "neg") {
       pr <- pr[, ncol(pr):1]
       rownames(pr) <- unname(complement_lookup[rownames(pr)])
     }
   }
-  if (any(grepl("_pr", names(y)))) {
+  if (any(grepl("_pr$", names(y)))) {
     op <- graphics::par(mar = c(0.75, 4.57, 4.57, 0.75), mfrow = c(1, 3))
     on.exit(graphics::par(op))
     sequence_barplot(fwd, main = "forward")
