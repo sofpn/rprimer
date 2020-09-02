@@ -42,6 +42,9 @@ remove_gaps <- function(x, threshold = 0.5) {
   # Convert to integer
   matr <- apply(matr, 2, as.integer)
   # Calculate gap frequency
+  if (!is.matrix(matr)) {
+    matr <- matrix(matr, ncol = length(matr)) # If only one sequence
+  }
   gaps <- colMeans(matr)
   # Get the indexes of the positions that should be kept
   index <- which(gaps <= threshold)

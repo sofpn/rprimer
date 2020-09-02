@@ -31,7 +31,7 @@ There are several factors to take into account when designing primers, probes an
 
 The purpose of rprimer is to automate primer, probe and PCR assay design as much as possible. 
 
-In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV).
+In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV), which is a highly variable RNA virus and a common foodborne pathogen. 
 
 ## Installation
 
@@ -156,7 +156,7 @@ In addition, `get_oligos()` avoids oligos:
 
 Candidate oligos are displayed in a tibble. Oligo sequences are displayed in both majority and IUPAC format, and as reverse complements (rc). `NA` means that the oligo was excluded due to e.g. a terminal A or T (if `avoid_3end_ta = TRUE`). An error message will return if no oligos are found. 
 
-I found 52 primers in my example. Most of them are located around position 1300, which is the most conserved region in my ROI. I only allowed one degenerate base in each primer, and no more than two variants of each primer. More primers can be found by increasing `max_degenerates` and `max_degeneracy`, or by increasing the `iupac_threshold` in the `sequence_properties()` function. 
+I found 95 primers in my example. Most of them are located around position 1300, which is the most conserved region in my ROI. I only allowed one degenerate base in each primer, and no more than two variants of each primer. More primers can be found by increasing `max_degenerates` and `max_degeneracy`, or by increasing the `iupac_threshold` in the `sequence_properties()` function. 
 
 **present match matrices separately**
 
@@ -189,6 +189,8 @@ str(my_primers[, -ncol(my_primers)])
 * `max_tm_difference` The maximum Tm difference between the two primers (absolute value, in C). The default is 1. Note that Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
 
 Candidate assays are displayed in a tibble (see below). An error message will return if no assays are found. Three different combinations of forward and reverse primer were found in this example. `total_degeneracy` is the sum of the number of variants of the forward primer and reverse primer. 
+
+The output looks a little messy (with many columns). **The last column, "match_matrix" contains a matrix for each assay with match information.** 
 
 **describe perfect match matrices, and pm percentages**
 **present less ugly output**

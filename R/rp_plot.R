@@ -167,17 +167,21 @@ sequence_detail_plot <- function(x) {
     seq_along(x$position), x$gaps,
     type = "h", ylim = c(0, 1), ylab = "gaps", xlab = "", xaxt = "n"
   )
+  ats <- seq(
+    1, length(x$position) + 1,
+    by = 10^round(log10(length(x$position)/10))
+  )
+  lbls <- seq(
+    x$position[[1]],
+    x$position[[length(x$position)]] + 1,
+    10^round(log10(length(x$position)/10))
+  )
+  ats <- round(ats, -1)
+  lbls <- round(lbls, -1)
   graphics::axis(
     side = 1,
-    at = seq(
-      1, length(x$position) + 1,
-      by = 10^round(log10(length(x$position)/10))
-    ) - 1,
-    labels = seq(
-      x$position[[1]],
-      x$position[[length(x$position)]] + 1,
-      10^round(log10(length(x$position)/10))
-    ) - 1
+    at = ats,
+    labels = lbls
   )
   graphics::mtext(
     side = 1, outer = TRUE, "position",

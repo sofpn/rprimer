@@ -29,12 +29,23 @@ select_roi <- function(x, from = 1, to = NULL) {
   # Get the length of the alignment
   # All sequences are of equal length in an rprimer_alignment object
   aln_length <- length(splitted[[1]])
-  if (to > aln_length) to <- NULL
   if (is.null(to)) to <- aln_length
   if (!(is.numeric(from) && is.numeric(to))) {
     stop(paste0(
       "'from' and 'to' must be positive integers. \n
       You've set 'from' to ", from, " and 'to' to ", to, "."), call. = FALSE
+    )
+  }
+  if (to > aln_length) {
+    stop(
+      "You've set 'to' at a position longer than the alignment length.",
+      call. = FALSE
+    )
+  }
+  if (to > aln_length) {
+    stop(
+      "You've set 'from' at a position longer than the alignment length.",
+      call. = FALSE
     )
   }
   if (to < from) {
