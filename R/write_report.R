@@ -1,7 +1,5 @@
 #' Write assay report
 #'
-#' @param filename (a character vector of length one).
-#'
 #' @param assay_selection An object of class 'rprimer_assay', with one row.
 #'
 #' @param sequence_profile An object of class 'rprimer_profile'.
@@ -12,6 +10,8 @@
 #' Optional. Comments that should be included in the report.
 #' A character vector of length one. The default is \code{NULL}.
 #'
+#' @param filename The name of the file (a character vector of length one).
+#'
 #' @return A html-document with detailed assay information.
 #'
 #' @details Details:
@@ -19,20 +19,22 @@
 #'
 #' @examples
 #' \dontrun{
-#' write_report("my_report",
+#' write_report(
 #' example_rprimer_assay[1, ],
 #' example_rprimer_profile,
 #' example_rprimer_properties,
-#' comment = "My specific comment"
+#' comment = "My specific comment",
+#' filename = "my_report",
 #' )
 #' }
 #'
 #' @export
-write_report <- function(filename = "my_assay_report",
-                         assay_selection,
+write_report <- function(assay_selection,
                          sequence_profile,
                          sequence_properties,
-                         comment = NULL) {
+                         comment = NULL,
+                         filename = "my_assay_report"
+                         ) {
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop(
       "rmkardown is needed for this function to work. \n
