@@ -190,7 +190,7 @@ consensus <- paste(sequence_properties$majority[assay_report[[1]]$general$begin:
 <br><br>
 The data is based on the majority consensus sequence. 
 
-### Match information (in silico inclusivity)
+### Matchching and mismatching sequences 
 
 ```{r, fig.width=12, fig.height=12}
 plot_match_matrix(assay_selection)
