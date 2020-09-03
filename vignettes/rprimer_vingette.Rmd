@@ -15,8 +15,8 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, message = FALSE, warning = FALSE}
-#library(rprimer)
-devtools::load_all(".")
+library(rprimer)
+#devtools::load_all(".")
 library(magrittr)
 ```
 
