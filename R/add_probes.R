@@ -135,29 +135,21 @@ add_probe_to_match_matrix <- function(x) {
   match_matrix <- purrr::map(seq_len(nrow(x)), function(y) {
     match <- cbind(assays[[y]], probe[[y]])
     if (!is.matrix(match)) {
-      match <- setNames(match) #########################################
       match <- as.matrix(match)
     }
-    match <- match[, -(5:6)]
-    if (!is.matrix(match)) {
-      match <- as.matrix(match)
-    }
-    majority_all_matr <- match[, c(1, 3, 5)]
-    if (!is.matrix(majority_all_matr)) {
-      majority_all_matr <- as.matrix(majority_all_matr)
-    }
-    majority_all <- rowSums(majority_all_matr)
-    iupac_all_matr <- match[, c(2, 4, 6)]
-    if (!is.matrix(iupac_all_matr)) {
-      iupac_all_matr <- as.matrix(iupac_all_matr)
-    }
-    iupac_all <- rowSums(iupac_all_matr)
-    majority_all <- ifelse(majority_all == 3, TRUE, FALSE)
-    iupac_all <- ifelse(iupac_all == 3, TRUE, FALSE)
+    match <- match[, -(5:6), drop = FALSE]
+    majority_all_matr <- match[, c(1, 3, 5), drop = FALSE]
+    match_majority_all <- rowSums(majority_all_matr)
+    match_majority_all <- ifelse(match_majority_all == 3, TRUE, FALSE)
+    iupac_all_matr <- match[, c(2, 4, 6), drop = FALSE]
+    match_iupac_all <- rowSums(iupac_all_matr)
+    match_iupac_all <- ifelse(match_iupac_all == 3, TRUE, FALSE)
     match <- cbind(match, majority_all, iupac_all)
     return(match)
   })
-  match_percentage <- purrr::map(match_matrix, ~ colMeans(.x[, 7:8]))
+  match_percentage <- purrr::map(match_matrix, function(x) {
+    colMeans(x[, 7:8, drop = FALSE])
+  })
   match_percentage <- do.call("rbind", match_percentage)
   match_percentage <- tibble::as_tibble(match_percentage)
   names(match_percentage) <- paste0("pm_", names(match_percentage))

@@ -138,7 +138,6 @@ custom_table(
 **Table 8.** Probe, summary. 
 <br>
 ```{r}
-
 if (has_probe) {
 custom_table(
   assay_report[[1]]$probe, 

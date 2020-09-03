@@ -94,7 +94,7 @@ rp_plot(my_sequence_profile, from = 1, to = 30, rc = FALSE)
 
 * *Majority*. The majority consensus sequence (the most frequently occurring nucleotide). 
 
-* *Iupac*. The IUPAC-consensus sequence, which includes wobble bases according to the IUPAC-nomenclature. All nucleotides with a proportion higher than or equal to `iupac_threshold` will be included in the IUPAC-consensus sequence.  
+* *Iupac*. The IUPAC-consensus sequence, which includes wobble bases according to the IUPAC-nomenclature. All nucleotides with a proportion higher than or equal to the  `iupac_threshold` will be included in the IUPAC-consensus sequence.  
 
 * *Gaps*. The proportion of gaps.  
 
