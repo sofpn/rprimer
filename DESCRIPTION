@@ -22,12 +22,12 @@ Imports:
     grDevices,
     purrr,
     tibble,
-    utils
+    utils,
+    magrittr
 Suggests: 
     covr,
     kableExtra,
     knitr,
-    magrittr,
     rmarkdown,
     testthat
 VignetteBuilder: 
