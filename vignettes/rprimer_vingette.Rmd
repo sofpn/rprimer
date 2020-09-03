@@ -15,8 +15,8 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, message = FALSE, warning = FALSE}
-library(rprimer)
-#devtools::load_all(".")
+#library(rprimer)
+devtools::load_all(".")
 library(magrittr)
 ```
 
@@ -35,7 +35,7 @@ In this document, I demonstrate how to use rprimer by designing a real-time RT-P
 
 ## Installation
 
-rprimer can be installed by calling: 
+Install rprimer by calling: 
 
 ```{r}
 # if (!requireNamespace("devtools", quietly = TRUE)) {
@@ -203,13 +203,11 @@ str(my_assays[ , -ncol(my_assays)])
 
 ### Step 6: Add probes 
 Probes can be generated with `get_oligos()`, and added to assays with `add_probes()`. 
-
 Here, `tm_difference` is the acceptable difference in Tm between the primers and probe. It is calculated by subtracting the Tm of the probe with the average Tm of the primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair. Note that the Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
 
 Assays are displayed in a tibble (see below). An error message will return if no assays are found.   
 
 ```{r}
-
 my_probes <- get_oligos(
   my_sequence_properties,
   target = my_alignment,
@@ -278,13 +276,13 @@ It is also possible to generate reports for all assays, for instance:
 #})
 ```
 
-The assay report contain more detailed information about the assay, and the output is presented in html format, as in the example below. Note that RMarkdown and kablEextra must be installed for this function to work.   
+The assay report contain more detailed information about the assay, and the output is presented in html format, as in the example below. Note that RMarkdown and kableExtra must be installed for this function to work.   
 <br><br>
 ![](design_report1.png)
 ![](design_report2.png)
 ![](design_report3.png)
 
-### Summarised workflow 
+### Summarized workflow 
 
 Here is the entire workflow (to copy and modify):
 
@@ -356,16 +354,5 @@ selected_assay <- my_assays[1, ]
 #  my_sequence_profile,
 #  my_sequence_properties,
 #  comment = "my new RT-qPCR assay :)"
-
-# Or generate reports for all assays 
-# purrr::walk(seq_len(nrow(my_assays)), function(i) {
-#  write_report(
-#    filename = paste0("my_assay_report_", i),
-#    my_assays[i, ],
-#    my_sequence_profile,
-#    my_sequence_properties,
-#   comment = paste("my new RT-qPCR assay, number", i)
-#  )
-#})
 ```
 

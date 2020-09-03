@@ -21,7 +21,7 @@
 #' @noRd
 new_rprimer_alignment <- function(x = list()) {
   # x must be a list
-  stopifnot(is.list(x))
+  stopifnot(is.list(x), length(x) >= 1)
   # All sequences must be a character vector of length one
   has_length_one <- purrr::map_lgl(x, ~is.character(.x) && length(.x) == 1)
   if (any(has_length_one == FALSE)) {

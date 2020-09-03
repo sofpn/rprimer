@@ -105,7 +105,7 @@ plot_assay_details <- function(x, y) {
 # x - a matrix
 split_matrix <- function(x) {
   n <- nrow(x)
-  out <- split.data.frame(x, rep(seq_len(ceiling(n / 100)), each = 50)[1:n])
+  out <- split.data.frame(x, rep(seq_len(ceiling(n / 50)), each = 50)[seq_len(n)])
   return(out)
 }
 
@@ -159,9 +159,10 @@ plot_match_matrix <- function(assay_selection) {
     op <- graphics::par(mar = c(3, 1, 3, 3))
     on.exit(graphics::par(op))
     # Add a legend
-    graphics::image(matrix(-4:5, ncol = 10, nrow = 1),
-                    col = c(rep("white", 4), colors, rep("white", 4)),
-                    axes = FALSE, xlab = "", ylab = ""
+    graphics::image(
+      matrix(-4:5, ncol = 10, nrow = 1),
+      col = c(rep("white", 4), colors, rep("white", 4)),
+      axes = FALSE, xlab = "", ylab = ""
     )
     graphics::text(0, 0.45, "mismatch", cex = 1)
     graphics::text(0, 0.55, "match", cex = 1)

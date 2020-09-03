@@ -144,7 +144,7 @@ add_probe_to_match_matrix <- function(x) {
     iupac_all_matr <- match[, c(2, 4, 6), drop = FALSE]
     match_iupac_all <- rowSums(iupac_all_matr)
     match_iupac_all <- ifelse(match_iupac_all == 3, TRUE, FALSE)
-    match <- cbind(match, majority_all, iupac_all)
+    match <- cbind(match, match_majority_all, match_iupac_all)
     return(match)
   })
   match_percentage <- purrr::map(match_matrix, function(x) {
@@ -152,7 +152,7 @@ add_probe_to_match_matrix <- function(x) {
   })
   match_percentage <- do.call("rbind", match_percentage)
   match_percentage <- tibble::as_tibble(match_percentage)
-  names(match_percentage) <- paste0("pm_", names(match_percentage))
+  names(match_percentage) <- gsub("match_", "pm_", names(match_percentage))
   drop <- c("match_matrix_pr", "match_matrix", "pm_majority_all", "pm_iupac_all")
   x <- x[, !(names(x) %in% drop)]
   x <- dplyr::bind_cols(x, match_percentage)
