@@ -35,3 +35,36 @@ new_rprimer_profile <- function(x = matrix()) {
 is.rprimer_profile <- function(x) {
   inherits(x, "rprimer_profile")
 }
+
+#' Extract elements in an rprimer_profile object
+#'
+#' @param x
+#' Object from which to extract element(s).
+#'
+#' @param i
+#' Indices specifying elements to extract.
+#'
+#' @param ...
+#' Indices specifying elements to extract.
+#'
+#' @export
+`[.rprimer_profile` <- function(x, i, ...) {
+  new_rprimer_profile(NextMethod())
+}
+
+#' Replace elements in an rprimer_profile object
+#'
+#' @param x
+#' Object from which to replace element(s) from.
+#'
+#' @param i
+#' Indices specifying elements to replace.
+#'
+#' @param value
+#' Typically an array-like object of a similar class as x.
+#'
+#' @export
+`[<-.rprimer_profile` <- function(x, i, value) {
+  stopifnot(is.rprimer_profile(value))
+  new_rprimer_profile(NextMethod())
+}

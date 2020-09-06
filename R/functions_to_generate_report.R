@@ -15,7 +15,7 @@ expand_degenerate <- function(x) {
     # Check which bases the IUPAC base at position i correspond to
     all_bases <- unname(degenerate_lookup[[i]])
     all_bases <- unlist(strsplit(all_bases, split = ","))
-    return(all_bases)
+    all_bases
   })
   # Get all possible combinations of DNA sequences
   expanded <- expand.grid(
@@ -25,7 +25,7 @@ expand_degenerate <- function(x) {
     seq_len(nrow(expanded)), ~paste(expanded[.x, ], collapse = "")
   )
   expanded <- unlist(expanded, use.names = FALSE)
-  return(expanded)
+  expanded
 }
 
 # x - an object of class rprimer_assay (one row)
@@ -52,9 +52,9 @@ print_assay_report <- function(x) {
     tm <- tm(variant)
     table <- tibble::tibble(variant, gc_content, tm)
     mean_values <- round(c(gc_content = mean(gc_content), tm = mean(tm)), 2)
-    return(list(all_variants = table, mean_values = mean_values))
+    list(all_variants = table, mean_values = mean_values)
   })
-  return(list(assay, degenerates))
+  list(assay, degenerates)
 }
 
 # x - an object of class rprimer_sequence_properties
@@ -106,7 +106,7 @@ plot_assay_details <- function(x, y) {
 split_matrix <- function(x) {
   n <- nrow(x)
   out <- split.data.frame(x, rep(seq_len(ceiling(n / 50)), each = 50)[seq_len(n)])
-  return(out)
+  out
 }
 
 # x - an object of class rprimer_assay (one row)

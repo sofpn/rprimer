@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```{r setup, message = FALSE, warning = FALSE}
 library(rprimer)
 #devtools::load_all(".")
-library(magrittr)
+#library(magrittr)
 ```
 
 ## Introduction 
@@ -45,6 +45,15 @@ Install rprimer by calling:
 
 # library(rprimer)
 ```
+
+### Data structures
+(S3 objects)
+
+* rprimer_alignment
+* rprimer_profile
+* rprimer_properties 
+* rprimer_oligo
+* rprimer_assay 
 
 ### Step 1: Import alignment 
 Prepare a .txt-file with an alignment of the sequences of interest (in fasta-format), and import it using `read_fasta_alignment()`. In this example, I use an alignment with 100 HEV sequences that I have collected from GenBank, which is provided with the package. 
@@ -82,11 +91,11 @@ my_sequence_profile <- sequence_profile(my_alignment)
 my_sequence_profile[, 1:6]
 ```
 
-The sequence profile can be visualized with `rp_plot()`. A specific region can be selected with `from` and `to`. The `rc` option regulates whether the sequence should be displayed as a reverse complement or not (the default is `FALSE`).
+The sequence profile can be visualized with `rp_plot()`. The `rc` option regulates whether the sequence should be displayed as a reverse complement or not (the default is `FALSE`).
 
 ```{r, fig.width=6, fig.height=6, fig.align='center'}
 # The first 30 bases of the sequence profile  
-rp_plot(my_sequence_profile, from = 1, to = 30, rc = FALSE) 
+rp_plot(my_sequence_profile[ , 1:30], rc = FALSE) 
 ```
 
 ### Step 3: Get sequence properties 
@@ -116,7 +125,7 @@ rp_plot(my_sequence_properties)
 You can also select a region to have a closer look, for instance: 
 
 ```{r,fig.width=6, fig.height=6, fig.align='center'}
-rp_plot(my_sequence_properties[200:500, ]) # Select position 300-500
+rp_plot(my_sequence_properties[200:500, ]) # Select position 200-500
 ```
 
 ### Step 4: Find primers 
@@ -202,8 +211,7 @@ str(my_assays[ , -ncol(my_assays)])
 ```
 
 ### Step 6: Add probes 
-Probes can be generated with `get_oligos()`, and added to assays with `add_probes()`. 
-Here, `tm_difference` is the acceptable difference in Tm between the primers and probe. It is calculated by subtracting the Tm of the probe with the average Tm of the primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair. Note that the Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
+Probes can be generated with `get_oligos()`, and added to assays with `add_probes()`. Here, `tm_difference` is the acceptable difference in Tm between the primers and probe. It is calculated by subtracting the Tm of the probe with the average Tm of the primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair. Note that the Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
 
 Assays are displayed in a tibble (see below). An error message will return if no assays are found.   
 
@@ -231,7 +239,7 @@ str(my_assays[ , -ncol(my_assays)])
 ```
 
 ### Step 8: Save results 
-Alignments, sequence properties, primer, probe and assay candidates can be exported using `rp_save()`. Objects of class 'rprimer_alignment' will be saved as .txt-files, whereas objects of class 'rprimer_sequence_properties', 'rprimer_oligo' and 'rprimer_assay' will be saved as .csv-files.
+Alignments, sequence properties, primer, probe and assay candidates can be exported using `rp_save()`. rprimer_alignment objects will be saved as .txt-files, whereas objects of rprimer_sequence_properties, rprimer_oligo and rprimer_assay objects will be saved as .csv-files.
 
 ```{r}
 # rp_save(my_alignment, filename = "my_alignment")
@@ -338,11 +346,6 @@ my_probes <- get_oligos(
 # Get assays and add probes 
 my_assays <- get_assays(my_primers, length = 60:90, max_tm_difference = 2) %>%
   add_probes(., my_probes, tm_difference = c(-3, 5))
-
-# Save the data 
-# rp_save(my_alignment, filename = "my_alignment")
-# rp_save(my_sequence_properties, filename = "my_sequence_properties")
-# rp_save(my_assays, filename = "my_assays")
 
 # Select assay and generate report 
 my_assays <- dplyr::arrange(my_assays, pm_majority_all)

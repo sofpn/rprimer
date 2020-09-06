@@ -7,9 +7,9 @@
 add_probes(x, y, tm_difference = c(0, 20))
 }
 \arguments{
-\item{x}{Assays to add probes to (an object of class 'rprimer_assay').}
+\item{x}{Assays to add probes to (an rprimer_assay object).}
 
-\item{y}{Candidate probes (an object of class 'rprimer_oligo').}
+\item{y}{Candidate probes (an rprimer_oligo object).}
 
 \item{tm_difference}{Acceptable Tm difference between primers and probe.
 The minimum allowed value is -20 and the maximum allowed value is 20.

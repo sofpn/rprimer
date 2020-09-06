@@ -68,7 +68,7 @@ rp_plot(my_alignment)
 ```
 
 ```{r}
-rp_plot(my_sequence_profile, from = 20, to = 40, rc = FALSE)
+rp_plot(my_sequence_profile[ , 20:40], rc = FALSE)
 ```
 
 ```{r}

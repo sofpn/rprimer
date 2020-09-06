@@ -10,8 +10,9 @@
 #'
 #' @examples
 #' rp_plot(example_rprimer_alignment)
-#' rp_plot(example_rprimer_profile, from = 1, to = 20, rc = TRUE)
+#' rp_plot(example_rprimer_profile[ , 1:20], rc = TRUE)
 #' rp_plot(example_rprimer_properties)
+#' rp_plot(example_rprimer_properties[1:20, ])
 #'
 #' @export
 rp_plot <- function(x, ...) {
@@ -22,7 +23,7 @@ rp_plot <- function(x, ...) {
   UseMethod("rp_plot")
 }
 
-#' @describeIn rp_plot Plot an object of class 'rprimer_alignment'.
+#' @describeIn rp_plot Plot an rprimer_alignment object.
 #'
 #' @export
 rp_plot.rprimer_alignment <- function(x, ...) {
@@ -49,50 +50,29 @@ rp_plot.rprimer_alignment <- function(x, ...) {
   )
 }
 
-#' @describeIn rp_plot Plot an object of class 'rprimer_profile'.
-#'
-#' @param from At which position the plot begins (an integer).
-#'
-#' @param to At which position the plot ends (an integer).
+#' @describeIn rp_plot Plot an rprimer_profile object.
 #'
 #' @param rc \code{TRUE/FALSE}. If the plotted sequence should be displayed
 #' as reverse complement or not. The default is \code{FALSE}.
 #'
 #' @export
 rp_plot.rprimer_profile <- function(
-  x, ..., from = NULL, to = NULL, rc = FALSE
+  x, rc = FALSE, ...
 ) {
-  if (is.null(from))
-    from <- 1
-  if (is.null(to))
-    to <- ncol(x)
-  if (!(is.numeric(from) && is.numeric(to))) {
-    stop("from and to must be numbers", call. = FALSE)
-  }
-  if (!(from <= ncol(x) && to <= ncol(x))) {
-    stop(
-      "from and to cannot be greater than the number of columns in x",
-      call. = FALSE
-    )
-  }
-  if (!(from >= 1 && to >= 1)) {
-    stop("from and to must be 1 or greater", call. = FALSE)
-  }
   if (!(is.logical(rc)))
     stop("rc must be set to TRUE or FALSE", call. = FALSE)
   op <- graphics::par(mar = c(0.75, 4.57, 0.75, 0.75))
   on.exit(graphics::par(op))
   # Get the data
-  selection <- x[, from:to]
-  selection <- selection[which(rownames(selection) != "-"), ]
+  x <- x[which(rownames(x) != "-"), ]
   if (rc == TRUE) {
-    selection <- selection[, rev(seq_len(ncol(selection)))]
-    rownames(selection) <- unname(complement_lookup[rownames(selection)])
+    x <- x[, rev(seq_len(ncol(x)))]
+    rownames(x) <- unname(complement_lookup[rownames(x)])
   }
-  sequence_barplot(selection)
+  sequence_barplot(x)
 }
 
-#' @describeIn rp_plot Plot an object of class 'rprimer_properties'.
+#' @describeIn rp_plot Plot an rprimer_properties object.
 #'
 #' @export
 rp_plot.rprimer_properties <- function(x, ...) {

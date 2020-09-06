@@ -70,7 +70,7 @@ rp_plot(my_alignment)
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ``` r
-rp_plot(my_sequence_profile, from = 20, to = 40, rc = FALSE)
+rp_plot(my_sequence_profile[ , 20:40], rc = FALSE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />

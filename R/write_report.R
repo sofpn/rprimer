@@ -1,16 +1,16 @@
 #' Write assay report
 #'
-#' @param assay_selection An object of class 'rprimer_assay', with one row.
+#' @param assay_selection An rprimer_assay object, with one row.
 #'
-#' @param sequence_profile An object of class 'rprimer_profile'.
+#' @param sequence_profile An rprimer_profile object.
 #'
-#' @param sequence_properties An object of class 'rprimer_properties.
+#' @param sequence_properties An rprimer_properties object.
 #'
 #' @param comment
 #' Optional. Comments that should be included in the report.
 #' A character vector of length one. The default is \code{NULL}.
 #'
-#' @param filename The name of the file (a character vector of length one).
+#' @param filename The name of the file. A character vector of length one.
 #'
 #' @return A html-document with detailed assay information.
 #'

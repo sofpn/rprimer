@@ -11,7 +11,7 @@ rp_plot(x, ...)
 
 \method{rp_plot}{rprimer_alignment}(x, ...)
 
-\method{rp_plot}{rprimer_profile}(x, ..., from = NULL, to = NULL, rc = FALSE)
+\method{rp_plot}{rprimer_profile}(x, rc = FALSE, ...)
 
 \method{rp_plot}{rprimer_properties}(x, ...)
 }
@@ -20,10 +20,6 @@ rp_plot(x, ...)
 
 \item{...}{Additional arguments that should be passed to the plot, when
 plotting an object of class 'rprimer_profile'.}
-
-\item{from}{At which position the plot begins (an integer).}
-
-\item{to}{At which position the plot ends (an integer).}
 
 \item{rc}{\code{TRUE/FALSE}. If the plotted sequence should be displayed
 as reverse complement or not. The default is \code{FALSE}.}
@@ -36,16 +32,17 @@ Plot an rprimer object (generic)
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{rprimer_alignment}: Plot an object of class 'rprimer_alignment'.
+\item \code{rprimer_alignment}: Plot an rprimer_alignment object.
 
-\item \code{rprimer_profile}: Plot an object of class 'rprimer_profile'.
+\item \code{rprimer_profile}: Plot an rprimer_profile object.
 
-\item \code{rprimer_properties}: Plot an object of class 'rprimer_properties'.
+\item \code{rprimer_properties}: Plot an rprimer_properties object.
 }}
 
 \examples{
 rp_plot(example_rprimer_alignment)
-rp_plot(example_rprimer_profile, from = 1, to = 20, rc = TRUE)
+rp_plot(example_rprimer_profile[ , 1:20], rc = TRUE)
 rp_plot(example_rprimer_properties)
+rp_plot(example_rprimer_properties[1:20, ])
 
 }

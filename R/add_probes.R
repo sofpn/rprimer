@@ -2,9 +2,9 @@
 #'
 #' \code{add_probes} adds probes to (RT)-PCR assays.
 #'
-#' @param x Assays to add probes to (an object of class 'rprimer_assay').
+#' @param x Assays to add probes to (an rprimer_assay object).
 #'
-#' @param y Candidate probes (an object of class 'rprimer_oligo').
+#' @param y Candidate probes (an rprimer_oligo object).
 #'
 #' @param tm_difference
 #' Acceptable Tm difference between primers and probe.

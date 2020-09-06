@@ -101,6 +101,7 @@ majority_consensus <- function(x) {
   if (!is.rprimer_profile(x)) {
     stop("'x' must be an rprimer_profile object.", call. = FALSE)
   }
+  x <- unclass(x)
   # Function to identify the most common base at a position
   find_most_common_base <- function(x, y) {
     most_common <- rownames(x)[y == max(y)]
@@ -193,6 +194,7 @@ iupac_consensus <- function(x, threshold = NULL) {
       You've set it to ", threshold, "."
     ))
   }
+  x <- unclass(x)
   # Select only a, c, g, t and - to count in the iupac consensus sequence
   bases <- c("a", "c", "g", "t", "-")
   x <- x[rownames(x) %in% bases, ]
@@ -224,6 +226,7 @@ gap_frequency <- function(x) {
   if (!is.rprimer_profile(x)) {
     stop("'x' must be an rprimer_profile object.", call. = FALSE)
   }
+  x <- unclass(x)
   if ("-" %in% rownames(x)) {
     gaps <- x[rownames(x) == "-", ]
     gaps <- unname(gaps)
@@ -253,6 +256,7 @@ nucleotide_identity <- function(x) {
   # I want to assess identity based on DNA bases,
   # i.e. ignore gaps and degenerate positions, so I make a subset (s) of x
   # with the rows named a, c, g and t.
+  x <- unclass(x)
   bases <- c("a", "c", "g", "t")
   s <- x[rownames(x) %in% bases, ]
   # Calculate relative proportions of the bases in s
@@ -283,6 +287,7 @@ shannon_entropy <- function(x) {
   # I want to assess entrpoy from DNA bases,
   # i.e. ignore gaps and degenerate positions, so I make a subset (s) of x
   # with the rows named a, c, g and t.
+  x <- unclass(x)
   bases <- c("a", "c", "g", "t")
   s <- x[rownames(x) %in% bases, ]
   # Calculate proportions of the bases in s

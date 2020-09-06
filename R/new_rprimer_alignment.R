@@ -106,3 +106,6 @@ is.rprimer_alignment <- function(x) {
   stopifnot(is.rprimer_alignment(value))
   new_rprimer_alignment(NextMethod())
 }
+
+#c.rprimer_alignment <- function(..., recursive = FALSE)
+#  new_rprimer_alignment(NextMethod(), c(unlist(sapply(list(...), ?????))))

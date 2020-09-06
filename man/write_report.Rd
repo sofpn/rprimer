@@ -5,24 +5,24 @@
 \title{Write assay report}
 \usage{
 write_report(
-  filename = "my_assay_report",
   assay_selection,
   sequence_profile,
   sequence_properties,
-  comment = NULL
+  comment = NULL,
+  filename = "my_assay_report"
 )
 }
 \arguments{
-\item{filename}{(a character vector of length one).}
+\item{assay_selection}{An rprimer_assay object, with one row.}
 
-\item{assay_selection}{An object of class 'rprimer_assay', with one row.}
+\item{sequence_profile}{An rprimer_profile object.}
 
-\item{sequence_profile}{An object of class 'rprimer_profile'.}
-
-\item{sequence_properties}{An object of class 'rprimer_properties.}
+\item{sequence_properties}{An rprimer_properties object.}
 
 \item{comment}{Optional. Comments that should be included in the report.
 A character vector of length one. The default is \code{NULL}.}
+
+\item{filename}{The name of the file. A character vector of length one.}
 }
 \value{
 A html-document with detailed assay information.
@@ -36,11 +36,12 @@ rmarkdown and kableExtra are needed for this function to work.
 }
 \examples{
 \dontrun{
-write_report("my_report",
+write_report(
 example_rprimer_assay[1, ],
 example_rprimer_profile,
 example_rprimer_properties,
-comment = "My specific comment"
+comment = "My specific comment",
+filename = "my_report",
 )
 }
 
