@@ -68,3 +68,10 @@ is.rprimer_profile <- function(x) {
   stopifnot(is.rprimer_profile(value))
   new_rprimer_profile(NextMethod())
 }
+
+#cbind.rprimer_profile <- function(..., desparse.level = 1) {
+# cbind(..., deparse.level = 1)
+#}
+
+
+#rbind.rprimer_profile <- function(x)

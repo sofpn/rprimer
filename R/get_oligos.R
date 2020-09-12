@@ -447,7 +447,7 @@ exclude_oligos <- function(oligos,
       call. = FALSE
     )
   }
-  # Remove oligos with at least 4 'runs' of the same dinucleotide ##################
+  # Remove oligos with at least 4 'runs' of the same dinucleotide
   oligos <- exclude(
     oligos,
     "(at){4,}|(ta){4,}|(ac){4,}|(ca){4,}|(ag){4,}|(ga){4,}|(gt){4,}|(tg){4,}|(cg){4,}|(gc){4,}|(tc){4,}|(ct){4,})"
