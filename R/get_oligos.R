@@ -124,24 +124,8 @@
 #'   in the target alignment the oligo matches perfectly to}
 #' }
 #'
-#' @examples
-#' get_oligos <- function(
-#' example_rprimer_properties,
-#' target_alignment = example_rprimer_alignment,
-#' length = 18:22,
-#' max_gap_frequency = 0.1,
-#' max_degenerates = 2,
-#' max_degeneracy = 4,
-#' avoid_3end_ta = TRUE,
-#' avoid_3end_runs = TRUE,
-#' avoid_gc_rich_3end = TRUE,
-#' avoid_5end_g = FALSE,
-#' gc_range = c(0.45, 0.55),
-#' tm_range = c(48, 70)
-#' )
-#'
 #' @references
-#' Tm-calculation:
+#' # Tm-calculation:
 #'
 #' SantaLucia, J, et al. (1996)
 #' Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
@@ -156,6 +140,22 @@
 #' SantaLucia, J (1998) A unified view of polymer,
 #' dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
 #' Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
+#'
+#' @examples
+#' get_oligos(
+#' example_rprimer_properties,
+#' target = example_rprimer_alignment,
+#' length = 18:22,
+#' max_gap_frequency = 0.1,
+#' max_degenerates = 2,
+#' max_degeneracy = 4,
+#' avoid_3end_ta = TRUE,
+#' avoid_3end_runs = TRUE,
+#' avoid_gc_rich_3end = TRUE,
+#' avoid_5end_g = FALSE,
+#' gc_range = c(0.45, 0.55),
+#' tm_range = c(48, 70)
+#' )
 #'
 #' @export
 get_oligos <- function(x,

@@ -139,9 +139,9 @@ may thus be misleading for degenerate (iupac) oligos.
 }
 
 \examples{
-get_oligos <- function(
+get_oligos(
 example_rprimer_properties,
-target_alignment = example_rprimer_alignment,
+target = example_rprimer_alignment,
 length = 18:22,
 max_gap_frequency = 0.1,
 max_degenerates = 2,
@@ -156,7 +156,7 @@ tm_range = c(48, 70)
 
 }
 \references{
-Tm-calculation:
+# Tm-calculation:
 
 SantaLucia, J, et al. (1996)
 Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
