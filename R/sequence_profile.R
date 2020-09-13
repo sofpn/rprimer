@@ -18,9 +18,6 @@
 #'
 #' @export
 sequence_profile <- function(x) {
-  if (!is.rprimer_alignment(x)) {
-    stop("'x' must be an rprimer_alignment object.", call. = FALSE)
-  }
   splitted <- purrr::map(x, split_sequence)
   # Make a matrix
   matr <- do.call("rbind", splitted)

@@ -14,6 +14,5 @@
   if (any(toset)) {
     options(op.devtools[toset])
   }
-
   invisible()
 }

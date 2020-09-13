@@ -255,89 +255,12 @@ get_nmers <- function(x, n = NULL) {
   if (!is.numeric(n) || n < 1 || n > length(x)) {
     stop("'n' must be an integer between 1 and length(x)", call. = FALSE)
   }
-  begin <- 1:(length(x) - n + 1)
+  begin <- seq_len(length(x) - n + 1)
   end <- begin + n - 1
   nmer <- purrr::map_chr(
     begin, ~ paste(x[begin[[.x]]:end[[.x]]], collapse = "")
   )
   nmer
-}
-
-#' Calculate GC content of a DNA sequence
-#'
-#' \code{gc_content} finds the GC content of a DNA sequence.
-#'
-#' @param x a DNA sequence (a character vector of length one).
-#'
-#' @details \code{x} cannot contain other characters than
-#' 'a', 'c', 'g', 't' and '-'.
-#'
-#' @return the GC content of x. Gaps ('-') will not be included
-#' in the calculation.
-#'
-#' @examples
-#' gc_content("acgttcc")
-#' gc_content("acgttcc--")
-#' gc_content("acgrn") # Will return an error because of an invalid base.
-#'
-#' @keywords internal
-#'
-#' @noRd
-gc_content <- function(x) {
-  if (typeof(x) != "character" || length(x) != 1) {
-    stop("'x' must be a character vector of length one.", call. = FALSE)
-  }
-  x <- tolower(x)
-  if (grepl("[^acgt-]", x)) {
-    stop("'x' contains at least one invalid base. \n
-      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-      'n', 'h', 'd', 'v', 'b' and '-'",
-         call. = FALSE
-    )
-  }
-  x <- split_sequence(x)
-  gc_count <- length(which(x == "c" | x == "g"))
-  # Gaps will not be included in the total count
-  total_count <- length(which(x == "a" | x == "c" | x == "g" | x == "t"))
-  gc <- gc_count / total_count
-  gc
-}
-
-#' Reverse complement
-#'
-#' \code{reverse_complement} finds the reverse complement of a DNA seuquence.
-#'
-#' @param x A DNA sequence (a character vector of length one).
-#'
-#' @details For \code{x}, valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm',
-#' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
-#'
-#' @return The reverse complement. Non valid bases will return as \code{NA}.
-#'
-#' @examples
-#' reverse_complement("cttgtr")
-#'
-#' @keywords internal
-#'
-#' @noRd
-reverse_complement <- function(x) {
-  if (typeof(x) != "character") {
-    stop("'x' must be a character vector", call. = FALSE)
-  }
-  x <- tolower(x)
-  if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("'x' contains at least one invalid base. \n
-      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-      'n', 'h', 'd', 'v', 'b' and '-'",
-         call. = FALSE
-    )
-  }
-  x <- strsplit(x, split = "")
-  complement <- complement_lookup[unlist(x)]
-  complement <- unname(complement)
-  rc <- rev(complement)
-  rc <- paste(rc, collapse = "")
-  rc
 }
 
 #' Calculate running, cumulative sums
@@ -376,7 +299,7 @@ running_sum <- function(x, n = NULL) {
     stop("'n' must be a number between 1 and length(x).", call. = FALSE)
   }
   cumul <- c(0, cumsum(x))
-  runsum <- cumul[(n + 1):length(cumul)] - cumul[1:(length(cumul) - n)]
+  runsum <- cumul[seq(n + 1, length(cumul))] - cumul[seq_len(length(cumul) - n)]
   runsum
 }
 
@@ -499,8 +422,8 @@ exclude_oligos <- function(oligos,
 #'
 #' @param avoid_gc_rich_3end
 #' \code{TRUE} or \code{FALSE}.
-#' If oligos with more than three G or C within the last five bases of the 3' end
-#' should be replaced with \code{NA}
+#' If oligos with more than three G or C within the last five bases of the
+#' 3' end should be replaced with \code{NA}
 #' (recommended for primers).
 #'
 #' @param avoid_5end_g
@@ -543,79 +466,6 @@ exclude_unwanted_oligos <- function(x,
   x
 }
 
-#' Count the number of degenerate bases in a DNA sequence
-#'
-#' \code{count_degenerates} returns the number of degenerate bases in a DNA
-#' sequence.
-#'
-#' @param x a DNA sequence (a character vector of length one, e.g. 'cttgg').
-#'
-#' @details Valid bases for \code{x} are 'a', 'c', 'g', 't', 'r', 'y', 'm',
-#' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
-#'
-#' @return the number of degenerate bases in \code{x} (an integer).
-#'
-#' @examples
-#' count_degenerates("cttnra")
-#'
-#' @keywords internal
-#'
-#' @noRd
-count_degenerates <- function(x) {
-  if (typeof(x) != "character") {
-    stop("'x' must be a character vector.", call. = FALSE)
-  }
-  if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("'x' contains at least one invalid base. \n
-      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-      'n', 'h', 'd', 'v', 'b' and '-'",
-         call. = FALSE
-    )
-  }
-  nt <- c("a", "c", "g", "t", "-")
-  x <- split_sequence(x)
-  count <- length(x[!x %in% nt])
-  count
-}
-
-#' Count the degeneracy of a DNA sequence
-#'
-#' \code{count_degenerates} counts the number of unique sequences of
-#' a DNA sequence with degenerate bases.
-#'
-#' @param x a DNA sequence (a character vector of length one, e.g. 'cttgg').
-#'
-#' @details
-#' Valid bases for \code{x} are 'a', 'c', 'g', 't', 'r', 'y', 'm',
-#' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
-#'
-#' @return The number of unique sequences of x (an integer).
-#'
-#' @examples
-#' count_degeneracy("cttnra")
-#'
-#' @keywords internal
-#'
-#' @noRd
-count_degeneracy <- function(x) {
-  if (typeof(x) != "character") {
-    stop("'x' must be a character vector.", call. = FALSE)
-  }
-  if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("'x' contains at least one invalid base. \n
-      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-      'n', 'h', 'd', 'v', 'b' and '-'",
-         call. = FALSE
-    )
-  }
-  x <- split_sequence(x)
-  # Find the number of nucleotides at each position in x
-  n_nucleotides <- degeneracy_lookup[x]
-  # Calculate the total number of DNA sequences in x
-  degeneracy <- prod(n_nucleotides)
-  degeneracy
-}
-
 #' Generate oligos of a specific length
 #'
 #' @inheritParams get_oligos
@@ -648,7 +498,6 @@ generate_oligos <- function(x,
   if (!(max_degeneracy >= 1 && max_degeneracy <= 16)) {
     stop("'max_degeneracy' must be between 1 and 16", call. = FALSE)
   }
-  # Find all possible oligos of length y
   majority <- get_nmers(x$majority, n = oligo_length)
   iupac <- get_nmers(x$iupac, n = oligo_length)
   majority_rc <- purrr::map_chr(majority, ~ reverse_complement(.x))
@@ -658,23 +507,17 @@ generate_oligos <- function(x,
   begin <- seq_along(majority)
   end <- seq_along(majority) + oligo_length - 1
   length <- oligo_length
-  # Identify oligos with high gap frequency
   gap_bin <- ifelse(x$gaps > max_gap_frequency, 1L, 0L)
   gap_penalty <- running_sum(gap_bin, n = oligo_length)
   oligos <- tibble::tibble(
     begin, end, length, majority, iupac,
     majority_rc, iupac_rc, degenerates, degeneracy, gap_penalty
   )
-  # Identify and exclude oligos that are duplicated
   unique_oligos <- match(oligos$majority, unique(oligos$majority))
   oligos <- oligos[unique_oligos, ]
-  # Exclude oligos with too high gap frequency
   oligos <- oligos[oligos$gap_penalty == 0, ]
-  # Exclude oligos with too many degenerate bases
   oligos <- oligos[oligos$degenerates <= max_degenerates, ]
-  # Exclude oligos with too high degeneracy
   oligos <- oligos[oligos$degeneracy <= max_degeneracy, ]
-  # Remove the gap_penalty column
   oligos <- dplyr::select(oligos, -gap_penalty)
   oligos
 }
@@ -705,20 +548,20 @@ add_gc_tm <- function(oligos,
       "'tm_range' must be between 20 and 90, e.g. c(55, 60)", call. = FALSE
     )
   }
-  # Calculate GC content of all majority oligos
   gc_majority <- purrr::map_dbl(oligos$majority, ~ gc_content(.x))
   oligos <- tibble::add_column(oligos, gc_majority)
-  # Exclude oligos with GC content outside the stated thresholds
   oligos <- oligos[oligos$gc_majority >= min(gc_range), ]
   oligos <- oligos[oligos$gc_majority <= max(gc_range), ]
-  # Calculate Tm of all majority oligos
   if (nrow(oligos) > 0L) {
-    tm_majority <- tm(oligos$majority, conc_oligo = conc_oligo, conc_na = conc_na)
+    tm_majority <- tm(
+      oligos$majority,
+      conc_oligo = conc_oligo,
+      conc_na = conc_na
+    )
   } else {
     tm_majority <- NA
   }
   oligos <- tibble::add_column(oligos, tm_majority)
-  # Exclude oligos with Tm outside the stated thresholds
   oligos <- oligos[oligos$tm_majority >= min(tm_range), ]
   oligos <- oligos[oligos$tm_majority <= max(tm_range), ]
   oligos
@@ -754,9 +597,7 @@ make_regex <- function(x) {
     )
   }
   x <- split_sequence(x)
-  # Go through each base of the DNA sequence
   regx <- purrr::map(x, function(i) {
-    # Check which bases the IUPAC base at position 'i' corresponds to
     all_bases <- unname(degenerate_lookup[i])
     all_bases <- unlist(strsplit(all_bases, split = ","))
     return(all_bases)
@@ -798,9 +639,7 @@ check_match <- function(x, y) {
     !is.na(x$iupac), x$iupac, purrr::map_chr(x$iupac_rc, reverse_complement)
   )
   iupac <- purrr::map_chr(iupac, make_regex)
-  # Shorten the sequence names to only accession numbers
   names(y) <- purrr::map_chr(names(y), truncate_name)
-  # Make a matrix that describes which sequences the oligo matches perfectly to
   match_matrix <- purrr::map(seq_len(nrow(x)), function(i) {
     match_majority <- grepl(majority[[i]], y)
     match_iupac <- grepl(iupac[[i]], y)
@@ -810,12 +649,10 @@ check_match <- function(x, y) {
     return(match)
   })
   names(match_matrix) <- x$iupac
-  # Calculate the match percentage for each oligo
   match_percentage <- purrr::map(match_matrix, colMeans)
   match_percentage <- do.call("rbind", match_percentage)
   colnames(match_percentage) <- c("pm_majority", "pm_iupac")
   match_percentage <- tibble::as_tibble(match_percentage)
-  # Add this information to the rprimer_oligo object
   x <- dplyr::bind_cols(x, match_percentage)
   match_matrix <- tibble::tibble(match_matrix)
   x <- dplyr::bind_cols(x, match_matrix)

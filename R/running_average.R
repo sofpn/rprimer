@@ -27,7 +27,9 @@ running_average <- function(x, size = NULL) {
   }
   stopifnot(is.numeric(x) && size <= length(x) && size >= 1)
   sums <- c(0, cumsum(x))
-  average <- (sums[((size + 1):length(sums))] - sums[(1:(length(sums) - size))]) / size
+  from <- seq_len(length(sums) - size)
+  to <- seq(size + 1, length(sums))
+  average <- (sums[to] - sums[from]) / size
   # Set the position to get a trailed moving average
   position <- seq(size, length(x))
   # To get a centered running average,
