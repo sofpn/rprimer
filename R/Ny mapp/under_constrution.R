@@ -1,5 +1,15 @@
-x <- Biostrings::readDNAMultipleAlignment(
-  filepath = system.file("extdata", "msx2_mRNA.aln", package="Biostrings"), format = "clustal")
+
+#' Check if an object is as RprimerProperties-object
+#'
+#' @param x An 'RprimerProperties'-like object.
+#'
+#' @return \code{TRUE} or \code{FALSE}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+is.RprimerProperties <- function(x) inherits(x, "RprimerProperties")
+
 
 #mask
 #as matrix

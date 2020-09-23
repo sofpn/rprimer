@@ -1,10 +1,9 @@
-#' Calculate GC running average
+#' Calculate running average
 #'
-#' \code{gcRunningAverage} calculates a running average of
-#' the GC-content of a DNA sequence
+#' \code{runningAverage} calculates a running average of a
+#' numeric vector.
 #'
-#' @param x
-#' A DNA sequence (a character vector). Valid bases are ACGT-.
+#' @param x A numeric vector.
 #'
 #' @param size
 #' Optional. The number of observations in each average, which
@@ -15,16 +14,13 @@
 #' @return A tibble with position and running average of x.
 #'
 #' @examples
-#' gcRunningAverage(
-#' c("G", "T", "T", "T", "G", "T", "T", "T", "C", "T", "T"), size = 2
-#' )
-#'
-#' @seealso gcContent
+#' runningAverage(c(1, 3, 2, 1, 3, 4, 5), size = 2)
+#' runningAverage(c(10, 22.4, 14.2, 44, 32))
 #'
 #' @keywords internal
 #'
 #' @noRd
-gcRunningAverage <- function(x, size = NULL) {
+runningAverage <- function(x, size = NULL) {
   if (is.null(size)) {
     size <- round(length(x) / 100)
     if (size == 0) {
@@ -43,18 +39,10 @@ gcRunningAverage <- function(x, size = NULL) {
   if (size < 1) {
     stop("'size' must be greater than 1.", call. = FALSE)
   }
-  x <- toupper(x)
-  if (grepl(paste0("[^", dnaBases, "]"), paste(x, collapse = ""))) {
-    stop(paste0("'x' can only contain bases ", dnaBases, "."),
-         call. = FALSE
-    )
-  }
-  begins <- seq_len(length(x) - size + 1)
-  ends <- begins + size - 1
-  average <- purrr::map2_dbl(begins, ends, function(i, j) {
-    string <- paste(x[i:j], collapse = "")
-    gcContent(string)
-  })
+  sums <- c(0, cumsum(x))
+  from <- seq_len(length(sums) - size)
+  to <- seq(size + 1, length(sums))
+  average <- (sums[to] - sums[from]) / size
   position <- seq(size, length(x))
   if (size > 1) {
     midpoint <- size / 2

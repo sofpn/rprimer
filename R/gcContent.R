@@ -2,13 +2,11 @@
 #'
 #' \code{gcContent} finds the GC content of a DNA sequence.
 #'
-#' @param x a DNA sequence (a character vector of length one).
+#' @param x
+#' A DNA sequence (a character vector of length one). Valid bases are
+#' ACGT-.
 #'
-#' @details \code{x} cannot contain other characters than
-#' 'A', 'C', 'G', 'T' and '-'.
-#'
-#' @return the GC content of x. Gaps ('-') will not be included
-#' in the calculation.
+#' @return The GC content of x.
 #'
 #' @examples
 #' gcContent("ACGTTCC")

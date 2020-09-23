@@ -8,7 +8,7 @@
 #' @param iupacThreshold
 #' A number (0, 0.2].
 #' At each position, all nucleotides with a proportion
-#' \code{>= iupacThreshold} will be included in
+#' higher or equal to the iupacThreshold will be included in
 #' the IUPAC consensus sequence. The default is 0.
 #'
 #' @section
@@ -40,7 +40,7 @@
 #' variability. First, for each nucleotide that occurs at a specific position,
 #' \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
 #' that nucleotide. Then, these values are summarized,
-#' followed by multiplication by \code{-1}.
+#' and multiplied by \code{-1}.
 #' A value of \code{0} indicate no variability and a high value
 #' indicate high variability.
 #' Gaps (-), as well as bases other than
@@ -62,21 +62,12 @@ getSequenceProperties <- function(x, iupacThreshold = 0) {
   }
   position <- seq_len(ncol(x))
   majority <- majorityConsensus(x)
-  IUPAC <- IUPACConsensus(x, threshold = iupacThreshold)
+  IUPAC <- iupacConsensus(x, threshold = iupacThreshold)
   gaps <- gapFrequency(x)
   identity <- nucleotideIdentity(x)
   entropy <- shannonEntropy(x)
-  sequenceProperties <- tibble::new_tibble( ####################
-    list(
-      "position" = position,
-      "majority" = majority,
-      "IUPAC" = IUPAC,
-      "gaps" = gaps,
-      "identity" = identity,
-      "entropy" = entropy
-    ),
-    nrow = length(position),
-    class = "rprimerProperties"
+  sequenceProperties <- tibble::tibble(
+    position, majority, IUPAC, gaps, identity, entropy
   )
   sequenceProperties
 }
@@ -102,7 +93,6 @@ majorityConsensus <- function(x) {
   x <- unclass(x)
   findMostCommonBase <- function(x, y) {
     mostCommon <- rownames(x)[y == max(y)]
-    # If there are ties, the most common base will be randomly selected
     if (length(mostCommon > 1)) {
       mostCommon <- sample(mostCommon, 1)
     }
@@ -114,15 +104,16 @@ majorityConsensus <- function(x) {
   consensus
 }
 
-#' Convert DNA nucleotides into the corresponding IUPAC degenerate base
+#' Convert DNA nucleotides into the corresponding IUPAC base
 #'
 #' \code{asIUPAC} takes several DNA nucleotides as input,
 #' and returns the degenerate base in IUPAC format.
 #'
-#' @param x A character vector of length one, containing DNA
+#' @param x
+#' A character vector of length one, containing DNA
 #' nucleotides (valid bases are A, C, G, T, - and .). Each base must
 #' be separated by a comma (,), e.g. 'A,C,G'.
-#' Characters other than A, C, G, T, -, ., will be ignored. However, when
+#' Characters other than A, C, G, T, and - will be ignored. However, when
 #' the input only consist of invalid bases,
 #' or if the bases are not separated by ',',
 #' \code{asIUPAC} will return NA.
@@ -144,21 +135,22 @@ asIUPAC <- function(x) {
       call. = FALSE
     )
   }
+  x <- toupper(x)
   x <- gsub(" ", "", x)
   x <- unlist(strsplit(x, split = ","), use.names = FALSE)
   x <- x[order(x)]
   x <- unique(x)
   bases <- c("A", "C", "G", "T", "-", ".")
   match <- x %in% bases
-  x <- x[!(match == FALSE)] # exclude non accepted nucleotides
+  x <- x[!(match == FALSE)]
   x <- paste(x, collapse = ",")
-  IUPAC <- unname(IUPACLookup[x]) # match with lookup table
+  IUPAC <- unname(iupacLookup[x])
   IUPAC
 }
 
 #' IUPAC consensus sequence
 #'
-#' \code{IUPACConsensus} returns the IUPAC consensus sequence from an
+#' \code{iupacConsensus} returns the IUPAC consensus sequence from an
 #' PrprimerProfile object.
 #'
 #' @inheritParams getSequenceProperties
@@ -166,7 +158,7 @@ asIUPAC <- function(x) {
 #' @param threshold
 #' Optional. A number (0, 0.2]
 #' At each position, all nucleotides with a proportion
-#' \code{>= threshold} will be included in
+#' higher or equal to the threshold will be included in
 #' the IUPAC consensus sequence. The default is 0.
 #'
 #' @return The consensus sequence (a character vector of length n).
@@ -177,7 +169,7 @@ asIUPAC <- function(x) {
 #' @keywords internal
 #'
 #' @noRd
-IUPACConsensus <- function(x, threshold = 0) {
+iupacConsensus <- function(x, threshold = 0) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
@@ -185,10 +177,10 @@ IUPACConsensus <- function(x, threshold = 0) {
     stop(paste0(
       "'treshold' must be higher than 0 and less or equal to 0.2. \n
       You've set it to ", threshold, "."
-    ))
+    ), call. = FALSE)
   }
   x <- unclass(x)
-  bases <- c("a", "c", "g", "t", "-", ".")
+  bases <- c("A", "C", "G", "T", "-")
   x <- x[rownames(x) %in% bases, ]
   basesToInclude <- apply(x, 2, function(y) {
     paste(rownames(x)[y > threshold], collapse = ",")
@@ -220,7 +212,7 @@ gap_frequency <- function(x) {
   }
   x <- unclass(x)
   if ("-" %in% rownames(x)) {
-    gaps <- x[rownames(x) == "-", ] ### also add "."
+    gaps <- x[rownames(x) == "-", ]
     gaps <- unname(gaps)
   } else {
     gaps <- rep(0, ncol(x))
@@ -245,15 +237,10 @@ nucleotideIdentity <- function(x) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
-  # I want to assess identity based on DNA bases,
-  # i.e. ignore gaps and degenerate positions, so I make a subset (s) of x
-  # with the rows named a, c, g and t.
   x <- unclass(x)
   bases <- c("A", "C", "G", "T")
   s <- x[rownames(x) %in% bases, ]
-  # Calculate relative proportions of the bases in s
   s <- apply(s, 2, function(x) x / sum(x))
-  # Find the greatest proportion at each position
   identity <- apply(s, 2, max)
   identity <- unname(identity)
   identity[is.na(identity)] <- 0
@@ -276,31 +263,16 @@ shannonEntropy <- function(x) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
-  # I want to assess entrpoy from DNA bases,
-  # i.e. ignore gaps and degenerate positions, so I make a subset (s) of x
-  # with the rows named a, c, g and t.
   x <- unclass(x)
   bases <- c("A", "C", "G", "T")
   s <- x[rownames(x) %in% bases, ]
-  # Calculate proportions of the bases in s
   s <- apply(s, 2, function(x) x / sum(x))
   entropy <- apply(s, 2, function(x) {
     ifelse(x == 0, 0, x * log2(x))
   })
   entropy <- -colSums(entropy)
   entropy <- unname(entropy)
-  entropy <- abs(entropy) # abs to avoid -0 (due to neg sums)
+  entropy <- abs(entropy)
   entropy[is.na(entropy)] <- 0
   entropy
 }
-
-#' Check if an object is as RprimerProperties-object
-#'
-#' @param x An 'RprimerProperties'-like object.
-#'
-#' @return \code{TRUE} or \code{FALSE}.
-#'
-#' @keywords internal
-#'
-#' @noRd
-is.RprimerProperties <- function(x) inherits(x, "RprimerProperties")

@@ -1,35 +1,28 @@
 #' Count the degeneracy of a DNA sequence
 #'
-#' \code{count_degenerates} counts the number of unique sequences of
+#' \code{countDegeneracy} counts the number of unique sequences of
 #' a DNA sequence with degenerate bases.
 #'
-#' @param x a DNA sequence (a character vector of length one, e.g. 'cttgg').
-#'
-#' @details
-#' Valid bases for \code{x} are 'a', 'c', 'g', 't', 'r', 'y', 'm',
-#' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
+#' @param x
+#' A DNA sequence (a character vector of length one).
+#' Valid bases are ACGTRYSWKMBDHVN-.
 #'
 #' @return The number of unique sequences of x (an integer).
 #'
 #' @examples
-#' count_degeneracy("cttnra")
+#' countDegeneracy("GTTTCCRT")
 #'
 #' @export
-count_degeneracy <- function(x) {
-  if (typeof(x) != "character") {
-    stop("'x' must be a character vector.", call. = FALSE)
+countDegeneracy <- function(x) {
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("'x' must be a character vector of length one.", call. = FALSE)
   }
-  if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("'x' contains at least one invalid base. \n
-      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-      'n', 'h', 'd', 'v', 'b' and '-'",
-         call. = FALSE
-    )
+  x <- toupper(x)
+  if (grepl(paste0("[^", allBases, "]"), x)) {
+    stop(paste0("'x' can only contain bases ", dnaBases, "."), call. = FALSE)
   }
-  x <- split_sequence(x)
-  # Find the number of nucleotides at each position in x
-  n_nucleotides <- degeneracy_lookup[x]
-  # Calculate the total number of DNA sequences in x
-  degeneracy <- prod(n_nucleotides)
+  x <- splitSequence(x)
+  nNucleotides <- degeneracyLookup[x]
+  degeneracy <- prod(nNucleotides)
   degeneracy
 }

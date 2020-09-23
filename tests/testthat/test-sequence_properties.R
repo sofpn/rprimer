@@ -11,18 +11,16 @@ test_that("majority_consensus works", {
   expect_false(any(grepl("^acgt-", cons)))
 })
 
-test_that("as_iupac returns an error when it should", {
-  expect_error(as_iupac(tg))
-  expect_error(as_iupac(c("c,g", "g,t")))
+test_that("asIUPAC returns an error when it should", {
+  expect_error(asIUPAC(c("C,G", "G,T")))
 })
 
-test_that("as_iupac works", {
-  expect_true(is.na(as_iupac("cg")))
-  expect_equal(as_iupac("c,g"), "s")
-  expect_equal(as_iupac("c,g,g"), "s")
-  expect_equal(as_iupac("c , g"), "s")
-  expect_equal(as_iupac("c,g, w"), "s")
-  expect_equal(as_iupac("-"), "-")
+test_that("asIUPAC works", {
+  expect_true(is.na(asIUPAC("GC")))
+  expect_equal(asIUPAC("C,G"), "S")
+  expect_equal(asIUPAC("C,G,G"), "S")
+  expect_equal(asIUPAC("C , G"), "S")
+  expect_equal(asIUPAC("-"), "-")
 })
 
 test_that("iupac_consensus returns an error when it should", {

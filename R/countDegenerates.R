@@ -1,32 +1,28 @@
 #' Count the number of degenerate bases in a DNA sequence
 #'
-#' \code{count_degenerates} returns the number of degenerate bases in a DNA
+#' \code{countDegenerates} returns the number of degenerate bases in a DNA
 #' sequence.
 #'
-#' @param x a DNA sequence (a character vector of length one, e.g. 'cttgg').
+#' @param x
+#' A DNA sequence (a character vector of length one).
+#' Valid bases are ACGTRYSWKMBDHVN-.
 #'
-#' @details Valid bases for \code{x} are 'a', 'c', 'g', 't', 'r', 'y', 'm',
-#' 'k', 's', 'w', n', 'h', 'd', 'v', 'b' and '-'.
-#'
-#' @return the number of degenerate bases in \code{x} (an integer).
+#' @return The number of degenerate bases in \code{x} (an integer).
 #'
 #' @examples
-#' count_degenerates("cttnra")
+#' count_degenerates("CTTRNA")
 #'
 #' @export
-count_degenerates <- function(x) {
-  if (typeof(x) != "character") {
-    stop("'x' must be a character vector.", call. = FALSE)
+countDegenerates <- function(x) {
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("'x' must be a character vector of length one.", call. = FALSE)
   }
-  if (grepl("[^acgtrymkswnhdvb-]", x)) {
-    stop("'x' contains at least one invalid base. \n
-      Valid bases are 'a', 'c', 'g', 't', 'r', 'y', 'm', 'k', 's', 'w',
-      'n', 'h', 'd', 'v', 'b' and '-'",
-         call. = FALSE
-    )
+  x <- toupper(x)
+  if (grepl(paste0("[^", allBases, "]"), x)) {
+    stop(paste0("'x' can only contain bases ", dnaBases, "."), call. = FALSE)
   }
-  nt <- c("a", "c", "g", "t", "-")
-  x <- split_sequence(x)
+  nt <- c("A", "C", "G", "T", "-")
+  x <- splitSequence(x)
   count <- length(x[!x %in% nt])
   count
 }

@@ -2,9 +2,11 @@ Type: Package
 Package: rprimer
 Title: Design RT-PCR Assays from Multiple Sequence Alignments
 Version: 0.99.0
-Description: Design
+Description: rprimer provides functions to design
     primers, probes and PCR assays from multiple sequence alignments of
-    DNA sequences.
+    DNA sequences, based on user specified constraints. 
+    For more information about the package and its 
+    functionality, please see thee vingette.
 Authors@R: 
     person(given = "Sofia",
            family = "Persson",
