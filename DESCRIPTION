@@ -25,7 +25,7 @@ Imports:
     magrittr,
     utils
 Suggests: 
-    BiocStyle
+    BiocStyle,
     covr,
     kableExtra,
     knitr,

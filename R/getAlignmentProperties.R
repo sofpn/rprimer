@@ -1,9 +1,9 @@
 #' Get alignment properties
 #'
 #' \code{getAlignmentProperties} returns information from
-#' an alignment profile
+#' an RprimerProfile
 #'
-#' @param x An alignment profile (an RprimerProfile object).
+#' @param x An RprimerProfile object.
 #'
 #' @param IUPACThreshold
 #' A number (0, 0.2].
