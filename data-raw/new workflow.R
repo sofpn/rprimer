@@ -7,15 +7,5 @@ myAlignment <- "example_alignment.txt" %>%
 Biostrings::colmask(myAlignment, invert = TRUE) <- IRanges::IRanges(start = 1000, end = 5000)
 
 #
-myAlignmentProfile <- Biostrings::consensusMatrix(myAlignment, as.prob = TRUE) #%>%
-
-x <- myAlignmentProfile
-
-# Remove columns with NA
-y <- x[, colSums(!is.na(x)) > 0]
-
-
-# allClasses document
-# vingette
-# Rprimer
-sessionInfo()
+myProfile <- Biostrings::consensusMatrix(myAlignment, as.prob = TRUE) %>%
+  RprimerProfile(.)

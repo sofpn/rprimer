@@ -7,8 +7,8 @@
 gcContent(x)
 }
 \arguments{
-\item{x}{A DNA sequence (a character vector of length one). Valid bases are
-ACGT-.}
+\item{x}{A DNA sequence (a character vector of length one).
+Valid bases are ACGT-.}
 }
 \value{
 The GC content of x.

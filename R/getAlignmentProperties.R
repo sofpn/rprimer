@@ -1,7 +1,7 @@
 #' Get alignment properties
 #'
-#' \code{getAlignmentProperties} returns information from
-#' an RprimerProfile
+#' \code{getAlignmentProperties} returns sequence information from
+#' an RprimerProfile object
 #'
 #' @param x An RprimerProfile object.
 #'
@@ -56,7 +56,7 @@
 #' getAlignmentProperties(exampleRprimerProfile, iupacThreshold = 0.1)
 #'
 #' @export
-getSequenceProperties <- function(x, iupacThreshold = 0) {
+getAlignmentProperties <- function(x, iupacThreshold = 0) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object", call. = FALSE)
   }
@@ -66,10 +66,10 @@ getSequenceProperties <- function(x, iupacThreshold = 0) {
   gaps <- gapFrequency(x)
   identity <- nucleotideIdentity(x)
   entropy <- shannonEntropy(x)
-  sequenceProperties <- tibble::tibble(
+  properties <- tibble::tibble(
     position, majority, IUPAC, gaps, identity, entropy
   )
-  sequenceProperties
+  properties
 }
 
 # Helpers =====================================================================
@@ -90,7 +90,7 @@ majorityConsensus <- function(x) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
-  x <- unclass(x)
+  x <- unclass(assay(x))
   findMostCommonBase <- function(x, y) {
     mostCommon <- rownames(x)[y == max(y)]
     if (length(mostCommon > 1)) {
@@ -179,7 +179,7 @@ iupacConsensus <- function(x, threshold = 0) {
       You've set it to ", threshold, "."
     ), call. = FALSE)
   }
-  x <- unclass(x)
+  x <- unclass(assay(x))
   bases <- c("A", "C", "G", "T", "-")
   x <- x[rownames(x) %in% bases, ]
   basesToInclude <- apply(x, 2, function(y) {
@@ -206,11 +206,11 @@ iupacConsensus <- function(x, threshold = 0) {
 #' @keywords internal
 #'
 #' @noRd
-gap_frequency <- function(x) {
+gapFrequency <- function(x) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
-  x <- unclass(x)
+  x <- unclass(assay(x))
   if ("-" %in% rownames(x)) {
     gaps <- x[rownames(x) == "-", ]
     gaps <- unname(gaps)
@@ -237,7 +237,7 @@ nucleotideIdentity <- function(x) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
-  x <- unclass(x)
+  x <- unclass(assay(x))
   bases <- c("A", "C", "G", "T")
   s <- x[rownames(x) %in% bases, ]
   s <- apply(s, 2, function(x) x / sum(x))
@@ -263,7 +263,7 @@ shannonEntropy <- function(x) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
-  x <- unclass(x)
+  x <- unclass(assay(x))
   bases <- c("A", "C", "G", "T")
   s <- x[rownames(x) %in% bases, ]
   s <- apply(s, 2, function(x) x / sum(x))

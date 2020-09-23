@@ -3,8 +3,8 @@
 #' \code{gcContent} finds the GC content of a DNA sequence.
 #'
 #' @param x
-#' A DNA sequence (a character vector of length one). Valid bases are
-#' ACGT-.
+#' A DNA sequence (a character vector of length one).
+#' Valid bases are ACGT-.
 #'
 #' @return The GC content of x.
 #'
