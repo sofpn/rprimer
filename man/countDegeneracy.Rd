@@ -14,7 +14,7 @@ Valid bases are ACGTRYSWKMBDHVN-.}
 The number of unique sequences of x (an integer).
 }
 \description{
-\code{countDegeneracy} counts the number of unique sequences of
+\code{countDegeneracy} returns the number of unique variants of
 a DNA sequence with degenerate bases.
 }
 \examples{

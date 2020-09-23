@@ -1,6 +1,6 @@
 #' Count the degeneracy of a DNA sequence
 #'
-#' \code{countDegeneracy} counts the number of unique sequences of
+#' \code{countDegeneracy} returns the number of unique variants of
 #' a DNA sequence with degenerate bases.
 #'
 #' @param x
@@ -19,7 +19,7 @@ countDegeneracy <- function(x) {
   }
   x <- toupper(x)
   if (grepl(paste0("[^", allBases, "]"), x)) {
-    stop(paste0("'x' can only contain bases ", dnaBases, "."), call. = FALSE)
+    stop(paste0("'x' can only contain bases ",allBases, "."), call. = FALSE)
   }
   x <- splitSequence(x)
   nNucleotides <- degeneracyLookup[x]

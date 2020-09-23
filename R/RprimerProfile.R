@@ -63,23 +63,12 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 setGeneric("rpShow", function(x, ...) standardGeneric("rpShow"))
 
 #' @export
-#' @importFrom SummarizedExperiment
 setMethod("rpShow", "RprimerProfile", function(x, withDimNames = TRUE) {
-  assay(x, withDimnames = withDimNames)
+  SummarizedExperiment::assay(x, withDimnames = withDimNames)
 })
 
 # Generics and methods ========================================================
 
-#' @export
-setGeneric("rpPlot", function(x, ...) standardGeneric("rpPlot"))
-
-
-#' @export
-setMethod("rpPlot", "RprimerProfile", function(x, rc = FALSE) {
-  rc = rc
-
-  plot(x)
-})
 
 # Inherits ====================================================================
 
