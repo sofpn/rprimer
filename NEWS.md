@@ -1,1 +1,2 @@
-# This is the news file
+Changes in version 0.99.0 (XXX-XX-XX)  
++ Submitted to Bioconductor 

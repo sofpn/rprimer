@@ -1,16 +1,16 @@
 Type: Package
 Package: rprimer
-Title: Design PCR Assays from Multiple Sequence Alignments
-Version: 0.0.9000
+Title: Design RT-PCR Assays from Multiple Sequence Alignments
+Version: 0.99.0
+Description: Design
+    primers, probes and PCR assays from multiple sequence alignments of
+    DNA sequences.
 Authors@R: 
     person(given = "Sofia",
            family = "Persson",
            role = c("aut", "cre"),
            email = "sofiapersson27@gmail.com",
            comment = c(ORCID = "0000-0003-2611-3030"))
-Description: The rprimer package provides functions to design
-    primers, probes and PCR assays from a multiple sequence alignment of
-    DNA sequences.
 License: GPL-3
 URL: https://github.com/sofpn/rprimer
 BugReports: https://github.com/sofpn/rprimer/issues
@@ -25,6 +25,7 @@ Imports:
     magrittr,
     utils
 Suggests: 
+    BiocStyle
     covr,
     kableExtra,
     knitr,
@@ -33,7 +34,6 @@ Suggests:
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
-LazyData: false
 RoxygenNote: 7.1.1
 biocViews: 
     ddPCR,

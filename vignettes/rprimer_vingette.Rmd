@@ -1,6 +1,8 @@
 ---
 title: "Getting started with rprimer"
-output: rmarkdown::html_vignette
+author: "Sofia Persson"
+package: rprimer
+output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Getting started with rprimer}
   %\VignetteEngine{knitr::rmarkdown}
@@ -47,13 +49,15 @@ Install rprimer by calling:
 ```
 
 ### Data structures
-(S3 objects)
+
 
 * rprimer_alignment
 * rprimer_profile
 * rprimer_properties 
 * rprimer_oligo
 * rprimer_assay 
+
+### Worked examples 
 
 ### Step 1: Import alignment 
 Prepare a .txt-file with an alignment of the sequences of interest (in fasta-format), and import it using `read_fasta_alignment()`. In this example, I use an alignment with 100 HEV sequences that I have collected from GenBank, which is provided with the package. 
@@ -358,4 +362,6 @@ selected_assay <- my_assays[1, ]
 #  my_sequence_properties,
 #  comment = "my new RT-qPCR assay :)"
 ```
+
+### Session info
 
