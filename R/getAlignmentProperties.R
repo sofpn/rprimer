@@ -5,10 +5,10 @@
 #'
 #' @param x An RprimerProfile object.
 #'
-#' @param IUPACThreshold
+#' @param iupacThreshold
 #' A number (0, 0.2].
 #' At each position, all nucleotides with a proportion
-#' \code{>= IUPACThreshold} will be included in
+#' \code{>= iupacThreshold} will be included in
 #' the IUPAC consensus sequence. The default is 0.
 #'
 #' @section
@@ -27,7 +27,7 @@
 #' position.
 #'
 #' @section Gaps:
-#' Proportion of gaps. Gaps are recognized as "-" and ".".
+#' Proportion of gaps. Gaps are recognized as "-".
 #'
 #' @section Identity:
 #' Proportion of
@@ -52,17 +52,17 @@
 #' nucleotide identity and Shannon entropy.
 #'
 #' @examples
-#' GetAlignmentProperties(example_rprimer_profile)
-#' GetAlignmentProperties(example_rprimer_profile, IUPACThreshold = 0.1)
+#' getAlignmentProperties(exampleRprimerProfile)
+#' getAlignmentProperties(exampleRprimerProfile, iupacThreshold = 0.1)
 #'
 #' @export
-getSequenceProperties <- function(x, IUPACThreshold = 0) {
+getSequenceProperties <- function(x, iupacThreshold = 0) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object", call. = FALSE)
   }
   position <- seq_len(ncol(x))
   majority <- majorityConsensus(x)
-  IUPAC <- IUPACConsensus(x, threshold = IUPACThreshold)
+  IUPAC <- IUPACConsensus(x, threshold = iupacThreshold)
   gaps <- gapFrequency(x)
   identity <- nucleotideIdentity(x)
   entropy <- shannonEntropy(x)

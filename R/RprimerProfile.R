@@ -1,4 +1,3 @@
-dnaBases <- "ACGTRYSWKMBDHVN._"
 
 #  New class ==================================================================
 
@@ -6,7 +5,7 @@ dnaBases <- "ACGTRYSWKMBDHVN._"
 #' @import methods
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
 .RprimerProfile <- setClass(
-  "RprimerProfile", 
+  "RprimerProfile",
   slots = representation(
     rowVec = "numeric",
     colVec = "numeric",
@@ -32,16 +31,16 @@ RprimerProfile <- function(
   ...) {
   se <- SummarizedExperiment(...)
   .RprimerProfile(
-    se, 
-    rowVec = rowVec, 
-    colVec = colVec, 
+    se,
+    rowVec = rowVec,
+    colVec = colVec,
     rowToRowMat = rowToRowMat,
     colToColMat = colToColMat,
     rowToColMat = rowToColMat,
     colToRowMat = colToRowMat
     )
 }
-  
+
 # Getter methods for 1D data ==================================================
 
 #' @export
@@ -53,7 +52,7 @@ setGeneric("colVec", function(x, ...) standardGeneric("colVec"))
 #' @export
 setMethod("rowVec", "RprimerProfile", function(x, withDimnames=TRUE) {
   out <- x@rowVec
-  if (withDimnames) 
+  if (withDimnames)
     names(out) <- rownames(x)
   out
 })
@@ -61,7 +60,7 @@ setMethod("rowVec", "RprimerProfile", function(x, withDimnames=TRUE) {
 #' @export
 setMethod("colVec", "RprimerProfile", function(x, withDimnames=TRUE) {
   out <- x@colVec
-  if (withDimnames) 
+  if (withDimnames)
     names(out) <- colnames(x)
   out
 })
@@ -83,7 +82,7 @@ setGeneric("colToRowMat", function(x, ...) standardGeneric("colToRowMat"))
 #' @export
 setMethod("rowToRowMat", "RprimerProfile", function(x, withDimnames=TRUE) {
   out <- x@rowToRowMat
-  if (withDimnames) 
+  if (withDimnames)
     rownames(out) <- rownames(x)
   out
 })
@@ -91,7 +90,7 @@ setMethod("rowToRowMat", "RprimerProfile", function(x, withDimnames=TRUE) {
 #' @export
 setMethod("colToColMat", "RprimerProfile", function(x, withDimnames=TRUE) {
   out <- x@colToColMat
-  if (withDimnames) 
+  if (withDimnames)
     colnames(out) <- colnames(x)
   out
 })
@@ -99,7 +98,7 @@ setMethod("colToColMat", "RprimerProfile", function(x, withDimnames=TRUE) {
 #' @export
 setMethod("rowToColMat", "RprimerProfile", function(x, withDimnames=TRUE) {
   out <- x@rowToColMat
-  if (withDimnames) 
+  if (withDimnames)
     rownames(out) <- colnames(x)
   out
 })
@@ -107,7 +106,7 @@ setMethod("rowToColMat", "RprimerProfile", function(x, withDimnames=TRUE) {
 #' @export
 setMethod("colToRowMat", "RprimerProfile", function(x, withDimnames=TRUE) {
   out <- x@colToRowMat
-  if (withDimnames) 
+  if (withDimnames)
     colnames(out) <- rownames(x)
   out
 })
@@ -120,7 +119,7 @@ setValidity2("RprimerProfile", function(object) {
   NR <- NROW(object)
   NC <- NCOL(object)
   msg <- NULL
-  
+
   # 1D
   if (length(rowVec(object, withDimnames=FALSE)) != NR) {
     msg <- c(msg, "'rowVec' should have length equal to the number of rows")
@@ -130,7 +129,7 @@ setValidity2("RprimerProfile", function(object) {
       msg, "'colVec' should have length equal to the number of columns"
     )
   }
-  
+
   # 2D
   if (NROW(rowToRowMat(object, withDimnames=FALSE)) != NR) {
     msg <- c(
@@ -152,7 +151,7 @@ setValidity2("RprimerProfile", function(object) {
       msg, "'ncol(colToRowMat)' should be equal to the number of rows"
     )
   }
-  
+
   if (length(msg)) {
     msg
   } else TRUE
@@ -217,7 +216,7 @@ setMethod("show", "RprimerProfile", function(object) {
 #  }
 #  if (any(grepl(paste0("^", dnaBases), row.names(SummarizedExperiment::assay(object))))) {
 #    msg <- c(msg, paste0(
-#      "The object contains invalid rownames. \n Valid rownames are ", 
+#      "The object contains invalid rownames. \n Valid rownames are ",
 #      dnaBases, "."
 #    )
 #  )
