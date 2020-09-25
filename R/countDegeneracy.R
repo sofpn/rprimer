@@ -19,7 +19,7 @@ countDegeneracy <- function(x) {
   }
   x <- toupper(x)
   if (grepl(paste0("[^", allBases, "]"), x)) {
-    stop(paste0("'x' can only contain bases ",allBases, "."), call. = FALSE)
+    stop(paste0("'x' can only contain bases ", allBases, "."), call. = FALSE)
   }
   x <- splitSequence(x)
   nNucleotides <- degeneracyLookup[x]

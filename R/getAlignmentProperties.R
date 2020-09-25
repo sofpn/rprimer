@@ -96,7 +96,7 @@ majorityConsensus <- function(x) {
     if (length(mostCommon > 1)) {
       mostCommon <- sample(mostCommon, 1)
     }
-    return(mostCommon)
+    mostCommon
   }
   # Get the consensus sequence at all positions
   consensus <- apply(x, 2, function(y) findMostCommonBase(x, y))

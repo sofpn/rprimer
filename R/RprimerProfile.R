@@ -21,6 +21,7 @@
 RprimerProfile <- function(x, ...) {
   x <- x[, colSums(!is.na(x)) > 0]
   x <- x[(rownames(x) != "+" & rownames(x) != "."), ]
+  colnames(x) <- seq_len(ncol(x))
   se <- SummarizedExperiment(list(x = x), ...)
   .RprimerProfile(se)
 }
