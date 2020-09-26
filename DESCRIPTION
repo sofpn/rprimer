@@ -18,12 +18,14 @@ URL: https://github.com/sofpn/rprimer
 BugReports: https://github.com/sofpn/rprimer/issues
 Depends: 
     R (>= 4.0)
-Imports: 
+Imports:
+    Biostrings,
     dplyr,
     ggplot2,
     purrr,
     tibble,
     magrittr,
+    methods,
     SummarizedExperiment
 Suggests: 
     BiocStyle,

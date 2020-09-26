@@ -9,7 +9,6 @@
 #  New class ==================================================================
 
 #' @export
-#' @import methods
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
 .RprimerProfile <- setClass(
   "RprimerProfile", contains = "SummarizedExperiment"

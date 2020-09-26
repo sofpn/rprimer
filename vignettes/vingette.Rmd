@@ -18,7 +18,6 @@ knitr::opts_chunk$set(
 
 ```{r setup, message = FALSE, warning = FALSE}
 library(rprimer)
-library(Biostrings)
 library(magrittr)
 #devtools::load_all(".")
 
@@ -65,26 +64,17 @@ Aldready existing functionality can be used to import an alignment
 In this example, I use an alignment with 100 HEV sequences that I have collected from GenBank, which is provided with the package. 
 
 ```{r}
-infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
+infile <- system.file('extdata', 'exampleAlignment.txt', package = "rprimer")
 ```
 
 ```{r}
 # Import alignment and remove positions with high gap frequency
-myAlignment <- infile %>%
-  readDNAMultipleAlignment(., format = "fasta") %>%
-  maskGaps(., min.fraction = 0.5, min.block.width = 1)
+#myAlignment <- infile %>%
+#  Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
+#  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1)
 
 # Select region of interest
-colmask(myAlignment, invert = TRUE) <- IRanges::IRanges(start = 1000, end = 5000)
-
-#
-myProfile <- consensusMatrix(myAlignment, as.prob = TRUE) #%>%
-
-x <- myProfile
-
-# Remove columns with NA
-y <- x[, colSums(!is.na(x)) > 0]
-
+# Biostrings::colmask(myAlignment, invert = TRUE) <- IRanges::IRanges(start = 1000, end = 5000)
 
 ```
 

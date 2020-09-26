@@ -80,7 +80,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #' \code{majorityConsensus} returns the majority consensus sequence of an
 #' alignment of DNA sequences.
 #'
-#' @inheritParams getSequenceProperties
+#' @inheritParams getAlignmentProperties
 #'
 #' @return The majority consensus sequence (a character vector of length n).
 #'
@@ -120,9 +120,9 @@ majorityConsensus <- function(x) {
 #' @return The corresponding IUPAC base.
 #'
 #' @examples
-#' as_IUPAC("A,C")
-#' as_IUPAC("R")
-#' as_IUPAC("TG") ## Will return NA since the bases are not separated by comma
+#' asIUPAC("A,C")
+#' asIUPAC("R")
+#' asIUPAC("TG") ## Will return NA since the bases are not separated by comma
 #'
 #' @keywords internal
 asIUPAC <- function(x) {
@@ -141,8 +141,8 @@ asIUPAC <- function(x) {
   match <- x %in% bases
   x <- x[!(match == FALSE)]
   x <- paste(x, collapse = ",")
-  IUPAC <- unname(iupacLookup[x])
-  IUPAC
+  iupacBase <- unname(iupacLookup[x])
+  iupacBase
 }
 
 #' IUPAC consensus sequence
@@ -150,7 +150,7 @@ asIUPAC <- function(x) {
 #' \code{iupacConsensus} returns the IUPAC consensus sequence from an
 #' PrprimerProfile object.
 #'
-#' @inheritParams getSequenceProperties
+#' @inheritParams getAlignmentProperties
 #'
 #' @param threshold
 #' Optional. A number (0, 0.2]
@@ -194,7 +194,7 @@ iupacConsensus <- function(x, threshold = 0) {
 #' \code{gapFrequency} returns the gap frequency from an
 #' PrprimerProfile object.
 #'
-#' @inheritParams getSequenceProperties
+#' @inheritParams getAlignmentProperties
 #'
 #' @return The gap frequency (a numeric vector of length n).
 #'
@@ -218,7 +218,7 @@ gapFrequency <- function(x) {
 #' \code{nucleotideIdentity} returns the nucleotide identity from an
 #' PrprimerProfile object.
 #'
-#' @inheritParams getSequenceProperties
+#' @inheritParams getAlignmentProperties
 #'
 #' @return The nucleotide identity (a numeric vector of length n).
 #' The nucleotide identity can range between (0, 1].
@@ -243,7 +243,7 @@ nucleotideIdentity <- function(x) {
 #' \code{shannonEntropy} returns the Shannon entropy from an
 #' PrprimerProfile object.
 #'
-#' @inheritParams getSequenceProperties
+#' @inheritParams getAlignmentProperties
 #'
 #' @return The Shannon entropy (a numeric vector of length n).
 #'
