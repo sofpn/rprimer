@@ -14,11 +14,6 @@
 #'
 #' @return A tibble with position and running average of x.
 #'
-#' @examples
-#' gcRunningAverage(
-#' c("G", "T", "T", "T", "G", "T", "T", "T", "C", "T", "T"), size = 2
-#' )
-#'
 #' @seealso gcContent
 #'
 #' @keywords internal

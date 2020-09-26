@@ -22,6 +22,6 @@ of DNA sequences.The function is a wrapper around
 Biostrings::consensusMatrix.
 }
 \examples{
-
+getAlignmentProfile(exampleRprimerAlignment)
 
 }

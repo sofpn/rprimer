@@ -9,9 +9,6 @@
 #'
 #' @return The number of degenerate bases in \code{x} (an integer).
 #'
-#' @examples
-#' count_degenerates("CTTRNA")
-#'
 #' @keywords internal
 countDegenerates <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {

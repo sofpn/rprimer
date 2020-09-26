@@ -16,10 +16,4 @@ The GC content of x.
 \description{
 \code{gcContent} finds the GC content of a DNA sequence.
 }
-\examples{
-gcContent("ACGTTCC")
-gcContent("ACGTTCC--")
-gcContent("ACGRN") ## Will return an error because of an invalid base.
-
-}
 \keyword{internal}

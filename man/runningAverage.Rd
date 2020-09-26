@@ -21,9 +21,4 @@ A tibble with position and running average of x.
 \code{runningAverage} calculates a running average of a
 numeric vector.
 }
-\examples{
-runningAverage(c(1, 3, 2, 1, 3, 4, 5), size = 2)
-runningAverage(c(10, 22.4, 14.2, 44, 32))
-
-}
 \keyword{internal}

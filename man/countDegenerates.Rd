@@ -17,8 +17,4 @@ The number of degenerate bases in \code{x} (an integer).
 \code{countDegenerates} returns the number of degenerate bases in a DNA
 sequence.
 }
-\examples{
-count_degenerates("CTTRNA")
-
-}
 \keyword{internal}

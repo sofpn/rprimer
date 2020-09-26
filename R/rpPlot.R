@@ -9,6 +9,8 @@
 #' @return A plot.
 #'
 #' @examples
+#' rpPlot(exampleRprimerProfile[, 1:10]) ## Plot the first 10 bases
+#' rpPlot(exampleRprimerProfile[, 1:10], rc = TRUE) ## As reverse complement
 #'
 #' @export
 setGeneric("rpPlot", function(x, ...) standardGeneric("rpPlot"))
@@ -34,6 +36,7 @@ setMethod("rpPlot", "RprimerProfile", function(x, rc = FALSE) {
       rownames(x)[swap] <- rownames(x)[rev(swap)]
     }
   }
+  Base <- Position <- Frequency <- NULL
   x <- reshape2::melt(x)
   names(x) <- c("Base", "Position", "Frequency")
   x$Base <- factor(x$Base)
@@ -43,7 +46,7 @@ setMethod("rpPlot", "RprimerProfile", function(x, rc = FALSE) {
   }
   cols <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038", "gray")
   p <- ggplot2::ggplot(
-    x, ggplot2::aes(x = Position, y = Frequency, fill = Base)
+    data = x, ggplot2::aes(x = Position, y = Frequency, fill = Base)
   )
   barchart <- ggplot2::geom_bar(stat = "identity")
   coloring <- ggplot2::scale_fill_manual(values = cols)

@@ -16,10 +16,4 @@ The reverse complement of x. Non valid bases will return as \code{NA}.
 \description{
 \code{reverseComplement} finds the reverse complement of a DNA sequence.
 }
-\examples{
-reverseComplement("CTTTGRTN")
-reverseComplement("CTTTGRTN-")
-reverseComplement("C")
-
-}
 \keyword{internal}

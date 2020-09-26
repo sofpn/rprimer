@@ -13,10 +13,6 @@
 #'
 #' @return A tibble with position and running average of x.
 #'
-#' @examples
-#' runningAverage(c(1, 3, 2, 1, 3, 4, 5), size = 2)
-#' runningAverage(c(10, 22.4, 14.2, 44, 32))
-#'
 #' @keywords internal
 runningAverage <- function(x, size = NULL) {
   if (is.null(size)) {

@@ -22,10 +22,4 @@ The corresponding IUPAC base.
 \code{asIUPAC} takes several DNA nucleotides as input,
 and returns the degenerate base in IUPAC format.
 }
-\examples{
-asIUPAC("A,C")
-asIUPAC("R")
-asIUPAC("TG") ## Will return NA since the bases are not separated by comma
-
-}
 \keyword{internal}

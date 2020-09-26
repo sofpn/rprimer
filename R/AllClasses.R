@@ -10,7 +10,7 @@
 
 #' @export
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
-.RprimerProfile <- setClass(
+setClass(
   "RprimerProfile", contains = "SummarizedExperiment"
 )
 
@@ -19,8 +19,7 @@
 #' @export
 #' @importFrom SummarizedExperiment SummarizedExperiment
 RprimerProfile <- function(x, ...) {
-  se <- SummarizedExperiment(list(x = x), ...)
-  .RprimerProfile(se)
+  methods::new("RprimerProfile", SummarizedExperiment(list(x = x), ...))
 }
 
 # Validity method =============================================================

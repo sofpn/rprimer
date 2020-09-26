@@ -9,11 +9,6 @@
 #' @return
 #' The reverse complement of x. Non valid bases will return as \code{NA}.
 #'
-#' @examples
-#' reverseComplement("CTTTGRTN")
-#' reverseComplement("CTTTGRTN-")
-#' reverseComplement("C")
-#'
 #' @keywords internal
 reverseComplement <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {

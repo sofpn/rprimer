@@ -17,8 +17,4 @@ The number of unique sequences of x (an integer).
 \code{countDegeneracy} returns the number of unique variants of
 a DNA sequence with degenerate bases.
 }
-\examples{
-countDegeneracy("GTTTCCRT")
-
-}
 \keyword{internal}

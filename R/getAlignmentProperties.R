@@ -119,11 +119,6 @@ majorityConsensus <- function(x) {
 #'
 #' @return The corresponding IUPAC base.
 #'
-#' @examples
-#' asIUPAC("A,C")
-#' asIUPAC("R")
-#' asIUPAC("TG") ## Will return NA since the bases are not separated by comma
-#'
 #' @keywords internal
 asIUPAC <- function(x) {
   if (!(is.character(x) && length(x) == 1)) {

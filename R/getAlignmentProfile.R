@@ -15,7 +15,7 @@
 #' number of positions in the alignment.
 #'
 #' @examples
-#'
+#' getAlignmentProfile(exampleRprimerAlignment)
 #'
 #' @export
 getAlignmentProfile <- function(x) {

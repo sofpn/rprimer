@@ -9,9 +9,6 @@
 #'
 #' @return The number of unique sequences of x (an integer).
 #'
-#' @examples
-#' countDegeneracy("GTTTCCRT")
-#'
 #' @keywords internal
 countDegeneracy <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {

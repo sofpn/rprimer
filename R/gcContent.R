@@ -8,11 +8,6 @@
 #'
 #' @return The GC content of x.
 #'
-#' @examples
-#' gcContent("ACGTTCC")
-#' gcContent("ACGTTCC--")
-#' gcContent("ACGRN") ## Will return an error because of an invalid base.
-#'
 #' @keywords internal
 gcContent <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {

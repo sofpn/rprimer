@@ -21,12 +21,6 @@ A tibble with position and running average of x.
 \code{gcRunningAverage} calculates a running average of
 the GC-content of a DNA sequence
 }
-\examples{
-gcRunningAverage(
-c("G", "T", "T", "T", "G", "T", "T", "T", "C", "T", "T"), size = 2
-)
-
-}
 \seealso{
 gcContent
 }
