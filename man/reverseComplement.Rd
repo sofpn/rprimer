@@ -22,3 +22,4 @@ reverseComplement("CTTTGRTN-")
 reverseComplement("C")
 
 }
+\keyword{internal}

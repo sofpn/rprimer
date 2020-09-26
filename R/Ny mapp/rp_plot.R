@@ -1,27 +1,3 @@
-#' Plot an rprimer object (generic)
-#'
-#' @param x An rprimer object (see methods for details).
-#'
-#' @param ...
-#' Additional arguments that should be passed to the plot, when
-#' plotting an object of class 'rprimer_profile'.
-#'
-#' @return A plot.
-#'
-#' @examples
-#' rp_plot(example_rprimer_alignment)
-#' rp_plot(example_rprimer_profile[ , 1:20], rc = TRUE)
-#' rp_plot(example_rprimer_properties)
-#' rp_plot(example_rprimer_properties[1:20, ])
-#'
-#' @export
-rp_plot <- function(x, ...) {
-  object_name <- as.character(substitute(x))
-  if (!exists(object_name)) {
-    stop(paste("object", object_name, "does not exist."), call. = FALSE)
-  }
-  UseMethod("rp_plot")
-}
 
 #' @describeIn rp_plot Plot an rprimer_alignment object.
 #'
@@ -50,27 +26,6 @@ rp_plot.rprimer_alignment <- function(x, ...) {
   )
 }
 
-#' @describeIn rp_plot Plot an rprimer_profile object.
-#'
-#' @param rc \code{TRUE/FALSE}. If the plotted sequence should be displayed
-#' as reverse complement or not. The default is \code{FALSE}.
-#'
-#' @export
-rp_plot.rprimer_profile <- function(
-  x, rc = FALSE, ...
-) {
-  if (!(is.logical(rc)))
-    stop("rc must be set to TRUE or FALSE", call. = FALSE)
-  op <- graphics::par(mar = c(0.75, 4.57, 0.75, 0.75))
-  on.exit(graphics::par(op))
-  # Get the data
-  x <- x[which(rownames(x) != "-"), ]
-  if (rc == TRUE) {
-    x <- x[, rev(seq_len(ncol(x)))]
-    rownames(x) <- unname(complement_lookup[rownames(x)])
-  }
-  sequence_barplot(x)
-}
 
 #' @describeIn rp_plot Plot an rprimer_properties object.
 #'
@@ -166,37 +121,5 @@ sequence_detail_plot <- function(x) {
   graphics::mtext(
     side = 1, outer = TRUE, "position",
     line = 3, cex = 0.7
-  )
-}
-
-#' Sequence barplot
-#'
-#' @param x A selection of a sequence profile
-#'
-#' @param ... Additional arguments that should be
-#' passed to the barplot, e.g. a title.
-#'
-#' @return A barplot.
-#'
-#' @keywords internal
-#'
-#' @noRd
-sequence_barplot <- function(x, ...) {
-  base_cols <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038", "white")
-  names(base_cols) <- c("a", "c", "g", "t", "-")
-  wobble_cols <- grDevices::gray.colors(10, start = 0.6)
-  names(wobble_cols) <- c("r", "y", "m", "k", "s", "w", "n", "h", "d", "v")
-  cols <- c(base_cols, wobble_cols)
-  graphics::barplot(
-    x,
-    space = 0, xaxt = "n", font.main = 1, border = "grey80",
-    col = cols[rownames(x)], legend = TRUE, ylab = "Proportion",
-    ylim = c(0, 1), ...,
-    args.legend = list(
-      x = "right", box.col = NA, border = "grey80",
-      bg = grDevices::rgb(
-        60, 60, 60, alpha = 50, maxColorValue = 200
-      ), inset = c(0, -0.3)
-    )
   )
 }

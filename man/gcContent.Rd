@@ -22,3 +22,4 @@ gcContent("ACGTTCC--")
 gcContent("ACGRN") ## Will return an error because of an invalid base.
 
 }
+\keyword{internal}

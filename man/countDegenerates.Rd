@@ -21,3 +21,4 @@ sequence.
 count_degenerates("CTTRNA")
 
 }
+\keyword{internal}

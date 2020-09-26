@@ -21,3 +21,4 @@ a DNA sequence with degenerate bases.
 countDegeneracy("GTTTCCRT")
 
 }
+\keyword{internal}

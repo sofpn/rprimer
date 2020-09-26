@@ -13,7 +13,7 @@
 #' gcContent("ACGTTCC--")
 #' gcContent("ACGRN") ## Will return an error because of an invalid base.
 #'
-#' @export
+#' @keywords internal
 gcContent <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
     stop("'x' must be a character vector of length one.", call. = FALSE)

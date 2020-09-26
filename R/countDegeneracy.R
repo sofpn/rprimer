@@ -12,7 +12,7 @@
 #' @examples
 #' countDegeneracy("GTTTCCRT")
 #'
-#' @export
+#' @keywords internal
 countDegeneracy <- function(x) {
   if (typeof(x) != "character" || length(x) != 1) {
     stop("'x' must be a character vector of length one.", call. = FALSE)

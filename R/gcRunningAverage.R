@@ -22,8 +22,6 @@
 #' @seealso gcContent
 #'
 #' @keywords internal
-#'
-#' @noRd
 gcRunningAverage <- function(x, size = NULL) {
   if (is.null(size)) {
     size <- round(length(x) / 100)

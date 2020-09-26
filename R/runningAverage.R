@@ -18,8 +18,6 @@
 #' runningAverage(c(10, 22.4, 14.2, 44, 32))
 #'
 #' @keywords internal
-#'
-#' @noRd
 runningAverage <- function(x, size = NULL) {
   if (is.null(size)) {
     size <- round(length(x) / 100)

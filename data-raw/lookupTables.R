@@ -17,7 +17,8 @@ complementLookup <- c(
     "D" = "H",
     "V" = "B",
     "B" = "V",
-    "-" = "-"
+    "-" = "-",
+    "other" = "other"
   )
 
 iupacLookup <- c(

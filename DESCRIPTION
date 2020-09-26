@@ -20,12 +20,11 @@ Depends:
     R (>= 4.0)
 Imports: 
     dplyr,
-    graphics,
-    grDevices,
+    ggplot2,
     purrr,
     tibble,
     magrittr,
-    utils
+    SummarizedExperiment
 Suggests: 
     BiocStyle,
     covr,
