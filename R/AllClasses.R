@@ -4,6 +4,7 @@
 # AllGenerics.R
 
 # allow subsetting but names must be kept! Also drop = F!
+# getAlignmentProfile
 
 #  New class ==================================================================
 
@@ -19,13 +20,6 @@
 #' @export
 #' @importFrom SummarizedExperiment SummarizedExperiment
 RprimerProfile <- function(x, ...) {
-  x <- x[, colSums(!is.na(x)) > 0]
-  x <- x[(rownames(x) != "+" & rownames(x) != "."), ]
-  bases <- c("A", "C", "G", "T", "-")
-  other <- colSums(x[!rownames(x) %in% bases, ])
-  x <- x[rownames(x) %in% bases, ]
-  x <- rbind(x, other)
-  colnames(x) <- seq_len(ncol(x))
   se <- SummarizedExperiment(list(x = x), ...)
   .RprimerProfile(se)
 }
@@ -58,9 +52,6 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
     msg
   }
 })
-
-# Generics and methods ========================================================
-
 
 # Inherits ====================================================================
 

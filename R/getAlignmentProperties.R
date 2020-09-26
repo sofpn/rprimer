@@ -69,6 +69,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
   properties <- tibble::tibble(
     position, majority, IUPAC, gaps, identity, entropy
   )
+  names(properties) <- c("Position", "Majority", "IUPAC", "Gaps", "Entropy")
   properties
 }
 
@@ -84,13 +85,11 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #' @return The majority consensus sequence (a character vector of length n).
 #'
 #' @keywords internal
-#'
-#' @noRd
 majorityConsensus <- function(x) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
-  x <- unclass(assay(x))
+  x <- unclass(SummarizedExperiment::assay(x))
   findMostCommonBase <- function(x, y) {
     mostCommon <- rownames(x)[y == max(y)]
     if (length(mostCommon > 1)) {
@@ -126,8 +125,6 @@ majorityConsensus <- function(x) {
 #' as_IUPAC("TG") ## Will return NA since the bases are not separated by comma
 #'
 #' @keywords internal
-#'
-#' @noRd
 asIUPAC <- function(x) {
   if (!(is.character(x) && length(x) == 1)) {
     stop(
@@ -167,8 +164,6 @@ asIUPAC <- function(x) {
 #' sequecnce is determined.
 #'
 #' @keywords internal
-#'
-#' @noRd
 iupacConsensus <- function(x, threshold = 0) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
@@ -179,7 +174,7 @@ iupacConsensus <- function(x, threshold = 0) {
       You've set it to ", threshold, "."
     ), call. = FALSE)
   }
-  x <- unclass(assay(x))
+  x <- unclass(SummarizedExperiment::assay(x))
   bases <- c("A", "C", "G", "T", "-")
   x <- x[rownames(x) %in% bases, ]
   basesToInclude <- apply(x, 2, function(y) {
@@ -204,13 +199,11 @@ iupacConsensus <- function(x, threshold = 0) {
 #' @return The gap frequency (a numeric vector of length n).
 #'
 #' @keywords internal
-#'
-#' @noRd
 gapFrequency <- function(x) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
-  x <- unclass(assay(x))
+  x <- unclass(SummarizedExperiment::assay(x))
   if ("-" %in% rownames(x)) {
     gaps <- x[rownames(x) == "-", ]
     gaps <- unname(gaps)
@@ -231,13 +224,11 @@ gapFrequency <- function(x) {
 #' The nucleotide identity can range between (0, 1].
 #'
 #' @keywords internal
-#'
-#' @noRd
 nucleotideIdentity <- function(x) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
-  x <- unclass(assay(x))
+  x <- unclass(SummarizedExperiment::assay(x))
   bases <- c("A", "C", "G", "T")
   s <- x[rownames(x) %in% bases, ]
   s <- apply(s, 2, function(x) x / sum(x))
@@ -257,13 +248,11 @@ nucleotideIdentity <- function(x) {
 #' @return The Shannon entropy (a numeric vector of length n).
 #'
 #' @keywords internal
-#'
-#' @noRd
 shannonEntropy <- function(x) {
   if (!is.RprimerProfile(x)) {
     stop("'x' must be an RprimerProfile object.", call. = FALSE)
   }
-  x <- unclass(assay(x))
+  x <- unclass(SummarizedExperiment::assay(x))
   bases <- c("A", "C", "G", "T")
   s <- x[rownames(x) %in% bases, ]
   s <- apply(s, 2, function(x) x / sum(x))
