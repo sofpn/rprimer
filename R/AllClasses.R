@@ -4,7 +4,6 @@
 # AllGenerics.R
 
 # allow subsetting but names must be kept! Also drop = F!
-# getAlignmentProfile
 
 #  New class ==================================================================
 

@@ -5,15 +5,21 @@
 \alias{exampleRprimerAlignment}
 \title{An alignment of hepatitis E virus sequences}
 \format{
-Add here ############################################
+A Biostrings::DNAMultipleAlignment object.
 }
 \source{
-The sequences were collected from NCBI GenBank,
+The sequences were collected from NCBI GenBank and the alignment
+was imported to the package using Biostrings::readDNAStringSet().
 }
 \usage{
 data(exampleRprimerAlignment)
 }
 \description{
 An alignment with 621 hepatitis E virus sequences.
+}
+\references{
+H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
+Efficient manipulation of biological strings. R package version
+2.57.2.
 }
 \keyword{datasets}
