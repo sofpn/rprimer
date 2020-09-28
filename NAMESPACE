@@ -3,7 +3,6 @@
 export(RprimerProfile)
 export(getAlignmentProfile)
 export(getAlignmentProperties)
-export(is.RprimerProfile)
 export(rpPlot)
 exportClasses(RprimerProfile)
 exportMethods(rpPlot)

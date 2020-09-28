@@ -22,6 +22,10 @@ of DNA sequences.The function is a wrapper around
 Biostrings::consensusMatrix.
 }
 \examples{
+data("exampleRprimerAlignment")
 getAlignmentProfile(exampleRprimerAlignment)
-
+}
+\references{
+H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
+Efficient manipulation of biological strings. R package version 2.57.2.
 }

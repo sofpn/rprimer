@@ -52,25 +52,29 @@
 #' nucleotide identity and Shannon entropy.
 #'
 #' @examples
+#' data("exampleRprimerProfile")
 #' getAlignmentProperties(exampleRprimerProfile)
 #' getAlignmentProperties(exampleRprimerProfile, iupacThreshold = 0.1)
-#'
 #' @export
 getAlignmentProperties <- function(x, iupacThreshold = 0) {
-  if (!is.RprimerProfile(x)) {
-    stop("'x' must be an RprimerProfile object", call. = FALSE)
-  }
-  position <- seq_len(ncol(x))
-  majority <- majorityConsensus(x)
-  IUPAC <- iupacConsensus(x, threshold = iupacThreshold)
-  gaps <- gapFrequency(x)
-  identity <- nucleotideIdentity(x)
-  entropy <- shannonEntropy(x)
-  properties <- tibble::tibble(
-    position, majority, IUPAC, gaps, identity, entropy
-  )
-  names(properties) <- c("Position", "Majority", "IUPAC", "Gaps", "Entropy")
-  properties
+    if (!methods::is(x, "RprimerProfile")) {
+        stop("'x' must be an RprimerProfile object", call. = FALSE)
+    }
+    position <- seq_len(ncol(x))
+    majority <- majorityConsensus(x)
+    IUPAC <- iupacConsensus(x, threshold = iupacThreshold)
+    gaps <- gapFrequency(x)
+    identity <- nucleotideIdentity(x)
+    entropy <- shannonEntropy(x)
+    properties <- tibble::tibble(
+        "Position" = position,
+        "Majority" = majority,
+        "IUPAC" = IUPAC,
+        "Gaps" = gaps,
+        "Identity" = identity,
+        "Entropy" = entropy
+    )
+    properties
 }
 
 # Helpers =====================================================================
@@ -86,21 +90,21 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #'
 #' @keywords internal
 majorityConsensus <- function(x) {
-  if (!is.RprimerProfile(x)) {
-    stop("'x' must be an RprimerProfile object.", call. = FALSE)
-  }
-  x <- unclass(SummarizedExperiment::assay(x))
-  findMostCommonBase <- function(x, y) {
-    mostCommon <- rownames(x)[y == max(y)]
-    if (length(mostCommon > 1)) {
-      mostCommon <- sample(mostCommon, 1)
+    if (!methods::is(x, "RprimerProfile")) {
+        stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
-    mostCommon
-  }
-  # Get the consensus sequence at all positions
-  consensus <- apply(x, 2, function(y) findMostCommonBase(x, y))
-  consensus <- unname(consensus)
-  consensus
+    x <- unclass(SummarizedExperiment::assay(x))
+    findMostCommonBase <- function(x, y) {
+        mostCommon <- rownames(x)[y == max(y)]
+        if (length(mostCommon > 1)) {
+            mostCommon <- sample(mostCommon, 1)
+        }
+        mostCommon
+    }
+    # Get the consensus sequence at all positions
+    consensus <- apply(x, 2, function(y) findMostCommonBase(x, y))
+    consensus <- unname(consensus)
+    consensus
 }
 
 #' Convert DNA nucleotides into the corresponding IUPAC base
@@ -121,23 +125,23 @@ majorityConsensus <- function(x) {
 #'
 #' @keywords internal
 asIUPAC <- function(x) {
-  if (!(is.character(x) && length(x) == 1)) {
-    stop(
-      "'x' must be a character vector of length one, e.g. 'A,C,T'.",
-      call. = FALSE
-    )
-  }
-  x <- toupper(x)
-  x <- gsub(" ", "", x)
-  x <- unlist(strsplit(x, split = ","), use.names = FALSE)
-  x <- x[order(x)]
-  x <- unique(x)
-  bases <- c("A", "C", "G", "T", "-", ".")
-  match <- x %in% bases
-  x <- x[!(match == FALSE)]
-  x <- paste(x, collapse = ",")
-  iupacBase <- unname(iupacLookup[x])
-  iupacBase
+    if (!(is.character(x) && length(x) == 1)) {
+        stop(
+            "'x' must be a character vector of length one, e.g. 'A,C,T'.",
+            call. = FALSE
+        )
+    }
+    x <- toupper(x)
+    x <- gsub(" ", "", x)
+    x <- unlist(strsplit(x, split = ","), use.names = FALSE)
+    x <- x[order(x)]
+    x <- unique(x)
+    bases <- c("A", "C", "G", "T", "-", ".")
+    match <- x %in% bases
+    x <- x[!(match == FALSE)]
+    x <- paste(x, collapse = ",")
+    iupacBase <- unname(iupacLookup[x])
+    iupacBase
 }
 
 #' IUPAC consensus sequence
@@ -160,28 +164,28 @@ asIUPAC <- function(x) {
 #'
 #' @keywords internal
 iupacConsensus <- function(x, threshold = 0) {
-  if (!is.RprimerProfile(x)) {
-    stop("'x' must be an RprimerProfile object.", call. = FALSE)
-  }
-  if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
-    stop(paste0(
-      "'treshold' must be higher than 0 and less or equal to 0.2. \n
+    if (!methods::is(x, "RprimerProfile")) {
+        stop("'x' must be an RprimerProfile object.", call. = FALSE)
+    }
+    if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
+        stop(paste0(
+            "'treshold' must be higher than 0 and less or equal to 0.2. \n
       You've set it to ", threshold, "."
-    ), call. = FALSE)
-  }
-  x <- unclass(SummarizedExperiment::assay(x))
-  bases <- c("A", "C", "G", "T", "-")
-  x <- x[rownames(x) %in% bases, ]
-  basesToInclude <- apply(x, 2, function(y) {
-    paste(rownames(x)[y > threshold], collapse = ",")
-  })
-  basesToInclude <- unname(basesToInclude)
-  consensus <- purrr::map_chr(basesToInclude, ~ asIUPAC(.x))
-  if (any(is.na(consensus))) {
-    warning("The consensus sequence contain NAs. \n
+        ), call. = FALSE)
+    }
+    x <- unclass(SummarizedExperiment::assay(x))
+    bases <- c("A", "C", "G", "T", "-")
+    x <- x[rownames(x) %in% bases, ]
+    basesToInclude <- apply(x, 2, function(y) {
+        paste(rownames(x)[y > threshold], collapse = ",")
+    })
+    basesToInclude <- unname(basesToInclude)
+    consensus <- purrr::map_chr(basesToInclude, ~ asIUPAC(.x))
+    if (any(is.na(consensus))) {
+        warning("The consensus sequence contain NAs. \n
     Try to lower the threshold value.", call. = FALSE)
-  }
-  consensus
+    }
+    consensus
 }
 
 #' Gap frequency
@@ -195,17 +199,17 @@ iupacConsensus <- function(x, threshold = 0) {
 #'
 #' @keywords internal
 gapFrequency <- function(x) {
-  if (!is.RprimerProfile(x)) {
-    stop("'x' must be an RprimerProfile object.", call. = FALSE)
-  }
-  x <- unclass(SummarizedExperiment::assay(x))
-  if ("-" %in% rownames(x)) {
-    gaps <- x[rownames(x) == "-", ]
-    gaps <- unname(gaps)
-  } else {
-    gaps <- rep(0, ncol(x))
-  }
-  gaps
+    if (!methods::is(x, "RprimerProfile")) {
+        stop("'x' must be an RprimerProfile object.", call. = FALSE)
+    }
+    x <- unclass(SummarizedExperiment::assay(x))
+    if ("-" %in% rownames(x)) {
+        gaps <- x[rownames(x) == "-", ]
+        gaps <- unname(gaps)
+    } else {
+        gaps <- rep(0, ncol(x))
+    }
+    gaps
 }
 
 #' Nucleotide identity
@@ -220,17 +224,17 @@ gapFrequency <- function(x) {
 #'
 #' @keywords internal
 nucleotideIdentity <- function(x) {
-  if (!is.RprimerProfile(x)) {
-    stop("'x' must be an RprimerProfile object.", call. = FALSE)
-  }
-  x <- unclass(SummarizedExperiment::assay(x))
-  bases <- c("A", "C", "G", "T")
-  s <- x[rownames(x) %in% bases, ]
-  s <- apply(s, 2, function(x) x / sum(x))
-  identity <- apply(s, 2, max)
-  identity <- unname(identity)
-  identity[is.na(identity)] <- 0
-  identity
+    if (!methods::is(x, "RprimerProfile")) {
+        stop("'x' must be an RprimerProfile object.", call. = FALSE)
+    }
+    x <- unclass(SummarizedExperiment::assay(x))
+    bases <- c("A", "C", "G", "T")
+    s <- x[rownames(x) %in% bases, ]
+    s <- apply(s, 2, function(x) x / sum(x))
+    identity <- apply(s, 2, max)
+    identity <- unname(identity)
+    identity[is.na(identity)] <- 0
+    identity
 }
 
 #' Shannon entropy
@@ -244,19 +248,19 @@ nucleotideIdentity <- function(x) {
 #'
 #' @keywords internal
 shannonEntropy <- function(x) {
-  if (!is.RprimerProfile(x)) {
-    stop("'x' must be an RprimerProfile object.", call. = FALSE)
-  }
-  x <- unclass(SummarizedExperiment::assay(x))
-  bases <- c("A", "C", "G", "T")
-  s <- x[rownames(x) %in% bases, ]
-  s <- apply(s, 2, function(x) x / sum(x))
-  entropy <- apply(s, 2, function(x) {
-    ifelse(x == 0, 0, x * log2(x))
-  })
-  entropy <- -colSums(entropy)
-  entropy <- unname(entropy)
-  entropy <- abs(entropy)
-  entropy[is.na(entropy)] <- 0
-  entropy
+    if (!methods::is(x, "RprimerProfile")) {
+        stop("'x' must be an RprimerProfile object.", call. = FALSE)
+    }
+    x <- unclass(SummarizedExperiment::assay(x))
+    bases <- c("A", "C", "G", "T")
+    s <- x[rownames(x) %in% bases, ]
+    s <- apply(s, 2, function(x) x / sum(x))
+    entropy <- apply(s, 2, function(x) {
+        ifelse(x == 0, 0, x * log2(x))
+    })
+    entropy <- -colSums(entropy)
+    entropy <- unname(entropy)
+    entropy <- abs(entropy)
+    entropy[is.na(entropy)] <- 0
+    entropy
 }

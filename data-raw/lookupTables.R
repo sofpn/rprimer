@@ -19,7 +19,7 @@ complementLookup <- c(
     "B" = "V",
     "-" = "-",
     "other" = "other"
-  )
+)
 
 iupacLookup <- c(
     "-,A" = "A",
@@ -53,7 +53,7 @@ iupacLookup <- c(
     "-,A,C,G,T" = "N",
     "A,C,G,T" = "N",
     "-" = "-"
-  )
+)
 
 degenerateLookup <- c(
     "A" = "A",
@@ -74,7 +74,7 @@ degenerateLookup <- c(
     "." = ".",
     "+" = "+",
     "-" = "-"
-  )
+)
 
 degeneracyLookup <- c(
     "A" = 1,
@@ -94,26 +94,26 @@ degeneracyLookup <- c(
     "V" = 3,
     "N" = 4,
     "-" = 1
-  )
+)
 
 bases <- c(
-  "AA",
-  "TT",
-  "AT",
-  "TA",
-  "CA",
-  "TG",
-  "GT",
-  "AC",
-  "CT",
-  "AG",
-  "GA",
-  "TC",
-  "CG",
-  "GC",
-  "GG",
-  "CC",
-  "."
+    "AA",
+    "TT",
+    "AT",
+    "TA",
+    "CA",
+    "TG",
+    "GT",
+    "AC",
+    "CT",
+    "AG",
+    "GA",
+    "TC",
+    "CG",
+    "GC",
+    "GG",
+    "CC",
+    "."
 )
 dH <- c(
   7.9,
@@ -159,14 +159,14 @@ nnLookup <- tibble::tibble(bases, dH, dS)
 gasConstant <- 1.987
 
 usethis::use_data(
-  allBases,
-  dnaBases,
-  complementLookup,
-  iupacLookup,
-  degenerateLookup,
-  degeneracyLookup,
-  nnLookup,
-  gasConstant,
-  internal = TRUE,
-  overwrite = TRUE
+    allBases,
+    dnaBases,
+    complementLookup,
+    iupacLookup,
+    degenerateLookup,
+    degeneracyLookup,
+    nnLookup,
+    gasConstant,
+    internal = TRUE,
+    overwrite = TRUE
 )

@@ -67,7 +67,7 @@ A, C, G and T are excluded from the calculation.
 }
 
 \examples{
+data("exampleRprimerProfile")
 getAlignmentProperties(exampleRprimerProfile)
 getAlignmentProperties(exampleRprimerProfile, iupacThreshold = 0.1)
-
 }

@@ -9,9 +9,9 @@
 #' @return A plot.
 #'
 #' @examples
+#' data("exampleRprimerProfile")
 #' rpPlot(exampleRprimerProfile[, 1:10]) ## Plot the first 10 bases
 #' rpPlot(exampleRprimerProfile[, 1:10], rc = TRUE) ## As reverse complement
-#'
 #' @export
 setGeneric("rpPlot", function(x, ...) standardGeneric("rpPlot"))
 
@@ -22,35 +22,35 @@ setGeneric("rpPlot", function(x, ...) standardGeneric("rpPlot"))
 #'
 #' @export
 setMethod("rpPlot", "RprimerProfile", function(x, rc = FALSE) {
-  if (!(is.logical(rc))) {
-    stop("'rc' must be set to TRUE or FALSE", call. = FALSE)
-  }
-  x <- SummarizedExperiment::assay(x)
-  x <- x[rownames(x) != "-", ]
-  if (rc == TRUE) {
-    rownames(x) <- unname(complementLookup[rownames(x)])
-    x <- x[order(rownames(x)), ]
-    if ("other" %in% rownames(x)) {
-      swap <- c(which(rownames(x) == "other"), nrow(x))
-      x[swap, ] <- x[rev(swap), ]
-      rownames(x)[swap] <- rownames(x)[rev(swap)]
+    if (!(is.logical(rc))) {
+        stop("'rc' must be set to TRUE or FALSE", call. = FALSE)
     }
-  }
-  Base <- Position <- Frequency <- NULL
-  x <- reshape2::melt(x)
-  names(x) <- c("Base", "Position", "Frequency")
-  x$Base <- factor(x$Base)
-  x$Position <- factor(x$Position)
-  if (rc == TRUE) {
-    x$Position <- factor(x$Position, levels = rev(levels(x$Position)))
-  }
-  cols <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038", "gray")
-  p <- ggplot2::ggplot(
-    data = x, ggplot2::aes(x = Position, y = Frequency, fill = Base)
-  )
-  barchart <- ggplot2::geom_bar(stat = "identity")
-  coloring <- ggplot2::scale_fill_manual(values = cols)
-  appearance <- ggplot2::theme_light()
-  options <- ggplot2::theme(legend.title = ggplot2::element_blank())
-  p + barchart + coloring + appearance + options
+    x <- SummarizedExperiment::assay(x)
+    x <- x[rownames(x) != "-", ]
+    if (rc == TRUE) {
+        rownames(x) <- unname(complementLookup[rownames(x)])
+        x <- x[order(rownames(x)), ]
+        if ("other" %in% rownames(x)) {
+            swap <- c(which(rownames(x) == "other"), nrow(x))
+            x[swap, ] <- x[rev(swap), ]
+            rownames(x)[swap] <- rownames(x)[rev(swap)]
+        }
+    }
+    Base <- Position <- Frequency <- NULL
+    x <- reshape2::melt(x)
+    names(x) <- c("Base", "Position", "Frequency")
+    x$Base <- factor(x$Base)
+    x$Position <- factor(x$Position)
+    if (rc == TRUE) {
+        x$Position <- factor(x$Position, levels = rev(levels(x$Position)))
+    }
+    cols <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038", "gray")
+    p <- ggplot2::ggplot(
+        data = x, ggplot2::aes(x = Position, y = Frequency, fill = Base)
+    )
+    barchart <- ggplot2::geom_bar(stat = "identity")
+    coloring <- ggplot2::scale_fill_manual(values = cols)
+    appearance <- ggplot2::theme_light()
+    options <- ggplot2::theme(legend.title = ggplot2::element_blank())
+    p + barchart + coloring + appearance + options
 })

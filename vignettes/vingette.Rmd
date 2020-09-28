@@ -25,16 +25,20 @@ library(magrittr)
 
 ## Introduction 
 
-There are several factors to take into account when designing primers, probes and PCR-assays, for instance:  
+There are several factors to take into account when designing primers, 
+probes and PCR-assays, for instance:  
 
 * GC content
 * Melting temperature
 * Sequence conservation 
 * ....
 
-The purpose of rprimer is to automate primer, probe and PCR assay design as much as possible. 
+The purpose of rprimer is to automate primer, 
+probe and PCR assay design as much as possible. 
 
-In this document, I demonstrate how to use rprimer by designing a real-time RT-PCR assay for detection of hepatitis E virus (HEV), which is a highly variable RNA virus and a common foodborne pathogen. 
+In this document, I demonstrate how to use rprimer by designing a real-time 
+RT-PCR assay for detection of hepatitis E virus (HEV), 
+which is a highly variable RNA virus and a common foodborne pathogen. 
 
 ## Installation
 
@@ -61,7 +65,8 @@ Install rprimer by calling:
 ### Step 1: Import alignment 
 Aldready existing functionality can be used to import an alignment 
 
-In this example, I use an alignment with 100 HEV sequences that I have collected from GenBank, which is provided with the package. 
+In this example, I use an alignment with 100 HEV sequences that I have collected 
+from GenBank, which is provided with the package. 
 
 ```{r}
 infile <- system.file('extdata', 'exampleAlignment.txt', package = "rprimer")

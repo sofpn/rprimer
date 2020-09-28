@@ -10,6 +10,6 @@
 #'
 #' @noRd
 splitSequence <- function(x) {
-  x <- unlist(strsplit(x, split = ""), use.names = FALSE)
-  x
+    x <- unlist(strsplit(x, split = ""), use.names = FALSE)
+    x
 }

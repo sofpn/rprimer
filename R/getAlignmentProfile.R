@@ -14,20 +14,26 @@
 #' where m is the number of unique bases in the alignment, and n is the
 #' number of positions in the alignment.
 #'
-#' @examples
-#' getAlignmentProfile(exampleRprimerAlignment)
+#' @references
+#' H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
+#' Efficient manipulation of biological strings. R package version 2.57.2.
 #'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' getAlignmentProfile(exampleRprimerAlignment)
 #' @export
 getAlignmentProfile <- function(x) {
-  # if (class(myAlignment) != "DNAMultipleAlignment")
-  x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
-  x <- x[, colSums(!is.na(x)) > 0]
-  x <- x[(rownames(x) != "+" & rownames(x) != "."), ]
-  bases <- c("A", "C", "G", "T", "-")
-  other <- colSums(x[!rownames(x) %in% bases, ])
-  x <- x[rownames(x) %in% bases, ]
-  x <- rbind(x, other)
-  colnames(x) <- seq_len(ncol(x))
-  x <- RprimerProfile(x)
-  x
+    if (!methods::is(x, "DNAMultipleAlignment")) {
+        stop("'x' must be a DNAMultipleAlignment object.", call. = FALSE)
+    }
+    x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
+    x <- x[, colSums(!is.na(x)) > 0]
+    x <- x[(rownames(x) != "+" & rownames(x) != "."), ]
+    bases <- c("A", "C", "G", "T", "-")
+    other <- colSums(x[!rownames(x) %in% bases, ])
+    x <- x[rownames(x) %in% bases, ]
+    x <- rbind(x, other)
+    colnames(x) <- seq_len(ncol(x))
+    x <- RprimerProfile(x)
+    x
 }

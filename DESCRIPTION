@@ -2,9 +2,17 @@ Type: Package
 Package: rprimer
 Title: Design RT-PCR Assays from Multiple Sequence Alignments
 Version: 0.99.0
-Description: rprimer provides functions to design
-    primers, probes and PCR assays from multiple sequence alignments of
-    DNA sequences, based on user specified constraints. 
+Description: rprimer provides a workflow to design
+    primers, probes and PCR assays from a multiple sequence 
+    alignment of DNA  sequences. It is especially designed 
+    for sequence variable targets like RNA viruses. 
+    Primers, probes and assay are designed from
+    user specified constraints on e.g. oligo and amplicon length, 
+    GC-content, melting temperature and maximum allowed number of 
+    variants and degenerate sites. 
+    The package also provides functions to visualise sequence properties 
+    such as gap frequency, GC-content, Shannon entropy and 
+    nucleotide identity from a multiple sequence alignment. 
     For more information about the package and its 
     functionality, please see thee vingette.
 Authors@R: 
@@ -24,14 +32,16 @@ Imports:
     ggplot2,
     purrr,
     tibble,
-    magrittr,
     methods,
+    reshape2,
+    S4Vectors,
     SummarizedExperiment
 Suggests: 
     BiocStyle,
     covr,
     kableExtra,
     knitr,
+    magrittr,
     rmarkdown,
     testthat
 VignetteBuilder: 
