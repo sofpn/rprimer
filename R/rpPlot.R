@@ -45,12 +45,85 @@ setMethod("rpPlot", "RprimerProfile", function(x, rc = FALSE) {
         x$Position <- factor(x$Position, levels = rev(levels(x$Position)))
     }
     cols <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038", "gray")
-    p <- ggplot2::ggplot(
+    ggplot2::ggplot(
         data = x, ggplot2::aes(x = Position, y = Frequency, fill = Base)
-    )
-    barchart <- ggplot2::geom_bar(stat = "identity")
-    coloring <- ggplot2::scale_fill_manual(values = cols)
-    appearance <- ggplot2::theme_light()
-    options <- ggplot2::theme(legend.title = ggplot2::element_blank())
-    p + barchart + coloring + appearance + options
+         ) +
+        ggplot2::geom_bar(stat = "identity") +
+        ggplot2::scale_fill_manual(values = cols) +
+        ggplot2::theme_light() +
+        ggplot2::theme(legend.title = ggplot2::element_blank())
 })
+
+
+# Helpers =====================================================================
+identityPlot <- function(x) {
+    Position <- Identity <- NULL
+    averages <- runningAverage(x$Identity)
+    ggplot2::ggplot(
+        data = x, ggplot2::aes(x = seq_along(Position), y = Identity)
+        ) +
+        ggplot2::geom_point(size = 0.2, ggplot2::aes(colour = Identity == 1)) +
+        ggplot2::geom_line(
+            data = averages,
+            ggplot2::aes(x = seq_along(Position), y = Average)
+        ) +
+        ggplot2::ylim(0, 1) +
+        ggplot2::theme_light() +
+        ggplot2::xlab("") +
+        ggplot2::theme(
+            legend.position = "none",
+            axis.text.x = ggplot2::element_blank(),
+            axis.ticks.x = ggplot2::element_blank()
+        )
+}
+
+entropyPlot <- function(x) {
+    Position <- Entropy <- NULL
+    averages <- runningAverage(x$Entropy)
+    ggplot2::ggplot(
+        data = x, ggplot2::aes(x = seq_along(Position), y = Entropy)
+        ) +
+        ggplot2::geom_point(size = 0.2, ggplot2::aes(colour = Entropy == 0)) +
+        ggplot2::geom_line(
+            data = averages,
+            ggplot2::aes(x = seq_along(Position), y = Average)
+        ) +
+        ggplot2::theme_light() +
+        ggplot2::xlab("") +
+        ggplot2::theme(
+            legend.position = "none",
+            axis.text.x = ggplot2::element_blank(),
+            axis.ticks.x = ggplot2::element_blank()
+        )
+}
+
+gcPlot <- function(x) {
+    Position <- NULL
+    averages <- gcRunningAverage(x$Majority)
+    ggplot2::ggplot(data = x, ggplot2::aes(x = seq_along(Position))) +
+        ggplot2::geom_line(
+            data = averages,
+            ggplot2::aes(x = seq_along(Position), y = Average)
+        ) +
+        ggplot2::geom_hline(yintercept = 0.5) +
+        ggplot2::theme_light() +
+        ggplot2::xlab("") +
+        ggplot2::ylab("GC-content") +
+        ggplot2::ylim(0, 1) +
+        ggplot2::theme(
+            legend.position = "none",
+            axis.text.x = ggplot2::element_blank(),
+            axis.ticks.x = ggplot2::element_blank()
+        )
+}
+
+gapPlot <- function(x) {
+    Position <- Gaps <- NULL
+    ggplot2::ggplot(data = x, ggplot2::aes(x = seq_along(Position), y = Gaps)) +
+        ggplot2::geom_bar(stat = "identity", ggplot2::aes(colour = Gaps == 0)) +
+        ggplot2::ylim(0, 1) +
+        ggplot2::theme_light() +
+        ggplot2::ylab("Position") +
+        ggplot2::theme(legend.position = "none")
+}
+# Addera custom xlab har, dvs ej seq along

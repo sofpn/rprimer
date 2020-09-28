@@ -53,6 +53,6 @@ gcRunningAverage <- function(x, size = NULL) {
         midpoint <- size / 2
         position <- position - midpoint
     }
-    df <- tibble::tibble(position, average)
+    df <- tibble::tibble("Position" = position, "Average" = average)
     df
 }
