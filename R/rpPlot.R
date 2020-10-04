@@ -12,6 +12,10 @@
 #' data("exampleRprimerProfile")
 #' rpPlot(exampleRprimerProfile[, 1:10]) ## Plot the first 10 bases
 #' rpPlot(exampleRprimerProfile[, 1:10], rc = TRUE) ## As reverse complement
+#'
+#' data("exampleRprimerProperties")
+#' rpPlot(exampleRprimerProperties)
+#'
 #' @export
 setGeneric("rpPlot", function(x, ...) standardGeneric("rpPlot"))
 
@@ -51,18 +55,38 @@ setMethod("rpPlot", "RprimerProfile", function(x, rc = FALSE) {
         ggplot2::geom_bar(stat = "identity") +
         ggplot2::scale_fill_manual(values = cols) +
         ggplot2::theme_light() +
-        ggplot2::theme(legend.title = ggplot2::element_blank())
+        ggplot2::theme(
+            legend.title = ggplot2::element_blank()
+        )
 })
 
+#' @describeIn rpPlot Plot an RprimerProperties object.
+#'
+#' @export
+setMethod("rpPlot", "RprimerProperties", function(x) {
+    x <- SummarizedExperiment::assay(x)
+    cowplot::plot_grid(
+        identityPlot(x),
+        entropyPlot(x),
+        gcPlot(x),
+        gapPlot(x),
+        align = "v",
+        nrow = 4
+    )
+})
 
 # Helpers =====================================================================
+
+# Addera custom xlab har, dvs ej seq along, ska också va integer
+# battre farger, transparent, tjockare linjer
+
 identityPlot <- function(x) {
     Position <- Identity <- NULL
     averages <- runningAverage(x$Identity)
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = seq_along(Position), y = Identity)
         ) +
-        ggplot2::geom_point(size = 0.2, ggplot2::aes(colour = Identity == 1)) +
+        ggplot2::geom_point(size = 0.2, ggplot2::aes(colour = Identity)) +
         ggplot2::geom_line(
             data = averages,
             ggplot2::aes(x = seq_along(Position), y = Average)
@@ -73,7 +97,8 @@ identityPlot <- function(x) {
         ggplot2::theme(
             legend.position = "none",
             axis.text.x = ggplot2::element_blank(),
-            axis.ticks.x = ggplot2::element_blank()
+            axis.ticks.x = ggplot2::element_blank(),
+            plot.margin = ggplot2::unit(c(0, 1, 0, 0.5), "cm")
         )
 }
 
@@ -83,17 +108,19 @@ entropyPlot <- function(x) {
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = seq_along(Position), y = Entropy)
         ) +
-        ggplot2::geom_point(size = 0.2, ggplot2::aes(colour = Entropy == 0)) +
+        ggplot2::geom_point(size = 0.2, ggplot2::aes(colour = Entropy)) +
         ggplot2::geom_line(
             data = averages,
             ggplot2::aes(x = seq_along(Position), y = Average)
         ) +
         ggplot2::theme_light() +
+        ggplot2::ylim(0, NA) +
         ggplot2::xlab("") +
         ggplot2::theme(
             legend.position = "none",
             axis.text.x = ggplot2::element_blank(),
-            axis.ticks.x = ggplot2::element_blank()
+            axis.ticks.x = ggplot2::element_blank(),
+            plot.margin = ggplot2::unit(c(0, 1, 0, 0.5), "cm")
         )
 }
 
@@ -113,17 +140,25 @@ gcPlot <- function(x) {
         ggplot2::theme(
             legend.position = "none",
             axis.text.x = ggplot2::element_blank(),
-            axis.ticks.x = ggplot2::element_blank()
+            axis.ticks.x = ggplot2::element_blank(),
+            plot.margin = ggplot2::unit(c(0, 1, 0, 0.5), "cm")
         )
 }
 
 gapPlot <- function(x) {
     Position <- Gaps <- NULL
     ggplot2::ggplot(data = x, ggplot2::aes(x = seq_along(Position), y = Gaps)) +
-        ggplot2::geom_bar(stat = "identity", ggplot2::aes(colour = Gaps == 0)) +
+        ggplot2::geom_bar(stat = "identity", ggplot2::aes(color = Gaps)) +
+        #ggplot2::scale_color_gradient(low = "blue", high = "red") +
         ggplot2::ylim(0, 1) +
         ggplot2::theme_light() +
-        ggplot2::ylab("Position") +
-        ggplot2::theme(legend.position = "none")
+        ggplot2::xlab("") +
+        ggplot2::theme(
+            legend.position = "none",
+            axis.text.x = ggplot2::element_blank(),
+            axis.ticks.x = ggplot2::element_blank(),
+            plot.margin = ggplot2::unit(c(0, 1, 0, 0.5), "cm")
+        )
 }
-# Addera custom xlab har, dvs ej seq along
+
+

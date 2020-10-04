@@ -74,6 +74,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
         "Identity" = identity,
         "Entropy" = entropy
     )
+    # properties <- RprimerProperties(x)
     properties
 }
 

@@ -24,10 +24,6 @@ test_that("getAlignmentProperties works", {
     expect_false(any(is.na(entropy)))
     expect_equal(shannonEntropy(s), entropy)
     properties <- getAlignmentProperties(toTest)
-    expect_equal(
-        colnames(properties),
-        c("Position", "Majority", "IUPAC", "Gaps", "Identity", "Entropy")
-    )
 })
 
 test_that("getAlignmentProperties returns an error when it should", {
