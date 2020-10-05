@@ -55,17 +55,18 @@
 #' data("exampleRprimerProfile")
 #' getAlignmentProperties(exampleRprimerProfile)
 #' getAlignmentProperties(exampleRprimerProfile, iupacThreshold = 0.1)
+#'
 #' @export
 getAlignmentProperties <- function(x, iupacThreshold = 0) {
     if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object", call. = FALSE)
+        stop("'x' must be an RprimerProfile object", call. = FALSE) #MAKE METHOD
     }
     position <- seq_len(ncol(x))
-    majority <- majorityConsensus(x)
-    IUPAC <- iupacConsensus(x, threshold = iupacThreshold)
-    gaps <- gapFrequency(x)
-    identity <- nucleotideIdentity(x)
-    entropy <- shannonEntropy(x)
+    majority <- .majorityConsensus(x)
+    IUPAC <- .iupacConsensus(x, threshold = iupacThreshold)
+    gaps <- .gapFrequency(x)
+    identity <- .nucleotideIdentity(x)
+    entropy <- .shannonEntropy(x)
     properties <- tibble::tibble(
         "Position" = position,
         "Majority" = majority,
@@ -78,23 +79,19 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     properties
 }
 
-# Helpers =====================================================================
+# Helpers =====================================================================  ### Add x param
 
 #' Majority consensus sequence
 #'
-#' \code{majorityConsensus} returns the majority consensus sequence of an
+#' \code{.majorityConsensus} returns the majority consensus sequence of an
 #' alignment of DNA sequences.
-#'
-#' @inheritParams getAlignmentProperties
 #'
 #' @return The majority consensus sequence (a character vector of length n).
 #'
 #' @keywords internal
-majorityConsensus <- function(x) {
-    if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object.", call. = FALSE)
-    }
-    x <- unclass(SummarizedExperiment::assay(x))
+#'
+#' @noRd
+.majorityConsensus <- function(x) {
     findMostCommonBase <- function(x, y) {
         mostCommon <- rownames(x)[y == max(y)]
         if (length(mostCommon > 1)) {
@@ -110,7 +107,7 @@ majorityConsensus <- function(x) {
 
 #' Convert DNA nucleotides into the corresponding IUPAC base
 #'
-#' \code{asIUPAC} takes several DNA nucleotides as input,
+#' \code{.asIUPAC} takes several DNA nucleotides as input,
 #' and returns the degenerate base in IUPAC format.
 #'
 #' @param x
@@ -125,7 +122,9 @@ majorityConsensus <- function(x) {
 #' @return The corresponding IUPAC base.
 #'
 #' @keywords internal
-asIUPAC <- function(x) {
+#'
+#' @noRd
+.asIUPAC <- function(x) {
     if (!(is.character(x) && length(x) == 1)) {
         stop(
             "'x' must be a character vector of length one, e.g. 'A,C,T'.",
@@ -147,10 +146,8 @@ asIUPAC <- function(x) {
 
 #' IUPAC consensus sequence
 #'
-#' \code{iupacConsensus} returns the IUPAC consensus sequence from an
+#' \code{.iupacConsensus} returns the IUPAC consensus sequence from an
 #' PrprimerProfile object.
-#'
-#' @inheritParams getAlignmentProperties
 #'
 #' @param threshold
 #' Optional. A number (0, 0.2]
@@ -164,17 +161,15 @@ asIUPAC <- function(x) {
 #' sequecnce is determined.
 #'
 #' @keywords internal
-iupacConsensus <- function(x, threshold = 0) {
-    if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object.", call. = FALSE)
-    }
+#'
+#' @noRd
+.iupacConsensus <- function(x, threshold = 0) {
     if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
         stop(paste0(
             "'treshold' must be higher than 0 and less or equal to 0.2. \n
       You've set it to ", threshold, "."
         ), call. = FALSE)
     }
-    x <- unclass(SummarizedExperiment::assay(x))
     bases <- c("A", "C", "G", "T", "-")
     x <- x[rownames(x) %in% bases, ]
     basesToInclude <- apply(x, 2, function(y) {
@@ -191,19 +186,12 @@ iupacConsensus <- function(x, threshold = 0) {
 
 #' Gap frequency
 #'
-#' \code{gapFrequency} returns the gap frequency from an
-#' PrprimerProfile object.
-#'
-#' @inheritParams getAlignmentProperties
-#'
 #' @return The gap frequency (a numeric vector of length n).
 #'
 #' @keywords internal
-gapFrequency <- function(x) {
-    if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object.", call. = FALSE)
-    }
-    x <- unclass(SummarizedExperiment::assay(x))
+#'
+#' @noRd
+.gapFrequency <- function(x) {
     if ("-" %in% rownames(x)) {
         gaps <- x[rownames(x) == "-", ]
         gaps <- unname(gaps)
@@ -215,20 +203,13 @@ gapFrequency <- function(x) {
 
 #' Nucleotide identity
 #'
-#' \code{nucleotideIdentity} returns the nucleotide identity from an
-#' PrprimerProfile object.
-#'
-#' @inheritParams getAlignmentProperties
-#'
 #' @return The nucleotide identity (a numeric vector of length n).
 #' The nucleotide identity can range between (0, 1].
 #'
 #' @keywords internal
-nucleotideIdentity <- function(x) {
-    if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object.", call. = FALSE)
-    }
-    x <- unclass(SummarizedExperiment::assay(x))
+#'
+#' @noRd
+.nucleotideIdentity <- function(x) {
     bases <- c("A", "C", "G", "T")
     s <- x[rownames(x) %in% bases, ]
     s <- apply(s, 2, function(x) x / sum(x))
@@ -240,19 +221,12 @@ nucleotideIdentity <- function(x) {
 
 #' Shannon entropy
 #'
-#' \code{shannonEntropy} returns the Shannon entropy from an
-#' PrprimerProfile object.
-#'
-#' @inheritParams getAlignmentProperties
-#'
 #' @return The Shannon entropy (a numeric vector of length n).
 #'
 #' @keywords internal
-shannonEntropy <- function(x) {
-    if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object.", call. = FALSE)
-    }
-    x <- unclass(SummarizedExperiment::assay(x))
+#'
+#' @noRd
+.shannonEntropy <- function(x) {
     bases <- c("A", "C", "G", "T")
     s <- x[rownames(x) %in% bases, ]
     s <- apply(s, 2, function(x) x / sum(x))

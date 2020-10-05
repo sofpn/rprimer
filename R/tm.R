@@ -16,7 +16,7 @@ nnSplit <- function(x) {
   #  stop("'x' must be a character vector of length one,
   #    with at least two characters (e.g. 'CTTA')", call. = FALSE)
   #}
-  x <- splitSequence(x)
+  x <- .splitSequence(x)
   from <- (seq_along(x) - 1)[-1]
   to <- seq_along(x)[-1]
   nn <- purrr::map2_chr(from, to, function(i, j) {

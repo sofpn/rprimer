@@ -151,7 +151,6 @@ getOligos <- function(x,
                        target,
                        length = 18:22,
                        maxGapFrequency = 0.1,
-                       maxDegenerates = 2,
                        maxDegeneracy = 4,
                        avoid_3end_ta = TRUE,
                        avoid_3end_runs = TRUE,
@@ -199,9 +198,23 @@ getOligos <- function(x,
 
 # Helpers =====================================================================
 
+#' Split sequence
+#'
+#' @param x A character vector of length one.
+#'
+#' @return A character vector of length \code{nchar(x)}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.splitSequence <- function(x) {
+  x <- unlist(strsplit(x, split = ""), use.names = FALSE)
+  x
+}
+
 #' Divide a DNA sequence into n-sized chunks
 #'
-#' \code{getNmers} divides a character vector into chunks of size \code{n}.
+#' \code{.getNmers} divides a character vector into chunks of size \code{n}.
 #'
 #' @param x A character vector.
 #'
@@ -215,7 +228,7 @@ getOligos <- function(x,
 #' @keywords internal
 #'
 #' @noRd
-getNmers <- function(x, n = NULL) {
+.getNmers <- function(x, n = NULL) {
   if (!(is.character(x))) {
     stop("'x' must be a character vector", call. = FALSE)
   }
@@ -238,7 +251,7 @@ getNmers <- function(x, n = NULL) {
 
 #' Calculate running, cumulative sums
 #'
-#' \code{runningSum} calculates 'running' sums of a numeric vector. Each
+#' \code{.runningSum} calculates 'running' sums of a numeric vector. Each
 #' sum is calculated in a size of \code{n}, in steps of 1 (i.e., if
 #' \code{n = 20}, the sum will be calculated from element 1 to 20,
 #' then from element 2 to 21, then from element 3 to 22, etc.)
@@ -255,7 +268,7 @@ getNmers <- function(x, n = NULL) {
 #' @keywords internal
 #'
 #' @noRd
-runningSum <- function(x, n = NULL) {
+.runningSum <- function(x, n = NULL) {
   if (!(is.numeric(x))) {
     stop("'x' must be a numeric vector.", call. = FALSE)
   }
@@ -272,6 +285,97 @@ runningSum <- function(x, n = NULL) {
   runsum <- cumul[seq(n + 1, length(cumul))] - cumul[seq_len(length(cumul) - n)]
   runsum
 }
+
+#' Calculate GC content of a DNA sequence
+#'
+#' \code{.gcContent} finds the GC content of a DNA sequence.
+#'
+#' @param x
+#' A DNA sequence (a character vector of length one).
+#' Valid bases are ACGT-.
+#'
+#' @return The GC content of x.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.gcContent <- function(x) {
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("'x' must be a character vector of length one.", call. = FALSE)
+  }
+  x <- toupper(x)
+  if (grepl(paste0("[^", dnaBases, "]"), x)) {
+    stop(paste0("'x' can only contain bases ", dnaBases, "."),
+         call. = FALSE
+    )
+  }
+  x <- .splitSequence(x)
+  gcCount <- length(which(x == "C" | x == "G"))
+  totalCount <- length(which(x == "A" | x == "C" | x == "G" | x == "T"))
+  gc <- gcCount / totalCount
+  gc
+}
+
+#' Reverse complement
+#'
+#' \code{.reverseComplement} finds the reverse complement of a DNA sequence.
+#'
+#' @param x
+#' A DNA sequence (a character vector of length one).
+#'
+#' @return
+#' The reverse complement of x. Non valid bases will return as \code{NA}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.reverseComplement <- function(x) {
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("'x' must be a character vector of length one.", call. = FALSE)
+  }
+  x <- toupper(x)
+  if (grepl(paste0("[^", allBases, "]"), x)) {
+    stop(paste0("'x' can only contain bases ", allBases, "."),
+         call. = FALSE
+    )
+  }
+  x <- .splitSequence(x)
+  complement <- complementLookup[unlist(x)]
+  complement <- unname(complement)
+  rc <- rev(complement)
+  rc <- paste(rc, collapse = "")
+  rc
+}
+
+#' Count the degeneracy of a DNA sequence
+#'
+#' \code{.countDegeneracy} returns the number of unique variants of
+#' a DNA sequence with degenerate bases.
+#'
+#' @param x
+#' A DNA sequence (a character vector of length one).
+#'
+#' @return The number of unique sequences of x (an integer).
+#'
+#' @keywords internal
+#'
+#' @noRd
+.countDegeneracy <- function(x) {
+  if (typeof(x) != "character" || length(x) != 1) {
+    stop("'x' must be a character vector of length one.", call. = FALSE)
+  }
+  x <- toupper(x)
+  if (grepl(paste0("[^", allBases, "]"), x)) {
+    stop(
+      paste0("'x' can only contain bases ", allBases, "."), call. = FALSE
+    )
+  }
+  x <- .splitSequence(x)
+  nNucleotides <- degeneracyLookup[x]
+  degeneracy <- prod(nNucleotides)
+  degeneracy
+}
+
 
 #' Exclude oligos with a specific pattern
 #'
@@ -444,8 +548,7 @@ exclude_unwanted_oligos <- function(x,
 #'
 #' @keywords internal
 #'
-#' @noRd
-generateOligos <- function(x,
+.generateOligos <- function(x,
                             oligoLength = 20,
                             maxGapFrequency = 0.1,
                             maxDegeneracy = 4) {
@@ -464,14 +567,14 @@ generateOligos <- function(x,
   if (!(maxDegeneracy >= 1 && maxDegeneracy <= 16)) {
     stop("'maxDegeneracy' must be between 1 and 16.", call. = FALSE)
   }
-  Majority <- getNmers(x$Majority, n = oligoLength)
-  IUPAC <- getNmers(x$IUPAC, n = oligoLength)
-  Degeneracy <- purrr::map_dbl(IUPAC, ~ countDegeneracy(.x))
+  Majority <- .getNmers(x$Majority, n = oligoLength)
+  IUPAC <- .getNmers(x$IUPAC, n = oligoLength)
+  Degeneracy <- purrr::map_dbl(IUPAC, ~ .countDegeneracy(.x))
   Begin <- seq_along(Majority)
   End <- seq_along(Majority) + oligoLength - 1
   Length <- oligoLength
   gapBin <- ifelse(x$Gaps > maxGapFrequency, 1L, 0L)
-  gapPenalty <- runningSum(gapBin, n = oligoLength)
+  gapPenalty <- .runningSum(gapBin, n = oligoLength)
   oligos <- tibble::tibble(
     Begin, End, Length, Majority, IUPAC,
     Degeneracy, gapPenalty
@@ -481,7 +584,7 @@ generateOligos <- function(x,
   oligos <- oligos[oligos$gapPenalty == 0, ]
   oligos <- oligos[oligos$Degeneracy <= maxDegeneracy, ]
   oligos <- dplyr::select(oligos, -gapPenalty)
-  All <- purrr::map(oligos$IUPAC, ~expandDegenerates(.x))
+  All <- purrr::map(oligos$IUPAC, ~.expandDegenerates(.x))
   oligos <- tibble::add_column(oligos, All, .before = "Degeneracy")
   oligos
 }
@@ -628,3 +731,23 @@ check_match <- function(x, y) {
   x <- dplyr::bind_cols(x, match_matrix)
   x
 }
+
+# to to: write tests
+# x - a DNA sequence (e.g. "cggttrt")
+.expandDegenerates <- function(x) {
+  x <- .splitSequence(x)
+  expanded <- purrr::map(x, function(i) {
+    allBases <- unname(degenerateLookup[[i]])
+    allBases <- unlist(strsplit(allBases, split = ","))
+    allBases
+  })
+  expanded <- expand.grid(
+    expanded[seq_along(expanded)], stringsAsFactors = FALSE
+  )
+  expanded <- purrr::map(
+    seq_len(nrow(expanded)), ~paste(expanded[.x, ], collapse = "")
+  )
+  expanded <- unlist(expanded, use.names = FALSE)
+  expanded
+}
+
