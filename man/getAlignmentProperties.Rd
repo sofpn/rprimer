@@ -70,4 +70,5 @@ A, C, G and T are excluded from the calculation.
 data("exampleRprimerProfile")
 getAlignmentProperties(exampleRprimerProfile)
 getAlignmentProperties(exampleRprimerProfile, iupacThreshold = 0.1)
+
 }

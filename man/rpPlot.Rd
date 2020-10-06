@@ -3,11 +3,14 @@
 \name{rpPlot}
 \alias{rpPlot}
 \alias{rpPlot,RprimerProfile-method}
+\alias{rpPlot,RprimerProperties-method}
 \title{Plot an rprimer object (generic)}
 \usage{
 rpPlot(x, ...)
 
 \S4method{rpPlot}{RprimerProfile}(x, rc = FALSE)
+
+\S4method{rpPlot}{RprimerProperties}(x)
 }
 \arguments{
 \item{x}{An rprimer object (see methods for details).}
@@ -27,10 +30,16 @@ Plot an rprimer object (generic)
 \section{Methods (by class)}{
 \itemize{
 \item \code{RprimerProfile}: Plot an RprimerProfile object.
+
+\item \code{RprimerProperties}: Plot an RprimerProperties object.
 }}
 
 \examples{
 data("exampleRprimerProfile")
 rpPlot(exampleRprimerProfile[, 1:10]) ## Plot the first 10 bases
 rpPlot(exampleRprimerProfile[, 1:10], rc = TRUE) ## As reverse complement
+
+data("exampleRprimerProperties")
+rpPlot(exampleRprimerProperties)
+
 }

@@ -1,10 +1,19 @@
-# Best practice:
+#' An S4 class for representation of an alignment profile
+#'
+#' @slot assay A numeric matrix with the proportion of each
+#' nucleotide at each position within an alignment
+#' of DNA sequences. The matrix has six rows,
+#' named 'A', 'C', 'G', 'T', '-' and 'Other'. '-' represents gaps and
+#' 'Other' represents nucleotides other than A, C, G and T, e.g.
+#' wobble bases. The columns are named
+#' according to which position they correspond to in the alignment.
+#'
+#' @name RprimerProfile
+#'
+#' @export RprimerProfile
+#'
+#' @exportClass RprimerProfile
 
-# AllClasses.R
-# AllGenerics.R
-
-# allow subsetting but names must be kept! Also drop = F!
-# skapa klass for RprimerProperties
 
 #  New class ==================================================================
 

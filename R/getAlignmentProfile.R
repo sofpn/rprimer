@@ -9,14 +9,14 @@
 #' An alignment of DNA sequences.
 #'
 #' @return
-#' The sequence profile (an object of class RprimerProfile).
-#' A numeric m x n matrix,
-#' where m is the number of unique bases in the alignment, and n is the
-#' number of positions in the alignment.
+#' A numeric matrix with the proportion of each
+#' nucleotide at each position within an alignment
+#' of DNA sequences. The matrix has six rows,
+#' named 'A', 'C', 'G', 'T', '-' and 'Other'. '-' represents gaps and
+#' 'Other' represents nucleotides other than A, C, G and T, e.g.
+#' wobble bases. The columns are named
+#' according to which position they correspond to in the input alignment.
 #'
-#' @references
-#' H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
-#' Efficient manipulation of biological strings. R package version 2.57.2.
 #'
 #' @examples
 #' data("exampleRprimerAlignment")

@@ -7,14 +7,14 @@
 #'
 #' @param maxGapFrequency
 #' Maximum allowed gap frequency.
-#' A number [0, 1). The default is 0.1, which means that
+#' A number [0, 1). It defaults to 0.1, meaning that
 #' positions with a gap frequency above 0.1 will not be
-#' considered as an oligo region.
+#' considered as oligo regions.
 #'
 #' @param length
-#' Oligo length. The minimum allowed
+#' Oligo length. A vector of integers. The minimum allowed
 #' value is 14 and the maximum allowed value is 30.
-#' The default is \code{18:22}.
+#' It defaults to \code{18:22}.
 #'
 #' @param maxDegeneracy
 #' Maximum number of variants of each oligo.

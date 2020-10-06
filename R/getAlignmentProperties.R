@@ -58,16 +58,16 @@
 #'
 #' @export
 getAlignmentProperties <- function(x, iupacThreshold = 0) {
-    if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object", call. = FALSE) #MAKE METHOD
-    }
+   # if (!methods::is(x, "RprimerProfile")) {
+    #    stop("'x' must be an RprimerProfile object", call. = FALSE) #MAKE METHOD
+    #}
     position <- seq_len(ncol(x))
     majority <- .majorityConsensus(x)
     IUPAC <- .iupacConsensus(x, threshold = iupacThreshold)
     gaps <- .gapFrequency(x)
     identity <- .nucleotideIdentity(x)
     entropy <- .shannonEntropy(x)
-    properties <- tibble::tibble(
+    properties <- tibble::tibble( #### MAKE OBJECT HERE
         "Position" = position,
         "Majority" = majority,
         "IUPAC" = IUPAC,
@@ -85,6 +85,8 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #'
 #' \code{.majorityConsensus} returns the majority consensus sequence of an
 #' alignment of DNA sequences.
+#'
+#' @param x A numeric matrix.
 #'
 #' @return The majority consensus sequence (a character vector of length n).
 #'
@@ -117,7 +119,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #' Characters other than A, C, G, T, and - will be ignored. However, when
 #' the input only consist of invalid bases,
 #' or if the bases are not separated by ',',
-#' \code{asIUPAC} will return NA.
+#' \code{.asIUPAC} will return NA.
 #'
 #' @return The corresponding IUPAC base.
 #'
@@ -149,6 +151,8 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #' \code{.iupacConsensus} returns the IUPAC consensus sequence from an
 #' PrprimerProfile object.
 #'
+#' @param x A numeric matrix.
+#'
 #' @param threshold
 #' Optional. A number (0, 0.2]
 #' At each position, all nucleotides with a proportion
@@ -157,7 +161,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #'
 #' @return The consensus sequence (a character vector of length n).
 #'
-#' @seealso \code{asIUPAC} for further info on how the IUPAC consensus
+#' @seealso \code{.asIUPAC} for further info on how the IUPAC consensus
 #' sequecnce is determined.
 #'
 #' @keywords internal
@@ -176,7 +180,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
         paste(rownames(x)[y > threshold], collapse = ",")
     })
     basesToInclude <- unname(basesToInclude)
-    consensus <- purrr::map_chr(basesToInclude, ~ asIUPAC(.x))
+    consensus <- purrr::map_chr(basesToInclude, ~.asIUPAC(.x))
     if (any(is.na(consensus))) {
         warning("The consensus sequence contain NAs. \n
     Try to lower the threshold value.", call. = FALSE)
@@ -185,6 +189,8 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 }
 
 #' Gap frequency
+#'
+#' @param x A numeric matrix.
 #'
 #' @return The gap frequency (a numeric vector of length n).
 #'
@@ -203,6 +209,8 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 
 #' Nucleotide identity
 #'
+#' @param x A numeric matrix.
+#'
 #' @return The nucleotide identity (a numeric vector of length n).
 #' The nucleotide identity can range between (0, 1].
 #'
@@ -220,6 +228,8 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 }
 
 #' Shannon entropy
+#'
+#' @param x A numeric matrix.
 #'
 #' @return The Shannon entropy (a numeric vector of length n).
 #'
