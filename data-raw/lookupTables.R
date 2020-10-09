@@ -1,3 +1,5 @@
+# to do: gor lista rprimer$blabla
+
 allBases <- "ACGTRYSWKMBDHVN-"
 dnaBases <- "ACGT-"
 

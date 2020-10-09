@@ -66,10 +66,10 @@ setMethod("rpPlot", "RprimerProfile", function(x, rc = FALSE) {
 setMethod("rpPlot", "RprimerProperties", function(x) {
     x <- SummarizedExperiment::assay(x)
     cowplot::plot_grid(
-        identityPlot(x),
-        entropyPlot(x),
-        gcPlot(x),
-        gapPlot(x),
+        .identityPlot(x),
+        .entropyPlot(x),
+        .gcPlot(x),
+        .gapPlot(x),
         align = "v",
         nrow = 4
     )
@@ -80,9 +80,14 @@ setMethod("rpPlot", "RprimerProperties", function(x) {
 # Addera custom xlab har, dvs ej seq along, ska också va integer
 # battre farger, transparent, tjockare linjer
 
-identityPlot <- function(x) {
+#' Plot nucleotide identity
+#'
+#' @keywords internal
+#'
+#' @noRd
+.identityPlot <- function(x) {
     Position <- Identity <- NULL
-    averages <- runningAverage(x$Identity)
+    averages <- .runningAverage(x$Identity)
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = seq_along(Position), y = Identity)
         ) +
@@ -102,9 +107,14 @@ identityPlot <- function(x) {
         )
 }
 
-entropyPlot <- function(x) {
+#' Plot Shannon entropy
+#'
+#' @keywords internal
+#'
+#' @noRd
+.entropyPlot <- function(x) {
     Position <- Entropy <- NULL
-    averages <- runningAverage(x$Entropy)
+    averages <- .runningAverage(x$Entropy)
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = seq_along(Position), y = Entropy)
         ) +
@@ -124,9 +134,14 @@ entropyPlot <- function(x) {
         )
 }
 
-gcPlot <- function(x) {
+#' Plot GC content
+#'
+#' @keywords internal
+#'
+#' @noRd
+.gcPlot <- function(x) {
     Position <- NULL
-    averages <- gcRunningAverage(x$Majority)
+    averages <- .gcRunningAverage(x$Majority)
     ggplot2::ggplot(data = x, ggplot2::aes(x = seq_along(Position))) +
         ggplot2::geom_line(
             data = averages,
@@ -145,7 +160,12 @@ gcPlot <- function(x) {
         )
 }
 
-gapPlot <- function(x) {
+#' Plot gap frequency
+#'
+#' @keywords internal
+#'
+#' @noRd
+.gapPlot <- function(x) {
     Position <- Gaps <- NULL
     ggplot2::ggplot(data = x, ggplot2::aes(x = seq_along(Position), y = Gaps)) +
         ggplot2::geom_bar(stat = "identity", ggplot2::aes(color = Gaps)) +
@@ -160,5 +180,3 @@ gapPlot <- function(x) {
             plot.margin = ggplot2::unit(c(0, 1, 0, 0.5), "cm")
         )
 }
-
-

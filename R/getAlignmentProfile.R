@@ -6,10 +6,11 @@
 #' Biostrings::consensusMatrix.
 #'
 #' @param x
-#' An alignment of DNA sequences.
+#' A Biostrings::DNAMultipleAlignment object.
 #'
 #' @return
-#' A numeric matrix with the proportion of each
+#' An RprimerProfile object, containing a numeric matrix with the
+#' proportion of each
 #' nucleotide at each position within an alignment
 #' of DNA sequences. The matrix has six rows,
 #' named 'A', 'C', 'G', 'T', '-' and 'Other'. '-' represents gaps and
@@ -21,6 +22,7 @@
 #' @examples
 #' data("exampleRprimerAlignment")
 #' getAlignmentProfile(exampleRprimerAlignment)
+#'
 #' @export
 getAlignmentProfile <- function(x) {
     if (!methods::is(x, "DNAMultipleAlignment")) {

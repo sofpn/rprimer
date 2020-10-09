@@ -7,10 +7,11 @@
 getAlignmentProfile(x)
 }
 \arguments{
-\item{x}{An alignment of DNA sequences.}
+\item{x}{A Biostrings::DNAMultipleAlignment object.}
 }
 \value{
-A numeric matrix with the proportion of each
+An RprimerProfile object, containing a numeric matrix with the
+proportion of each
 nucleotide at each position within an alignment
 of DNA sequences. The matrix has six rows,
 named 'A', 'C', 'G', 'T', '-' and 'Other'. '-' represents gaps and
@@ -27,4 +28,5 @@ Biostrings::consensusMatrix.
 \examples{
 data("exampleRprimerAlignment")
 getAlignmentProfile(exampleRprimerAlignment)
+
 }

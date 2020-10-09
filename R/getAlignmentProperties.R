@@ -58,9 +58,10 @@
 #'
 #' @export
 getAlignmentProperties <- function(x, iupacThreshold = 0) {
-   # if (!methods::is(x, "RprimerProfile")) {
-    #    stop("'x' must be an RprimerProfile object", call. = FALSE) #MAKE METHOD
-    #}
+    if (!methods::is(x, "RprimerProfile")) {
+        stop("'x' must be an RprimerProfile object", call. = FALSE) #MAKE METHOD?
+    }
+    x <- SummarizedExperiment::assay(x)
     position <- seq_len(ncol(x))
     majority <- .majorityConsensus(x)
     IUPAC <- .iupacConsensus(x, threshold = iupacThreshold)
@@ -79,7 +80,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     properties
 }
 
-# Helpers =====================================================================  ### Add x param
+# Helpers =====================================================================
 
 #' Majority consensus sequence
 #'
