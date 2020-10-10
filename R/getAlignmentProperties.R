@@ -59,7 +59,7 @@
 #' @export
 getAlignmentProperties <- function(x, iupacThreshold = 0) {
     if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object", call. = FALSE) #MAKE METHOD?
+        stop("'x' must be an RprimerProfile object", call. = FALSE)
     }
     x <- SummarizedExperiment::assay(x)
     position <- seq_len(ncol(x))
@@ -68,7 +68,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     gaps <- .gapFrequency(x)
     identity <- .nucleotideIdentity(x)
     entropy <- .shannonEntropy(x)
-    properties <- tibble::tibble( #### MAKE OBJECT HERE
+    properties <- tibble::tibble(
         "Position" = position,
         "Majority" = majority,
         "IUPAC" = IUPAC,
@@ -76,7 +76,6 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
         "Identity" = identity,
         "Entropy" = entropy
     )
-    # properties <- RprimerProperties(x)
     properties
 }
 
@@ -102,7 +101,6 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
         }
         mostCommon
     }
-    # Get the consensus sequence at all positions
     consensus <- apply(x, 2, function(y) findMostCommonBase(x, y))
     consensus <- unname(consensus)
     consensus
@@ -128,12 +126,6 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #'
 #' @noRd
 .asIUPAC <- function(x) {
-    if (!(is.character(x) && length(x) == 1)) {
-        stop(
-            "'x' must be a character vector of length one, e.g. 'A,C,T'.",
-            call. = FALSE
-        )
-    }
     x <- toupper(x)
     x <- gsub(" ", "", x)
     x <- unlist(strsplit(x, split = ","), use.names = FALSE)
@@ -163,7 +155,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #' @return The consensus sequence (a character vector of length n).
 #'
 #' @seealso \code{.asIUPAC} for further info on how the IUPAC consensus
-#' sequecnce is determined.
+#' sequence is determined.
 #'
 #' @keywords internal
 #'
@@ -171,8 +163,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 .iupacConsensus <- function(x, threshold = 0) {
     if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
         stop(paste0(
-            "'treshold' must be higher than 0 and less or equal to 0.2. \n
-      You've set it to ", threshold, "."
+            "'treshold' must be higher than 0 and less or equal to 0.2."
         ), call. = FALSE)
     }
     bases <- c("A", "C", "G", "T", "-")

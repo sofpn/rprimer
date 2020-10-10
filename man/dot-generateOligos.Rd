@@ -6,6 +6,18 @@
 \usage{
 .generateOligos(x, oligoLength = 20, maxGapFrequency = 0.1, maxDegeneracy = 4)
 }
+\arguments{
+\item{x}{an RprimerProperties object.}
+
+\item{maxGapFrequency}{Maximum allowed gap frequency.
+A number [0, 1]. It defaults to 0.1, which means that
+positions with a gap frequency above 0.1 will not be
+considered as an oligo region.}
+
+\item{maxDegeneracy}{Maximum number of variants.
+The minimum allowed value is 1 and the maximum
+allowed value is 32. It defaults to 4.}
+}
 \value{
 A tibble with oligos.
 }

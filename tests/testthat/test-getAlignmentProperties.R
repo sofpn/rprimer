@@ -36,10 +36,6 @@ test_that("getAlignmentProperties returns an error when it should", {
     expect_error(.iupacConsensus(toTest, threshold = NA))
 })
 
-test_that(".asIUPAC returns an error when it should", {
-    expect_error(.asIUPAC(c("C,G", "G,T")))
-})
-
 test_that(".asIUPAC works", {
     expect_true(is.na(.asIUPAC("GC")))
     expect_equal(.asIUPAC("C,G"), "S")

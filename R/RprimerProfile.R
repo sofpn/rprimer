@@ -1,6 +1,8 @@
 #' An S4 class for representation of an alignment profile
 #'
-#' @slot assay A numeric matrix with the proportion of each
+#' An extension of the S4 class SummarizedExperiment::SummarizedExperiment.
+#'
+#' A numeric matrix with the proportion of each
 #' nucleotide at each position within an alignment
 #' of DNA sequences. The matrix has six rows,
 #' named 'A', 'C', 'G', 'T', '-' and 'Other'. '-' represents gaps and
@@ -8,22 +10,28 @@
 #' wobble bases. The columns are named
 #' according to which position they correspond to in the alignment.
 #'
-#' @name RprimerProfile
+#' @name RprimerProfile-class
 #'
-#' @export RprimerProfile
+#' @rdname RprimerProfile-class
 #'
-#' @exportClass RprimerProfile
-
-
-#  New class ==================================================================
-
 #' @export
+#'
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
 setClass("RprimerProfile", contains = "SummarizedExperiment")
 
 # Constructor =================================================================
 
+#' @describeIn RprimerProfile-class
+#'
+#' @param x An object.
+#'
+#' @param ... Additional arguments.
+#'
+#' @return An RprimerProfile object if validation succeeds. An error
+#' message if not.
+#'
 #' @export
+#'
 #' @importFrom SummarizedExperiment SummarizedExperiment
 RprimerProfile <- function(x, ...) {
     methods::new("RprimerProfile", SummarizedExperiment(list(x = x), ...))
