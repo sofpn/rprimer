@@ -1,3 +1,5 @@
+## To do: make S4 class
+
 #' Get alignment properties
 #'
 #' \code{getAlignmentProperties} returns sequence information from
@@ -47,7 +49,7 @@
 #' A, C, G and T are excluded from the calculation.
 #'
 #' @return
-#' An RprimerProperties object, which contains a tibble (a data frame)
+#' A tibble (a data frame)
 #' with information on majority and IUPAC consensus sequence, gap frequency,
 #' nucleotide identity and Shannon entropy.
 #'
@@ -88,20 +90,20 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #'
 #' @param x A numeric matrix.
 #'
-#' @return The majority consensus sequence (a character vector of length n).
+#' @return The majority consensus sequence (a character vector).
 #'
 #' @keywords internal
 #'
 #' @noRd
 .majorityConsensus <- function(x) {
-    findMostCommonBase <- function(x, y) {
+    .findMostCommonBase <- function(x, y) {
         mostCommon <- rownames(x)[y == max(y)]
         if (length(mostCommon > 1)) {
             mostCommon <- sample(mostCommon, 1)
         }
         mostCommon
     }
-    consensus <- apply(x, 2, function(y) findMostCommonBase(x, y))
+    consensus <- apply(x, 2, function(y) .findMostCommonBase(x, y))
     consensus <- unname(consensus)
     consensus
 }
@@ -135,7 +137,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     match <- x %in% bases
     x <- x[!(match == FALSE)]
     x <- paste(x, collapse = ",")
-    iupacBase <- unname(iupacLookup[x])
+    iupacBase <- unname(rprimerGlobals$iupacLookup[x])
     iupacBase
 }
 
@@ -152,7 +154,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #' higher or equal to the threshold will be included in
 #' the IUPAC consensus sequence. The default is 0.
 #'
-#' @return The consensus sequence (a character vector of length n).
+#' @return The consensus sequence (a character vector).
 #'
 #' @seealso \code{.asIUPAC} for further info on how the IUPAC consensus
 #' sequence is determined.
@@ -184,7 +186,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #'
 #' @param x A numeric matrix.
 #'
-#' @return The gap frequency (a numeric vector of length n).
+#' @return The gap frequency (a numeric vector).
 #'
 #' @keywords internal
 #'
@@ -203,7 +205,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #'
 #' @param x A numeric matrix.
 #'
-#' @return The nucleotide identity (a numeric vector of length n).
+#' @return The nucleotide identity (a numeric vector).
 #' The nucleotide identity can range between (0, 1].
 #'
 #' @keywords internal
@@ -223,7 +225,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #'
 #' @param x A numeric matrix.
 #'
-#' @return The Shannon entropy (a numeric vector of length n).
+#' @return The Shannon entropy (a numeric vector).
 #'
 #' @keywords internal
 #'

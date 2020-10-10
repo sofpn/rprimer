@@ -5,13 +5,13 @@
 \alias{exampleRprimerProfile}
 \title{A sequence profile from hepatitis E virus sequences}
 \format{
-An RprimerProfile object.
+An \code{RprimerProfile} object.
 }
 \source{
 The sequences were collected from NCBI GenBank.
 }
 \usage{
-data(exampleRprimerProfile)
+data("exampleRprimerProfile")
 }
 \description{
 A sequence profile from hepatitis E virus sequences

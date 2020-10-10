@@ -7,26 +7,33 @@
 getAlignmentProfile(x)
 }
 \arguments{
-\item{x}{A Biostrings::DNAMultipleAlignment object.}
+\item{x}{A \code{Biostrings::DNAMultipleAlignment} object.}
 }
 \value{
-An RprimerProfile object, containing a numeric matrix with the
+An \code{RprimerProfile} object, containing a numeric matrix with the
 proportion of each
 nucleotide at each position within an alignment
 of DNA sequences. The matrix has six rows,
 named 'A', 'C', 'G', 'T', '-' and 'Other'. '-' represents gaps and
 'Other' represents nucleotides other than A, C, G and T, e.g.
 wobble bases. The columns are named
-according to which position they correspond to in the input alignment.
+according to which position they correspond to in the alignment.
+To do: Note that
+columns with NA are removed.
 }
 \description{
-\code{getAlignmentProfile} returns a matrix with the
+\code{getAlignmentProfile()} returns a matrix with the
 proportion of each nucleotide at each position within an alignment
-of DNA sequences.The function is a wrapper around
-Biostrings::consensusMatrix.
+of DNA sequences. The function is a wrapper around
+\code{Biostrings::consensusMatrix()}.
 }
 \examples{
 data("exampleRprimerAlignment")
 getAlignmentProfile(exampleRprimerAlignment)
 
+}
+\references{
+H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
+Efficient manipulation of biological strings. R package version
+2.57.2.
 }

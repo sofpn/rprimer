@@ -1,14 +1,14 @@
 #' An alignment of hepatitis E virus sequences
 #'
-#' An alignment with 621 hepatitis E virus sequences.
+#' An alignment with 100 hepatitis E virus sequences.
 #'
-#' @format A Biostrings::DNAMultipleAlignment object.
+#' @format A \code{Biostrings::DNAMultipleAlignment} object.
 #'
-#' @usage data(exampleRprimerAlignment)
+#' @usage data("exampleRprimerAlignment")
 #'
 #' @source
 #' The sequences were collected from NCBI GenBank and the alignment
-#' was imported to the package using Biostrings::readDNAStringSet().
+#' was imported to the package using \code{Biostrings::readDNAStringSet()}.
 #'
 #' @references
 #' H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
@@ -18,9 +18,9 @@
 
 #' A sequence profile from hepatitis E virus sequences
 #'
-#' @format An RprimerProfile object.
+#' @format An \code{RprimerProfile} object.
 #'
-#' @usage data(exampleRprimerProfile)
+#' @usage data("exampleRprimerProfile")
 #'
 #' @source
 #' The sequences were collected from NCBI GenBank.
@@ -28,7 +28,7 @@
 
 #' Sequence properties of hepatitis E virus sequences
 #'
-#' @format An RprimerProperties object.
+#' @format An \code{RprimerProperties} object.
 #'
 #' \describe{
 #'   \item{Position}{position in the alignment}
@@ -39,7 +39,7 @@
 #'   \item{Entropy}{Shannon entropy}
 #' }
 #'
-#' @usage data(exampleRprimerProperties)
+#' @usage data("exampleRprimerProperties")
 #'
 #' @source The sequences were collected from NCBI GenBank.
 "exampleRprimerProperties"

@@ -18,7 +18,8 @@ An RprimerProfile object if validation succeeds. An error
 message if not.
 }
 \description{
-An extension of the S4 class SummarizedExperiment::SummarizedExperiment.
+An extension of the S4 class
+\code{SummarizedExperiment::SummarizedExperiment}.
 }
 \details{
 A numeric matrix with the proportion of each

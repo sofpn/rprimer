@@ -5,7 +5,7 @@
 #' \code{getOligos} identifies oligos (primers and probes) from
 #' sequence properties.
 #'
-#' @param x an RprimerProperties object.
+#' @param x an \code{RprimerProperties} object.
 #'
 #' @param length
 #' Oligo length. The minimum allowed
@@ -77,7 +77,7 @@
 #' The melting temperature is calculated using the nearest-neighbor method,
 #' with the following assumptions:
 #'
-#' * Oligos are not expected to be self-complementary (hence no symmetry
+#' * Oligos are not expected to be self-complementary (i.e. no symmetry
 #' correction is done)
 #' * The oligo concentration is assumed to be much higher
 #' than the target concentration
@@ -94,6 +94,8 @@
 #'
 #' The tibble contains the following information:
 #'
+#' If \code{showAllVariants == FALSE}:
+#'
 #' \describe{
 #'   \item{Begin}{position where the oligo begins}
 #'   \item{End}{position where the oligo ends}
@@ -103,8 +105,20 @@
 #'   \item{Majority_RC}{majority sequence, reverse complement}
 #'   \item{IUPAC_RC}{IUPAC sequence, reverse complement}
 #'   \item{Degeneracy}{number of variants}
+#'   \item{Entropy}{summarized Shannon entropy of the oligo}
 #'   \item{GC_majority}{GC content (majority sequence), proportion}
 #'   \item{Tm_majority}{melting temperature}
+#' }
+#'
+#' If \code{showAllVariants == TRUE}, the following columns will be added:
+#'
+#' \describe{
+#'   \item{All}{Lists with all sequence variants of the oligos}
+#'   \item{All_RC}{Lists with all sequence variants of the oligos, reverse
+#'   complements}
+#'   \item{Tm_all}{Lists with the Tm of all sequence variants of the oligos}
+#'   \item{GC_all}{Lists with the GC content of all
+#'   sequence variants of the oligos}
 #' }
 #'
 #' @examples
@@ -198,8 +212,7 @@ getOligos <- function(x,
 #'
 #' @noRd
 .splitSequence <- function(x) {
-  x <- unlist(strsplit(x, split = ""), use.names = FALSE)
-  x
+  unlist(strsplit(x, split = ""), use.names = FALSE)
 }
 
 #' Divide a DNA sequence into n-sized chunks
@@ -263,7 +276,7 @@ getOligos <- function(x,
 .countDegeneracy <- function(x) {
   x <- toupper(x)
   x <- .splitSequence(x)
-  nNucleotides <- degeneracyLookup[x]
+  nNucleotides <- rprimerGlobals$degeneracyLookup[x]
   degeneracy <- prod(nNucleotides)
   degeneracy
 }
@@ -281,13 +294,13 @@ getOligos <- function(x,
                             maxGapFrequency = 0.1,
                             maxDegeneracy = 4) {
   if (!(min(oligoLength) >= 14 && max(oligoLength) <= 30)) {
-    stop("'oligoLength' must be between 14 and 30.", call. = FALSE)
+    stop("'oligoLength' must be from 14 to 30.", call. = FALSE)
   }
   if (!(maxGapFrequency >= 0 && maxGapFrequency <= 1)) {
-    stop("'maxGapFrequency' must be between 0 and 1.", call. = FALSE)
+    stop("'maxGapFrequency' must be from 0 to 1.", call. = FALSE)
   }
   if (!(maxDegeneracy >= 1 && maxDegeneracy <= 32)) {
-    stop("'maxDegeneracy' must be between 1 and 32.", call. = FALSE)
+    stop("'maxDegeneracy' must be from 1 to 32.", call. = FALSE)
   }
   Majority <- .getNmers(x$Majority, n = oligoLength)
   IUPAC <- .getNmers(x$IUPAC, n = oligoLength)
@@ -295,11 +308,12 @@ getOligos <- function(x,
   Begin <- seq_along(Majority)
   End <- as.integer(seq_along(Majority) + oligoLength - 1)
   Length <- oligoLength
+  Entropy <- .runningSum(x$Entropy, n = oligoLength)
   gapBin <- ifelse(x$Gaps > maxGapFrequency, 1L, 0L)
   gapPenalty <- .runningSum(gapBin, n = oligoLength)
   oligos <- tibble::tibble(
     Begin, End, Length, Majority, IUPAC,
-    Degeneracy, gapPenalty
+    Degeneracy, Entropy, gapPenalty
   )
   uniqueOligos <- match(oligos$Majority, unique(oligos$Majority))
   oligos <- oligos[uniqueOligos, ]
@@ -349,7 +363,7 @@ getOligos <- function(x,
 .reverseComplement <- function(x) {
   x <- toupper(x)
   x <- strsplit(x, split = "")
-  complement <- complementLookup[unlist(x)]
+  complement <- rprimerGlobals$complementLookup[unlist(x)]
   complement <- unname(complement)
   rc <- rev(complement)
   rc <- paste(rc, collapse = "")
@@ -474,7 +488,7 @@ getOligos <- function(x,
   }
   GC_majority <- purrr::map_dbl(x$Majority, ~ .gcContent(.x))
   x <- tibble::add_column(
-    x, GC_majority, .after = "Degeneracy"
+    x, GC_majority, .after = "Entropy"
   )
   x <- x[x$GC_majority >= min(gcRange) & x$GC_majority <= max(gcRange), ]
   x
@@ -514,7 +528,6 @@ getOligos <- function(x,
 #' @param table The lookup table that should be used.
 #' Either 'dH' (entropy) or 'dS' (enthalpy).
 #'
-#'
 #' @return The corresponding values for dH or dS (in cal/M).
 #'
 #' @keywords internal
@@ -522,11 +535,11 @@ getOligos <- function(x,
 #' @noRd
 .getNnTableValues <- function(x, table = "dH") {
   if (table == "dH") {
-    selected <- nnLookup$dH
+    selected <- rprimerGlobals$nnLookup$dH
   } else {
-    selected <- nnLookup$dS
+    selected <- rprimerGlobals$nnLookup$dS
   }
-  matching <- selected[match(x, nnLookup$bases)]
+  matching <- selected[match(x, rprimerGlobals$nnLookup$bases)]
   if (is.null(ncol(x))) {
     matching
   } else {
@@ -544,7 +557,7 @@ getOligos <- function(x,
 #'
 #' @noRd
 .init3End <- function(x) {
-  if (grepl("(t|a)$", x)) {
+  if (grepl("(T|A)$", x)) {
     c(H = 2.3 * 1000, S = 4.1)
   } else {
     c(H = 0.1 * 1000, S = -2.8)
@@ -553,7 +566,7 @@ getOligos <- function(x,
 
 #' @describeIn .init3End
 .init5End <- function(x) {
-  if (grepl("^(t|a)", x)) {
+  if (grepl("^(T|A)", x)) {
     c(H = 2.3 * 1000, S = 4.1)
   } else {
     c(H = 0.1 * 1000, S = -2.8)
@@ -576,11 +589,11 @@ getOligos <- function(x,
 #'
 #' @noRd
 .tm <- function(oligos, concOligo = 5e-07, concNa = 0.05) {
-  if (!is.double(concOligo) || concOligo < 2e-07 || concOligo > 2.0e-06) {
+  if (concOligo < 0.2e-07 || concOligo > 2.0e-06) {
     stop("'concOligo' must be from
            0.2e-07 M (20 nM) to 2e-06 M (2000 nM).", call. = FALSE)
   }
-  if (!is.double(concNa) || concNa < 0.01 || concNa > 1) {
+  if (concNa < 0.01 || concNa > 1) {
     stop("'concNa' must be from 0.01 to 1 M.", call. = FALSE)
   }
   oligos <- toupper(oligos)
@@ -610,7 +623,7 @@ getOligos <- function(x,
   # Correct delta S for salt conc.
   N <- nchar(oligos[[1]]) - 1 # Number of phosphates
   sumdS <- sumdS + 0.368 * N * log(concNa)
-  tm <- sumdH / (sumdS + gasConstant * log(concOligo))
+  tm <- sumdH / (sumdS + rprimerGlobals$gasConstant * log(concOligo))
   tm <- tm - 273.15
   tm
 }
@@ -636,7 +649,7 @@ getOligos <- function(x,
   }
   Tm_majority <- .tm(x$Majority, concOligo = concOligo, concNa = concNa)
   x <- tibble::add_column(
-    x, Tm_majority, .after = "Degeneracy"
+    x, Tm_majority, .after = "Entropy"
   )
   x <- x[x$Tm_majority >= min(tmRange) & x$Tm_majority <= max(tmRange), ]
   x
@@ -657,7 +670,7 @@ getOligos <- function(x,
 .expandDegenerates <- function(x) {
   x <- .splitSequence(x)
   expanded <- purrr::map(x, function(i) {
-    allBases <- unname(degenerateLookup[[i]])
+    allBases <- unname(rprimerGlobals$degenerateLookup[[i]])
     allBases <- unlist(strsplit(allBases, split = ","))
     allBases
   })

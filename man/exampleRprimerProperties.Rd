@@ -5,7 +5,7 @@
 \alias{exampleRprimerProperties}
 \title{Sequence properties of hepatitis E virus sequences}
 \format{
-An RprimerProperties object.
+An \code{RprimerProperties} object.
 
 \describe{
   \item{Position}{position in the alignment}
@@ -20,7 +20,7 @@ An RprimerProperties object.
 The sequences were collected from NCBI GenBank.
 }
 \usage{
-data(exampleRprimerProperties)
+data("exampleRprimerProperties")
 }
 \description{
 Sequence properties of hepatitis E virus sequences

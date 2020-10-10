@@ -5,17 +5,17 @@
 \alias{exampleRprimerAlignment}
 \title{An alignment of hepatitis E virus sequences}
 \format{
-A Biostrings::DNAMultipleAlignment object.
+A \code{Biostrings::DNAMultipleAlignment} object.
 }
 \source{
 The sequences were collected from NCBI GenBank and the alignment
-was imported to the package using Biostrings::readDNAStringSet().
+was imported to the package using \code{Biostrings::readDNAStringSet()}.
 }
 \usage{
-data(exampleRprimerAlignment)
+data("exampleRprimerAlignment")
 }
 \description{
-An alignment with 621 hepatitis E virus sequences.
+An alignment with 100 hepatitis E virus sequences.
 }
 \references{
 H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:

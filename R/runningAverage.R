@@ -88,11 +88,6 @@
         stop("'size' must be greater than 1.", call. = FALSE)
     }
     x <- toupper(x)
-    if (grepl(paste0("[^", dnaBases, "]"), paste(x, collapse = ""))) {
-        stop(paste0("'x' can only contain bases ", dnaBases, "."),
-             call. = FALSE
-        )
-    }
     begins <- seq_len(length(x) - size + 1)
     ends <- begins + size - 1
     average <- purrr::map2_dbl(begins, ends, function(i, j) {

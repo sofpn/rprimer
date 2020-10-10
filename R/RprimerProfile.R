@@ -1,6 +1,7 @@
 #' An S4 class for representation of an alignment profile
 #'
-#' An extension of the S4 class SummarizedExperiment::SummarizedExperiment.
+#' An extension of the S4 class
+#' \code{SummarizedExperiment::SummarizedExperiment}.
 #'
 #' A numeric matrix with the proportion of each
 #' nucleotide at each position within an alignment
@@ -47,21 +48,18 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
     if (!is.numeric(SummarizedExperiment::assay(object))) {
         msg <- c(msg, "The object is not in numeric format.")
     }
-    if (min(SummarizedExperiment::assay(object)) < 0) {
+    if (any(SummarizedExperiment::assay(object) < 0)) {
         msg <- c(msg, "The object contains values < 0.")
     }
-    if (max(SummarizedExperiment::assay(object)) > 1) {
+    if (any(SummarizedExperiment::assay(object) > 1)) {
         msg <- c(msg, "The object contains values > 1.")
     }
-    if (is.null(rownames(SummarizedExperiment::assay(object)))) {
-        msg <- c(msg, "The object does not have rownames.")
+    if (any(colSums(SummarizedExperiment::assay(object)) > 1)) {
+        msg <- c(msg, "At least one column sums up to > 1.")
     }
-    # if (any(
-    # grepl(paste0("[^", dnaBases, "]"),
-    # row.names(SummarizedExperiment::assay(object))))
-    # ) {
-    #  msg <- c(msg, "The object has invalid rownames.")
-    # }
+    if (!all(c("A", "C", "G", "T", "-", "other") %in% row.names(object))) {
+        msg <- c(msg, "The object does not have/has invalid rownames.")
+    }
     if (is.null(msg)) {
         TRUE
     } else {

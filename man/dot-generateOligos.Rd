@@ -7,7 +7,7 @@
 .generateOligos(x, oligoLength = 20, maxGapFrequency = 0.1, maxDegeneracy = 4)
 }
 \arguments{
-\item{x}{an RprimerProperties object.}
+\item{x}{an \code{RprimerProperties} object.}
 
 \item{maxGapFrequency}{Maximum allowed gap frequency.
 A number [0, 1]. It defaults to 0.1, which means that

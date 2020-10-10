@@ -20,7 +20,7 @@ getOligos(
 )
 }
 \arguments{
-\item{x}{an RprimerProperties object.}
+\item{x}{an \code{RprimerProperties} object.}
 
 \item{length}{Oligo length. The minimum allowed
 value is 14 and the maximum allowed value is 30.
@@ -73,6 +73,8 @@ candidates. An error message will return if no oligos are found.
 
 The tibble contains the following information:
 
+If \code{showAllVariants == FALSE}:
+
 \describe{
   \item{Begin}{position where the oligo begins}
   \item{End}{position where the oligo ends}
@@ -84,6 +86,17 @@ The tibble contains the following information:
   \item{Degeneracy}{number of variants}
   \item{GC_majority}{GC content (majority sequence), proportion}
   \item{Tm_majority}{melting temperature}
+}
+
+If \code{showAllVariants == TRUE}, the following columns will be added:
+
+\describe{
+  \item{All}{Lists with all sequence variants of the oligos}
+  \item{All_RC}{Lists with all sequence variants of the oligos, reverse
+  complements}
+  \item{Tm_all}{Lists with the Tm of all sequence variants of the oligos}
+  \item{GC_all}{Lists with the GC content of all
+  sequence variants of the oligos}
 }
 }
 \description{
@@ -107,7 +120,7 @@ These checks are made on the majority oligo sequences.
 The melting temperature is calculated using the nearest-neighbor method,
 with the following assumptions:
 
-* Oligos are not expected to be self-complementary (hence no symmetry
+* Oligos are not expected to be self-complementary (i.e. no symmetry
 correction is done)
 * The oligo concentration is assumed to be much higher
 than the target concentration

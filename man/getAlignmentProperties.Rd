@@ -15,7 +15,7 @@ higher or equal to the iupacThreshold will be included in
 the IUPAC consensus sequence. The default is 0.}
 }
 \value{
-An RprimerProperties object, which contains a tibble (a data frame)
+A tibble (a data frame)
 with information on majority and IUPAC consensus sequence, gap frequency,
 nucleotide identity and Shannon entropy.
 }

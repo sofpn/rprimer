@@ -63,13 +63,13 @@ Install rprimer by calling:
 ### Worked examples 
 
 ### Step 1: Import alignment 
-Aldready existing functionality can be used to import an alignment 
+Already existing functionality can be used to import an alignment.
 
-In this example, I use an alignment with 100 HEV sequences that I have collected 
+In this example, I use an alignment with 100 HEV sequences collected 
 from GenBank, which is provided with the package. 
 
 ```{r}
-infile <- system.file('extdata', 'exampleAlignment.txt', package = "rprimer")
+#infile <- system.file('extdata', 'exampleAlignment.txt', package = "rprimer")
 ```
 
 ```{r}
