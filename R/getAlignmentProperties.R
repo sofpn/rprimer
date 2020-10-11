@@ -2,16 +2,16 @@
 
 #' Get alignment properties
 #'
-#' \code{getAlignmentProperties} returns sequence information from
+#' \code{getAlignmentProperties()} returns sequence information from
 #' an RprimerProfile object
 #'
-#' @param x An RprimerProfile object.
+#' @param x An \code{RprimerProfile} object.
 #'
 #' @param iupacThreshold
 #' A number (0, 0.2].
 #' At each position, all nucleotides with a proportion
-#' higher or equal to the iupacThreshold will be included in
-#' the IUPAC consensus sequence. The default is 0.
+#' higher or equal to the \code{iupacThreshold} will be included in
+#' the IUPAC consensus sequence. It defaults to 0.
 #'
 #' @section
 #' Majority consensus sequence:
@@ -49,9 +49,16 @@
 #' A, C, G and T are excluded from the calculation.
 #'
 #' @return
-#' A tibble (a data frame)
-#' with information on majority and IUPAC consensus sequence, gap frequency,
-#' nucleotide identity and Shannon entropy.
+#' A tibble (a data frame) with the following information:
+#'
+#' #' \describe{
+#'   \item{Position}{Position in the alignment.}
+#'   \item{Majority}{Majority consensus sequence.}
+#'   \item{IUPAC}{IUPAC consensus sequence.}
+#'   \item{Gaps}{Proportion of gaps.}
+#'   \item{Identity}{Proportion of the most common nucleotide.}
+#'   \item{Entropy}{Shannon entropy}
+#' }
 #'
 #' @examples
 #' data("exampleRprimerProfile")
@@ -85,7 +92,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 
 #' Majority consensus sequence
 #'
-#' \code{.majorityConsensus} returns the majority consensus sequence of an
+#' \code{.majorityConsensus()} returns the majority consensus sequence of an
 #' alignment of DNA sequences.
 #'
 #' @param x A numeric matrix.
@@ -110,7 +117,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 
 #' Convert DNA nucleotides into the corresponding IUPAC base
 #'
-#' \code{.asIUPAC} takes several DNA nucleotides as input,
+#' \code{.asIUPAC()} takes several DNA nucleotides as input,
 #' and returns the degenerate base in IUPAC format.
 #'
 #' @param x
@@ -143,7 +150,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 
 #' IUPAC consensus sequence
 #'
-#' \code{.iupacConsensus} returns the IUPAC consensus sequence from an
+#' \code{.iupacConsensus()} returns the IUPAC consensus sequence from an
 #' PrprimerProfile object.
 #'
 #' @param x A numeric matrix.

@@ -82,8 +82,14 @@ test_that(
   expect_true("Tm_majority" %in% colnames(toTest))
   expect_true(any(grepl("^G", toTest$Majority)))
   expect_true(any(grepl("^G", toTest$Majority_RC)))
+  expect_true(min(toTest$Identity_3end, na.rm = TRUE) < 0.99)
+  expect_true(min(toTest$Identity_3end_RC, na.rm = TRUE) < 0.99)
   toTest <- .filterOligos(
-    toTest, gcClamp = FALSE, avoid5EndG = TRUE, avoid3EndRuns = FALSE)
+    toTest, gcClamp = FALSE, avoid5EndG = TRUE, avoid3EndRuns = FALSE,
+    minEndIdentity = 0.99
+  )
+  expect_false(min(toTest$Identity_3end, na.rm = TRUE) < 0.99)
+  expect_false(min(toTest$Identity_3end_RC, na.rm = TRUE) < 0.99)
   expect_false(any(grepl("^G", toTest$Majority)))
   expect_false(any(grepl("^G", toTest$Majority_RC)))
   expect_true(any(grepl("([A-Z])\\1\\1$", toTest$Majority)))
@@ -143,4 +149,10 @@ test_that(".expandOligos works", {
   toTest <- .expandOligos(toTest[1:2, ])
   expect_true(all(c("All", "All_RC", "Tm_all", "GC_all") %in% colnames(toTest)))
   expect_true(is.list(toTest$All[1]))
+})
+
+test_that(".countEndIdentity works", {
+  toTest <- c(1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 2, 2, 2)
+  expect_equivalent(.countEndIdentity(toTest, n = length(toTest))[, "plus"], 2)
+  expect_equivalent(.countEndIdentity(toTest, n = length(toTest))[, "minus"], 1)
 })

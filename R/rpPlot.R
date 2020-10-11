@@ -9,6 +9,7 @@
 #' @return A plot.
 #'
 #' @examples
+#'
 #' data("exampleRprimerProfile")
 #' rpPlot(exampleRprimerProfile[, 1:10]) ## Plot the first 10 bases
 #' rpPlot(exampleRprimerProfile[, 1:10], rc = TRUE) ## As reverse complement
@@ -24,7 +25,7 @@ setGeneric("rpPlot", function(x, ...) standardGeneric("rpPlot"))
 #' @export
 setMethod("rpPlot", "RprimerProfile", function(x, rc = FALSE) {
     if (!(is.logical(rc))) {
-        stop("'rc' must be set to TRUE or FALSE", call. = FALSE)
+        stop("'rc' must be set to 'TRUE' or 'FALSE'.", call. = FALSE)
     }
     x <- SummarizedExperiment::assay(x)
     x <- x[rownames(x) != "-", ]

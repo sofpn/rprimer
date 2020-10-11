@@ -12,6 +12,7 @@ getOligos(
   gcClamp = TRUE,
   avoid3EndRuns = TRUE,
   avoid5EndG = FALSE,
+  minEndIdentity = NULL,
   gcRange = c(0.45, 0.55),
   tmRange = c(48, 70),
   concOligo = 5e-07,
@@ -20,25 +21,23 @@ getOligos(
 )
 }
 \arguments{
-\item{x}{an \code{RprimerProperties} object.}
+\item{x}{An \code{RprimerProperties} object.}
 
 \item{length}{Oligo length. The minimum allowed
 value is 14 and the maximum allowed value is 30.
 It defaults to \code{18:22}.}
 
 \item{maxGapFrequency}{Maximum allowed gap frequency.
-A number [0, 1]. It defaults to 0.1, which means that
-positions with a gap frequency above 0.1 will not be
-considered as an oligo region.}
+A number [0, 1]. It defaults to 0.1.}
 
-\item{maxDegeneracy}{Maximum number of variants.
-The minimum allowed value is 1 and the maximum
-allowed value is 32. It defaults to 4.}
+\item{maxDegeneracy}{Maximum number of variants. A number [1, 32]. It defaults to 4.}
 
 \item{gcClamp}{\code{TRUE} or \code{FALSE}.
 If oligos with no GC-clamp
 should be replaced with \code{NA}
-(recommended for primers). It defaults to \code{TRUE}.}
+(recommended for primers). It defaults to \code{TRUE}. A GC-clamp
+is here identified as two to three G or
+C:s within the last five bases (3' end) of the oligo.}
 
 \item{avoid3EndRuns}{\code{TRUE} or \code{FALSE}.
 If oligos with more than two runs
@@ -46,15 +45,26 @@ of the same nucleotide at the 3' end should be replaced with \code{NA}
 (recommended for primers).
 It defaults to \code{TRUE}.}
 
-\item{avoid5EndG}{\code{TRUE} or \code{FALSE}.If oligos with g
+\item{avoid5EndG}{\code{TRUE} or \code{FALSE}. If oligos with G
 at the 5' end should be replaced with \code{NA}
 (recommended for probes). It defaults to \code{FALSE}.}
+
+\item{minEndIdentity}{Optional. If specified, a number [0, 1]. The minimum average identity
+at the 3' end (i.e. the last five bases of the oligo).}
 
 \item{gcRange}{Accepted GC-content (proportion, not %). A numeric vector [0, 1].
 It defaults to \code{c(0.45, 0.55)}.}
 
 \item{tmRange}{Accepted Tm. A numeric vector [30, 90].
-It defaults to \code{c(48, 70)}.}
+It defaults to \code{c(48, 70)}.
+Tm is calculated using the nearest-neighbor method,
+with the following assumptions:
+1) Oligos are not expected to be self-complementary (i.e. no symmetry
+correction is done);
+2) The oligo concentration is assumed to be much higher
+than the target concentration.
+
+See references for table values and equations.}
 
 \item{concOligo}{Oligo concentration in M, for Tm calculation. A numeric vector
 [0.2e-07, 2e-06], i.e. between 20 nM and 20000 nM.
@@ -65,7 +75,8 @@ A numeric vector [0.01, 1]. It defaults to 0.05 M (50 mM).}
 
 \item{showAllVariants}{If sequence, GC-content and Tm should be presented for all
 variants of each oligo (in case of degenerate bases).
-\code{TRUE} or \code{FALSE}. It defaults to \code{TRUE}.}
+\code{TRUE} (slower) or \code{FALSE} (faster).
+It defaults to \code{TRUE}.}
 }
 \value{
 A tibble (a data frame) with all oligo
@@ -76,68 +87,52 @@ The tibble contains the following information:
 If \code{showAllVariants == FALSE}:
 
 \describe{
-  \item{Begin}{position where the oligo begins}
-  \item{End}{position where the oligo ends}
-  \item{Length}{length of the oligo}
-  \item{Majority}{majority sequence}
-  \item{IUPAC}{IUPAC sequence (i.e. with degenerate bases)}
-  \item{Majority_RC}{majority sequence, reverse complement}
-  \item{IUPAC_RC}{IUPAC sequence, reverse complement}
-  \item{Degeneracy}{number of variants}
-  \item{GC_majority}{GC content (majority sequence), proportion}
-  \item{Tm_majority}{melting temperature}
+  \item{Begin}{Position where the oligo begins.}
+  \item{End}{Position where the oligo ends.}
+  \item{Length}{Length of the oligo.}
+  \item{Majority}{Majority sequence.}
+  \item{Majority_RC}{Majority sequence, reverse complement.}
+  \item{GC_majority}{GC content (majority sequence), proportion.}
+  \item{Tm_majority}{Melting temperature.}
+  \item{Identity}{Average identity score of the oligo.}
+  \item{IUPAC}{IUPAC sequence (i.e. with degenerate bases).}
+  \item{IUPAC_RC}{IUPAC sequence, reverse complement.}
+  \item{Degeneracy}{Number of variants of the degenerate oligo.}
 }
 
-If \code{showAllVariants == TRUE}, the following columns will be added:
+If \code{showAllVariants == TRUE}, the following columns are also included:
 
 \describe{
-  \item{All}{Lists with all sequence variants of the oligos}
+  \item{All}{Lists with all sequence variants of the oligos.}
   \item{All_RC}{Lists with all sequence variants of the oligos, reverse
-  complements}
-  \item{Tm_all}{Lists with the Tm of all sequence variants of the oligos}
+  complements.}
   \item{GC_all}{Lists with the GC content of all
-  sequence variants of the oligos}
+  sequence variants of the oligos.}
+  \item{Tm_all}{Lists with the Tm of all sequence variants of the oligos.}
+
 }
 }
 \description{
-\code{getOligos} identifies oligos (primers and probes) from
+\code{getOligos()} identifies oligos (primers and probes) from
 sequence properties.
 }
-\section{Excluded oligos}{
-
-The function excludes all oligos with:
-* More than than three consecutive runs of the same dinucleotide
-(e.g. 'TATATATA')
-* More than four consecutive runs of the
-same nucleotide (e.g. 'AAAAA')
-It also excludes oligos that are duplicated, to prevent binding to several
-places in the target.
-These checks are made on the majority oligo sequences.
-}
-
-\section{Tm}{
-
-The melting temperature is calculated using the nearest-neighbor method,
-with the following assumptions:
-
-* Oligos are not expected to be self-complementary (i.e. no symmetry
-correction is done)
-* The oligo concentration is assumed to be much higher
-than the target concentration
-
-See references for table values and equations.
-}
-
-\section{Note}{
+\section{Notes}{
 
 GC-content and Tm are calculated based on the majority oligos, and
 may thus be misleading for degenerate (IUPAC) oligos.
+
+\code{getOligos()} excludes all oligos with
+more than than three consecutive runs of the same dinucleotide
+(e.g. 'TATATATA') and more than four consecutive runs of the
+same nucleotide (e.g. 'AAAAA').
+It also excludes oligos that are duplicated to prevent binding to several
+places in the target. These checks are based on the majority oligos.
 }
 
 \examples{
 data("exampleRprimerProperties")
 
-getOligos <- function(
+getOligos(
 exampleRprimerProperties,
 length = 18:22,
 maxGapFrequency = 0.1,
@@ -145,6 +140,7 @@ maxDegeneracy = 4,
 gcClamp = TRUE,
 avoid3EndRuns = TRUE,
 avoid5EndG = FALSE,
+minEndIdentity = 0.98,
 gcRange = c(0.45, 0.55),
 tmRange = c(48, 65),
 concOligo = 5e-07,
@@ -156,17 +152,18 @@ showAllVariants = TRUE
 \references{
 Tm-calculation:
 
+Formula and salt correction method:
 SantaLucia, J, et al. (1996)
 Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
-Biochemistry, 35: 3555-3562 (Formula and salt correction method
-are from here)
+Biochemistry, 35: 3555-3562
 
+Duplex initiation parameters:
 Allawi, H. & SantaLucia, J. (1997)
 Thermodynamics and NMR of Internal G-T Mismatches in DNA.
 Biochemistry, 36, 34: 10581–10594
-(Duplex initiation parameters are from here)
 
+Table values for nearest-neighbors:
 SantaLucia, J (1998) A unified view of polymer,
 dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
-Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
+Proc. Natl. Acad. Sci. USA, 95: 1460-1465.
 }

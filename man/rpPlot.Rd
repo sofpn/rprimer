@@ -30,6 +30,7 @@ Plot an Rprimer object (generic)
 }}
 
 \examples{
+
 data("exampleRprimerProfile")
 rpPlot(exampleRprimerProfile[, 1:10]) ## Plot the first 10 bases
 rpPlot(exampleRprimerProfile[, 1:10], rc = TRUE) ## As reverse complement

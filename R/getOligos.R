@@ -2,10 +2,10 @@
 
 #' Get oligos
 #'
-#' \code{getOligos} identifies oligos (primers and probes) from
+#' \code{getOligos()} identifies oligos (primers and probes) from
 #' sequence properties.
 #'
-#' @param x an \code{RprimerProperties} object.
+#' @param x An \code{RprimerProperties} object.
 #'
 #' @param length
 #' Oligo length. The minimum allowed
@@ -14,20 +14,18 @@
 #'
 #' @param maxGapFrequency
 #' Maximum allowed gap frequency.
-#' A number [0, 1]. It defaults to 0.1, which means that
-#' positions with a gap frequency above 0.1 will not be
-#' considered as an oligo region.
+#' A number [0, 1]. It defaults to 0.1.
 #'
 #' @param maxDegeneracy
-#' Maximum number of variants.
-#' The minimum allowed value is 1 and the maximum
-#' allowed value is 32. It defaults to 4.
+#' Maximum number of variants. A number [1, 32]. It defaults to 4.
 #'
 #' @param gcClamp
 #' \code{TRUE} or \code{FALSE}.
 #' If oligos with no GC-clamp
 #' should be replaced with \code{NA}
-#' (recommended for primers). It defaults to \code{TRUE}.
+#' (recommended for primers). It defaults to \code{TRUE}. A GC-clamp
+#' is here identified as two to three G or
+#' C:s within the last five bases (3' end) of the oligo.
 #'
 #' @param avoid3EndRuns
 #' \code{TRUE} or \code{FALSE}.
@@ -37,9 +35,13 @@
 #' It defaults to \code{TRUE}.
 #'
 #' @param avoid5EndG
-#' \code{TRUE} or \code{FALSE}.If oligos with g
+#' \code{TRUE} or \code{FALSE}. If oligos with G
 #' at the 5' end should be replaced with \code{NA}
 #' (recommended for probes). It defaults to \code{FALSE}.
+#'
+#' @param minEndIdentity
+#' Optional. If specified, a number [0, 1]. The minimum average identity
+#' at the 3' end (i.e. the last five bases of the oligo).
 #'
 #' @param gcRange
 #' Accepted GC-content (proportion, not %). A numeric vector [0, 1].
@@ -48,6 +50,14 @@
 #' @param tmRange
 #' Accepted Tm. A numeric vector [30, 90].
 #' It defaults to \code{c(48, 70)}.
+#' Tm is calculated using the nearest-neighbor method,
+#' with the following assumptions:
+#' 1) Oligos are not expected to be self-complementary (i.e. no symmetry
+#' correction is done);
+#' 2) The oligo concentration is assumed to be much higher
+#' than the target concentration.
+#'
+#' See references for table values and equations.
 #'
 #' @param concOligo
 #' Oligo concentration in M, for Tm calculation. A numeric vector
@@ -61,32 +71,19 @@
 #' @param showAllVariants
 #' If sequence, GC-content and Tm should be presented for all
 #' variants of each oligo (in case of degenerate bases).
-#' \code{TRUE} or \code{FALSE}. It defaults to \code{TRUE}.
+#' \code{TRUE} (slower) or \code{FALSE} (faster).
+#' It defaults to \code{TRUE}.
 #'
-#' @section Excluded oligos:
-#' The function excludes all oligos with:
-#' * More than than three consecutive runs of the same dinucleotide
-#' (e.g. 'TATATATA')
-#' * More than four consecutive runs of the
-#' same nucleotide (e.g. 'AAAAA')
-#' It also excludes oligos that are duplicated, to prevent binding to several
-#' places in the target.
-#' These checks are made on the majority oligo sequences.
-#'
-#' @section Tm:
-#' The melting temperature is calculated using the nearest-neighbor method,
-#' with the following assumptions:
-#'
-#' * Oligos are not expected to be self-complementary (i.e. no symmetry
-#' correction is done)
-#' * The oligo concentration is assumed to be much higher
-#' than the target concentration
-#'
-#' See references for table values and equations.
-#'
-#' @section Note:
+#' @section Notes:
 #' GC-content and Tm are calculated based on the majority oligos, and
 #' may thus be misleading for degenerate (IUPAC) oligos.
+#'
+#' \code{getOligos()} excludes all oligos with
+#' more than than three consecutive runs of the same dinucleotide
+#' (e.g. 'TATATATA') and more than four consecutive runs of the
+#' same nucleotide (e.g. 'AAAAA').
+#' It also excludes oligos that are duplicated to prevent binding to several
+#' places in the target. These checks are based on the majority oligos.
 #'
 #' @return
 #' A tibble (a data frame) with all oligo
@@ -97,34 +94,35 @@
 #' If \code{showAllVariants == FALSE}:
 #'
 #' \describe{
-#'   \item{Begin}{position where the oligo begins}
-#'   \item{End}{position where the oligo ends}
-#'   \item{Length}{length of the oligo}
-#'   \item{Majority}{majority sequence}
-#'   \item{IUPAC}{IUPAC sequence (i.e. with degenerate bases)}
-#'   \item{Majority_RC}{majority sequence, reverse complement}
-#'   \item{IUPAC_RC}{IUPAC sequence, reverse complement}
-#'   \item{Degeneracy}{number of variants}
-#'   \item{Entropy}{summarized Shannon entropy of the oligo}
-#'   \item{GC_majority}{GC content (majority sequence), proportion}
-#'   \item{Tm_majority}{melting temperature}
+#'   \item{Begin}{Position where the oligo begins.}
+#'   \item{End}{Position where the oligo ends.}
+#'   \item{Length}{Length of the oligo.}
+#'   \item{Majority}{Majority sequence.}
+#'   \item{Majority_RC}{Majority sequence, reverse complement.}
+#'   \item{GC_majority}{GC content (majority sequence), proportion.}
+#'   \item{Tm_majority}{Melting temperature.}
+#'   \item{Identity}{Average identity score of the oligo.}
+#'   \item{IUPAC}{IUPAC sequence (i.e. with degenerate bases).}
+#'   \item{IUPAC_RC}{IUPAC sequence, reverse complement.}
+#'   \item{Degeneracy}{Number of variants of the degenerate oligo.}
 #' }
 #'
-#' If \code{showAllVariants == TRUE}, the following columns will be added:
+#' If \code{showAllVariants == TRUE}, the following columns are also included:
 #'
 #' \describe{
-#'   \item{All}{Lists with all sequence variants of the oligos}
+#'   \item{All}{Lists with all sequence variants of the oligos.}
 #'   \item{All_RC}{Lists with all sequence variants of the oligos, reverse
-#'   complements}
-#'   \item{Tm_all}{Lists with the Tm of all sequence variants of the oligos}
+#'   complements.}
 #'   \item{GC_all}{Lists with the GC content of all
-#'   sequence variants of the oligos}
+#'   sequence variants of the oligos.}
+#'   \item{Tm_all}{Lists with the Tm of all sequence variants of the oligos.}
+#'
 #' }
 #'
 #' @examples
 #' data("exampleRprimerProperties")
 #'
-#' getOligos <- function(
+#' getOligos(
 #' exampleRprimerProperties,
 #' length = 18:22,
 #' maxGapFrequency = 0.1,
@@ -132,6 +130,7 @@
 #' gcClamp = TRUE,
 #' avoid3EndRuns = TRUE,
 #' avoid5EndG = FALSE,
+#' minEndIdentity = 0.98,
 #' gcRange = c(0.45, 0.55),
 #' tmRange = c(48, 65),
 #' concOligo = 5e-07,
@@ -142,19 +141,20 @@
 #' @references
 #' Tm-calculation:
 #'
+#' Formula and salt correction method:
 #' SantaLucia, J, et al. (1996)
 #' Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
-#' Biochemistry, 35: 3555-3562 (Formula and salt correction method
-#' are from here)
+#' Biochemistry, 35: 3555-3562
 #'
+#' Duplex initiation parameters:
 #' Allawi, H. & SantaLucia, J. (1997)
 #' Thermodynamics and NMR of Internal G-T Mismatches in DNA.
 #' Biochemistry, 36, 34: 10581–10594
-#' (Duplex initiation parameters are from here)
 #'
+#' Table values for nearest-neighbors:
 #' SantaLucia, J (1998) A unified view of polymer,
 #' dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
-#' Proc. Natl. Acad. Sci. USA, 95: 1460-1465. (Table values are from here)
+#' Proc. Natl. Acad. Sci. USA, 95: 1460-1465.
 #'
 #' @export
 getOligos <- function(x,
@@ -164,6 +164,7 @@ getOligos <- function(x,
                       gcClamp = TRUE,
                       avoid3EndRuns = TRUE,
                       avoid5EndG = FALSE,
+                      minEndIdentity = NULL,
                       gcRange = c(0.45, 0.55),
                       tmRange = c(48, 70),
                       concOligo = 5e-07,
@@ -186,7 +187,7 @@ getOligos <- function(x,
     oligos <- .addReverseComplement(oligos)
     oligos <- .filterOligos(
       oligos, gcClamp = gcClamp, avoid5EndG = avoid5EndG,
-      avoid3EndRuns = avoid3EndRuns
+      avoid3EndRuns = avoid3EndRuns, minEndIdentity = minEndIdentity
     )
     oligos
   })
@@ -197,7 +198,9 @@ getOligos <- function(x,
       allOligos, concOligo = concOligo, concNa = concNa
     )
   }
- allOligos
+  drop <- c("Identity_3end", "Identity_3end_RC")
+  allOligos <- allOligos[!names(allOligos) %in% drop]
+  allOligos
 }
 
 # Helpers =====================================================================
@@ -239,7 +242,7 @@ getOligos <- function(x,
 
 #' Calculate running sums
 #'
-#' \code{.runningSum} calculates 'running' sums of a numeric vector. Each
+#' \code{.runningSum()} calculates 'running' sums of a numeric vector. Each
 #' sum is calculated in a size of \code{n}, in steps of 1 (i.e., if
 #' \code{n = 20}, the sum will be calculated from element 1 to 20,
 #' then from element 2 to 21, then from element 3 to 22, etc.)
@@ -260,9 +263,37 @@ getOligos <- function(x,
   runsum
 }
 
+#' Calculate mean identity for 3' ends of oligos.
+#'
+#' @param x A numeric vector of nucleotide identities.
+#'
+#' @param n Oligo length, an integer.
+#'
+#' @return
+#' Mean identity score for the last five bases of the oligo(s).
+#' A numeric matrix with two columns, the first represent plus strand oligos
+#' and the second represent minus strand oligos (reverse complements).
+#'
+#' @keywords internal
+#'
+#' @noRd
+.countEndIdentity <- function(x, n) {
+  begin <- seq_len(length(x) - n + 1)
+  end <- begin + n - 1
+  frame <- purrr::map(begin, ~ x[begin[[.x]]:end[[.x]]])
+  endScore <- purrr::map(frame, function(x) {
+    lastFive <- mean(x[(length(x) - 4):length(x)])
+    firstFive <- mean(x[1:5])
+    c(lastFive, firstFive)
+  })
+  endScore <- do.call("rbind", endScore)
+  colnames(endScore) <- c("plus", "minus")
+  endScore
+}
+
 #' Count the degeneracy of a DNA sequence
 #'
-#' \code{.countDegeneracy} returns the number of unique variants of
+#' \code{.countDegeneracy()} returns the number of unique variants of
 #' a DNA sequence with degenerate bases.
 #'
 #' @param x
@@ -289,6 +320,7 @@ getOligos <- function(x,
 #'
 #' @keywords internal
 #'
+#' @noRd
 .generateOligos <- function(x,
                             oligoLength = 20,
                             maxGapFrequency = 0.1,
@@ -308,12 +340,15 @@ getOligos <- function(x,
   Begin <- seq_along(Majority)
   End <- as.integer(seq_along(Majority) + oligoLength - 1)
   Length <- oligoLength
-  Entropy <- .runningSum(x$Entropy, n = oligoLength)
+  Identity <- .runningSum(x$Identity, n = oligoLength)/oligoLength
+  endIdentity <- .countEndIdentity(x$Identity, n = oligoLength)
+  Identity_3end <- endIdentity[, "plus"]
+  Identity_3end_RC <- endIdentity[, "minus"]
   gapBin <- ifelse(x$Gaps > maxGapFrequency, 1L, 0L)
   gapPenalty <- .runningSum(gapBin, n = oligoLength)
   oligos <- tibble::tibble(
-    Begin, End, Length, Majority, IUPAC,
-    Degeneracy, Entropy, gapPenalty
+    Begin, End, Length, Majority, Identity, Identity_3end, Identity_3end_RC,
+    IUPAC, Degeneracy, gapPenalty
   )
   uniqueOligos <- match(oligos$Majority, unique(oligos$Majority))
   oligos <- oligos[uniqueOligos, ]
@@ -325,7 +360,7 @@ getOligos <- function(x,
 
 #' Exclude non optimal oligos
 #'
-#' \code{.exclude} replaces oligos with many consecutive
+#' \code{.exclude()} replaces oligos with many consecutive
 #' mono- or dinucleotides with \code{NA}.
 #'
 #' @param x A tibble with oligos.
@@ -351,7 +386,7 @@ getOligos <- function(x,
 
 #' Get the reverse complement of a DNA sequence
 #'
-#' \code{.reverseComplement} finds the reverse complement of a DNA sequence.
+#' \code{.reverseComplement()} finds the reverse complement of a DNA sequence.
 #'
 #' @param x A DNA sequence (a character vector of length one).
 #'
@@ -382,9 +417,8 @@ getOligos <- function(x,
 .addReverseComplement <- function(x) {
   Majority_RC <- purrr::map_chr(x$Majority, ~.reverseComplement(.x))
   IUPAC_RC <- purrr::map_chr(x$IUPAC, ~.reverseComplement(.x))
-  x <- tibble::add_column(
-    x, Majority_RC, IUPAC_RC, .before = "Degeneracy"
-  )
+  x <- tibble::add_column(x, Majority_RC, .after = "Majority")
+  x <- tibble::add_column(x, IUPAC_RC, .after = "IUPAC")
   x
 }
 
@@ -403,8 +437,8 @@ getOligos <- function(x,
   ends <- purrr::map(x, ~.splitSequence(.x))
   ends <- purrr::map(ends, ~.x[(length(.x) - 4):length(.x)])
   gc <- purrr::map_dbl(ends, ~.gcContent(.x))
-  x[gc >= 4/5] <- NA
-  x[gc <= 1/5] <- NA
+  x[gc > 3/5] <- NA
+  x[gc < 2/5] <- NA
   x
 }
 
@@ -422,13 +456,20 @@ getOligos <- function(x,
 .filterOligos <- function(x,
                           gcClamp = TRUE,
                           avoid5EndG = FALSE,
-                          avoid3EndRuns = TRUE) {
+                          avoid3EndRuns = TRUE,
+                          minEndIdentity = NULL) {
   if (any(!is.logical(
     c(gcClamp, avoid5EndG, avoid3EndRuns)
   ))) {
     stop(
       "'gcClamp', 'avoid5EndG',  and 'avoid3EndRuns' must be set to \n
       'TRUE' or 'FALSE'", call. = FALSE
+    )
+  }
+  if (is.null(minEndIdentity)) minEndIdentity <- 0
+  if (minEndIdentity < 0 || minEndIdentity > 1) {
+    stop(
+      "'minEndIdentity' must be either 'NULL' or from 0 to 1.", call. = FALSE
     )
   }
   if (gcClamp == TRUE) {
@@ -443,6 +484,10 @@ getOligos <- function(x,
     x$Majority[grepl("([A-Z])\\1\\1$", x$Majority)] <- NA
     x$Majority_RC[grepl("([A-Z])\\1\\1$", x$Majority_RC)] <- NA
   }
+  x$Majority[x$Identity_3end < minEndIdentity] <- NA
+  x$Identity_3end[x$Identity_3end < minEndIdentity] <- NA
+  x$Majority_RC[x$Identity_3end_RC < minEndIdentity] <- NA
+  x$Identity_3end_RC[x$Identity_3end_RC < minEndIdentity] <- NA
   x$IUPAC[is.na(x$Majority)] <- NA
   x$IUPAC_RC[is.na(x$Majority_RC)] <- NA
   invalidOligos <- is.na(x$Majority) & is.na(x$Majority_RC)
@@ -452,7 +497,7 @@ getOligos <- function(x,
 
 #' Calculate GC content of a DNA sequence
 #'
-#' \code{.gcContent} finds the GC content of a DNA sequence.
+#' \code{.gcContent()} finds the GC content of a DNA sequence.
 #'
 #' @param x
 #' A DNA sequence (a character vector of length one).
@@ -460,6 +505,8 @@ getOligos <- function(x,
 #' @return The GC content of x.
 #'
 #' @keywords internal
+#'
+#' @noRd
 .gcContent <- function(x) {
   x <- toupper(x)
   x <- .splitSequence(x)
@@ -488,7 +535,7 @@ getOligos <- function(x,
   }
   GC_majority <- purrr::map_dbl(x$Majority, ~ .gcContent(.x))
   x <- tibble::add_column(
-    x, GC_majority, .after = "Entropy"
+    x, GC_majority, .before = "Identity"
   )
   x <- x[x$GC_majority >= min(gcRange) & x$GC_majority <= max(gcRange), ]
   x
@@ -496,7 +543,7 @@ getOligos <- function(x,
 
 #' Split a DNA sequence into nearest neighbors
 #'
-#' \code{.nnSplit} splits an oligo sequence into nearest neighbors
+#' \code{.nnSplit()} splits an oligo sequence into nearest neighbors
 #' (for calculation of deltaG, deltaH and Tm)
 #'
 #' @param x a DNA sequence with at least two bases, e.g. 'CTTA'
@@ -519,7 +566,7 @@ getOligos <- function(x,
 
 #' Calculate dH or dS of nearest neighbors using lookup tables
 #'
-#' \code{.getNnTableValues} finds the corresponding dH or dS values
+#' \code{.getNnTableValues()} finds the corresponding dH or dS values
 #' for nearest-neighbor pairs.
 #'
 #' @param x A matrix (of type character) with nearest-neighbor pairs
@@ -649,7 +696,7 @@ getOligos <- function(x,
   }
   Tm_majority <- .tm(x$Majority, concOligo = concOligo, concNa = concNa)
   x <- tibble::add_column(
-    x, Tm_majority, .after = "Entropy"
+    x, Tm_majority, .before = "Identity"
   )
   x <- x[x$Tm_majority >= min(tmRange) & x$Tm_majority <= max(tmRange), ]
   x
@@ -699,7 +746,7 @@ getOligos <- function(x,
   All <- purrr::map(x$IUPAC, function(x) {
     if (is.na(x)) "" else .expandDegenerates(x)
   })
-  x <- tibble::add_column(x, All, .before = "Degeneracy")
+  x <- tibble::add_column(x, All, .after = "Degeneracy")
   All_RC <- purrr::map(x$IUPAC_RC, function(x) {
     if (is.na(x)) "" else .expandDegenerates(x)
   })
@@ -714,6 +761,6 @@ getOligos <- function(x,
     toCalculate <- unlist(toCalculate)
     purrr::map_dbl(toCalculate, ~.tm(.x))
   })
-  x <- tibble::add_column(x, Tm_all, GC_all)
+  x <- tibble::add_column(x, GC_all, Tm_all)
   x
 }

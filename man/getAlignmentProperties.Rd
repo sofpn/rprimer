@@ -7,12 +7,12 @@
 getAlignmentProperties(x, iupacThreshold = 0)
 }
 \arguments{
-\item{x}{An RprimerProfile object.}
+\item{x}{An \code{RprimerProfile} object.}
 
 \item{iupacThreshold}{A number (0, 0.2].
 At each position, all nucleotides with a proportion
-higher or equal to the iupacThreshold will be included in
-the IUPAC consensus sequence. The default is 0.}
+higher or equal to the \code{iupacThreshold} will be included in
+the IUPAC consensus sequence. It defaults to 0.}
 }
 \value{
 A tibble (a data frame)
@@ -20,7 +20,7 @@ with information on majority and IUPAC consensus sequence, gap frequency,
 nucleotide identity and Shannon entropy.
 }
 \description{
-\code{getAlignmentProperties} returns sequence information from
+\code{getAlignmentProperties()} returns sequence information from
 an RprimerProfile object
 }
 \section{Majority consensus sequence}{
