@@ -9,7 +9,7 @@ getAssays(
   probes = NULL,
   length = 65:120,
   maxTmDifferencePrimers = 2,
-  tmDifferenceProbes = NULL
+  tmDifferenceProbes = c(0, 20)
 )
 }
 \arguments{

@@ -149,6 +149,6 @@ test_that(".expandOligos works", {
 
 test_that(".countEndIdentity works", {
   toTest <- c(1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 2, 2, 2)
-  expect_equivalent(.countEndIdentity(toTest, n = length(toTest))[, "plus"], 2)
-  expect_equivalent(.countEndIdentity(toTest, n = length(toTest))[, "minus"], 1)
+  expect_equivalent(.countEndIdentity(toTest, n = length(toTest))[, "Pos"], 2)
+  expect_equivalent(.countEndIdentity(toTest, n = length(toTest))[, "Neg"], 1)
 })

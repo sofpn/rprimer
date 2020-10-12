@@ -14,7 +14,7 @@ getOligos(
   avoid5EndG = FALSE,
   minEndIdentity = NULL,
   gcRange = c(0.45, 0.55),
-  tmRange = c(48, 70),
+  tmRange = c(50, 65),
   concOligo = 5e-07,
   concNa = 0.05,
   showAllVariants = TRUE
@@ -56,7 +56,7 @@ at the 3' end (i.e. the last five bases of the oligo).}
 It defaults to \code{c(0.45, 0.55)}.}
 
 \item{tmRange}{Accepted Tm. A numeric vector [30, 90].
-It defaults to \code{c(48, 70)}.
+It defaults to \code{c(50, 65)}.
 Tm is calculated using the nearest-neighbor method,
 with the following assumptions:
 1) Oligos are not expected to be self-complementary (i.e. no symmetry
