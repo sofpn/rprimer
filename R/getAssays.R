@@ -134,7 +134,7 @@ getAssays <- function(primers,
                       probes = NULL,
                       length = 65:120,
                       maxTmDifferencePrimers = 2,
-                      tmDifferenceProbes = NULL
+                      tmDifferenceProbes = c(0, 20)
                       ) {
   assays <- .combinePrimers(
     primers = primers, length = length,
@@ -248,8 +248,9 @@ getAssays <- function(primers,
 #'
 #' @noRd
 .addProbes <- function(assays, probes, tmDifferenceProbes = c(0, 20)) {
-  if (is.null(tmDifferenceProbes)) tmDifferenceProbes <- c(-20, 20)
-  if (!(min(tmDifferenceProbes) >= -20 && max(tmDifferenceProbes) <= 20)) {
+  if (!(is.numeric(tmDifferenceProbes) &&
+    min(tmDifferenceProbes) >= -20 && max(tmDifferenceProbes) <= 20)
+  ) {
     stop(
       "'tm_difference' must be from -20 to 20, e.g. c(-1, 5).",
       call. = FALSE
@@ -302,7 +303,7 @@ getAssays <- function(primers,
     Sense == "Pos", probeCandidates$IUPAC, probeCandidates$IUPAC_RC
   )
   probeCandidates <- tibble::add_column(probeCandidates, Sense)
-  drop <- c("majority_rc", "iupac_rc")
+  drop <- c("Majority_RC", "IUPAC_RC")
   probeCandidates <- probeCandidates[!names(probeCandidates) %in% drop]
   names(probeCandidates) <- paste0(names(probeCandidates), "_pr")
   assays <- dplyr::bind_cols(assays, probeCandidates)

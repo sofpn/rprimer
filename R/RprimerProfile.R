@@ -1,3 +1,5 @@
+## Getter instead of assay
+
 #' An S4 class for representation of an alignment profile
 #'
 #' An extension of the S4 class

@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ### Installation
 
 You can install the development version of rprimer 
@@ -27,30 +26,29 @@ from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("sofpn/rprimer")
 ```
-
-### Initial setup
+Initial setup for this session: 
 
 ``` {r, message=FALSE, warn=FALSE}
 # library(rprimer)
 devtools::load_all(".")
-library(magrittr)
+library(magrittr) ## Required for the pipe operator in this example
 ```
 
 ### Introduction 
 
 In this document, I demonstrate how to use rprimer by designing an RT-qPCR assay 
-for detection of Hepatitis E virus (HEV). 
+for detection of hepatitis E virus. 
 
-### Step 0: Import alignment and mask positions with high gap frequency
+### To start: Import alignment and mask positions with high gap frequency
 
 For this part, I use previously existing functionality from the Biostrings-package. 
 
-Align the target sequences of interest and import using 
-`Biostrings::readDNAMultipleAlignment()`. Mask positions with high gap frequency
+Import an alignment with target sequences of interest using 
+`Biostrings::readDNAMultipleAlignment()`, and mask positions with high gap frequency
 using `Biostrings::maskGaps()`.
 
-The file "example_alignment" is provided with the package and consists of 100 HEV
-sequences. 
+The file "example_alignment.txt" is provided with the package and consists of 100
+hepatitis E virus sequences. 
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -60,57 +58,55 @@ myAlignment <- infile %>%
   Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1)
 ```
 
+The alignment can be visualised with the `rpPlot()` function from this package.
+
 ### Step 1: `getAlignmentProfile()` 
 
-The first step is to retrieve the consensus matrix by using 
-`getAlignmentProfile()`, which is a wrapper around `Biostrings::consensusMatrix()`. 
-Positions that are masked in the alignment are removed. 
+`getAlignmentProfile()` is a wrapper around `Biostrings::consensusMatrix()`. 
+It takes a `Biostrings::DNAMultipleAlignment` object as input and returns 
+an `RprimerProfile` object, which contains a numeric matrix that 
+holds the proportion of each nucleotide at each position in the alignment. 
+Masked positions are removed. ***OBS*** 
 
 ```{r}
 myAlignmentProfile <- getAlignmentProfile(myAlignment)
-myAlignmentProfile[ , 1:30] ## View the first 30 bases 
+(myAlignmentProfile[ , 1:30]) ## View the first 30 bases 
 ```
 
-The nucleotide distribution/sequence conservation at specific positions can 
-be visualized using `rpPlot()`. 
-The `rc` option regulates whether the alignment
+The object can be visualized using `rpPlot()`. 
+The `rc` option regulates whether it
 should be displayed as a reverse complement or not. 
 
-```{r}
+```{r, fig.align="center", fig.width=6, fig.height=6}
 rpPlot(myAlignmentProfile[, 1:30], rc = FALSE) ## Plot the first 30 bases 
 ```
 
 ### Step 2: `getAlignmentProperties()`
 
-`getAlignmentProperties()` takes an alignment profile as input and 
-returns a tibble (a data frame) with the following sequence properties:
-
-* Majority. The majority consensus sequence 
-(the most frequently occurring nucleotide).
-* IUPAC. The IUPAC-consensus sequence, which includes wobble bases 
-according to the IUPAC-nomenclature. All nucleotides with a proportion 
-higher than or equal to the `iupacThreshold` will be included in 
-the IUPAC-consensus sequence.
-* Gaps. The proportion of gaps.
-* Identity. The proportion of the most frequently occurring base.
-* Entropy. The Shannon entropy, which is a measurement of variability. 
-A value of zero indicate no variability and a high value indicate high variability.
+`getAlignmentProperties()` takes an `RprimerProfile`-object as input and 
+returns an `RprimerProperties`-object with information about majority and IUPAC
+consensus base at each position, together with gap frequency, 
+nucleotide identity and Shannon entropy (a measurement of variability). All 
+nucleotides with a frequency higher than the `iupacThreshold` will be 
+included in the IUPAC consensus base. 
 
 ```{r}
 myAlignmentProperties <- getAlignmentProperties(
-  myAlignmentProfile, iupacThreshold = 0.05
+  myAlignmentProfile, iupacThreshold = 0.05 
 )
 head(myAlignmentProperties)
 ```
+The object can be visualised with `rpPlot()`. 
 
 ### Step 3: `getOligos()`
 
-`getOligos()` searches for oligos that fulfill the following constraints: 
+`getOligos()` takes an `RprimerProperties` object as input and searches 
+for oligos based on the following constraints: 
 
 * `maxGapFrequency` Maximum gap frequency, defaults to 0.1 
-* `length` Oligo length, defaults to 18-22.
+* `length` Oligo length, defaults to `18:22`.
 * `maxDegeneracy` Maximum number of degenerate variants of each oligo, 
-defaults to 4. 
+defaults to `4`. 
 * `gcClamp` If oligos must have a GC-clamp to be considered as valid
 (recommended for primers), defaults to `TRUE`. 
 * `avoid3endRuns` If oligos with more than two runs of the same nucleotide at 
@@ -119,42 +115,85 @@ defaults to `TRUE`.
 * `avoid5endG` If oligos with a G at the terminal 5' end should be avoided 
 (recommended for probes), defaults to `FALSE`.
 * `minEndIdentity` Optional. Minimum allowed identity at the 3' end 
-(i.e. the last five bases). If set to 1, ....................
-* `gcRange` GC-content-range, defaults to 0.45-0.55.
-* `tmRange` melting temperature (Tm) range, defaults to 48-65. 
-* `concOligo` Oligo concentration (for Tm calculation), 
-defaults to 5e-07 M (500 nM)
-* `concNa` Sodium ion concentration (for Tm calculation), 
-defaults to 0.05 M (50 mM).
-* `showAllVariants` 	If sequence, GC-content and Tm should be presented for 
-all variants of each oligo (in case of degenerate bases), defaults to `TRUE`.
-
-In addition, `get_oligos()` avoids oligos:
-
-* With more than than three consecutive runs of the same dinucleotide 
-(e.g. "TATATATA")
-* With more than four consecutive runs of the same nucleotide 
-(e.g. "AAAAA")
-* That are duplicated (to prevent binding at several places on the genome)
-
+(i.e. the last five bases). E.g., if set to `1`, only oligos with complete 
+target conservation at the 3' end will be considered.
+* `gcRange` GC-content-range, defaults to `c(0.45, 0.55)`.
+* `tmRange` Melting temperature (Tm) range, defaults to `c(50, 65)`. 
 Tm is calculated using the nearest-neighbor method. See `?rprimer::getOligos` 
 for a detailed description and references.
+* `concOligo` Oligo concentration (for Tm calculation), 
+defaults to `5e-07` M (500 nM)
+* `concNa` Sodium ion concentration (for Tm calculation), 
+defaults to `0.05` M (50 mM).
+* `showAllVariants` If sequence, GC-content and Tm should be presented for 
+all variants of each oligo (in case of degenerate bases).`TRUE`
+(slower) or `FALSE` (faster), defaults to `TRUE`. 
+
+In addition, `get_oligos()` avoids:
+
+* Oligos with more than than three consecutive runs of the same dinucleotide 
+(e.g. "TATATATA")
+* Oligos with more than four consecutive runs of the same nucleotide 
+(e.g. "AAAAA")
+* Oligos that are duplicated (to prevent binding at several places on the genome)
+
+Below, I want to design both primers and probes. I use somewhat different 
+settings for the two oligo types.
+
+An error message will return if no oligos are found. 
 
 ``` {r}
-## Design primers with default settings  
-myPrimers <- getOligos(myAlignmentProperties)
-head(myPrimers)
+myPrimers <- getOligos(myAlignmentProperties,
+                       length = 18:22,
+                       maxGapFrequency = 0.05,
+                       maxDegeneracy = 4,
+                       gcClamp = TRUE,
+                       avoid3EndRuns = TRUE,
+                       avoid5EndG = FALSE,
+                       minEndIdentity = 0.99,
+                       gcRange = c(0.40, 0.60),
+                       tmRange = c(50, 65),
+                       showAllVariants = TRUE)
 
-## Design probes 
+myProbes <-  getOligos(myAlignmentProperties,
+                       length = 16:22,
+                       maxGapFrequency = 0.05,
+                       maxDegeneracy = 4,
+                       gcClamp = FALSE,
+                       avoid3EndRuns = FALSE,
+                       avoid5EndG = TRUE,
+                       minEndIdentity = NULL,
+                       gcRange = c(0.40, 0.60),
+                       tmRange = c(50, 75),
+                       showAllVariants = TRUE)
 ```
 
 ### Step 4: `getAssays()`
-`getAssays()` finds pairs of forward and reverse primers that fulfill the following criteria:
+`getAssays()` finds pairs of forward and reverse primers and combines them with
+probes (if selected). It takes `RprimerOligo` objects as input and returns an
+`RprimerAssay` object. 
 
-  * `length` Amplicon length. The default is 65-120.
+Assays are designed from the following constraints: 
 
-* `max_tm_difference` The maximum Tm difference between the two primers (absolute value, in C). The default is 1. Note that Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
-Here, `tmDifference` is the acceptable difference in Tm between the primers and probe. It is calculated by subtracting the Tm of the probe with the average Tm of the primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair. Note that the Tm-difference is calculated from the majority oligos, and may thus be misleading for degenerate (IUPAC) oligos.
+  * `length` Amplicon length, defaults to `65:120`.
+  * `maxTmDifferencePrimers` Maximum Tm difference between the two primers 
+  (absolute value), defaults to `2`.
+  * `tmDifferenceProbes` Acceptable Tm difference between the primers 
+  (average Tm of the primer pair) and probe, defaults to `c(0, 20)`.
 
-Assays are displayed in a tibble (see below). 
+Candidate assays are displayed in a tibble. 
 An error message will return if no assays are found.
+
+```{r}
+myAssays <- getAssays(primers = myPrimers, 
+                      probes = myProbes)
+```
+
+That's it!  
+
+For more detailed information, please see the help files or the package vingette.
+
+```{r}
+sessionInfo()
+```
+

@@ -59,19 +59,14 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
         stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
     x <- SummarizedExperiment::assay(x)
-    position <- seq_len(ncol(x))
-    majority <- .majorityConsensus(x)
+    Position <- seq_len(ncol(x))
+    Majority <- .majorityConsensus(x)
     IUPAC <- .iupacConsensus(x, threshold = iupacThreshold)
-    gaps <- .gapFrequency(x)
-    identity <- .nucleotideIdentity(x)
-    entropy <- .shannonEntropy(x)
+    Gaps <- .gapFrequency(x)
+    Identity <- .nucleotideIdentity(x)
+    Entropy <- .shannonEntropy(x)
     properties <- tibble::tibble(
-        "Position" = position,
-        "Majority" = majority,
-        "IUPAC" = IUPAC,
-        "Gaps" = gaps,
-        "Identity" = identity,
-        "Entropy" = entropy
+        Position, Majority, IUPAC, Gaps, Identity, Entropy
     )
     properties <- .roundDfDbl(properties)
     properties
@@ -186,7 +181,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     consensus <- purrr::map_chr(basesToInclude, ~.asIUPAC(.x))
     if (any(is.na(consensus))) {
         warning("The consensus sequence contain NAs. \n
-    Try to lower the threshold value.", call. = FALSE)
+    Try to lower the 'threshold' value.", call. = FALSE)
     }
     consensus
 }

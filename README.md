@@ -15,30 +15,30 @@ You can install the development version of rprimer from
 devtools::install_github("sofpn/rprimer")
 ```
 
-### Initial setup
+Initial setup for this session:
 
 ``` r
 # library(rprimer)
 devtools::load_all(".")
-library(magrittr)
+library(magrittr) ## Required for the pipe operator in this example
 ```
 
 ### Introduction
 
 In this document, I demonstrate how to use rprimer by designing an
-RT-qPCR assay for detection of Hepatitis E virus (HEV).
+RT-qPCR assay for detection of hepatitis E virus.
 
-### Step 0: Import alignment and mask positions with high gap frequency
+### To start: Import alignment and mask positions with high gap frequency
 
 For this part, I use previously existing functionality from the
 Biostrings-package.
 
-Align the target sequences of interest and import using
-`Biostrings::readDNAMultipleAlignment()`. Mask positions with high gap
-frequency using `Biostrings::maskGaps()`.
+Import an alignment with target sequences of interest using
+`Biostrings::readDNAMultipleAlignment()`, and mask positions with high
+gap frequency using `Biostrings::maskGaps()`.
 
-The file “example\_alignment” is provided with the package and consists
-of 100 HEV sequences.
+The file “example\_alignment.txt” is provided with the package and
+consists of 100 hepatitis E virus sequences.
 
 ``` r
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -48,16 +48,21 @@ myAlignment <- infile %>%
   Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1)
 ```
 
+The alignment can be visualised with the `rpPlot()` function from this
+package.
+
 ### Step 1: `getAlignmentProfile()`
 
-The first step is to retrieve the consensus matrix by using
-`getAlignmentProfile()`, which is a wrapper around
-`Biostrings::consensusMatrix()`. Positions that are masked in the
-alignment are removed.
+`getAlignmentProfile()` is a wrapper around
+`Biostrings::consensusMatrix()`. It takes a
+`Biostrings::DNAMultipleAlignment` object as input and returns an
+`RprimerProfile` object, which contains a numeric matrix that holds the
+proportion of each nucleotide at each position in the alignment. Masked
+positions are removed. ***OBS***
 
 ``` r
 myAlignmentProfile <- getAlignmentProfile(myAlignment)
-myAlignmentProfile[ , 1:30] ## View the first 30 bases 
+(myAlignmentProfile[ , 1:30]) ## View the first 30 bases 
 #> class: RprimerProfile 
 #> dim: 6 30 
 #> metadata(0):
@@ -68,38 +73,27 @@ myAlignmentProfile[ , 1:30] ## View the first 30 bases
 #> colData names(0):
 ```
 
-The nucleotide distribution/sequence conservation at specific positions
-can be visualized using `rpPlot()`. The `rc` option regulates whether
-the alignment should be displayed as a reverse complement or not.
+The object can be visualized using `rpPlot()`. The `rc` option regulates
+whether it should be displayed as a reverse complement or not.
 
 ``` r
 rpPlot(myAlignmentProfile[, 1:30], rc = FALSE) ## Plot the first 30 bases 
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" />
 
 ### Step 2: `getAlignmentProperties()`
 
-`getAlignmentProperties()` takes an alignment profile as input and
-returns a tibble (a data frame) with the following sequence properties:
-
-  - Majority. The majority consensus sequence (the most frequently
-    occurring nucleotide).
-  - IUPAC. The IUPAC-consensus sequence, which includes wobble bases
-    according to the IUPAC-nomenclature. All nucleotides with a
-    proportion higher than or equal to the `iupacThreshold` will be
-    included in the IUPAC-consensus sequence.
-  - Gaps. The proportion of gaps.
-  - Identity. The proportion of the most frequently occurring base.
-  - Entropy. The Shannon entropy, which is a measurement of variability.
-    A value of zero indicate no variability and a high value indicate
-    high variability.
-
-<!-- end list -->
+`getAlignmentProperties()` takes an `RprimerProfile`-object as input and
+returns an `RprimerProperties`-object with information about majority
+and IUPAC consensus base at each position, together with gap frequency,
+nucleotide identity and Shannon entropy (a measurement of variability).
+All nucleotides with a frequency higher than the `iupacThreshold` will
+be included in the IUPAC consensus base.
 
 ``` r
 myAlignmentProperties <- getAlignmentProperties(
-  myAlignmentProfile, iupacThreshold = 0.05
+  myAlignmentProfile, iupacThreshold = 0.05 
 )
 head(myAlignmentProperties)
 #> # A tibble: 6 x 6
@@ -113,15 +107,17 @@ head(myAlignmentProperties)
 #> 6        6 A        A     0.290     1       0
 ```
 
+The object can be visualised with `rpPlot()`.
+
 ### Step 3: `getOligos()`
 
-`getOligos()` searches for oligos that fulfill the following
-constraints:
+`getOligos()` takes an `RprimerProperties` object as input and searches
+for oligos based on the following constraints:
 
   - `maxGapFrequency` Maximum gap frequency, defaults to 0.1
-  - `length` Oligo length, defaults to 18-22.
+  - `length` Oligo length, defaults to `18:22`.
   - `maxDegeneracy` Maximum number of degenerate variants of each oligo,
-    defaults to 4.
+    defaults to `4`.
   - `gcClamp` If oligos must have a GC-clamp to be considered as valid
     (recommended for primers), defaults to `TRUE`.
   - `avoid3endRuns` If oligos with more than two runs of the same
@@ -130,65 +126,143 @@ constraints:
   - `avoid5endG` If oligos with a G at the terminal 5’ end should be
     avoided (recommended for probes), defaults to `FALSE`.
   - `minEndIdentity` Optional. Minimum allowed identity at the 3’ end
-    (i.e. the last five bases). If set to 1, ………………..
-  - `gcRange` GC-content-range, defaults to 0.45-0.55.
-  - `tmRange` melting temperature (Tm) range, defaults to 48-65.
+    (i.e. the last five bases). E.g., if set to `1`, only oligos with
+    complete target conservation at the 3’ end will be considered.
+  - `gcRange` GC-content-range, defaults to `c(0.45, 0.55)`.
+  - `tmRange` Melting temperature (Tm) range, defaults to `c(50, 65)`.
+    Tm is calculated using the nearest-neighbor method. See
+    `?rprimer::getOligos` for a detailed description and references.
   - `concOligo` Oligo concentration (for Tm calculation), defaults to
-    5e-07 M (500 nM)
+    `5e-07` M (500 nM)
   - `concNa` Sodium ion concentration (for Tm calculation), defaults to
-    0.05 M (50 mM).
+    `0.05` M (50 mM).
   - `showAllVariants` If sequence, GC-content and Tm should be presented
-    for all variants of each oligo (in case of degenerate bases),
-    defaults to `TRUE`.
+    for all variants of each oligo (in case of degenerate bases).`TRUE`
+    (slower) or `FALSE` (faster), defaults to `TRUE`.
 
-In addition, `get_oligos()` avoids oligos:
+In addition, `get_oligos()` avoids:
 
-  - With more than than three consecutive runs of the same dinucleotide
-    (e.g. “TATATATA”)
-  - With more than four consecutive runs of the same nucleotide
+  - Oligos with more than than three consecutive runs of the same
+    dinucleotide (e.g. “TATATATA”)
+  - Oligos with more than four consecutive runs of the same nucleotide
     (e.g. “AAAAA”)
-  - That are duplicated (to prevent binding at several places on the
-    genome)
+  - Oligos that are duplicated (to prevent binding at several places on
+    the genome)
 
-Tm is calculated using the nearest-neighbor method. See
-`?rprimer::getOligos` for a detailed description and references.
+Below, I want to design both primers and probes. I use somewhat
+different settings for the two oligo types.
+
+An error message will return if no oligos are found.
 
 ``` r
-## Design primers with default settings  
-myPrimers <- getOligos(myAlignmentProperties)
-head(myPrimers)
-#> # A tibble: 6 x 15
-#>   Begin   End Length Majority Majority_RC GC_majority Tm_majority Identity IUPAC
-#>   <int> <int>  <int> <chr>    <chr>             <dbl>       <dbl>    <dbl> <chr>
-#> 1    27    44     18 <NA>     AAACTGATGG~         0.5        55.6     0.97 <NA> 
-#> 2    28    45     18 <NA>     TAAACTGATG~         0.5        54.9     0.97 <NA> 
-#> 3    43    60     18 TTATCAA~ <NA>                0.5        55.3     0.97 TYAT~
-#> 4    44    61     18 TATCAAG~ <NA>                0.5        55.1     0.97 YATY~
-#> 5    55    72     18 CTGGCAT~ <NA>                0.5        53.2     0.98 CTGG~
-#> 6    64    81     18 <NA>     CCTGCTCAAT~         0.5        51.7     0.99 <NA> 
-#> # ... with 6 more variables: IUPAC_RC <chr>, Degeneracy <int>, All <list>,
-#> #   All_RC <list>, GC_all <list>, Tm_all <list>
+myPrimers <- getOligos(myAlignmentProperties,
+                       length = 18:22,
+                       maxGapFrequency = 0.05,
+                       maxDegeneracy = 4,
+                       gcClamp = TRUE,
+                       avoid3EndRuns = TRUE,
+                       avoid5EndG = FALSE,
+                       minEndIdentity = 0.99,
+                       gcRange = c(0.40, 0.60),
+                       tmRange = c(50, 65),
+                       showAllVariants = TRUE)
 
-## Design probes 
+myProbes <-  getOligos(myAlignmentProperties,
+                       length = 16:22,
+                       maxGapFrequency = 0.05,
+                       maxDegeneracy = 4,
+                       gcClamp = FALSE,
+                       avoid3EndRuns = FALSE,
+                       avoid5EndG = TRUE,
+                       minEndIdentity = NULL,
+                       gcRange = c(0.40, 0.60),
+                       tmRange = c(50, 75),
+                       showAllVariants = TRUE)
 ```
 
 ### Step 4: `getAssays()`
 
-`getAssays()` finds pairs of forward and reverse primers that fulfill
-the following criteria:
+`getAssays()` finds pairs of forward and reverse primers and combines
+them with probes (if selected). It takes `RprimerOligo` objects as input
+and returns an `RprimerAssay` object.
 
-  - `length` Amplicon length. The default is 65-120.
+Assays are designed from the following constraints:
 
-  - `max_tm_difference` The maximum Tm difference between the two
-    primers (absolute value, in C). The default is 1. Note that
-    Tm-difference is calculated from the majority oligos, and may thus
-    be misleading for degenerate (IUPAC) oligos. Here, `tmDifference` is
-    the acceptable difference in Tm between the primers and probe. It is
-    calculated by subtracting the Tm of the probe with the average Tm of
-    the primer pair. Hence, a negative Tm-difference means that the Tm
-    of the probe is lower than the average Tm of the primer pair. Note
-    that the Tm-difference is calculated from the majority oligos, and
-    may thus be misleading for degenerate (IUPAC) oligos.
+  - `length` Amplicon length, defaults to `65:120`.
+  - `maxTmDifferencePrimers` Maximum Tm difference between the two
+    primers (absolute value), defaults to `2`.
+  - `tmDifferenceProbes` Acceptable Tm difference between the primers
+    (average Tm of the primer pair) and probe, defaults to `c(0, 20)`.
 
-Assays are displayed in a tibble (see below). An error message will
-return if no assays are found.
+Candidate assays are displayed in a tibble. An error message will return
+if no assays are found.
+
+``` r
+myAssays <- getAssays(primers = myPrimers, 
+                      probes = myProbes)
+```
+
+That’s it\!
+
+For more detailed information, please see the help files or the package
+vingette.
+
+``` r
+sessionInfo()
+#> R version 4.0.2 (2020-06-22)
+#> Platform: x86_64-w64-mingw32/x64 (64-bit)
+#> Running under: Windows 10 x64 (build 18362)
+#> 
+#> Matrix products: default
+#> 
+#> locale:
+#> [1] LC_COLLATE=Swedish_Sweden.1252  LC_CTYPE=Swedish_Sweden.1252   
+#> [3] LC_MONETARY=Swedish_Sweden.1252 LC_NUMERIC=C                   
+#> [5] LC_TIME=Swedish_Sweden.1252    
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> other attached packages:
+#> [1] magrittr_1.5   rprimer_0.99.0 testthat_2.3.2
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] Rcpp_1.0.5                  lattice_0.20-41            
+#>  [3] prettyunits_1.1.1           ps_1.3.4                   
+#>  [5] Biostrings_2.57.2           utf8_1.1.4                 
+#>  [7] assertthat_0.2.1            rprojroot_1.3-2            
+#>  [9] digest_0.6.25               R6_2.4.1                   
+#> [11] GenomeInfoDb_1.25.11        plyr_1.8.6                 
+#> [13] backports_1.1.9             stats4_4.0.2               
+#> [15] evaluate_0.14               ggplot2_3.3.2              
+#> [17] pillar_1.4.6                zlibbioc_1.35.0            
+#> [19] rlang_0.4.7                 rstudioapi_0.11            
+#> [21] callr_3.4.4                 S4Vectors_0.27.12          
+#> [23] Matrix_1.2-18               rmarkdown_2.3              
+#> [25] labeling_0.3                desc_1.2.0                 
+#> [27] devtools_2.3.1              stringr_1.4.0              
+#> [29] RCurl_1.98-1.2              munsell_0.5.0              
+#> [31] DelayedArray_0.15.8         compiler_4.0.2             
+#> [33] xfun_0.17                   pkgconfig_2.0.3            
+#> [35] BiocGenerics_0.35.4         pkgbuild_1.1.0             
+#> [37] htmltools_0.5.0             tidyselect_1.1.0           
+#> [39] SummarizedExperiment_1.19.6 tibble_3.0.3               
+#> [41] GenomeInfoDbData_1.2.3      matrixStats_0.56.0         
+#> [43] IRanges_2.23.10             fansi_0.4.1                
+#> [45] crayon_1.3.4                dplyr_1.0.2                
+#> [47] withr_2.2.0                 bitops_1.0-6               
+#> [49] grid_4.0.2                  gtable_0.3.0               
+#> [51] lifecycle_0.2.0             scales_1.1.1               
+#> [53] cli_2.0.2                   stringi_1.5.3              
+#> [55] farver_2.0.3                XVector_0.29.3             
+#> [57] reshape2_1.4.4              fs_1.5.0                   
+#> [59] remotes_2.2.0               ellipsis_0.3.1             
+#> [61] generics_0.0.2              vctrs_0.3.4                
+#> [63] tools_4.0.2                 Biobase_2.49.1             
+#> [65] glue_1.4.2                  purrr_0.3.4                
+#> [67] processx_3.4.4              pkgload_1.1.0              
+#> [69] parallel_4.0.2              yaml_2.2.1                 
+#> [71] colorspace_1.4-1            GenomicRanges_1.41.6       
+#> [73] sessioninfo_1.1.1           memoise_1.1.0              
+#> [75] knitr_1.29                  usethis_1.6.1
+```
