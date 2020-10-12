@@ -40,13 +40,11 @@ The purpose of rprimer is to design (RT)-(q/dd)PCR assays from multiple
 sequence alignments. In this document, I demonstrate how to use the package 
 by designing an RT-qPCR assay for detection of hepatitis E virus. 
 
-### To start: Import alignment and mask positions with high gap frequency
+### To start
 
-For this part, I use previously existing functionality from the Biostrings-package. 
-
-Import an alignment with target sequences of interest using 
-`Biostrings::readDNAMultipleAlignment()`, and mask positions with high gap frequency
-using `Biostrings::maskGaps()`.
+The first step is to import an alignment with target sequences of interest and 
+mask positions with high gap frequency. For this part, I use previously 
+existing functionality from the Biostrings-package. 
 
 The file "example_alignment.txt" is provided with the package and consists of 100
 hepatitis E virus sequences. 
@@ -56,10 +54,9 @@ infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 
 myAlignment <- infile %>%
   Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
-  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1)
+  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1) 
+## Mask positions with at least 50 % gaps 
 ```
-
-The alignment can be visualised with the `rpPlot()` function from this package.
 
 ### Step 1: `getAlignmentProfile()` 
 
