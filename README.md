@@ -25,8 +25,10 @@ library(magrittr) ## Required for the pipe operator in this example
 
 ### Introduction
 
-In this document, I demonstrate how to use rprimer by designing an
-RT-qPCR assay for detection of hepatitis E virus.
+The purpose of rprimer is to design (RT)-(q/dd)PCR assays from multiple
+sequence alignments. In this document, I demonstrate how to use the
+package by designing an RT-qPCR assay for detection of hepatitis E
+virus.
 
 ### To start: Import alignment and mask positions with high gap frequency
 
@@ -57,8 +59,7 @@ package.
 `Biostrings::consensusMatrix()`. It takes a
 `Biostrings::DNAMultipleAlignment` object as input and returns an
 `RprimerProfile` object, which contains a numeric matrix that holds the
-proportion of each nucleotide at each position in the alignment. Masked
-positions are removed. ***OBS***
+proportion of each nucleotide at each position in the alignment.
 
 ``` r
 myAlignmentProfile <- getAlignmentProfile(myAlignment)
@@ -88,8 +89,8 @@ rpPlot(myAlignmentProfile[, 1:30], rc = FALSE) ## Plot the first 30 bases
 returns an `RprimerProperties`-object with information about majority
 and IUPAC consensus base at each position, together with gap frequency,
 nucleotide identity and Shannon entropy (a measurement of variability).
-All nucleotides with a frequency higher than the `iupacThreshold` will
-be included in the IUPAC consensus base.
+All nucleotides that occurs with a frequency higher than the
+`iupacThreshold` will be included in the IUPAC consensus base.
 
 ``` r
 myAlignmentProperties <- getAlignmentProperties(
@@ -206,6 +207,8 @@ That’s it\!
 
 For more detailed information, please see the help files or the package
 vingette.
+
+### Session info
 
 ``` r
 sessionInfo()
