@@ -3,62 +3,50 @@
 #' Get alignment properties
 #'
 #' \code{getAlignmentProperties()} returns sequence information from
-#' an RprimerProfile object
+#' an \code{RprimerProfile} object.
 #'
 #' @param x An \code{RprimerProfile} object.
 #'
 #' @param iupacThreshold
-#' A number (0, 0.2].
+#' A number [0, 0.2].
 #' At each position, all nucleotides with a proportion
-#' higher or equal to the \code{iupacThreshold} will be included in
+#' higher than the \code{iupacThreshold} will be included in
 #' the IUPAC consensus sequence. It defaults to 0.
-#'
-#' @section
-#' Majority consensus sequence:
-#' The most frequently occurring nucleotide.
-#' If two or more bases occur with the same frequency,
-#' the consensus nucleotide will be randomly selected among these bases.
-#'
-#' @section
-#' IUPAC consensus sequence:
-#' The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
-#' Note that the IUPAC consensus sequence only
-#' takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
-#' present in the alignment will be skipped. If a position only contains
-#' degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
-#' position.
-#'
-#' @section Gaps:
-#' Proportion of gaps. Gaps are recognized as "-".
-#'
-#' @section Identity:
-#' Proportion of
-#' the most common base. Gaps (-),
-#' as well as bases other than A, C, G and T are excluded from the
-#' calculation.
-#'
-#' @section Entropy:
-#' Shannon entropy is a measurement of
-#' variability. First, for each nucleotide that occurs at a specific position,
-#' \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
-#' that nucleotide. Then, these values are summarized,
-#' and multiplied by \code{-1}.
-#' A value of \code{0} indicate no variability and a high value
-#' indicate high variability.
-#' Gaps (-), as well as bases other than
-#' A, C, G and T are excluded from the calculation.
 #'
 #' @return
 #' A tibble (a data frame) with the following information:
 #'
-#' #' \describe{
+#' \describe{
 #'   \item{Position}{Position in the alignment.}
-#'   \item{Majority}{Majority consensus sequence.}
-#'   \item{IUPAC}{IUPAC consensus sequence.}
-#'   \item{Gaps}{Proportion of gaps.}
-#'   \item{Identity}{Proportion of the most common nucleotide.}
-#'   \item{Entropy}{Shannon entropy}
+#'   \item{Majority}{Majority consensus sequence.
+#'   The most frequently occurring nucleotide.
+#'   If two or more bases occur with the same frequency,
+#'   the consensus nucleotide will be randomly selected among these bases.}
+#'   \item{IUPAC}{
+#'   The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
+#'   Note that the IUPAC consensus sequence only
+#'   takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
+#'   present in the alignment will be skipped. If a position only contains
+#'   degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
+#'   position.}
+#'   \item{Gaps}{Proportion of gaps. Gaps are recognized as "-".}
+#'   \item{Identity}{Proportion of the most common nucleotide.
+#'    Gaps (-), as well as bases other than A, C, G and T are excluded from the
+#'    calculation.}
+#'   \item{Entropy}{Shannon entropy.
+#'    Shannon entropy is a measurement of
+#'    variability.
+#'    First, for each nucleotide that occurs at a specific position,
+#'    \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
+#'    that nucleotide. Then, these values are summarized,
+#'    and multiplied by \code{-1}.
+#'    A value of \code{0} indicate no variability and a high value
+#'    indicate high variability.
+#'    Gaps (-), as well as bases other than
+#'    A, C, G and T are excluded from the calculation.}
 #' }
+#'
+#' @seealso getAlignmentProfile
 #'
 #' @examples
 #' data("exampleRprimerProfile")
@@ -68,7 +56,7 @@
 #' @export
 getAlignmentProperties <- function(x, iupacThreshold = 0) {
     if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object", call. = FALSE)
+        stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
     x <- SummarizedExperiment::assay(x)
     position <- seq_len(ncol(x))
@@ -85,10 +73,26 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
         "Identity" = identity,
         "Entropy" = entropy
     )
+    properties <- .roundDfDbl(properties)
     properties
 }
 
 # Helpers =====================================================================
+
+#' Round all doubles in a data frame
+#'
+#' @param x A data frame.
+#'
+#' @return A data frame where all vectors of type double are rounded.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.roundDfDbl <- function(x) {
+    dbls <- purrr::map_lgl(x, ~is.double(.x))
+    x[dbls] <- round(x[dbls], 2)
+    x
+}
 
 #' Majority consensus sequence
 #'
@@ -171,9 +175,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #' @noRd
 .iupacConsensus <- function(x, threshold = 0) {
     if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
-        stop(paste0(
-            "'treshold' must be higher than 0 and less or equal to 0.2."
-        ), call. = FALSE)
+        stop(paste0("'treshold' must be from 0 to 0.2."), call. = FALSE)
     }
     bases <- c("A", "C", "G", "T", "-")
     x <- x[rownames(x) %in% bases, ]
@@ -213,7 +215,6 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
 #' @param x A numeric matrix.
 #'
 #' @return The nucleotide identity (a numeric vector).
-#' The nucleotide identity can range between (0, 1].
 #'
 #' @keywords internal
 #'

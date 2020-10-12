@@ -40,7 +40,7 @@
 #' (recommended for probes). It defaults to \code{FALSE}.
 #'
 #' @param minEndIdentity
-#' Optional. If specified, a number [0, 1]. The minimum average identity
+#' Optional. If specified, a number [0, 1]. The minimum allowed identity
 #' at the 3' end (i.e. the last five bases of the oligo).
 #'
 #' @param gcRange
@@ -116,7 +116,6 @@
 #'   \item{GC_all}{Lists with the GC content of all
 #'   sequence variants of the oligos.}
 #'   \item{Tm_all}{Lists with the Tm of all sequence variants of the oligos.}
-#'
 #' }
 #'
 #' @examples
@@ -137,6 +136,8 @@
 #' concNa = 0.05,
 #' showAllVariants = TRUE
 #' )
+#'
+#' @seealso getAlignmentProperties
 #'
 #' @references
 #' Tm-calculation:
@@ -200,6 +201,7 @@ getOligos <- function(x,
   }
   drop <- c("Identity_3end", "Identity_3end_RC")
   allOligos <- allOligos[!names(allOligos) %in% drop]
+  allOligos <- .roundDfDbl(allOligos)
   allOligos
 }
 
@@ -270,7 +272,7 @@ getOligos <- function(x,
 #' @param n Oligo length, an integer.
 #'
 #' @return
-#' Mean identity score for the last five bases of the oligo(s).
+#' Min identity score for the last five bases of the oligo(s).
 #' A numeric matrix with two columns, the first represent plus strand oligos
 #' and the second represent minus strand oligos (reverse complements).
 #'
@@ -282,8 +284,8 @@ getOligos <- function(x,
   end <- begin + n - 1
   frame <- purrr::map(begin, ~ x[begin[[.x]]:end[[.x]]])
   endScore <- purrr::map(frame, function(x) {
-    lastFive <- mean(x[(length(x) - 4):length(x)])
-    firstFive <- mean(x[1:5])
+    lastFive <- min(x[(length(x) - 4):length(x)])
+    firstFive <- min(x[1:5])
     c(lastFive, firstFive)
   })
   endScore <- do.call("rbind", endScore)
@@ -368,7 +370,7 @@ getOligos <- function(x,
 #' @details
 #' An oligo is excluded if:
 #' - It has more than three runs of the same dinucleotide (e.g. "TATATATA")
-#' - It has more than four runs of the same nucleotide (e.g. ("AAAAA"))
+#' - It has more than four runs of the same nucleotide (e.g. "AAAAA")
 #'
 #' @return
 #' A tibble where non optimal oligos have been excluded.
@@ -485,9 +487,7 @@ getOligos <- function(x,
     x$Majority_RC[grepl("([A-Z])\\1\\1$", x$Majority_RC)] <- NA
   }
   x$Majority[x$Identity_3end < minEndIdentity] <- NA
-  x$Identity_3end[x$Identity_3end < minEndIdentity] <- NA
   x$Majority_RC[x$Identity_3end_RC < minEndIdentity] <- NA
-  x$Identity_3end_RC[x$Identity_3end_RC < minEndIdentity] <- NA
   x$IUPAC[is.na(x$Majority)] <- NA
   x$IUPAC_RC[is.na(x$Majority_RC)] <- NA
   invalidOligos <- is.na(x$Majority) & is.na(x$Majority_RC)
@@ -512,8 +512,7 @@ getOligos <- function(x,
   x <- .splitSequence(x)
   gcCount <- length(which(x == "C" | x == "G"))
   totalCount <- length(which(x == "A" | x == "C" | x == "G" | x == "T"))
-  gc <- gcCount / totalCount
-  gc
+  gcCount / totalCount
 }
 
 #' Add GC content to generated oligos
@@ -754,12 +753,12 @@ getOligos <- function(x,
   GC_all <- purrr::map(seq_len(nrow(x)), function(i) {
       toCalculate <- ifelse(!is.na(x[i, ]$Majority), x[i, ]$All, x[i, ]$All_RC)
       toCalculate <- unlist(toCalculate)
-      purrr::map_dbl(toCalculate, ~.gcContent(.x))
+      purrr::map_dbl(toCalculate, ~round(.gcContent(.x), 2))
   })
   Tm_all <- purrr::map(seq_len(nrow(x)), function(i) {
     toCalculate <- ifelse(!is.na(x[i, ]$Majority), x[i, ]$All, x[i, ]$All_RC)
     toCalculate <- unlist(toCalculate)
-    purrr::map_dbl(toCalculate, ~.tm(.x))
+    purrr::map_dbl(toCalculate, ~round(.tm(.x), 2))
   })
   x <- tibble::add_column(x, GC_all, Tm_all)
   x

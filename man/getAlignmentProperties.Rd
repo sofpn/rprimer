@@ -9,66 +9,54 @@ getAlignmentProperties(x, iupacThreshold = 0)
 \arguments{
 \item{x}{An \code{RprimerProfile} object.}
 
-\item{iupacThreshold}{A number (0, 0.2].
+\item{iupacThreshold}{A number [0, 0.2].
 At each position, all nucleotides with a proportion
-higher or equal to the \code{iupacThreshold} will be included in
+higher than the \code{iupacThreshold} will be included in
 the IUPAC consensus sequence. It defaults to 0.}
 }
 \value{
-A tibble (a data frame)
-with information on majority and IUPAC consensus sequence, gap frequency,
-nucleotide identity and Shannon entropy.
+A tibble (a data frame) with the following information:
+
+\describe{
+  \item{Position}{Position in the alignment.}
+  \item{Majority}{Majority consensus sequence.
+  The most frequently occurring nucleotide.
+  If two or more bases occur with the same frequency,
+  the consensus nucleotide will be randomly selected among these bases.}
+  \item{IUPAC}{
+  The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
+  Note that the IUPAC consensus sequence only
+  takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
+  present in the alignment will be skipped. If a position only contains
+  degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
+  position.}
+  \item{Gaps}{Proportion of gaps. Gaps are recognized as "-".}
+  \item{Identity}{Proportion of the most common nucleotide.
+   Gaps (-), as well as bases other than A, C, G and T are excluded from the
+   calculation.}
+  \item{Entropy}{Shannon entropy.
+   Shannon entropy is a measurement of
+   variability.
+   First, for each nucleotide that occurs at a specific position,
+   \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
+   that nucleotide. Then, these values are summarized,
+   and multiplied by \code{-1}.
+   A value of \code{0} indicate no variability and a high value
+   indicate high variability.
+   Gaps (-), as well as bases other than
+   A, C, G and T are excluded from the calculation.}
+}
 }
 \description{
 \code{getAlignmentProperties()} returns sequence information from
-an RprimerProfile object
+an \code{RprimerProfile} object.
 }
-\section{Majority consensus sequence}{
-
-The most frequently occurring nucleotide.
-If two or more bases occur with the same frequency,
-the consensus nucleotide will be randomly selected among these bases.
-}
-
-\section{IUPAC consensus sequence}{
-
-The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
-Note that the IUPAC consensus sequence only
-takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
-present in the alignment will be skipped. If a position only contains
-degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
-position.
-}
-
-\section{Gaps}{
-
-Proportion of gaps. Gaps are recognized as "-".
-}
-
-\section{Identity}{
-
-Proportion of
-the most common base. Gaps (-),
-as well as bases other than A, C, G and T are excluded from the
-calculation.
-}
-
-\section{Entropy}{
-
-Shannon entropy is a measurement of
-variability. First, for each nucleotide that occurs at a specific position,
-\code{p*log2(p)}, is calculated, where \code{p} is the proportion of
-that nucleotide. Then, these values are summarized,
-and multiplied by \code{-1}.
-A value of \code{0} indicate no variability and a high value
-indicate high variability.
-Gaps (-), as well as bases other than
-A, C, G and T are excluded from the calculation.
-}
-
 \examples{
 data("exampleRprimerProfile")
 getAlignmentProperties(exampleRprimerProfile)
 getAlignmentProperties(exampleRprimerProfile, iupacThreshold = 0.1)
 
+}
+\seealso{
+getAlignmentProfile
 }

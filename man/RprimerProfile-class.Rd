@@ -21,17 +21,20 @@ message if not.
 An extension of the S4 class
 \code{SummarizedExperiment::SummarizedExperiment}.
 }
-\details{
-A numeric matrix with the proportion of each
+\section{Functions}{
+\itemize{
+\item \code{RprimerProfile}: 
+}}
+
+\section{Slots}{
+
+\describe{
+\item{\code{assays}}{A numeric matrix with the proportion of each
 nucleotide at each position within an alignment
 of DNA sequences. The matrix has six rows,
 named 'A', 'C', 'G', 'T', '-' and 'Other'. '-' represents gaps and
 'Other' represents nucleotides other than A, C, G and T, e.g.
 wobble bases. The columns are named
-according to which position they correspond to in the alignment.
-}
-\section{Functions}{
-\itemize{
-\item \code{RprimerProfile}: 
+according to which position they correspond to in the alignment.}
 }}
 

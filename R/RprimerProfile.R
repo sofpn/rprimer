@@ -3,7 +3,7 @@
 #' An extension of the S4 class
 #' \code{SummarizedExperiment::SummarizedExperiment}.
 #'
-#' A numeric matrix with the proportion of each
+#' @slot assays A numeric matrix with the proportion of each
 #' nucleotide at each position within an alignment
 #' of DNA sequences. The matrix has six rows,
 #' named 'A', 'C', 'G', 'T', '-' and 'Other'. '-' represents gaps and
@@ -59,6 +59,9 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
     }
     if (!all(c("A", "C", "G", "T", "-", "other") %in% row.names(object))) {
         msg <- c(msg, "The object does not have/has invalid rownames.")
+    }
+    if (nrow(object) != 6) {
+        msg <- c(msg, "The object does not have six rows.")
     }
     if (is.null(msg)) {
         TRUE

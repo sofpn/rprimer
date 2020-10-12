@@ -49,7 +49,7 @@ It defaults to \code{TRUE}.}
 at the 5' end should be replaced with \code{NA}
 (recommended for probes). It defaults to \code{FALSE}.}
 
-\item{minEndIdentity}{Optional. If specified, a number [0, 1]. The minimum average identity
+\item{minEndIdentity}{Optional. If specified, a number [0, 1]. The minimum allowed identity
 at the 3' end (i.e. the last five bases of the oligo).}
 
 \item{gcRange}{Accepted GC-content (proportion, not %). A numeric vector [0, 1].
@@ -109,7 +109,6 @@ If \code{showAllVariants == TRUE}, the following columns are also included:
   \item{GC_all}{Lists with the GC content of all
   sequence variants of the oligos.}
   \item{Tm_all}{Lists with the Tm of all sequence variants of the oligos.}
-
 }
 }
 \description{
@@ -166,4 +165,7 @@ Table values for nearest-neighbors:
 SantaLucia, J (1998) A unified view of polymer,
 dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
 Proc. Natl. Acad. Sci. USA, 95: 1460-1465.
+}
+\seealso{
+getAlignmentProperties
 }

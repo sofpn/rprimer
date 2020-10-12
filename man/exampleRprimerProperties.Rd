@@ -8,11 +8,11 @@
 An \code{RprimerProperties} object.
 
 \describe{
-  \item{Position}{position in the alignment}
-  \item{Majority}{majority consensus sequence}
-  \item{IUPAC}{IUPAC consensus sequence}
-  \item{Gaps}{proportion of gaps}
-  \item{Identity}{proportion of the most common nucleotide}
+  \item{Position}{Position in the alignment.}
+  \item{Majority}{Majority consensus sequence.}
+  \item{IUPAC}{IUPAC consensus sequence.}
+  \item{Gaps}{Proportion of gaps.}
+  \item{Identity}{Proportion of the most common nucleotide.}
   \item{Entropy}{Shannon entropy}
 }
 }
