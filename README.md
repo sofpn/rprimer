@@ -7,11 +7,12 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 
 ### Introduction
 
-The purpose of rprimer is to design (RT)-(q/dd)PCR assays for highly
-variable target sequences from multiple sequence alignments.
+The purpose of rprimer is to design (RT)-(q/dd)PCR assays from multiple
+DNA sequence alignments.
 
 In this document, I demonstrate how to use the package by designing an
-RT-qPCR assay for detection of hepatitis E virus.
+RT-(q/dd)PCR assay for detection of hepatitis E virus, which is a highly
+variable RNA virus.
 
 ### Package overview
 
@@ -32,22 +33,24 @@ You can install the development version of rprimer from
 devtools::install_github("sofpn/rprimer")
 ```
 
-Initial setup for the code in this example:
+Initial setup for the code in this document:
 
 ``` r
 # library(rprimer)
 devtools::load_all(".")
 library(magrittr) ## Required for the pipe operator 
+library(Biostrings) ## Required to import alignments 
 ```
 
 ### To start
 
 The first step is to import an alignment with target sequences of
-interest and mask positions with high gap frequency. For this part, I
-use previously existing functionality from the Biostrings-package.
+interest and mask positions with high gap frequency. Previously existing
+functionality from the Biostrings-package can be used for this part.
 
 The file “example\_alignment.txt” is provided with the rprimer package
-and contains 100 hepatitis E virus sequences.
+and contains 100 hepatitis E virus sequences. I use it in the example
+below:
 
 ``` r
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -60,23 +63,23 @@ myAlignment <- infile %>%
 
 ### Step 1: `getAlignmentProfile()`
 
-`getAlignmentProfile()` is a wrapper around
-`Biostrings::consensusMatrix()`. It takes a
-`Biostrings::DNAMultipleAlignment` object as input and returns an
-`RprimerProfile` object, which contains a numeric matrix that holds the
-proportion of each nucleotide at each position in the alignment.
+`getAlignmentProfile()` takes a `Biostrings::DNAMultipleAlignment`
+object as input and returns an `RprimerProfile` object, which contains a
+numeric matrix that holds the proportion of each nucleotide at each
+position in the alignment. The function is a wrapper around
+`Biostrings::consensusMatrix()`.
 
 ``` r
 myAlignmentProfile <- getAlignmentProfile(myAlignment)
-(myAlignmentProfile[ , 1:30]) ## View the first 30 bases 
-#> class: RprimerProfile 
-#> dim: 6 30 
-#> metadata(0):
-#> assays(1): x
-#> rownames(6): A C ... - other
-#> rowData names(0):
-#> colnames(30): 1 2 ... 29 30
-#> colData names(0):
+rpGetData(myAlignmentProfile)[ , 1:10] ## View the first 10 bases 
+#>          1    2    3    4    5    6    7    8    9   10
+#> A     0.00 0.00 0.00 0.71 0.00 0.71 0.00 0.00 0.75 0.02
+#> C     0.00 0.00 0.71 0.00 0.00 0.00 0.72 0.76 0.01 0.75
+#> G     0.59 0.71 0.00 0.00 0.70 0.00 0.00 0.00 0.00 0.00
+#> T     0.00 0.00 0.00 0.00 0.01 0.00 0.00 0.00 0.00 0.03
+#> -     0.41 0.29 0.29 0.29 0.29 0.29 0.28 0.24 0.24 0.20
+#> other 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+## rpGetData is a getter method for all classes within the package 
 ```
 
 The object can be visualized using `rpPlot()`. The `rc` option regulates
@@ -93,14 +96,14 @@ rpPlot(myAlignmentProfile[, 1:30], rc = FALSE) ## Plot the first 30 bases
 `getAlignmentProperties()` takes an `RprimerProfile`-object as input and
 returns an `RprimerProperties`-object with information about majority
 and IUPAC consensus base at each position, together with gap frequency,
-nucleotide identity and Shannon entropy (a measurement of variability).
-All nucleotides that occurs with a frequency higher than the
-`iupacThreshold` will be included in the IUPAC consensus base.
+nucleotide identity and Shannon entropy. All nucleotides that occurs
+with a frequency higher than the `iupacThreshold` will be included in
+the IUPAC consensus base. Hence, for downstream oligo design, a low
+`iupacThreshold` will generate oligos with more degenerate bases than a
+high `iupacThreshold`.
 
 ``` r
-myAlignmentProperties <- getAlignmentProperties(
-  myAlignmentProfile, iupacThreshold = 0.05 
-)
+myAlignmentProperties <- getAlignmentProperties(myAlignmentProfile, iupacThreshold = 0.05)
 head(myAlignmentProperties)
 #> # A tibble: 6 x 6
 #>   Position Majority IUPAC  Gaps Identity Entropy
@@ -133,7 +136,8 @@ for oligos based on the following constraints:
     avoided (recommended for probes), defaults to `FALSE`.
   - `minEndIdentity` Optional. Minimum allowed identity at the 3’ end
     (i.e. the last five bases). E.g., if set to `1`, only oligos with
-    complete target conservation at the 3’ end will be considered.
+    complete target conservation at the 3’ end will be considered, and
+    hence no wobble bases will be present at the 3’ ends.
   - `gcRange` GC-content-range, defaults to `c(0.45, 0.55)`.
   - `tmRange` Melting temperature (Tm) range, defaults to `c(50, 65)`.
     Tm is calculated using the nearest-neighbor method. See
@@ -208,6 +212,10 @@ myAssays <- getAssays(primers = myPrimers,
                       probes = myProbes)
 ```
 
+### Further notes
+
+degeneracy…
+
 ### Session info
 
 ``` r
@@ -224,48 +232,48 @@ sessionInfo()
 #> [5] LC_TIME=Swedish_Sweden.1252    
 #> 
 #> attached base packages:
-#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> [1] stats4    parallel  stats     graphics  grDevices utils     datasets 
+#> [8] methods   base     
 #> 
 #> other attached packages:
-#> [1] magrittr_1.5   rprimer_0.99.0 testthat_2.3.2
+#> [1] Biostrings_2.57.2   XVector_0.29.3      IRanges_2.23.10    
+#> [4] S4Vectors_0.27.12   BiocGenerics_0.35.4 magrittr_1.5       
+#> [7] rprimer_0.99.0      testthat_2.3.2     
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] Rcpp_1.0.5                  lattice_0.20-41            
 #>  [3] prettyunits_1.1.1           ps_1.3.4                   
-#>  [5] Biostrings_2.57.2           utf8_1.1.4                 
-#>  [7] assertthat_0.2.1            rprojroot_1.3-2            
-#>  [9] digest_0.6.25               R6_2.4.1                   
-#> [11] GenomeInfoDb_1.25.11        plyr_1.8.6                 
-#> [13] backports_1.1.9             stats4_4.0.2               
-#> [15] evaluate_0.14               ggplot2_3.3.2              
-#> [17] pillar_1.4.6                zlibbioc_1.35.0            
-#> [19] rlang_0.4.7                 rstudioapi_0.11            
-#> [21] callr_3.4.4                 S4Vectors_0.27.12          
-#> [23] Matrix_1.2-18               rmarkdown_2.3              
-#> [25] labeling_0.3                desc_1.2.0                 
-#> [27] devtools_2.3.1              stringr_1.4.0              
-#> [29] RCurl_1.98-1.2              munsell_0.5.0              
-#> [31] DelayedArray_0.15.8         compiler_4.0.2             
-#> [33] xfun_0.17                   pkgconfig_2.0.3            
-#> [35] BiocGenerics_0.35.4         pkgbuild_1.1.0             
-#> [37] htmltools_0.5.0             tidyselect_1.1.0           
-#> [39] SummarizedExperiment_1.19.6 tibble_3.0.3               
-#> [41] GenomeInfoDbData_1.2.3      matrixStats_0.56.0         
-#> [43] IRanges_2.23.10             fansi_0.4.1                
-#> [45] crayon_1.3.4                dplyr_1.0.2                
-#> [47] withr_2.2.0                 bitops_1.0-6               
-#> [49] grid_4.0.2                  gtable_0.3.0               
-#> [51] lifecycle_0.2.0             scales_1.1.1               
-#> [53] cli_2.0.2                   stringi_1.5.3              
-#> [55] farver_2.0.3                XVector_0.29.3             
-#> [57] reshape2_1.4.4              fs_1.5.0                   
-#> [59] remotes_2.2.0               ellipsis_0.3.1             
-#> [61] generics_0.0.2              vctrs_0.3.4                
-#> [63] tools_4.0.2                 Biobase_2.49.1             
-#> [65] glue_1.4.2                  purrr_0.3.4                
-#> [67] processx_3.4.4              pkgload_1.1.0              
-#> [69] parallel_4.0.2              yaml_2.2.1                 
-#> [71] colorspace_1.4-1            GenomicRanges_1.41.6       
-#> [73] sessioninfo_1.1.1           memoise_1.1.0              
-#> [75] knitr_1.29                  usethis_1.6.1
+#>  [5] utf8_1.1.4                  assertthat_0.2.1           
+#>  [7] rprojroot_1.3-2             digest_0.6.25              
+#>  [9] R6_2.4.1                    GenomeInfoDb_1.25.11       
+#> [11] plyr_1.8.6                  backports_1.1.9            
+#> [13] evaluate_0.14               ggplot2_3.3.2              
+#> [15] pillar_1.4.6                zlibbioc_1.35.0            
+#> [17] rlang_0.4.7                 rstudioapi_0.11            
+#> [19] callr_3.4.4                 Matrix_1.2-18              
+#> [21] rmarkdown_2.3               labeling_0.3               
+#> [23] desc_1.2.0                  devtools_2.3.1             
+#> [25] stringr_1.4.0               RCurl_1.98-1.2             
+#> [27] munsell_0.5.0               DelayedArray_0.15.8        
+#> [29] compiler_4.0.2              xfun_0.17                  
+#> [31] pkgconfig_2.0.3             pkgbuild_1.1.0             
+#> [33] htmltools_0.5.0             tidyselect_1.1.0           
+#> [35] SummarizedExperiment_1.19.6 tibble_3.0.3               
+#> [37] GenomeInfoDbData_1.2.3      matrixStats_0.56.0         
+#> [39] fansi_0.4.1                 crayon_1.3.4               
+#> [41] dplyr_1.0.2                 withr_2.2.0                
+#> [43] bitops_1.0-6                grid_4.0.2                 
+#> [45] gtable_0.3.0                lifecycle_0.2.0            
+#> [47] scales_1.1.1                cli_2.0.2                  
+#> [49] stringi_1.5.3               farver_2.0.3               
+#> [51] reshape2_1.4.4              fs_1.5.0                   
+#> [53] remotes_2.2.0               ellipsis_0.3.1             
+#> [55] generics_0.0.2              vctrs_0.3.4                
+#> [57] tools_4.0.2                 Biobase_2.49.1             
+#> [59] glue_1.4.2                  purrr_0.3.4                
+#> [61] processx_3.4.4              pkgload_1.1.0              
+#> [63] yaml_2.2.1                  colorspace_1.4-1           
+#> [65] GenomicRanges_1.41.6        sessioninfo_1.1.1          
+#> [67] memoise_1.1.0               knitr_1.29                 
+#> [69] usethis_1.6.1
 ```

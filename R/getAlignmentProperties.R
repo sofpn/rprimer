@@ -58,7 +58,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     if (!methods::is(x, "RprimerProfile")) {
         stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
-    x <- SummarizedExperiment::assay(x)
+    x <- rpGetData(x)
     Position <- seq_len(ncol(x))
     Majority <- .majorityConsensus(x)
     IUPAC <- .iupacConsensus(x, threshold = iupacThreshold)

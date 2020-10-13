@@ -19,11 +19,12 @@ knitr::opts_chunk$set(
 
 ### Introduction 
 
-The purpose of rprimer is to design (RT)-(q/dd)PCR assays for highly variable
-target sequences from multiple sequence alignments. 
+The purpose of rprimer is to design (RT)-(q/dd)PCR assays from multiple DNA 
+sequence alignments. 
 
 In this document, I demonstrate how to use the package 
-by designing an RT-qPCR assay for detection of hepatitis E virus. 
+by designing an RT-(q/dd)PCR assay for detection of hepatitis E virus, which
+is a highly variable RNA virus. 
 
 ### Package overview 
 
@@ -43,22 +44,23 @@ from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("sofpn/rprimer")
 ```
-Initial setup for the code in this example: 
+Initial setup for the code in this document: 
 
 ``` {r, message=FALSE, warn=FALSE}
 # library(rprimer)
 devtools::load_all(".")
 library(magrittr) ## Required for the pipe operator 
+library(Biostrings) ## Required to import alignments 
 ```
 
 ### To start
 
 The first step is to import an alignment with target sequences of interest and 
-mask positions with high gap frequency. For this part, I use previously 
-existing functionality from the Biostrings-package. 
+mask positions with high gap frequency. Previously 
+existing functionality from the Biostrings-package can be used for this part. 
 
-The file "example_alignment.txt" is provided with the rprimer package 
-and contains 100 hepatitis E virus sequences. 
+The file "example_alignment.txt" is provided with the rprimer package
+and contains 100 hepatitis E virus sequences. I use it in the example below: 
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -71,21 +73,22 @@ myAlignment <- infile %>%
 
 ### Step 1: `getAlignmentProfile()` 
 
-`getAlignmentProfile()` is a wrapper around `Biostrings::consensusMatrix()`. 
-It takes a `Biostrings::DNAMultipleAlignment` object as input and returns 
-an `RprimerProfile` object, which contains a numeric matrix that 
-holds the proportion of each nucleotide at each position in the alignment. 
+`getAlignmentProfile()` takes a `Biostrings::DNAMultipleAlignment` object as 
+input and returns an `RprimerProfile` object, which contains a numeric matrix 
+that holds the proportion of each nucleotide at each position in the alignment.
+The function is a wrapper around `Biostrings::consensusMatrix()`.
 
 ```{r}
 myAlignmentProfile <- getAlignmentProfile(myAlignment)
-(myAlignmentProfile[ , 1:30]) ## View the first 30 bases 
+rpGetData(myAlignmentProfile)[ , 1:10] ## View the first 10 bases 
+## rpGetData is a getter method for all classes within the package 
 ```
 
 The object can be visualized using `rpPlot()`. 
 The `rc` option regulates whether it
 should be displayed as a reverse complement or not. 
 
-```{r, fig.align="center", fig.width=6, fig.height=6}
+```{r, fig.align="center", fig.width=6, fig.height=4}
 rpPlot(myAlignmentProfile[, 1:30], rc = FALSE) ## Plot the first 30 bases 
 ```
 
@@ -94,14 +97,14 @@ rpPlot(myAlignmentProfile[, 1:30], rc = FALSE) ## Plot the first 30 bases
 `getAlignmentProperties()` takes an `RprimerProfile`-object as input and 
 returns an `RprimerProperties`-object with information about majority and IUPAC
 consensus base at each position, together with gap frequency, 
-nucleotide identity and Shannon entropy (a measurement of variability). All 
+nucleotide identity and Shannon entropy. All 
 nucleotides that occurs with a frequency higher than the `iupacThreshold` 
-will be included in the IUPAC consensus base. 
+will be included in the IUPAC consensus base. Hence, for downstream oligo 
+design, a low `iupacThreshold` will generate oligos with 
+more degenerate bases than a high `iupacThreshold`. 
 
 ```{r}
-myAlignmentProperties <- getAlignmentProperties(
-  myAlignmentProfile, iupacThreshold = 0.05 
-)
+myAlignmentProperties <- getAlignmentProperties(myAlignmentProfile, iupacThreshold = 0.05)
 head(myAlignmentProperties)
 ```
 The object can be visualised with `rpPlot()`. 
@@ -124,7 +127,8 @@ defaults to `TRUE`.
 (recommended for probes), defaults to `FALSE`.
 * `minEndIdentity` Optional. Minimum allowed identity at the 3' end 
 (i.e. the last five bases). E.g., if set to `1`, only oligos with complete 
-target conservation at the 3' end will be considered.
+target conservation at the 3' end will be considered, and hence no wobble 
+bases will be present at the 3' ends. 
 * `gcRange` GC-content-range, defaults to `c(0.45, 0.55)`.
 * `tmRange` Melting temperature (Tm) range, defaults to `c(50, 65)`. 
 Tm is calculated using the nearest-neighbor method. See `?rprimer::getOligos` 
@@ -195,7 +199,12 @@ An error message will return if no assays are found.
 ```{r}
 myAssays <- getAssays(primers = myPrimers, 
                       probes = myProbes)
+
 ```
+
+### Further notes 
+
+degeneracy... 
 
 ### Session info 
 

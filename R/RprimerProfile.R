@@ -44,19 +44,19 @@ RprimerProfile <- function(x, ...) {
 
 S4Vectors::setValidity2("RprimerProfile", function(object) {
     msg <- NULL
-    if (!is.matrix(SummarizedExperiment::assay(object))) {
+    if (!is.matrix(rpGetData(object))) {
         msg <- c(msg, "The object is not a matrix.")
     }
-    if (!is.numeric(SummarizedExperiment::assay(object))) {
+    if (!is.numeric(rpGetData(object))) {
         msg <- c(msg, "The object is not in numeric format.")
     }
-    if (any(SummarizedExperiment::assay(object) < 0)) {
+    if (any(rpGetData(object) < 0)) {
         msg <- c(msg, "The object contains values < 0.")
     }
-    if (any(SummarizedExperiment::assay(object) > 1)) {
+    if (any(rpGetData(object) > 1)) {
         msg <- c(msg, "The object contains values > 1.")
     }
-    if (any(colSums(SummarizedExperiment::assay(object)) > 1)) {
+    if (any(colSums(rpGetData(object)) > 1)) {
         msg <- c(msg, "At least one column sums up to > 1.")
     }
     if (!all(c("A", "C", "G", "T", "-", "other") %in% row.names(object))) {
@@ -70,4 +70,27 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
     } else {
         msg
     }
+})
+
+# Getter method ===============================================================
+
+#' Getter, generic
+#'
+#' @param x An object.
+#'
+#' @param ... Additional arguments.
+#'
+#' @return A matrix.
+#'
+#' @export
+setGeneric("rpGetData", function(x, ...) standardGeneric("rpGetData"))
+
+
+#' Getter, method for RprimerProfile objects
+#'
+#' @param x An \code{RprimerProfile} object.
+#'
+#' @export
+setMethod("rpGetData", "RprimerProfile", function(x) {
+        SummarizedExperiment::assay(x)
 })

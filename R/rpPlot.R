@@ -27,7 +27,7 @@ setMethod("rpPlot", "RprimerProfile", function(x, rc = FALSE) {
     if (!(is.logical(rc))) {
         stop("'rc' must be set to 'TRUE' or 'FALSE'.", call. = FALSE)
     }
-    x <- SummarizedExperiment::assay(x)
+    x <- rpGetData(x)
     x <- x[rownames(x) != "-", ]
     if (rc == TRUE) {
         rownames(x) <- unname(rprimerGlobals$complementLookup[rownames(x)])
