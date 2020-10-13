@@ -17,6 +17,23 @@ knitr::opts_chunk$set(
 )
 ```
 
+### Introduction 
+
+The purpose of rprimer is to design (RT)-(q/dd)PCR assays for highly variable
+target sequences from multiple sequence alignments. 
+
+In this document, I demonstrate how to use the package 
+by designing an RT-qPCR assay for detection of hepatitis E virus. 
+
+### Package overview 
+
+The assay design workflow is based on the following functions: 
+
+* `getAlignmentProfile()`
+* `getAlignmentProperties()`
+* `getOligos()`
+* `getAssays()`
+
 ### Installation
 
 You can install the development version of rprimer 
@@ -26,19 +43,13 @@ from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("sofpn/rprimer")
 ```
-Initial setup for this session: 
+Initial setup for the code in this example: 
 
 ``` {r, message=FALSE, warn=FALSE}
 # library(rprimer)
 devtools::load_all(".")
-library(magrittr) ## Required for the pipe operator in this example
+library(magrittr) ## Required for the pipe operator 
 ```
-
-### Introduction 
-
-The purpose of rprimer is to design (RT)-(q/dd)PCR assays from multiple 
-sequence alignments. In this document, I demonstrate how to use the package 
-by designing an RT-qPCR assay for detection of hepatitis E virus. 
 
 ### To start
 
@@ -46,8 +57,8 @@ The first step is to import an alignment with target sequences of interest and
 mask positions with high gap frequency. For this part, I use previously 
 existing functionality from the Biostrings-package. 
 
-The file "example_alignment.txt" is provided with the package and consists of 100
-hepatitis E virus sequences. 
+The file "example_alignment.txt" is provided with the rprimer package 
+and contains 100 hepatitis E virus sequences. 
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -100,7 +111,7 @@ The object can be visualised with `rpPlot()`.
 `getOligos()` takes an `RprimerProperties` object as input and searches 
 for oligos based on the following constraints: 
 
-* `maxGapFrequency` Maximum gap frequency, defaults to 0.1 
+* `maxGapFrequency` Maximum gap frequency, defaults to `0.1`. 
 * `length` Oligo length, defaults to `18:22`.
 * `maxDegeneracy` Maximum number of degenerate variants of each oligo, 
 defaults to `4`. 
@@ -185,11 +196,6 @@ An error message will return if no assays are found.
 myAssays <- getAssays(primers = myPrimers, 
                       probes = myProbes)
 ```
-
-
-That's it!  
-
-For more detailed information, please see the help files or the package vingette.
 
 ### Session info 
 

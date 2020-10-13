@@ -22,7 +22,7 @@
 #' may thus be misleading for degenerate (IUPAC) primers.
 #'
 #' @param tmDifferenceProbes
-#' Optional. Acceptable Tm difference between the primers (average Tm of the
+#' Acceptable Tm difference between the primers (average Tm of the
 #' primer pair) and probe. A numeric vector [-20, 20],
 #' defaults to \code{c(0, 20)}.
 #' The Tm-difference is calculated by subtracting the
