@@ -10,7 +10,7 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 The purpose of rprimer is to design (RT)-(q/dd)PCR assays from multiple
 DNA sequence alignments.
 
-In this document, I demonstrate how to use the package by designing an
+In this document, I demonstrate how to use rprimer by designing an
 RT-(q/dd)PCR assay for detection of hepatitis E virus, which is a highly
 variable RNA virus.
 
@@ -79,7 +79,6 @@ rpGetData(myAlignmentProfile)[ , 1:10] ## View the first 10 bases
 #> T     0.00 0.00 0.00 0.00 0.01 0.00 0.00 0.00 0.00 0.03
 #> -     0.41 0.29 0.29 0.29 0.29 0.29 0.28 0.24 0.24 0.20
 #> other 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
-## rpGetData is a getter method for all classes within the package 
 ```
 
 The object can be visualized using `rpPlot()`. The `rc` option regulates
@@ -106,7 +105,7 @@ high `iupacThreshold`.
 myAlignmentProperties <- getAlignmentProperties(myAlignmentProfile, iupacThreshold = 0.05)
 head(myAlignmentProperties)
 #> # A tibble: 6 x 6
-#>   Position Majority IUPAC  Gaps Identity Entropy
+#>   position majority iupac  gaps identity entropy
 #>      <int> <chr>    <chr> <dbl>    <dbl>   <dbl>
 #> 1        1 G        G     0.41      1       0   
 #> 2        2 G        G     0.290     1       0   
@@ -200,9 +199,14 @@ Assays are designed from the following constraints:
 
   - `length` Amplicon length, defaults to `65:120`.
   - `maxTmDifferencePrimers` Maximum Tm difference between the two
-    primers (absolute value), defaults to `2`.
+    primers (absolute value, calculated for majority primers), defaults
+    to `2`.
   - `tmDifferenceProbes` Acceptable Tm difference between the primers
     (average Tm of the primer pair) and probe, defaults to `c(0, 20)`.
+    The Tm-difference is calculated by subtracting the Tm of the probe
+    with the average Tm of the (majority) primer pair. Thus, a negative
+    Tm-difference means that the Tm of the probe is lower than the
+    average Tm of the primer pair.
 
 Candidate assays are displayed in a tibble. An error message will return
 if no assays are found.
@@ -210,6 +214,11 @@ if no assays are found.
 ``` r
 myAssays <- getAssays(primers = myPrimers, 
                       probes = myProbes)
+#> New names:
+#> * majorityRev -> majorityRev...17
+#> * iupacRev -> iupacRev...23
+#> * majorityRev -> majorityRev...27
+#> * iupacRev -> iupacRev...30
 ```
 
 ### Further notes

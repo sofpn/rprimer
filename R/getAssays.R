@@ -1,4 +1,4 @@
-## exempel ## tester ## s4 class
+## exempel ## tester ## s4 class ## method
 
 #' Get (RT)-PCR assays from oligos
 #'
@@ -26,7 +26,7 @@
 #' primer pair) and probe. A numeric vector [-20, 20],
 #' defaults to \code{c(0, 20)}.
 #' The Tm-difference is calculated by subtracting the
-#' Tm of the probe with the average Tm of the
+#' Tm of the probe with the average Tm of the majority
 #' primer pair. Thus, a negative Tm-difference
 #' means that the Tm of the probe is lower than the average Tm of the
 #' primer pair.
@@ -37,77 +37,76 @@
 #' A tibble (a data frame) with all candidate
 #' assays. An error message will return if no assays are found.
 #'
-#' @note Results:
-#'
 #' The tibble contains the following information:
-#'
 #' \describe{
-#'   \item{Begin}{Position where the assay begins.}
-#'   \item{End}{Position where the assay ends.}
-#'   \item{Amplicon_length}{Length of the amplicon.}
-#'   \item{Tm_difference_primer}{Difference in Tm between
+#'   \item{begin}{Position where the assay begins.}
+#'   \item{end}{Position where the assay ends.}
+#'   \item{ampliconLength}{Length of the amplicon.}
+#'   \item{tmDifferencePrimer}{Difference in Tm between
 #'   the forward and reverse primer, absolute value.}
-#'   \item{Mean_identity}{Average identity score of the primers
+#'   \item{meanIdentity}{Average identity score of the primers
 #'   (and probe if selected)}.
-#'   \item{Total_degeneracy}{Total number of oligos in the assay.}
-#'   \item{Begin_fwd}{Position where the forward primer begins.}
-#'   \item{End_fwd}{Position where the reverse primer ends.}
-#'   \item{Length_fwd}{Length of the forward primer.}
-#'   \item{Majority_fwd}{Majority sequence of the forward primer.}
-#'   \item{GC_majority_fwd}{GC-content of the forward primer
+#'   \item{totalDegeneracy}{Total number of oligos in the assay.}
+#'   \item{beginFwd}{Position where the forward primer begins.}
+#'   \item{endFwd}{Position where the reverse primer ends.}
+#'   \item{lengthFwd}{Length of the forward primer.}
+#'   \item{majorityFwd}{Majority sequence of the forward primer.}
+#'   \item{gcMajorityFwd}{GC-content of the forward primer
 #'   (majority sequence), proportion.}
-#'   \item{Identity_fwd}{Average identity of the forward primer.}
-#'   \item{Tm_majority_fwd}{Tm of the forward primer
+#'   \item{identityFwd}{Average identity of the forward primer.}
+#'   \item{tmMajorityFwd}{Tm of the forward primer
 #'   (majority sequence).}
-#'   \item{IUPAC_fwd}{IUPAC sequence (i.e. with degenerate bases)
+#'   \item{iupacFwd}{IUPAC sequence (i.e. with degenerate bases)
 #'   of the forward primer.}
-#'   \item{Degeneracy_fwd}{Number of variants of the forward primer.
-#'   \item{Begin_rev}{Position where the reverse primer begins.}
-#'   \item{End_rev}{Position where the reverse primer ends.}
-#'   \item{Length_rev}{Length of the reverse primer.}
-#'   \item{Majority_rev}{Majority sequence of the reverse primer.}
-#'   \item{GC_majority_rev}{GC-content of the reverse primer
+#'   \item{degeneracyFwd}{Number of variants of the forward primer.
+#'   \item{beginRev}{Position where the reverse primer begins.}
+#'   \item{endRev}{Position where the reverse primer ends.}
+#'   \item{lengthRev}{Length of the reverse primer.}
+#'   \item{majorityRev}{Majority sequence of the reverse primer.}
+#'   \item{gcMajorityRev}{GC-content of the reverse primer
 #'   (majority sequence), proportion.}
-#'   \item{Tm_majority_rev}{Tm of the reverse primer
+#'   \item{tmMajorityRev}{Tm of the reverse primer
 #'   (majority sequence).}
-#'   \item{Identity_rev}{Average identity of the reverse primer.}
-#'   \item{IUPAC_rev}{IUPAC sequence (i.e. with degenerate bases)
+#'   \item{identityRev}{Average identity of the reverse primer.}
+#'   \item{iupacRev}{IUPAC sequence (i.e. with degenerate bases)
 #'   of the reverse primer.}
-#'   \item{Degeneracy_rev}{Number of variants of the reverse primer.}
+#'   \item{degeneracyRev}{Number of variants of the reverse primer.}
 #' }
 #'
 #' If the option \code{showAllVariants == TRUE} was used for primer design
 #' in \code{get_oligos()}, the following columns are also added:
 #'
 #' \describe{
-#'   \item{All_fwd}{Lists with all sequence variants of the forward primer.}
-#'   \item{GC_all_fwd}{Lists with the GC content of all
+#'   \item{allFwd}{Lists with all sequence variants of the forward primer.}
+#'   \item{gcAllFwd}{Lists with the GC content of all
 #'   sequence variants of the forward primer.}
-#'   \item{Tm_all_fwd}{Lists with the Tm of all sequence variants of
+#'   \item{tmAllFwd}{Lists with the Tm of all sequence variants of
 #'   the reverse primer.}
-#'   \item{All_rev}{Lists with all sequence variants of the reverse primer.}
-#'   \item{GC_all_rev}{Lists with the GC content of all
+#'   \item{allRev}{Lists with all sequence variants of the reverse primer.}
+#'   \item{gcAllRev}{Lists with the GC content of all
 #'   sequence variants of the forward primer.}
-#'   \item{Tm_all_rev}{Lists with the Tm of all sequence variants of
+#'   \item{tmAllRev}{Lists with the Tm of all sequence variants of
 #'   the reverse primer.}
 #' }
 #'
 #' If a probe is used, the following columns are also included:
 #'
 #' \describe{
-#'   \item{Begin_pr}{Position where the probe begins.}
-#'   \item{End_pr}{Position where the probe ends.}
-#'   \item{Length_pr}{Length of the probe.}
-#'   \item{Majority_pr}{Majority sequence of the probe.}
-#'   \item{GC_majority_pr}{GC-content of the probe
+#'   \item{Tm_difference_primer_probe}{Difference in Tm between the average
+#'   Tm of the primer pair and the probe, majority sequences.}
+#'   \item{beginPr}{Position where the probe begins.}
+#'   \item{endPr}{Position where the probe ends.}
+#'   \item{lengthPr}{Length of the probe.}
+#'   \item{majorityPr}{Majority sequence of the probe.}
+#'   \item{gcMajorityPr}{GC-content of the probe
 #'   (majority sequence), proportion.}
-#'   \item{Tm_majority_pr}{Tm of the probe
+#'   \item{tmMajorityPr}{Tm of the probe
 #'   (majority sequence).}
-#'   \item{Identity_pr}{Average identity of the probe.}
-#'   \item{IUPAC_pr}{IUPAC sequence (i.e. with degenerate bases)
+#'   \item{identityPr}{Average identity of the probe.}
+#'   \item{iupacPr}{IUPAC sequence (i.e. with degenerate bases)
 #'   of the probe.}
-#'   \item{Degeneracy_pr}{Number of variants of the probe.}
-#'   \item{Sense_pr}{Sense of the probe (pos or neg). If both probes are valid,
+#'   \item{degeneracyPr}{Number of variants of the probe.}
+#'   \item{sensePr}{Sense of the probe (pos or neg). If both probes are valid,
 #'   the probe with the least G:s is selected.}
 #' }
 #'
@@ -115,17 +114,13 @@
 #' in \code{get_oligos()}, the following columns are also added:
 #'
 #' \describe{
-#'   \item{All_pr}{Lists with all sequence variants of the probe.}
-#'   \item{GC_all_pr}{Lists with the GC content of all
+#'   \item{allPr}{Lists with all sequence variants of the probe.}
+#'   \item{gcAllPr}{Lists with the GC content of all
 #'   sequence variants of the probe.}
-#'   \item{Tm_all_pr}{Lists with the Tm of all sequence variants of
+#'   \item{tmAllPr}{Lists with the Tm of all sequence variants of
 #'   the probe.}
 #' }
 #'
-#' \describe{
-#'   \item{Tm_difference_primer_probe}{Difference in Tm between the average
-#'   Tm of the primer pair and the probe, majority sequences.}
-#' }
 #'
 #' @seealso getOligos
 #'
@@ -185,48 +180,37 @@ getAssays <- function(primers,
   if (!(min(length) >= 40 && max(length) <= 5000)) {
     stop("'length' must be from 40 to 5000.", call. = FALSE)
   }
-  # Get all potential candidates for fwd and rev primers
-  fwd <- primers[!is.na(primers$Majority), ]
-  rev <- primers[!is.na(primers$Majority_RC), ]
-  # Get all possible combinations of fwd and rev primers
+  fwd <- primers[!is.na(primers$majority), ]
+  rev <- primers[!is.na(primers$majorityRc), ]
   combinations <- expand.grid(
-    fwd$Majority, rev$Majority_RC, stringsAsFactors = FALSE
+    fwd$majority, rev$majorityRc, stringsAsFactors = FALSE
   )
   names(combinations) <- c("fwdMajority", "revMajority")
-  # Get indexes of the fwd and rev primer sequences
-  indexFwd <- match(combinations$fwdMajority, primers$Majority)
-  indexRev <- match(combinations$revMajority, primers$Majority_RC)
-  # Make two datasets of x, one for fwd and one for rev
+  indexFwd <- match(combinations$fwdMajority, primers$majority)
+  indexRev <- match(combinations$revMajority, primers$majorityRc)
   fwd <- primers[indexFwd, ]
   rev <- primers[indexRev, ]
-  # Add a tag on colnames before combining the two datasets
-  colnames(fwd) <- paste0(colnames(fwd), "_fwd")
-  colnames(rev) <- paste0(colnames(rev), "_rev")
-  # Combine the two datasets
+  colnames(fwd) <- paste0(colnames(fwd), "Fwd")
+  colnames(rev) <- paste0(colnames(rev), "Rev")
   assays <- dplyr::bind_cols(fwd, rev)
   assays <- tibble::as_tibble(assays)
-  # Add amplicon length, tm difference and total degeneracy to the data
-  Amplicon_length <- assays$End_rev - assays$Begin_fwd + 1
-  Amplicon_length <- as.integer(Amplicon_length)
-  Tm_difference_primer <- assays$Tm_majority_fwd - assays$Tm_majority_rev
-  Tm_difference_primer <- abs(Tm_difference_primer)
-  Begin <- assays$Begin_fwd
-  End <- assays$End_rev
-  Total_degeneracy <- assays$Degeneracy_fwd + assays$Degeneracy_rev
-  Mean_identity <- mean(c(assays$Identity_fwd, assays$Identity_rev))
+  ampliconLength <- assays$endRev - assays$beginFwd + 1
+  ampliconLength <- as.integer(ampliconLength)
+  tmDifferencePrimer <- abs(assays$tmMajorityFwd - assays$tmMajorityRev)
+  begin <- assays$beginFwd
+  end <- assays$endRev
+  totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
+  meanIdentity <- mean(c(assays$identityFwd, assays$identityRev))
   assays <- tibble::add_column(
-    assays, Begin, End, Amplicon_length,
-    Tm_difference_primer, Mean_identity, Total_degeneracy, .before = "Begin_fwd"
+    assays, begin, end, ampliconLength,
+    tmDifferencePrimer, meanIdentity, totalDegeneracy, .before = "beginFwd"
   )
-  # Drop columns that we do no longer need
-  drop <- c("Majority_RC_fwd", "IUPAC_RC_fwd", "Majority_rev", "IUPAC_rev")
+  drop <- c("majorityRcFwd", "iupacRcFwd", "majorityRev", "iupacRev")
   assays <- assays[!(names(assays) %in% drop)]
-  # Rename columns
-  names(assays)[grep("_rc", names(assays))] <- c("Majority_rev", "IUPAC_rev")
-  # Collect assays with desired amplicon length and tm difference
-  assays <- assays[assays$Amplicon_length >= min(length), ]
-  assays <- assays[assays$Amplicon_length <= max(length), ]
-  assays <- assays[assays$Tm_difference_primer <= maxTmDifferencePrimers, ]
+  names(assays)[grep("Rc", names(assays))] <- c("majorityRev", "iupacRev")
+  assays <- assays[assays$ampliconLength >= min(length), ]
+  assays <- assays[assays$ampliconLength <= max(length), ]
+  assays <- assays[assays$tmDifferencePrimer <= maxTmDifferencePrimers, ]
   if (nrow(assays) == 0L)
     stop("No assays were found.", call. = FALSE)
   assays
@@ -256,23 +240,13 @@ getAssays <- function(primers,
       call. = FALSE
     )
   }
-  # For each assay, take all probes that bind within the assay region
   probeCandidates <- purrr::map(seq_len(nrow(assays)), function(i) {
-    # The probe has to begin after the fwd primer ends
-    # and we want at least one base between (hence the + 2)
-    from <- assays$End_fwd[[i]] + 2
-    # The probe has to end before the rev primer begins
-    # and we want at least one base in-between
-    to <- assays$Begin_rev[[i]] - 2
-    # Take all probes that begin and end 'within' the assay region
-    probe <- probes[probes$Begin >= from & probes$End <= to, ]
+    from <- assays$endFwd[[i]] + 2
+    to <- assays$beginRev[[i]] - 2
+    probe <- probes[probes$begin >= from & probes$end <= to, ]
     probe
   })
-  # For each assay, we check how many probe candidates we have
   numberOfProbes <- purrr::map_int(probeCandidates, nrow)
-  # Then, we need to pick all the assays that can harbor a probe.
-  # For assays that has n number of probes, we need to
-  # repeat that row n times.
   rowsToSelect <- purrr::map(
     seq_along(numberOfProbes), ~rep(.x, numberOfProbes[[.x]])
   )
@@ -281,47 +255,44 @@ getAssays <- function(primers,
   if (nrow(assays) == 0L) {
     stop("No assays with probes could be generated.", call. = FALSE)
   }
-  # Now, we can make a data frame of the probe candidates
   probeCandidates <- do.call("rbind", probeCandidates)
-  # Select sense of the probe
-  Sense <- purrr::map2_chr(
-    probeCandidates$Majority, probeCandidates$Majority_RC, function(x, y) {
-      if (is.na(x)) Sense <- "Neg"
-      if (is.na(y)) Sense <- "Pos"
+  sense <- purrr::map2_chr(
+    probeCandidates$majority, probeCandidates$majorityRc, function(x, y) {
+      if (is.na(x)) sense <- "neg"
+      if (is.na(y)) sense <- "pos"
       if (!is.na(x) && !is.na(y)) {
-        # If both probes are valid, select the probe with the least Gs
         gContentPos <- .gContent(x)
         gContentNeg <- .gContent(y)
-        Sense <- ifelse(gContentPos <= gContentNeg, "Pos", "Neg")
+        sense <- ifelse(gContentPos <= gContentNeg, "pos", "neg")
       }
-      Sense
+      sense
   })
-  probeCandidates$Majority <- ifelse(
-    Sense == "Pos", probeCandidates$Majority, probeCandidates$Majority_RC
+  probeCandidates$majority <- ifelse(
+    sense == "pos", probeCandidates$majority, probeCandidates$majorityRc
   )
-  probeCandidates$IUPAC <- ifelse(
-    Sense == "Pos", probeCandidates$IUPAC, probeCandidates$IUPAC_RC
+  probeCandidates$iupac <- ifelse(
+    sense == "pos", probeCandidates$iupac, probeCandidates$iupacRc
   )
-  probeCandidates <- tibble::add_column(probeCandidates, Sense)
-  drop <- c("Majority_RC", "IUPAC_RC")
+  probeCandidates <- tibble::add_column(probeCandidates, sense)
+  drop <- c("majorityRc", "iupacRc")
   probeCandidates <- probeCandidates[!names(probeCandidates) %in% drop]
-  names(probeCandidates) <- paste0(names(probeCandidates), "_pr")
+  names(probeCandidates) <- paste0(names(probeCandidates), "Pr")
   assays <- dplyr::bind_cols(assays, probeCandidates)
-  assays$Mean_identity <- mean(
-    c(assays$Identity_fwd, assays$Identity_rev, assays$Identity_pr)
+  assays$meanIdentity <- mean(
+    c(assays$identityFwd, assays$identityRev, assays$identityPr)
   )
-  assays$Total_degeneracy <- assays$Total_degeneracy + probeCandidates$Degeneracy_pr
-  Tm_difference_primer_probe <- purrr::map_dbl(
+  assays$totalDegeneracy <- assays$totalDegeneracy + probeCandidates$degeneracyPr
+  tmDifferencePrimerProbe <- purrr::map_dbl(
     seq_len(nrow(assays)), function(x) {
-      assays$Tm_majority_pr[[x]] - mean(
-        assays$Tm_majority_fwd[[x]], assays$Tm_majority_rev[[x]]
+      assays$tmMajorityPr[[x]] - mean(
+        assays$tmMajorityFwd[[x]], assays$tmMajorityRev[[x]]
       )
     })
   assays <- tibble::add_column(
-    assays, Tm_difference_primer_probe, .after = "Tm_difference_primer"
+    assays, tmDifferencePrimerProbe, .after = "tmDifferencePrimer"
   )
-  assays <- assays[assays$Tm_difference_primer_probe >= min(tmDifferenceProbes), ]
-  assays <- assays[assays$Tm_difference_primer_probe <= max(tmDifferenceProbes), ]
+  assays <- assays[assays$tmDifferencePrimerProbe >= min(tmDifferenceProbes), ]
+  assays <- assays[assays$tmDifferencePrimerProbe <= max(tmDifferenceProbes), ]
   if (nrow(assays) == 0L) {
     stop("No assays with probes could be generated.", call. = FALSE)
   }

@@ -23,14 +23,14 @@ test_that(".splitSequence works", {
 
 test_that(".getNmers works", {
   data("exampleRprimerProperties")
-  toTest <- exampleRprimerProperties$Majority[1:50]
+  toTest <- exampleRprimerProperties$majority[1:50]
   result <- .getNmers(toTest, n = 20)
   expect_true(all(nchar(result) == 20))
 })
 
 test_that(".getNmers returns an error when it should", {
   data("exampleRprimerProperties")
-  toTest <- exampleRprimerProperties$Majority[1:50]
+  toTest <- exampleRprimerProperties$majority[1:50]
   expect_error(.getNmers(toTest))
 })
 
@@ -62,38 +62,38 @@ test_that(
   toTest <- .generateOligos(exampleRprimerProperties)
   dinucleotideRepeats <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(TC){4,}|(CT){4,})"
   mononucleotideRepeates <- "([A-Z])\\1\\1\\1\\1"
-  expect_true(any(grepl(dinucleotideRepeats, toTest$Majority)))
-  expect_true(any(grepl(mononucleotideRepeates, toTest$Majority)))
+  expect_true(any(grepl(dinucleotideRepeats, toTest$majority)))
+  expect_true(any(grepl(mononucleotideRepeates, toTest$majority)))
   toTest <- .exclude(toTest)
-  expect_false(any(grepl(dinucleotideRepeats, toTest$Majority)))
-  expect_false(any(grepl(mononucleotideRepeates, toTest$Majority)))
+  expect_false(any(grepl(dinucleotideRepeats, toTest$majority)))
+  expect_false(any(grepl(mononucleotideRepeates, toTest$majority)))
   toTest <- .addReverseComplement(toTest)
   expect_equal(
-    c("Majority_RC", "IUPAC_RC") %in% colnames(toTest), c(TRUE, TRUE)
+    c("majorityRc", "iupacRc") %in% colnames(toTest), c(TRUE, TRUE)
   )
   expect_error(.addGcContent(toTest, gcRange = c(0.45, 10)))
   toTest <- .addGcContent(toTest)
-  expect_true("GC_majority" %in% colnames(toTest))
-  expect_false(any(toTest$GC_majority < 0))
-  expect_false(any(toTest$GC_majority > 1))
+  expect_true("gcMajority" %in% colnames(toTest))
+  expect_false(any(toTest$gcMajority < 0))
+  expect_false(any(toTest$gcMajority > 1))
   expect_error(.addTm(toTest, tmRange =  c(19, 10)))
   expect_error(.addTm(toTest, tmRange =  c(20, 91)))
   toTest <- .addTm(toTest)
-  expect_true("Tm_majority" %in% colnames(toTest))
-  expect_true(any(grepl("^G", toTest$Majority)))
-  expect_true(any(grepl("^G", toTest$Majority_RC)))
+  expect_true("tmMajority" %in% colnames(toTest))
+  expect_true(any(grepl("^G", toTest$majority)))
+  expect_true(any(grepl("^G", toTest$majorityRc)))
   toTest <- .filterOligos(
     toTest, gcClamp = FALSE, avoid5EndG = TRUE, avoid3EndRuns = FALSE,
     minEndIdentity = 0.99
   )
-  expect_false(any(grepl("^G", toTest$Majority)))
-  expect_false(any(grepl("^G", toTest$Majority_RC)))
-  expect_true(any(grepl("([A-Z])\\1\\1$", toTest$Majority)))
-  expect_true(any(grepl("([A-Z])\\1\\1$", toTest$Majority_RC)))
+  expect_false(any(grepl("^G", toTest$majority)))
+  expect_false(any(grepl("^G", toTest$majorityRc)))
+  expect_true(any(grepl("([A-Z])\\1\\1$", toTest$majority)))
+  expect_true(any(grepl("([A-Z])\\1\\1$", toTest$majorityRc)))
   toTest <- .filterOligos(
     toTest, gcClamp = FALSE, avoid5EndG = TRUE, avoid3EndRuns = TRUE)
-  expect_false(any(grepl("([A-Z])\\1\\1$", toTest$Majority)))
-  expect_false(any(grepl("([A-Z])\\1\\1$", toTest$Majority_RC)))
+  expect_false(any(grepl("([A-Z])\\1\\1$", toTest$majority)))
+  expect_false(any(grepl("([A-Z])\\1\\1$", toTest$majorityRc)))
 })
 
 test_that(".getOligosWithGcClamp works", {
@@ -143,12 +143,12 @@ test_that(".expandOligos works", {
     exampleRprimerProperties[1:100, ], showAllVariants = FALSE
   )
   toTest <- .expandOligos(toTest[1:2, ])
-  expect_true(all(c("All", "All_RC", "Tm_all", "GC_all") %in% colnames(toTest)))
-  expect_true(is.list(toTest$All[1]))
+  expect_true(all(c("all", "allRc", "tmAll", "gcAll") %in% colnames(toTest)))
+  expect_true(is.list(toTest$all[1]))
 })
 
 test_that(".countEndIdentity works", {
   toTest <- c(1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 2, 2, 2)
-  expect_equivalent(.countEndIdentity(toTest, n = length(toTest))[, "Pos"], 2)
-  expect_equivalent(.countEndIdentity(toTest, n = length(toTest))[, "Neg"], 1)
+  expect_equivalent(.countEndIdentity(toTest, n = length(toTest))[, "pos"], 2)
+  expect_equivalent(.countEndIdentity(toTest, n = length(toTest))[, "neg"], 1)
 })

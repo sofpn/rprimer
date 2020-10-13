@@ -1,4 +1,4 @@
-## To do: make S4 class
+## To do: make S4 class # MAKE method instead?
 
 #' Get alignment properties
 #'
@@ -17,23 +17,23 @@
 #' A tibble (a data frame) with the following information:
 #'
 #' \describe{
-#'   \item{Position}{Position in the alignment.}
-#'   \item{Majority}{Majority consensus sequence.
+#'   \item{position}{Position in the alignment.}
+#'   \item{majority}{Majority consensus sequence.
 #'   The most frequently occurring nucleotide.
 #'   If two or more bases occur with the same frequency,
 #'   the consensus nucleotide will be randomly selected among these bases.}
-#'   \item{IUPAC}{
+#'   \item{iupac}{
 #'   The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
 #'   Note that the IUPAC consensus sequence only
 #'   takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
 #'   present in the alignment will be skipped. If a position only contains
 #'   degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
 #'   position.}
-#'   \item{Gaps}{Proportion of gaps. Gaps are recognized as "-".}
-#'   \item{Identity}{Proportion of the most common nucleotide.
+#'   \item{gaps}{Proportion of gaps. Gaps are recognized as "-".}
+#'   \item{identity}{Proportion of the most common nucleotide.
 #'    Gaps (-), as well as bases other than A, C, G and T are excluded from the
 #'    calculation.}
-#'   \item{Entropy}{Shannon entropy.
+#'   \item{entropy}{Shannon entropy.
 #'    Shannon entropy is a measurement of
 #'    variability.
 #'    First, for each nucleotide that occurs at a specific position,
@@ -58,15 +58,15 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     if (!methods::is(x, "RprimerProfile")) {
         stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
-    x <- rpGetData(x)
-    Position <- seq_len(ncol(x))
-    Majority <- .majorityConsensus(x)
-    IUPAC <- .iupacConsensus(x, threshold = iupacThreshold)
-    Gaps <- .gapFrequency(x)
-    Identity <- .nucleotideIdentity(x)
-    Entropy <- .shannonEntropy(x)
+    x <- rpGetData(x) ### Better getter!
+    position <- seq_len(ncol(x))
+    majority <- .majorityConsensus(x)
+    iupac <- .iupacConsensus(x, threshold = iupacThreshold)
+    gaps <- .gapFrequency(x)
+    identity <- .nucleotideIdentity(x)
+    entropy <- .shannonEntropy(x)
     properties <- tibble::tibble(
-        Position, Majority, IUPAC, Gaps, Identity, Entropy
+        position, majority, iupac, gaps, identity, entropy
     )
     properties <- .roundDfDbl(properties)
     properties

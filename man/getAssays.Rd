@@ -38,15 +38,11 @@ Note that the Tm-difference is calculated from the majority oligos, and
 may thus be misleading for degenerate (IUPAC) oligos.}
 }
 \value{
-A tibble (a data frame) with all candidate
-assays. An error message will return if no assays are found.
+
 }
 \description{
 \code{getAssays()} combines forward and reverse primers
 and (if selected) probes to (RT)-PCR assays.
-}
-\note{
-
 }
 \seealso{
 getOligos

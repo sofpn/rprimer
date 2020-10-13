@@ -6,6 +6,9 @@
 \usage{
 \S4method{rpGetData}{RprimerProfile}(x)
 }
+\arguments{
+\item{x}{An \code{RprimerProfile} object.}
+}
 \description{
 Getter, method for RprimerProfile objects
 }

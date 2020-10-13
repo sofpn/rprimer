@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 The purpose of rprimer is to design (RT)-(q/dd)PCR assays from multiple DNA 
 sequence alignments. 
 
-In this document, I demonstrate how to use the package 
+In this document, I demonstrate how to use rprimer 
 by designing an RT-(q/dd)PCR assay for detection of hepatitis E virus, which
 is a highly variable RNA virus. 
 
@@ -81,7 +81,6 @@ The function is a wrapper around `Biostrings::consensusMatrix()`.
 ```{r}
 myAlignmentProfile <- getAlignmentProfile(myAlignment)
 rpGetData(myAlignmentProfile)[ , 1:10] ## View the first 10 bases 
-## rpGetData is a getter method for all classes within the package 
 ```
 
 The object can be visualized using `rpPlot()`. 
@@ -189,9 +188,13 @@ Assays are designed from the following constraints:
 
   * `length` Amplicon length, defaults to `65:120`.
   * `maxTmDifferencePrimers` Maximum Tm difference between the two primers 
-  (absolute value), defaults to `2`.
+  (absolute value, calculated for majority primers), defaults to `2`.
   * `tmDifferenceProbes` Acceptable Tm difference between the primers 
-  (average Tm of the primer pair) and probe, defaults to `c(0, 20)`.
+  (average Tm of the primer pair) and probe, defaults to `c(0, 20)`. 
+  The Tm-difference is calculated by subtracting the Tm of the probe with the 
+  average Tm of the (majority) primer pair. Thus, a negative Tm-difference
+  means that the Tm of the probe is lower than the average Tm of the
+  primer pair.
 
 Candidate assays are displayed in a tibble. 
 An error message will return if no assays are found.

@@ -94,28 +94,28 @@
 #' If \code{showAllVariants == FALSE}:
 #'
 #' \describe{
-#'   \item{Begin}{Position where the oligo begins.}
-#'   \item{End}{Position where the oligo ends.}
-#'   \item{Length}{Length of the oligo.}
-#'   \item{Majority}{Majority sequence.}
-#'   \item{Majority_RC}{Majority sequence, reverse complement.}
-#'   \item{GC_majority}{GC content (majority sequence), proportion.}
-#'   \item{Tm_majority}{Melting temperature.}
-#'   \item{Identity}{Average identity score of the oligo.}
-#'   \item{IUPAC}{IUPAC sequence (i.e. with degenerate bases).}
-#'   \item{IUPAC_RC}{IUPAC sequence, reverse complement.}
-#'   \item{Degeneracy}{Number of variants of the degenerate oligo.}
+#'   \item{begin}{Position where the oligo begins.}
+#'   \item{end}{Position where the oligo ends.}
+#'   \item{length}{Length of the oligo.}
+#'   \item{majority}{Majority sequence.}
+#'   \item{majorityRc}{Majority sequence, reverse complement.}
+#'   \item{gcMajority}{GC content (majority sequence), proportion.}
+#'   \item{tmMajority}{Melting temperature.}
+#'   \item{identity}{Average identity score of the oligo.}
+#'   \item{iupac}{IUPAC sequence (i.e. with degenerate bases).}
+#'   \item{iupacRc}{IUPAC sequence, reverse complement.}
+#'   \item{degeneracy}{Number of variants of the degenerate oligo.}
 #' }
 #'
 #' If \code{showAllVariants == TRUE}, the following columns are also included:
 #'
 #' \describe{
-#'   \item{All}{Lists with all sequence variants of the oligos.}
-#'   \item{All_RC}{Lists with all sequence variants of the oligos, reverse
+#'   \item{all}{Lists with all sequence variants of the oligos.}
+#'   \item{allRc}{Lists with all sequence variants of the oligos, reverse
 #'   complements.}
-#'   \item{GC_all}{Lists with the GC content of all
+#'   \item{gcAll}{Lists with the GC content of all
 #'   sequence variants of the oligos.}
-#'   \item{Tm_all}{Lists with the Tm of all sequence variants of the oligos.}
+#'   \item{tmAll}{Lists with the Tm of all sequence variants of the oligos.}
 #' }
 #'
 #' @examples
@@ -199,7 +199,7 @@ getOligos <- function(x,
       allOligos, concOligo = concOligo, concNa = concNa
     )
   }
-  drop <- c("Identity_3end", "Identity_3end_RC")
+  drop <- c("identity3End", "identity3EndRc")
   allOligos <- allOligos[!names(allOligos) %in% drop]
   allOligos <- .roundDfDbl(allOligos)
   allOligos
@@ -285,11 +285,11 @@ getOligos <- function(x,
   frame <- purrr::map(begin, ~ x[begin[[.x]]:end[[.x]]])
   endScore <- purrr::map(frame, function(x) {
     lastFive <- min(x[(length(x) - 4):length(x)])
-    firstFive <- min(x[1:5])
+    firstFive <- min(x[seq_len(5)])
     c(lastFive, firstFive)
   })
   endScore <- do.call("rbind", endScore)
-  colnames(endScore) <- c("Pos", "Neg")
+  colnames(endScore) <- c("pos", "neg")
   endScore
 }
 
@@ -336,26 +336,26 @@ getOligos <- function(x,
   if (!(maxDegeneracy >= 1 && maxDegeneracy <= 32)) {
     stop("'maxDegeneracy' must be from 1 to 32.", call. = FALSE)
   }
-  Majority <- .getNmers(x$Majority, n = oligoLength)
-  IUPAC <- .getNmers(x$IUPAC, n = oligoLength)
-  Degeneracy <- as.integer(purrr::map_dbl(IUPAC, ~ .countDegeneracy(.x)))
-  Begin <- seq_along(Majority)
-  End <- as.integer(seq_along(Majority) + oligoLength - 1)
-  Length <- oligoLength
-  Identity <- .runningSum(x$Identity, n = oligoLength)/oligoLength
-  endIdentity <- .countEndIdentity(x$Identity, n = oligoLength)
-  Identity_3end <- endIdentity[, "Pos"]
-  Identity_3end_RC <- endIdentity[, "Neg"]
-  gapBin <- ifelse(x$Gaps > maxGapFrequency, 1L, 0L)
+  majority <- .getNmers(x$majority, n = oligoLength)
+  iupac <- .getNmers(x$iupac, n = oligoLength)
+  degeneracy <- as.integer(purrr::map_dbl(iupac, ~ .countDegeneracy(.x)))
+  begin <- seq_along(majority)
+  end <- as.integer(seq_along(majority) + oligoLength - 1)
+  length <- oligoLength
+  identity <- .runningSum(x$identity, n = oligoLength)/oligoLength
+  endIdentity <- .countEndIdentity(x$identity, n = oligoLength)
+  identity3End <- endIdentity[, "pos"]
+  identity3EndRc <- endIdentity[, "neg"]
+  gapBin <- ifelse(x$gaps > maxGapFrequency, 1L, 0L)
   gapPenalty <- .runningSum(gapBin, n = oligoLength)
   oligos <- tibble::tibble(
-    Begin, End, Length, Majority, Identity, Identity_3end, Identity_3end_RC,
-    IUPAC, Degeneracy, gapPenalty
+    begin, end, length, majority, identity, identity3End, identity3EndRc,
+    iupac, degeneracy, gapPenalty
   )
-  uniqueOligos <- match(oligos$Majority, unique(oligos$Majority))
+  uniqueOligos <- match(oligos$majority, unique(oligos$majority))
   oligos <- oligos[uniqueOligos, ]
   oligos <- oligos[oligos$gapPenalty == 0, ]
-  oligos <- oligos[oligos$Degeneracy <= maxDegeneracy, ]
+  oligos <- oligos[oligos$degeneracy <= maxDegeneracy, ]
   oligos <- dplyr::select(oligos, -gapPenalty)
   oligos
 }
@@ -381,8 +381,8 @@ getOligos <- function(x,
 .exclude <- function(x) {
   dinucleotideRepeats <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(TC){4,}|(CT){4,})"
   mononucleotideRepeates <- "([A-Z])\\1\\1\\1\\1"
-  x <- x[!grepl(dinucleotideRepeats, x$Majority), ]
-  x <- x[!grepl(mononucleotideRepeates, x$Majority), ]
+  x <- x[!grepl(dinucleotideRepeats, x$majority), ]
+  x <- x[!grepl(mononucleotideRepeates, x$majority), ]
   x
 }
 
@@ -417,10 +417,10 @@ getOligos <- function(x,
 #'
 #' @noRd
 .addReverseComplement <- function(x) {
-  Majority_RC <- purrr::map_chr(x$Majority, ~.reverseComplement(.x))
-  IUPAC_RC <- purrr::map_chr(x$IUPAC, ~.reverseComplement(.x))
-  x <- tibble::add_column(x, Majority_RC, .after = "Majority")
-  x <- tibble::add_column(x, IUPAC_RC, .after = "IUPAC")
+  majorityRc <- purrr::map_chr(x$majority, ~.reverseComplement(.x))
+  iupacRc <- purrr::map_chr(x$iupac, ~.reverseComplement(.x))
+  x <- tibble::add_column(x, majorityRc, .after = "majority")
+  x <- tibble::add_column(x, iupacRc, .after = "iupac")
   x
 }
 
@@ -475,22 +475,22 @@ getOligos <- function(x,
     )
   }
   if (gcClamp == TRUE) {
-    x$Majority <- .getOligosWithGcClamp(x$Majority)
-    x$Majority_RC <- .getOligosWithGcClamp(x$Majority_RC)
+    x$majority <- .getOligosWithGcClamp(x$majority)
+    x$majorityRc <- .getOligosWithGcClamp(x$majorityRc)
   }
   if (avoid5EndG == TRUE) {
-    x$Majority[grepl("^G", x$Majority)] <- NA
-    x$Majority_RC[grepl("^G", x$Majority_RC)] <- NA
+    x$majority[grepl("^G", x$majority)] <- NA
+    x$majorityRc[grepl("^G", x$majorityRc)] <- NA
   }
   if (avoid3EndRuns == TRUE) {
-    x$Majority[grepl("([A-Z])\\1\\1$", x$Majority)] <- NA
-    x$Majority_RC[grepl("([A-Z])\\1\\1$", x$Majority_RC)] <- NA
+    x$majority[grepl("([A-Z])\\1\\1$", x$majority)] <- NA
+    x$majorityRc[grepl("([A-Z])\\1\\1$", x$majorityRc)] <- NA
   }
-  x$Majority[x$Identity_3end < minEndIdentity] <- NA
-  x$Majority_RC[x$Identity_3end_RC < minEndIdentity] <- NA
-  x$IUPAC[is.na(x$Majority)] <- NA
-  x$IUPAC_RC[is.na(x$Majority_RC)] <- NA
-  invalidOligos <- is.na(x$Majority) & is.na(x$Majority_RC)
+  x$majority[x$identity3End < minEndIdentity] <- NA
+  x$majorityRc[x$identity3EndRc < minEndIdentity] <- NA
+  x$iupac[is.na(x$majority)] <- NA
+  x$iupacRc[is.na(x$majorityRc)] <- NA
+  invalidOligos <- is.na(x$majority) & is.na(x$majorityRc)
   x <- x[!invalidOligos, ]
   x
 }
@@ -532,11 +532,11 @@ getOligos <- function(x,
       "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).", call. = FALSE
     )
   }
-  GC_majority <- purrr::map_dbl(x$Majority, ~ .gcContent(.x))
+  gcMajority <- purrr::map_dbl(x$majority, ~ .gcContent(.x))
   x <- tibble::add_column(
-    x, GC_majority, .before = "Identity"
+    x, gcMajority, .before = "identity"
   )
-  x <- x[x$GC_majority >= min(gcRange) & x$GC_majority <= max(gcRange), ]
+  x <- x[x$gcMajority >= min(gcRange) & x$gcMajority <= max(gcRange), ]
   x
 }
 
@@ -693,11 +693,11 @@ getOligos <- function(x,
       "'tmRange' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE
     )
   }
-  Tm_majority <- .tm(x$Majority, concOligo = concOligo, concNa = concNa)
+  tmMajority <- .tm(x$majority, concOligo = concOligo, concNa = concNa)
   x <- tibble::add_column(
-    x, Tm_majority, .before = "Identity"
+    x, tmMajority, .before = "identity"
   )
-  x <- x[x$Tm_majority >= min(tmRange) & x$Tm_majority <= max(tmRange), ]
+  x <- x[x$tmMajority >= min(tmRange) & x$tmMajority <= max(tmRange), ]
   x
 }
 
@@ -742,24 +742,24 @@ getOligos <- function(x,
 #'
 #' @noRd
 .expandOligos <- function(x, concOligo = 5e-7, concNa = 0.05) {
-  All <- purrr::map(x$IUPAC, function(x) {
+  all <- purrr::map(x$iupac, function(x) {
     if (is.na(x)) "" else .expandDegenerates(x)
   })
-  x <- tibble::add_column(x, All, .after = "Degeneracy")
-  All_RC <- purrr::map(x$IUPAC_RC, function(x) {
+  x <- tibble::add_column(x, all, .after = "degeneracy")
+  allRc <- purrr::map(x$iupacRc, function(x) {
     if (is.na(x)) "" else .expandDegenerates(x)
   })
-  x <- tibble::add_column(x, All_RC, .after = "All")
-  GC_all <- purrr::map(seq_len(nrow(x)), function(i) {
-      toCalculate <- ifelse(!is.na(x[i, ]$Majority), x[i, ]$All, x[i, ]$All_RC)
+  x <- tibble::add_column(x, allRc, .after = "all")
+  gcAll <- purrr::map(seq_len(nrow(x)), function(i) {
+      toCalculate <- ifelse(!is.na(x[i, ]$majority), x[i, ]$all, x[i, ]$allRc)
       toCalculate <- unlist(toCalculate)
       purrr::map_dbl(toCalculate, ~round(.gcContent(.x), 2))
   })
-  Tm_all <- purrr::map(seq_len(nrow(x)), function(i) {
-    toCalculate <- ifelse(!is.na(x[i, ]$Majority), x[i, ]$All, x[i, ]$All_RC)
+  tmAll <- purrr::map(seq_len(nrow(x)), function(i) {
+    toCalculate <- ifelse(!is.na(x[i, ]$majority), x[i, ]$all, x[i, ]$allRc)
     toCalculate <- unlist(toCalculate)
     purrr::map_dbl(toCalculate, ~round(.tm(.x), 2))
   })
-  x <- tibble::add_column(x, GC_all, Tm_all)
+  x <- tibble::add_column(x, gcAll, tmAll)
   x
 }

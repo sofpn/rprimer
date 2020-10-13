@@ -87,28 +87,28 @@ The tibble contains the following information:
 If \code{showAllVariants == FALSE}:
 
 \describe{
-  \item{Begin}{Position where the oligo begins.}
-  \item{End}{Position where the oligo ends.}
-  \item{Length}{Length of the oligo.}
-  \item{Majority}{Majority sequence.}
-  \item{Majority_RC}{Majority sequence, reverse complement.}
-  \item{GC_majority}{GC content (majority sequence), proportion.}
-  \item{Tm_majority}{Melting temperature.}
-  \item{Identity}{Average identity score of the oligo.}
-  \item{IUPAC}{IUPAC sequence (i.e. with degenerate bases).}
-  \item{IUPAC_RC}{IUPAC sequence, reverse complement.}
-  \item{Degeneracy}{Number of variants of the degenerate oligo.}
+  \item{begin}{Position where the oligo begins.}
+  \item{end}{Position where the oligo ends.}
+  \item{length}{Length of the oligo.}
+  \item{majority}{Majority sequence.}
+  \item{majorityRc}{Majority sequence, reverse complement.}
+  \item{gcMajority}{GC content (majority sequence), proportion.}
+  \item{tmMajority}{Melting temperature.}
+  \item{identity}{Average identity score of the oligo.}
+  \item{iupac}{IUPAC sequence (i.e. with degenerate bases).}
+  \item{iupacRc}{IUPAC sequence, reverse complement.}
+  \item{degeneracy}{Number of variants of the degenerate oligo.}
 }
 
 If \code{showAllVariants == TRUE}, the following columns are also included:
 
 \describe{
-  \item{All}{Lists with all sequence variants of the oligos.}
-  \item{All_RC}{Lists with all sequence variants of the oligos, reverse
+  \item{all}{Lists with all sequence variants of the oligos.}
+  \item{allRc}{Lists with all sequence variants of the oligos, reverse
   complements.}
-  \item{GC_all}{Lists with the GC content of all
+  \item{gcAll}{Lists with the GC content of all
   sequence variants of the oligos.}
-  \item{Tm_all}{Lists with the Tm of all sequence variants of the oligos.}
+  \item{tmAll}{Lists with the Tm of all sequence variants of the oligos.}
 }
 }
 \description{
