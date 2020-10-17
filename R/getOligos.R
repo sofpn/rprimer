@@ -1,5 +1,3 @@
-## Biostrings::vmatchPattern(DNAStringSet(aln)) -> irange object
-
 #' Get oligos
 #'
 #' \code{getOligos()} identifies oligos (primers and probes) from
@@ -94,6 +92,7 @@
 #' If \code{showAllVariants == FALSE}:
 #'
 #' \describe{
+#'   \item{type}{Type of oligo, primer or probe.}
 #'   \item{begin}{Position where the oligo begins.}
 #'   \item{end}{Position where the oligo ends.}
 #'   \item{length}{Length of the oligo.}

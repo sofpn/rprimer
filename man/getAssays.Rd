@@ -30,7 +30,7 @@ may thus be misleading for degenerate (IUPAC) primers.}
 primer pair) and probe. A numeric vector [-20, 20],
 defaults to \code{c(0, 20)}.
 The Tm-difference is calculated by subtracting the
-Tm of the probe with the average Tm of the
+Tm of the probe with the average Tm of the majority
 primer pair. Thus, a negative Tm-difference
 means that the Tm of the probe is lower than the average Tm of the
 primer pair.

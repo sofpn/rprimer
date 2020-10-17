@@ -44,7 +44,7 @@
         midpoint <- size / 2
         position <- position - midpoint
     }
-    df <- tibble::tibble("Position" = position, "Average" = average)
+    df <- tibble::tibble(position, average)
     df
 }
 
@@ -101,6 +101,6 @@
         midpoint <- size / 2
         position <- position - midpoint
     }
-    df <- tibble::tibble("Position" = position, "Average" = average)
+    df <- tibble::tibble(position, average)
     df
 }

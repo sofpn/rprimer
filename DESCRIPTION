@@ -29,6 +29,7 @@ Imports:
     purrr,
     tibble,
     methods,
+    patchwork,
     reshape2,
     S4Vectors,
     SummarizedExperiment

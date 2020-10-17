@@ -87,6 +87,7 @@ The tibble contains the following information:
 If \code{showAllVariants == FALSE}:
 
 \describe{
+  \item{type}{Type of oligo, primer or probe.}
   \item{begin}{Position where the oligo begins.}
   \item{end}{Position where the oligo ends.}
   \item{length}{Length of the oligo.}
