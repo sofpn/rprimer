@@ -2,15 +2,16 @@
 % Please edit documentation in R/plots.R
 \name{plotNucleotides}
 \alias{plotNucleotides}
-\alias{plotNucleotides,RprimerProfile-method}
-\title{Plot the nucleotide distribution of an RprimerProfile object}
+\title{Plot nucleotide distribution}
 \usage{
-plotNucleotides(x, rc = FALSE)
-
-\S4method{plotNucleotides}{RprimerProfile}(x, rc = FALSE)
+plotNucleotides(x, from = NULL, to = NULL, rc = FALSE)
 }
 \arguments{
 \item{x}{An \code{RprimerProfile} object.}
+
+\item{from}{Optional. Start position (an integer).}
+
+\item{to}{Optional. End position (an integer).}
 
 \item{rc}{\code{TRUE} or {FALSE}. If the plotted sequence should be displayed
 as reverse complement or not. Defaults to \code{FALSE}.}
@@ -19,17 +20,13 @@ as reverse complement or not. Defaults to \code{FALSE}.}
 A barplot with nucleotide distribution.
 }
 \description{
-Plot the nucleotide distribution of an RprimerProfile object
+Plot nucleotide distribution
 }
-\section{Methods (by class)}{
-\itemize{
-\item \code{RprimerProfile}: 
-}}
-
 \examples{
 data("exampleRprimerProfile")
-plotNucleotides(exampleRprimerProfile[, 1:10]) ## Plot the first 10 bases
-plotNucleotides(exampleRprimerProfile[, 1:10], rc = TRUE)
+plotNucleotides(exampleRprimerProfile, from = 1, to = 10)
+## Plot the first 10 bases
+plotNucleotides(exampleRprimerProfile, from =  1, to = 10, rc = TRUE)
 ## As reverse complement
 
 }

@@ -39,7 +39,7 @@
 #'
 #' The tibble contains the following information:
 #' \describe{
-#'   \item{begin}{Position where the assay begins.}
+#'   \item{start}{Position where the assay starts.}
 #'   \item{end}{Position where the assay ends.}
 #'   \item{ampliconLength}{Length of the amplicon.}
 #'   \item{tmDifferencePrimer}{Difference in Tm between
@@ -47,7 +47,7 @@
 #'   \item{meanIdentity}{Average identity score of the primers
 #'   (and probe if selected)}.
 #'   \item{totalDegeneracy}{Total number of oligos in the assay.}
-#'   \item{beginFwd}{Position where the forward primer begins.}
+#'   \item{startFwd}{Position where the forward primer starts.}
 #'   \item{endFwd}{Position where the reverse primer ends.}
 #'   \item{lengthFwd}{Length of the forward primer.}
 #'   \item{majorityFwd}{Majority sequence of the forward primer.}
@@ -59,7 +59,7 @@
 #'   \item{iupacFwd}{IUPAC sequence (i.e. with degenerate bases)
 #'   of the forward primer.}
 #'   \item{degeneracyFwd}{Number of variants of the forward primer.
-#'   \item{beginRev}{Position where the reverse primer begins.}
+#'   \item{startRev}{Position where the reverse primer starts.}
 #'   \item{endRev}{Position where the reverse primer ends.}
 #'   \item{lengthRev}{Length of the reverse primer.}
 #'   \item{majorityRev}{Majority sequence of the reverse primer.}
@@ -94,7 +94,7 @@
 #' \describe{
 #'   \item{Tm_difference_primer_probe}{Difference in Tm between the average
 #'   Tm of the primer pair and the probe, majority sequences.}
-#'   \item{beginPr}{Position where the probe begins.}
+#'   \item{startPr}{Position where the probe starts.}
 #'   \item{endPr}{Position where the probe ends.}
 #'   \item{lengthPr}{Length of the probe.}
 #'   \item{majorityPr}{Majority sequence of the probe.}
@@ -133,7 +133,8 @@ getAssays <- function(primers,
                       ) {
   assays <- .combinePrimers(
     primers = primers, length = length,
-    maxTmDifferencePrimers = maxTmDifferencePrimers)
+    maxTmDifferencePrimers = maxTmDifferencePrimers
+  )
   if (!is.null(probes)) {
     assays <- .addProbes(
       assays = assays, probes = probes, tmDifferenceProbes = tmDifferenceProbes
@@ -194,16 +195,16 @@ getAssays <- function(primers,
   colnames(rev) <- paste0(colnames(rev), "Rev")
   assays <- dplyr::bind_cols(fwd, rev)
   assays <- tibble::as_tibble(assays)
-  ampliconLength <- assays$endRev - assays$beginFwd + 1
+  ampliconLength <- assays$endRev - assays$startFwd + 1
   ampliconLength <- as.integer(ampliconLength)
   tmDifferencePrimer <- abs(assays$tmMajorityFwd - assays$tmMajorityRev)
-  begin <- assays$beginFwd
+  start <- assays$startFwd
   end <- assays$endRev
   totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
   meanIdentity <- mean(c(assays$identityFwd, assays$identityRev))
   assays <- tibble::add_column(
-    assays, begin, end, ampliconLength,
-    tmDifferencePrimer, meanIdentity, totalDegeneracy, .before = "beginFwd"
+    assays, start, end, ampliconLength,
+    tmDifferencePrimer, meanIdentity, totalDegeneracy, .before = "startFwd"
   )
   drop <- c("majorityRcFwd", "iupacRcFwd", "majorityRev", "iupacRev")
   assays <- assays[!(names(assays) %in% drop)]
@@ -242,8 +243,8 @@ getAssays <- function(primers,
   }
   probeCandidates <- purrr::map(seq_len(nrow(assays)), function(i) {
     from <- assays$endFwd[[i]] + 2
-    to <- assays$beginRev[[i]] - 2
-    probe <- probes[probes$begin >= from & probes$end <= to, ]
+    to <- assays$startRev[[i]] - 2
+    probe <- probes[probes$start >= from & probes$end <= to, ]
     probe
   })
   numberOfProbes <- purrr::map_int(probeCandidates, nrow)

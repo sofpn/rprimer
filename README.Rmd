@@ -17,28 +17,18 @@ knitr::opts_chunk$set(
 )
 ```
 
-### Introduction 
-
-The purpose of rprimer is to design (RT)-(q/dd)PCR assays from multiple DNA 
-sequence alignments. 
-
-In this document, I demonstrate how to use rprimer 
-by designing an RT-(q/dd)PCR assay for detection of hepatitis E virus, which
-is a highly variable RNA virus. 
-
 ### Package overview 
 
-The assay design workflow is based on the following functions: 
+rprimer provides functions for designing (RT)-(q/dd)PCR assays from 
+multiple DNA sequence alignments. The design process is built on three functions: 
 
-* `getAlignmentProfile()`
-* `getAlignmentProperties()`
+* `getConsensusProfile()`
 * `getOligos()`
 * `getAssays()`
 
 ### Installation
 
-You can install the development version of rprimer 
-from [GitHub](https://github.com/) with:
+You can install rprimer from [GitHub](https://github.com/) with:
 
   ``` r
 # install.packages("devtools")
@@ -53,14 +43,16 @@ library(magrittr) ## Required for the pipe operator
 library(Biostrings) ## Required to import alignments 
 ```
 
+### Demonstration 
+
+Below, I demonstrate how to use rprimer by designing an RT-(q/d)PCR assay for detection of hepatitis E virus, which is a highly variable RNA virus. 
+
 ### To start
 
-The first step is to import an alignment with target sequences of interest and 
-mask positions with high gap frequency. Previously 
-existing functionality from the Biostrings-package can be used for this part. 
+The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings can be used for this part. 
 
 The file "example_alignment.txt" is provided with the rprimer package
-and contains 100 hepatitis E virus sequences. I use it in the example below: 
+and contains 100 hepatitis E virus sequences. 
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -71,63 +63,46 @@ myAlignment <- infile %>%
 ## Mask positions with at least 50 % gaps 
 ```
 
-### Step 1: `getAlignmentProfile()` 
+### Step 1: `getConsensusProfile()` 
 
-`getAlignmentProfile()` takes a `Biostrings::DNAMultipleAlignment` object as 
-input and returns an `RprimerProfile` object, which contains a numeric matrix 
-that holds the proportion of each nucleotide at each position in the alignment.
-The function is a wrapper around `Biostrings::consensusMatrix()`.
+`getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and retrieves the information needed for the design process. 
+
+All nucleotides with a frequency higher than the `iupacThreshold` will be included in the IUPAC consensus base. Hence, oligos generated from an object with a low `iupacThreshold` will contain more degenerate bases than those generated with a high.
 
 ```{r}
-myAlignmentProfile <- getAlignmentProfile(myAlignment)
-rpGetData(myAlignmentProfile)[ , 1:10] ## View the first 10 bases 
+ myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
 ```
 
-The object can be visualized using `rpPlot()`. 
-The `rc` option regulates whether it
-should be displayed as a reverse complement or not. 
+The ougput can be visualised using `plotConsensusProfile()`.
+
+```{r}
+plotConsensusProfile(myConsensusProfile)
+```
+
+Moreover, the nucleotide distribution can be visualized using `plotNucleotides()`. The `rc` option regulates whether the sequence should be displayed as a reverse complement or not. 
 
 ```{r, fig.align="center", fig.width=6, fig.height=4}
-rpPlot(myAlignmentProfile[, 1:30], rc = FALSE) ## Plot the first 30 bases 
+plotNucleotides(myConsensusProfile, from = 1, to = 30, rc = FALSE) ## Plot the first 30 bases 
 ```
 
-### Step 2: `getAlignmentProperties()`
+### Step 2: `getOligos()`
 
-`getAlignmentProperties()` takes an `RprimerProfile`-object as input and 
-returns an `RprimerProperties`-object with information about majority and IUPAC
-consensus base at each position, together with gap frequency, 
-nucleotide identity and Shannon entropy. All 
-nucleotides that occurs with a frequency higher than the `iupacThreshold` 
-will be included in the IUPAC consensus base. Hence, for downstream oligo 
-design, a low `iupacThreshold` will generate oligos with 
-more degenerate bases than a high `iupacThreshold`. 
-
-```{r}
-myAlignmentProperties <- getAlignmentProperties(myAlignmentProfile, iupacThreshold = 0.05)
-head(myAlignmentProperties)
-```
-The object can be visualised with `rpPlot()`. 
-
-### Step 3: `getOligos()`
-
-`getOligos()` takes an `RprimerProperties` object as input and searches 
-for oligos based on the following constraints: 
+`getOligos()` searches for oligos from the following constraints: 
 
 * `maxGapFrequency` Maximum gap frequency, defaults to `0.1`. 
 * `length` Oligo length, defaults to `18:22`.
 * `maxDegeneracy` Maximum number of degenerate variants of each oligo, 
 defaults to `4`. 
-* `gcClamp` If oligos must have a GC-clamp to be considered as valid
+* `gcClamp` If oligos must have a GC-clamp 
 (recommended for primers), defaults to `TRUE`. 
 * `avoid3endRuns` If oligos with more than two runs of the same nucleotide at 
-the terminal 3' end should be excluded (recommended for primers), 
+the terminal 3' end should be avodied (recommended for primers), 
 defaults to `TRUE`.
 * `avoid5endG` If oligos with a G at the terminal 5' end should be avoided 
 (recommended for probes), defaults to `FALSE`.
 * `minEndIdentity` Optional. Minimum allowed identity at the 3' end 
 (i.e. the last five bases). E.g., if set to `1`, only oligos with complete 
-target conservation at the 3' end will be considered, and hence no wobble 
-bases will be present at the 3' ends. 
+target conservation at the 3' end will be considered.
 * `gcRange` GC-content-range, defaults to `c(0.45, 0.55)`.
 * `tmRange` Melting temperature (Tm) range, defaults to `c(50, 65)`. 
 Tm is calculated using the nearest-neighbor method. See `?rprimer::getOligos` 
@@ -146,15 +121,16 @@ In addition, `get_oligos()` avoids:
 (e.g. "TATATATA")
 * Oligos with more than four consecutive runs of the same nucleotide 
 (e.g. "AAAAA")
-* Oligos that are duplicated (to prevent binding at several places on the genome)
+* Oligos that are duplicated 
+(to prevent binding at several places on the genome)
+
+An error message will return if no oligos are found. 
 
 Below, I want to design both primers and probes. I use somewhat different 
 settings for the two oligo types.
 
-An error message will return if no oligos are found. 
-
 ``` {r}
-myPrimers <- getOligos(myAlignmentProperties,
+myPrimers <- getOligos(myConsensusProfile,
                        length = 18:22,
                        maxGapFrequency = 0.05,
                        maxDegeneracy = 4,
@@ -166,7 +142,7 @@ myPrimers <- getOligos(myAlignmentProperties,
                        tmRange = c(50, 65),
                        showAllVariants = TRUE)
 
-myProbes <-  getOligos(myAlignmentProperties,
+myProbes <-  getOligos(myConsensusProfile,
                        length = 16:22,
                        maxGapFrequency = 0.05,
                        maxDegeneracy = 4,
@@ -180,34 +156,36 @@ myProbes <-  getOligos(myAlignmentProperties,
 ```
 
 ### Step 4: `getAssays()`
+
 `getAssays()` finds pairs of forward and reverse primers and combines them with
-probes (if selected). It takes `RprimerOligo` objects as input and returns an
-`RprimerAssay` object. 
+probes (if selected). 
 
 Assays are designed from the following constraints: 
 
-  * `length` Amplicon length, defaults to `65:120`.
-  * `maxTmDifferencePrimers` Maximum Tm difference between the two primers 
+* `length` Amplicon length, defaults to `65:120`.
+* `maxTmDifferencePrimers` Maximum Tm difference between the two primers 
   (absolute value, calculated for majority primers), defaults to `2`.
-  * `tmDifferenceProbes` Acceptable Tm difference between the primers 
+* `tmDifferenceProbes` Acceptable Tm difference between the primers 
   (average Tm of the primer pair) and probe, defaults to `c(0, 20)`. 
   The Tm-difference is calculated by subtracting the Tm of the probe with the 
   average Tm of the (majority) primer pair. Thus, a negative Tm-difference
   means that the Tm of the probe is lower than the average Tm of the
   primer pair.
 
-Candidate assays are displayed in a tibble. 
 An error message will return if no assays are found.
 
 ```{r}
-myAssays <- getAssays(primers = myPrimers, 
-                      probes = myProbes)
+myAssays <- getAssays(primers = myPrimers, probes = myProbes)
 
 ```
 
 ### Further notes 
 
 degeneracy... 
+majority 
+gap masking pitfall
+
+*To do:*
 
 ### Session info 
 

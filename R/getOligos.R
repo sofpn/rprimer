@@ -93,7 +93,7 @@
 #'
 #' \describe{
 #'   \item{type}{Type of oligo, primer or probe.}
-#'   \item{begin}{Position where the oligo begins.}
+#'   \item{start}{Position where the oligo starts.}
 #'   \item{end}{Position where the oligo ends.}
 #'   \item{length}{Length of the oligo.}
 #'   \item{majority}{Majority sequence.}
@@ -118,10 +118,10 @@
 #' }
 #'
 #' @examples
-#' data("exampleRprimerProperties")
+#' data("exampleRprimerProfile")
 #'
 #' getOligos(
-#' exampleRprimerProperties,
+#' exampleRprimerProfile,
 #' length = 18:22,
 #' maxGapFrequency = 0.1,
 #' maxDegeneracy = 4,
@@ -193,7 +193,7 @@ getOligos <- function(x,
   })
   if (nrow(allOligos) == 0L)
     stop("No oligos were found.", call. = FALSE)
-  if (showAllVariants == TRUE) {
+  if (showAllVariants) {
     allOligos <- .expandOligos(
       allOligos, concOligo = concOligo, concNa = concNa
     )
@@ -233,10 +233,10 @@ getOligos <- function(x,
 #'
 #' @noRd
 .getNmers <- function(x, n) {
-  begin <- seq_len(length(x) - n + 1)
-  end <- begin + n - 1
+  start <- seq_len(length(x) - n + 1)
+  end <- start + n - 1
   nmer <- purrr::map_chr(
-    begin, ~ paste(x[begin[[.x]]:end[[.x]]], collapse = "")
+    start, ~ paste(x[start[[.x]]:end[[.x]]], collapse = "")
   )
   nmer
 }
@@ -279,9 +279,9 @@ getOligos <- function(x,
 #'
 #' @noRd
 .countEndIdentity <- function(x, n) {
-  begin <- seq_len(length(x) - n + 1)
-  end <- begin + n - 1
-  frame <- purrr::map(begin, ~ x[begin[[.x]]:end[[.x]]])
+  start <- seq_len(length(x) - n + 1)
+  end <- start + n - 1
+  frame <- purrr::map(start, ~ x[start[[.x]]:end[[.x]]])
   endScore <- purrr::map(frame, function(x) {
     lastFive <- min(x[(length(x) - 4):length(x)])
     firstFive <- min(x[seq_len(5)])
@@ -338,7 +338,7 @@ getOligos <- function(x,
   majority <- .getNmers(x$majority, n = oligoLength)
   iupac <- .getNmers(x$iupac, n = oligoLength)
   degeneracy <- as.integer(purrr::map_dbl(iupac, ~ .countDegeneracy(.x)))
-  begin <- seq_along(majority)
+  start <- seq_along(majority)
   end <- as.integer(seq_along(majority) + oligoLength - 1)
   length <- oligoLength
   identity <- .runningSum(x$identity, n = oligoLength)/oligoLength
@@ -348,7 +348,7 @@ getOligos <- function(x,
   gapBin <- ifelse(x$gaps > maxGapFrequency, 1L, 0L)
   gapPenalty <- .runningSum(gapBin, n = oligoLength)
   oligos <- tibble::tibble(
-    begin, end, length, majority, identity, identity3End, identity3EndRc,
+    start, end, length, majority, identity, identity3End, identity3EndRc,
     iupac, degeneracy, gapPenalty
   )
   uniqueOligos <- match(oligos$majority, unique(oligos$majority))
@@ -473,15 +473,15 @@ getOligos <- function(x,
       "'minEndIdentity' must be either 'NULL' or from 0 to 1.", call. = FALSE
     )
   }
-  if (gcClamp == TRUE) {
+  if (gcClamp) {
     x$majority <- .getOligosWithGcClamp(x$majority)
     x$majorityRc <- .getOligosWithGcClamp(x$majorityRc)
   }
-  if (avoid5EndG == TRUE) {
+  if (avoid5EndG) {
     x$majority[grepl("^G", x$majority)] <- NA
     x$majorityRc[grepl("^G", x$majorityRc)] <- NA
   }
-  if (avoid3EndRuns == TRUE) {
+  if (avoid3EndRuns) {
     x$majority[grepl("([A-Z])\\1\\1$", x$majority)] <- NA
     x$majorityRc[grepl("([A-Z])\\1\\1$", x$majorityRc)] <- NA
   }
@@ -592,15 +592,6 @@ getOligos <- function(x,
   }
 }
 
-#' Initiation of DNA sequences for Tm calculation
-#'
-#' @param x One or more DNA sequences (a character vector).
-#'
-#' @return The initiaion values for x.
-#'
-#' @keywords internal
-#'
-#' @noRd
 .init3End <- function(x) {
   if (grepl("(T|A)$", x)) {
     c(H = 2.3 * 1000, S = 4.1)
@@ -609,7 +600,6 @@ getOligos <- function(x,
   }
 }
 
-#' @describeIn .init3End
 .init5End <- function(x) {
   if (grepl("^(T|A)", x)) {
     c(H = 2.3 * 1000, S = 4.1)

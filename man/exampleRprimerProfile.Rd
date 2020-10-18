@@ -3,7 +3,7 @@
 \docType{data}
 \name{exampleRprimerProfile}
 \alias{exampleRprimerProfile}
-\title{A sequence profile from hepatitis E virus sequences}
+\title{Consensus profile of an alignment of hepatitis E virus sequences}
 \format{
 An \code{RprimerProfile} object.
 }
@@ -14,6 +14,6 @@ The sequences were collected from NCBI GenBank.
 data("exampleRprimerProfile")
 }
 \description{
-A sequence profile from hepatitis E virus sequences
+Consensus profile of an alignment of hepatitis E virus sequences
 }
 \keyword{datasets}

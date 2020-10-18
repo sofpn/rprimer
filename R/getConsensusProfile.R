@@ -1,27 +1,37 @@
-## To do: make S4 class # MAKE method instead?
-
-#' Get alignment properties
+#' Get sequence information from an alignment
 #'
-#' \code{getAlignmentProperties()} returns sequence information from
-#' an \code{RprimerProfile} object.
+#' \code{getConsensusProfile()} returns sequence information from an alignment
+#' of DNA sequences.
 #'
-#' @param x An \code{RprimerProfile} object.
+#' @param x
+#' A \code{Biostrings::DNAMultipleAlignment} object.
 #'
 #' @param iupacThreshold
 #' A number [0, 0.2].
 #' At each position, all nucleotides with a proportion
 #' higher than the \code{iupacThreshold} will be included in
-#' the IUPAC consensus sequence. It defaults to 0.
+#' the IUPAC consensus sequence. Defaults to 0.
 #'
 #' @return
-#' A tibble (a data frame) with the following information:
+#' An \code{RprimerProfile} object, containing the following information:
 #'
 #' \describe{
-#'   \item{position}{Position in the alignment.}
+#'   \item{position}{Position in the alignment. Note that masked columns
+#'   from the original alignment are removed, and
+#'   hence not taken into account when position is determined.}
+#'   \item{a}{Proportion of A}
+#'   \item{c}{Proportion of C}
+#'   \item{g}{Proportion of G}
+#'   \item{t}{Proportion of T}
+#'   \item{other}{Proportion of bases other than A, C, G, T}
+#'   \item{gaps}{proportion of gaps (recognized as "-" in the alignment)}
 #'   \item{majority}{Majority consensus sequence.
 #'   The most frequently occurring nucleotide.
 #'   If two or more bases occur with the same frequency,
 #'   the consensus nucleotide will be randomly selected among these bases.}
+#'   \item{identity}{Proportion of the most common nucleotide.
+#'   Gaps (-), as well as bases other than A, C, G and T are excluded from the
+#'   calculation.}
 #'   \item{iupac}{
 #'   The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
 #'   Note that the IUPAC consensus sequence only
@@ -29,47 +39,60 @@
 #'   present in the alignment will be skipped. If a position only contains
 #'   degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
 #'   position.}
-#'   \item{gaps}{Proportion of gaps. Gaps are recognized as "-".}
-#'   \item{identity}{Proportion of the most common nucleotide.
-#'    Gaps (-), as well as bases other than A, C, G and T are excluded from the
-#'    calculation.}
 #'   \item{entropy}{Shannon entropy.
-#'    Shannon entropy is a measurement of
-#'    variability.
-#'    First, for each nucleotide that occurs at a specific position,
-#'    \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
-#'    that nucleotide. Then, these values are summarized,
-#'    and multiplied by \code{-1}.
-#'    A value of \code{0} indicate no variability and a high value
-#'    indicate high variability.
-#'    Gaps (-), as well as bases other than
-#'    A, C, G and T are excluded from the calculation.}
+#'   Shannon entropy is a measurement of
+#'   variability.
+#'   First, for each nucleotide that occurs at a specific position,
+#'   \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
+#'   that nucleotide. Then, these values are summarized,
+#'   and multiplied by \code{-1}.
+#'   A value of \code{0} indicate no variability and a high value
+#'   indicate high variability.
+#'   Gaps (-), as well as bases other than
+#'   A, C, G and T are excluded from the calculation.}
 #' }
 #'
-#' @seealso getAlignmentProfile
-#'
 #' @examples
-#' data("exampleRprimerProfile")
-#' getAlignmentProperties(exampleRprimerProfile)
-#' getAlignmentProperties(exampleRprimerProfile, iupacThreshold = 0.1)
+#' data("exampleRprimerAlignment")
+#' getConsensusProfile(exampleRprimerAlignment)
+#'
+#' @seealso plotNucleotides, plotConsensusProfile
+#'
+#' @references
+#' This function is a wrapper around \code{Biostrings::consensusMatrix()}:
+#'
+#' H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
+#' Efficient manipulation of biological strings. R package version
+#' 2.57.2.
 #'
 #' @export
-getAlignmentProperties <- function(x, iupacThreshold = 0) {
-    if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object.", call. = FALSE)
+getConsensusProfile <- function(x, iupacThreshold = 0) {
+    if (!methods::is(x, "DNAMultipleAlignment")) {
+        stop("'x' must be a DNAMultipleAlignment object.")
     }
-    x <- rpGetData(x) ### Better getter!
+    x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
+    x <- x[, colSums(!is.na(x)) > 0]
+    colnames(x) <- seq_len(ncol(x))
+    x <- x[(rownames(x) != "+" & rownames(x) != "."), ]
+    bases <- c("A", "C", "G", "T", "-")
+    other <- colSums(x[!rownames(x) %in% bases, ])
+    x <- x[rownames(x) %in% bases, ]
+    x <- rbind(x, other)
     position <- seq_len(ncol(x))
+    a <- unname(x["A", ])
+    c <- unname(x["C", ])
+    g <- unname(x["G", ])
+    t <- unname(x["T", ])
+    other <- unname(x["other", ])
+    gaps <- unname(x["-", ])
     majority <- .majorityConsensus(x)
-    iupac <- .iupacConsensus(x, threshold = iupacThreshold)
-    gaps <- .gapFrequency(x)
     identity <- .nucleotideIdentity(x)
+    iupac <- .iupacConsensus(x, threshold = iupacThreshold)
     entropy <- .shannonEntropy(x)
-    properties <- tibble::tibble(
-        position, majority, iupac, gaps, identity, entropy
+    tibble::tibble(
+        position, a, c, g, t, other, gaps, majority, identity, iupac, entropy
     )
-    properties <- .roundDfDbl(properties)
-    properties
+    # RprimerProfile(####) # extend the vector class!
 }
 
 # Helpers =====================================================================
@@ -88,6 +111,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     x[dbls] <- round(x[dbls], 2)
     x
 }
+
 
 #' Majority consensus sequence
 #'
@@ -139,7 +163,7 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     x <- unlist(strsplit(x, split = ","), use.names = FALSE)
     x <- x[order(x)]
     x <- unique(x)
-    bases <- c("A", "C", "G", "T", "-", ".")
+    bases <- c("A", "C", "G", "T", "-")
     match <- x %in% bases
     x <- x[!(match == FALSE)]
     x <- paste(x, collapse = ",")
@@ -186,25 +210,6 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     consensus
 }
 
-#' Gap frequency
-#'
-#' @param x A numeric matrix.
-#'
-#' @return The gap frequency (a numeric vector).
-#'
-#' @keywords internal
-#'
-#' @noRd
-.gapFrequency <- function(x) {
-    if ("-" %in% rownames(x)) {
-        gaps <- x[rownames(x) == "-", ]
-        gaps <- unname(gaps)
-    } else {
-        gaps <- rep(0, ncol(x))
-    }
-    gaps
-}
-
 #' Nucleotide identity
 #'
 #' @param x A numeric matrix.
@@ -237,12 +242,11 @@ getAlignmentProperties <- function(x, iupacThreshold = 0) {
     bases <- c("A", "C", "G", "T")
     s <- x[rownames(x) %in% bases, ]
     s <- apply(s, 2, function(x) x / sum(x))
-    entropy <- apply(s, 2, function(x) {
-        ifelse(x == 0, 0, x * log2(x))
-    })
+    entropy <- apply(s, 2, function(x) ifelse(x == 0, 0, x * log2(x)))
     entropy <- -colSums(entropy)
     entropy <- unname(entropy)
     entropy <- abs(entropy)
     entropy[is.na(entropy)] <- 0
     entropy
 }
+

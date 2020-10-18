@@ -88,7 +88,7 @@ If \code{showAllVariants == FALSE}:
 
 \describe{
   \item{type}{Type of oligo, primer or probe.}
-  \item{begin}{Position where the oligo begins.}
+  \item{start}{Position where the oligo starts.}
   \item{end}{Position where the oligo ends.}
   \item{length}{Length of the oligo.}
   \item{majority}{Majority sequence.}
@@ -130,10 +130,10 @@ places in the target. These checks are based on the majority oligos.
 }
 
 \examples{
-data("exampleRprimerProperties")
+data("exampleRprimerProfile")
 
 getOligos(
-exampleRprimerProperties,
+exampleRprimerProfile,
 length = 18:22,
 maxGapFrequency = 0.1,
 maxDegeneracy = 4,
