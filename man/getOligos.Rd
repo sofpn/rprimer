@@ -25,38 +25,36 @@ getOligos(
 
 \item{length}{Oligo length. The minimum allowed
 value is 14 and the maximum allowed value is 30.
-It defaults to \code{18:22}.}
+Defaults to \code{18:22}.}
 
 \item{maxGapFrequency}{Maximum allowed gap frequency.
-A number [0, 1]. It defaults to 0.1.}
+A number [0, 1]. Defaults to 0.1.}
 
-\item{maxDegeneracy}{Maximum number of variants. A number [1, 32]. It defaults to 4.}
+\item{maxDegeneracy}{Maximum number of variants. A number [1, 32]. Defaults to 4.}
 
 \item{gcClamp}{\code{TRUE} or \code{FALSE}.
 If oligos with no GC-clamp
 should be replaced with \code{NA}
-(recommended for primers). It defaults to \code{TRUE}. A GC-clamp
+(recommended for primers). Defaults to \code{TRUE}. A GC-clamp
 is here identified as two to three G or
 C:s within the last five bases (3' end) of the oligo.}
 
 \item{avoid3EndRuns}{\code{TRUE} or \code{FALSE}.
 If oligos with more than two runs
 of the same nucleotide at the 3' end should be replaced with \code{NA}
-(recommended for primers).
-It defaults to \code{TRUE}.}
+(recommended for primers). Defaults to \code{TRUE}.}
 
 \item{avoid5EndG}{\code{TRUE} or \code{FALSE}. If oligos with G
 at the 5' end should be replaced with \code{NA}
-(recommended for probes). It defaults to \code{FALSE}.}
+(recommended for probes). Defaults to \code{FALSE}.}
 
 \item{minEndIdentity}{Optional. If specified, a number [0, 1]. The minimum allowed identity
 at the 3' end (i.e. the last five bases of the oligo).}
 
 \item{gcRange}{Accepted GC-content (proportion, not %). A numeric vector [0, 1].
-It defaults to \code{c(0.45, 0.55)}.}
+Defaults to \code{c(0.45, 0.55)}.}
 
-\item{tmRange}{Accepted Tm. A numeric vector [30, 90].
-It defaults to \code{c(55, 65)}.
+\item{tmRange}{Accepted Tm. A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
 Tm is calculated using the nearest-neighbor method,
 with the following assumptions:
 1) Oligos are not expected to be self-complementary (i.e. no symmetry

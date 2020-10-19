@@ -15,18 +15,18 @@ higher than the \code{iupacThreshold} will be included in
 the IUPAC consensus sequence. Defaults to 0.}
 }
 \value{
-An \code{RprimerProfile} object, containing the following information:
+An \code{RprimerProfile} object, which contains the following information:
 
 \describe{
   \item{position}{Position in the alignment. Note that masked columns
   from the original alignment are removed, and
   hence not taken into account when position is determined.}
-  \item{a}{Proportion of A}
-  \item{c}{Proportion of C}
-  \item{g}{Proportion of G}
-  \item{t}{Proportion of T}
-  \item{other}{Proportion of bases other than A, C, G, T}
-  \item{gaps}{proportion of gaps (recognized as "-" in the alignment)}
+  \item{a}{Proportion of A.}
+  \item{c}{Proportion of C.}
+  \item{g}{Proportion of G.}
+  \item{t}{Proportion of T.}
+  \item{other}{Proportion of bases other than A, C, G, T.}
+  \item{gaps}{proportion of gaps (recognized as "-" in the alignment).}
   \item{majority}{Majority consensus sequence.
   The most frequently occurring nucleotide.
   If two or more bases occur with the same frequency,
@@ -69,7 +69,4 @@ This function is a wrapper around \code{Biostrings::consensusMatrix()}:
 H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
 Efficient manipulation of biological strings. R package version
 2.57.2.
-}
-\seealso{
-plotNucleotides, plotConsensusProfile
 }

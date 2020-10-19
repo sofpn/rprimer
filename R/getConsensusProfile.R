@@ -13,18 +13,18 @@
 #' the IUPAC consensus sequence. Defaults to 0.
 #'
 #' @return
-#' An \code{RprimerProfile} object, containing the following information:
+#' An \code{RprimerProfile} object, which contains the following information:
 #'
 #' \describe{
 #'   \item{position}{Position in the alignment. Note that masked columns
 #'   from the original alignment are removed, and
 #'   hence not taken into account when position is determined.}
-#'   \item{a}{Proportion of A}
-#'   \item{c}{Proportion of C}
-#'   \item{g}{Proportion of G}
-#'   \item{t}{Proportion of T}
-#'   \item{other}{Proportion of bases other than A, C, G, T}
-#'   \item{gaps}{proportion of gaps (recognized as "-" in the alignment)}
+#'   \item{a}{Proportion of A.}
+#'   \item{c}{Proportion of C.}
+#'   \item{g}{Proportion of G.}
+#'   \item{t}{Proportion of T.}
+#'   \item{other}{Proportion of bases other than A, C, G, T.}
+#'   \item{gaps}{proportion of gaps (recognized as "-" in the alignment).}
 #'   \item{majority}{Majority consensus sequence.
 #'   The most frequently occurring nucleotide.
 #'   If two or more bases occur with the same frequency,
@@ -55,8 +55,6 @@
 #' @examples
 #' data("exampleRprimerAlignment")
 #' getConsensusProfile(exampleRprimerAlignment)
-#'
-#' @seealso plotNucleotides, plotConsensusProfile
 #'
 #' @references
 #' This function is a wrapper around \code{Biostrings::consensusMatrix()}:
@@ -89,10 +87,10 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     identity <- .nucleotideIdentity(x)
     iupac <- .iupacConsensus(x, threshold = iupacThreshold)
     entropy <- .shannonEntropy(x)
-    tibble::tibble(
+    df <- data.frame(
         position, a, c, g, t, other, gaps, majority, identity, iupac, entropy
     )
-    # RprimerProfile(####) # extend the vector class!
+    RprimerProfile(df)
 }
 
 # Helpers =====================================================================
@@ -111,7 +109,6 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     x[dbls] <- round(x[dbls], 2)
     x
 }
-
 
 #' Majority consensus sequence
 #'
@@ -179,7 +176,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' @param x A numeric matrix.
 #'
 #' @param threshold
-#' Optional. A number (0, 0.2]
+#' Optional. A number [0, 0.2]
 #' At each position, all nucleotides with a proportion
 #' higher or equal to the threshold will be included in
 #' the IUPAC consensus sequence. The default is 0.
