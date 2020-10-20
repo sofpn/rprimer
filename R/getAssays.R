@@ -1,5 +1,3 @@
-## exempel ## tester ## s4 class ## method
-
 #' Get (RT)-PCR assays from oligos
 #'
 #' \code{getAssays()} combines forward and reverse primers
@@ -21,7 +19,7 @@
 #' Note that the Tm-difference is calculated from the majority primers, and
 #' may thus be misleading for degenerate (IUPAC) primers.
 #'
-#' @param tmDifferenceProbes
+#' @param tmDifferencePrimersProbe
 #' Acceptable Tm difference between the primers (average Tm of the
 #' primer pair) and probe. A numeric vector [-20, 20],
 #' defaults to \code{c(0, 20)}.
@@ -34,10 +32,11 @@
 #' may thus be misleading for degenerate (IUPAC) oligos.
 #'
 #' @return
-#' A tibble (a data frame) with all candidate
-#' assays. An error message will return if no assays are found.
+#' An \code{RprimerAssay} object.
+#' An error message will return if no assays are found.
 #'
-#' The tibble contains the following information:
+#' The object contains the following information:
+#'
 #' \describe{
 #'   \item{start}{Position where the assay starts.}
 #'   \item{end}{Position where the assay ends.}
@@ -58,7 +57,7 @@
 #'   (majority sequence).}
 #'   \item{iupacFwd}{IUPAC sequence (i.e. with degenerate bases)
 #'   of the forward primer.}
-#'   \item{degeneracyFwd}{Number of variants of the forward primer.
+#'   \item{degeneracyFwd}{Number of variants of the forward primer}.
 #'   \item{startRev}{Position where the reverse primer starts.}
 #'   \item{endRev}{Position where the reverse primer ends.}
 #'   \item{lengthRev}{Length of the reverse primer.}
@@ -92,7 +91,7 @@
 #' If a probe is used, the following columns are also included:
 #'
 #' \describe{
-#'   \item{Tm_difference_primer_probe}{Difference in Tm between the average
+#'   \item{tmDifferencePrimerProbe}{Difference in Tm between the average
 #'   Tm of the primer pair and the probe, majority sequences.}
 #'   \item{startPr}{Position where the probe starts.}
 #'   \item{endPr}{Position where the probe ends.}
@@ -111,7 +110,7 @@
 #' }
 #'
 #' If the option \code{showAllVariants == TRUE} was used for probe design
-#' in \code{get_oligos()}, the following columns are also added:
+#' in \code{getOligos()}, the following data are also added:
 #'
 #' \describe{
 #'   \item{allPr}{Lists with all sequence variants of the probe.}
@@ -121,26 +120,42 @@
 #'   the probe.}
 #' }
 #'
-#'
 #' @seealso getOligos
 #'
+#' @examples
+#' data("exampleRprimerOligo")
+#' ## Get assays with only primers, using default settings
+#' getAssays(exampleRprimerOligo)
+#' ## Get assays with primers and probe, using default settings
+#' getAssays(primers = exampleRprimerOligo, probes = exampleRprimerOligo)
 #' @export
 getAssays <- function(primers,
                       probes = NULL,
                       length = 65:120,
                       maxTmDifferencePrimers = 2,
-                      tmDifferenceProbes = c(0, 20)
-                      ) {
-  assays <- .combinePrimers(
-    primers = primers, length = length,
-    maxTmDifferencePrimers = maxTmDifferencePrimers
-  )
-  if (!is.null(probes)) {
-    assays <- .addProbes(
-      assays = assays, probes = probes, tmDifferenceProbes = tmDifferenceProbes
+                      tmDifferencePrimersProbe = c(0, 20)) {
+    if (!methods::is(primers, "RprimerOligo")) {
+        stop("'x' must be an RprimerProfile object.")
+    }
+    if (!is.null(probes)) {
+        if (!methods::is(primers, "RprimerOligo")) {
+            stop("'x' must be an RprimerProfile object.")
+        }
+    }
+    primers <- as.data.frame(primers)
+    assays <- .combinePrimers(
+        primers = primers, length = length,
+        maxTmDifferencePrimers = maxTmDifferencePrimers
     )
-  }
-  assays
+    if (!is.null(probes)) {
+        probes <- as.data.frame(probes)
+        assays <- .addProbes(
+            assays = assays, probes = probes,
+            tmDifferencePrimersProbe = tmDifferencePrimersProbe
+        )
+    }
+    assays <- .roundDfDbl(assays)
+    RprimerAssay(assays)
 }
 
 # Helpers =====================================================================
@@ -158,10 +173,10 @@ getAssays <- function(primers,
 #'
 #' @noRd
 .gContent <- function(x) {
-  x <- .splitSequence(x)
-  gCount <- length(which(x == "G"))
-  totalCount <- length(which(x == "A" | x == "C" | x == "G" | x == "T"))
-  gCount / totalCount
+    x <- .splitSequence(x)
+    gCount <- length(which(x == "G"))
+    totalCount <- length(which(x == "A" | x == "C" | x == "G" | x == "T"))
+    gCount / totalCount
 }
 
 #' Combine primers to assays
@@ -173,48 +188,56 @@ getAssays <- function(primers,
 #' @noRd
 .combinePrimers <- function(primers,
                             length = 65:120,
-                            maxTmDifferencePrimers = 2
-                            ) {
-  if (!(maxTmDifferencePrimers > 0 && maxTmDifferencePrimers < 30)) {
-    stop("'maxTmDifferencePrimers' must be from 0 to 30.", call. = FALSE)
-  }
-  if (!(min(length) >= 40 && max(length) <= 5000)) {
-    stop("'length' must be from 40 to 5000.", call. = FALSE)
-  }
-  fwd <- primers[!is.na(primers$majority), ]
-  rev <- primers[!is.na(primers$majorityRc), ]
-  combinations <- expand.grid(
-    fwd$majority, rev$majorityRc, stringsAsFactors = FALSE
-  )
-  names(combinations) <- c("fwdMajority", "revMajority")
-  indexFwd <- match(combinations$fwdMajority, primers$majority)
-  indexRev <- match(combinations$revMajority, primers$majorityRc)
-  fwd <- primers[indexFwd, ]
-  rev <- primers[indexRev, ]
-  colnames(fwd) <- paste0(colnames(fwd), "Fwd")
-  colnames(rev) <- paste0(colnames(rev), "Rev")
-  assays <- dplyr::bind_cols(fwd, rev)
-  assays <- tibble::as_tibble(assays)
-  ampliconLength <- assays$endRev - assays$startFwd + 1
-  ampliconLength <- as.integer(ampliconLength)
-  tmDifferencePrimer <- abs(assays$tmMajorityFwd - assays$tmMajorityRev)
-  start <- assays$startFwd
-  end <- assays$endRev
-  totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
-  meanIdentity <- mean(c(assays$identityFwd, assays$identityRev))
-  assays <- tibble::add_column(
-    assays, start, end, ampliconLength,
-    tmDifferencePrimer, meanIdentity, totalDegeneracy, .before = "startFwd"
-  )
-  drop <- c("majorityRcFwd", "iupacRcFwd", "majorityRev", "iupacRev")
-  assays <- assays[!(names(assays) %in% drop)]
-  names(assays)[grep("Rc", names(assays))] <- c("majorityRev", "iupacRev")
-  assays <- assays[assays$ampliconLength >= min(length), ]
-  assays <- assays[assays$ampliconLength <= max(length), ]
-  assays <- assays[assays$tmDifferencePrimer <= maxTmDifferencePrimers, ]
-  if (nrow(assays) == 0L)
-    stop("No assays were found.", call. = FALSE)
-  assays
+                            maxTmDifferencePrimers = 2) {
+    if (!(maxTmDifferencePrimers > 0 && maxTmDifferencePrimers < 30)) {
+        stop("'maxTmDifferencePrimers' must be from 0 to 30.", call. = FALSE)
+    }
+    if (!(min(length) >= 40 && max(length) <= 5000)) {
+        stop("'length' must be from 40 to 5000.", call. = FALSE)
+    }
+    fwd <- primers[!is.na(primers$majority), ]
+    rev <- primers[!is.na(primers$majorityRc), ]
+    combinations <- expand.grid(
+        fwd$majority, rev$majorityRc,
+        stringsAsFactors = FALSE
+    )
+    names(combinations) <- c("fwdMajority", "revMajority")
+    indexFwd <- match(combinations$fwdMajority, primers$majority)
+    indexRev <- match(combinations$revMajority, primers$majorityRc)
+    fwd <- primers[indexFwd, ]
+    rev <- primers[indexRev, ]
+    names(fwd) <- paste0(names(fwd), "Fwd")
+    names(rev) <- paste0(names(rev), "Rev")
+    assays <- dplyr::bind_cols(fwd, rev)
+    assays <- tibble::tibble(assays)
+    ampliconLength <- assays$endRev - assays$startFwd + 1
+    ampliconLength <- as.integer(ampliconLength)
+    tmDifferencePrimer <- abs(assays$tmMajorityFwd - assays$tmMajorityRev)
+    start <- assays$startFwd
+    end <- assays$endRev
+    totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
+    meanIdentity <- mean(c(assays$identityFwd, assays$identityRev))
+    assays <- tibble::add_column(
+        assays, start, end, ampliconLength,
+        tmDifferencePrimer, meanIdentity, totalDegeneracy,
+        .before = "startFwd"
+    )
+    drop <- c("majorityRcFwd", "iupacRcFwd", "majorityRev", "iupacRev")
+    assays <- assays[!(names(assays) %in% drop)]
+    if (any(grep("all", names(assays)))) {
+        drop <- c("allRcFwd", "allRev")
+        assays <- assays[!(names(assays) %in% drop)]
+    }
+    names(assays)[grep("Rc", names(assays))] <- gsub(
+        "Rc", "", names(assays)[grep("Rc", names(assays))]
+    )
+    assays <- assays[assays$ampliconLength >= min(length), ]
+    assays <- assays[assays$ampliconLength <= max(length), ]
+    assays <- assays[assays$tmDifferencePrimer <= maxTmDifferencePrimers, ]
+    if (nrow(assays) == 0L) {
+          stop("No assays were found.", call. = FALSE)
+      }
+    assays
 }
 
 #' Add probes to (RT)-PCR assays
@@ -232,70 +255,77 @@ getAssays <- function(primers,
 #' @keywords internal
 #'
 #' @noRd
-.addProbes <- function(assays, probes, tmDifferenceProbes = c(0, 20)) {
-  if (!(is.numeric(tmDifferenceProbes) &&
-    min(tmDifferenceProbes) >= -20 && max(tmDifferenceProbes) <= 20)
-  ) {
-    stop(
-      "'tm_difference' must be from -20 to 20, e.g. c(-1, 5).",
-      call. = FALSE
-    )
-  }
-  probeCandidates <- purrr::map(seq_len(nrow(assays)), function(i) {
-    from <- assays$endFwd[[i]] + 2
-    to <- assays$startRev[[i]] - 2
-    probe <- probes[probes$start >= from & probes$end <= to, ]
-    probe
-  })
-  numberOfProbes <- purrr::map_int(probeCandidates, nrow)
-  rowsToSelect <- purrr::map(
-    seq_along(numberOfProbes), ~rep(.x, numberOfProbes[[.x]])
-  )
-  rowsToSelect <- unlist(rowsToSelect, use.names = FALSE)
-  assays <- assays[rowsToSelect, ]
-  if (nrow(assays) == 0L) {
-    stop("No assays with probes could be generated.", call. = FALSE)
-  }
-  probeCandidates <- do.call("rbind", probeCandidates)
-  sense <- purrr::map2_chr(
-    probeCandidates$majority, probeCandidates$majorityRc, function(x, y) {
-      if (is.na(x)) sense <- "neg"
-      if (is.na(y)) sense <- "pos"
-      if (!is.na(x) && !is.na(y)) {
-        gContentPos <- .gContent(x)
-        gContentNeg <- .gContent(y)
-        sense <- ifelse(gContentPos <= gContentNeg, "pos", "neg")
-      }
-      sense
-  })
-  probeCandidates$majority <- ifelse(
-    sense == "pos", probeCandidates$majority, probeCandidates$majorityRc
-  )
-  probeCandidates$iupac <- ifelse(
-    sense == "pos", probeCandidates$iupac, probeCandidates$iupacRc
-  )
-  probeCandidates <- tibble::add_column(probeCandidates, sense)
-  drop <- c("majorityRc", "iupacRc")
-  probeCandidates <- probeCandidates[!names(probeCandidates) %in% drop]
-  names(probeCandidates) <- paste0(names(probeCandidates), "Pr")
-  assays <- dplyr::bind_cols(assays, probeCandidates)
-  assays$meanIdentity <- mean(
-    c(assays$identityFwd, assays$identityRev, assays$identityPr)
-  )
-  assays$totalDegeneracy <- assays$totalDegeneracy + probeCandidates$degeneracyPr
-  tmDifferencePrimerProbe <- purrr::map_dbl(
-    seq_len(nrow(assays)), function(x) {
-      assays$tmMajorityPr[[x]] - mean(
-        assays$tmMajorityFwd[[x]], assays$tmMajorityRev[[x]]
-      )
+.addProbes <- function(assays, probes, tmDifferencePrimersProbe = c(0, 20)) {
+    if (!(is.numeric(tmDifferencePrimersProbe) &&
+        min(tmDifferencePrimersProbe) >= -20 && max(tmDifferencePrimersProbe) <= 20)
+    ) {
+        stop(
+            "'tm_difference' must be from -20 to 20, e.g. c(-1, 5).",
+            call. = FALSE
+        )
+    }
+    probeCandidates <- purrr::map(seq_len(nrow(assays)), function(i) {
+        from <- assays$endFwd[[i]] + 2
+        to <- assays$startRev[[i]] - 2
+        probe <- probes[probes$start >= from & probes$end <= to, ]
+        probe
     })
-  assays <- tibble::add_column(
-    assays, tmDifferencePrimerProbe, .after = "tmDifferencePrimer"
-  )
-  assays <- assays[assays$tmDifferencePrimerProbe >= min(tmDifferenceProbes), ]
-  assays <- assays[assays$tmDifferencePrimerProbe <= max(tmDifferenceProbes), ]
-  if (nrow(assays) == 0L) {
-    stop("No assays with probes could be generated.", call. = FALSE)
-  }
-  assays
+    numberOfProbes <- purrr::map_int(probeCandidates, nrow)
+    rowsToSelect <- purrr::map(
+        seq_along(numberOfProbes), ~ rep(.x, numberOfProbes[[.x]])
+    )
+    rowsToSelect <- unlist(rowsToSelect, use.names = FALSE)
+    assays <- assays[rowsToSelect, ]
+    if (nrow(assays) == 0L) {
+        stop("No assays with probes could be generated.", call. = FALSE)
+    }
+    probeCandidates <- do.call("rbind", probeCandidates)
+    sense <- purrr::map2_chr(
+        probeCandidates$majority, probeCandidates$majorityRc, function(x, y) {
+            if (is.na(x)) sense <- "neg"
+            if (is.na(y)) sense <- "pos"
+            if (!is.na(x) && !is.na(y)) {
+                gContentPos <- .gContent(x)
+                gContentNeg <- .gContent(y)
+                sense <- ifelse(gContentPos <= gContentNeg, "pos", "neg")
+            }
+            sense
+        }
+    )
+    probeCandidates$majority <- ifelse(
+        sense == "pos", probeCandidates$majority, probeCandidates$majorityRc
+    )
+    probeCandidates$iupac <- ifelse(
+        sense == "pos", probeCandidates$iupac, probeCandidates$iupacRc
+    )
+    probeCandidates <- tibble::add_column(probeCandidates, sense)
+    drop <- c("majorityRc", "iupacRc")
+    probeCandidates <- probeCandidates[!names(probeCandidates) %in% drop]
+    names(probeCandidates) <- paste0(names(probeCandidates), "Pr")
+    assays <- dplyr::bind_cols(assays, probeCandidates)
+    assays$meanIdentity <- mean(
+        c(assays$identityFwd, assays$identityRev, assays$identityPr)
+    )
+    assays$totalDegeneracy <- assays$totalDegeneracy + probeCandidates$degeneracyPr
+    tmDifferencePrimerProbe <- purrr::map_dbl(
+        seq_len(nrow(assays)), function(x) {
+            assays$tmMajorityPr[[x]] - mean(
+                assays$tmMajorityFwd[[x]], assays$tmMajorityRev[[x]]
+            )
+        }
+    )
+    assays <- tibble::add_column(
+        assays, tmDifferencePrimerProbe,
+        .after = "tmDifferencePrimer"
+    )
+    assays <- assays[
+        assays$tmDifferencePrimerProbe >= min(tmDifferencePrimersProbe),
+    ]
+    assays <- assays[
+        assays$tmDifferencePrimerProbe <= max(tmDifferencePrimersProbe),
+    ]
+    if (nrow(assays) == 0L) {
+        stop("No assays with probes could be generated.", call. = FALSE)
+    }
+    assays
 }

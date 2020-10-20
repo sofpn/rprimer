@@ -4,6 +4,7 @@
 #'
 #' @name RprimerProfile-class
 #'
+#' @description
 #' \code{RprimerProfile} extends the \code{S4Vectors::DataFrame} class,
 #' without any additional slots. It has the same accessors and
 #' coercion, subsetting, and combining methods as the parent class, but has
@@ -42,29 +43,34 @@
 #'
 #' @export
 #'
+#' @examples
+#' data("exampleRprimerProfile")
+#' x <- as.data.frame(exampleRprimerProfile)
+#' RprimerProfile(x)
 #' @importFrom S4Vectors DataFrame
 RprimerProfile <- function(...,
                            row.names = NULL,
                            check.names = TRUE,
-                           stringsAsFactors
-                           ) {
-  df <- DataFrame(...,
-                  row.names = row.names,
-                  check.names = check.names,
-                  stringsAsFactors = stringsAsFactors
-                  )
-  .RprimerProfile(df)
+                           stringsAsFactors) {
+    df <- DataFrame(...,
+        row.names = row.names,
+        check.names = check.names,
+        stringsAsFactors = stringsAsFactors
+    )
+    .RprimerProfile(df)
 }
 
 # I did very simple validity checks here...
 S4Vectors::setValidity2("RprimerProfile", function(object) {
-  msg <- NULL
-#  if (names(object)[1] != "counts") {
-#    msg <- c(msg, "'counts' must be first assay")
-#  }
-  if (is.null(msg)) {
-    TRUE
-  } else msg
+    msg <- NULL
+    #  if (names(object)[1] != "counts") {
+    #    msg <- c(msg, "'counts' must be first assay")
+    #  }
+    if (is.null(msg)) {
+        TRUE
+    } else {
+        msg
+    }
 })
 
 # RprimerOligo ================================================================
@@ -73,6 +79,7 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 #'
 #' @name RprimerOligo-class
 #'
+#' @description
 #' \code{RprimerOligo} extends the \code{S4Vectors::DataFrame} class,
 #' without any additional slots. It has the same accessors and
 #' coercion, subsetting, and combining methods as the parent class, but has
@@ -113,28 +120,33 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 #'
 #' @export
 #'
+#' @examples
+#' data("exampleRprimerOligo")
+#' x <- as.data.frame(exampleRprimerOligo)
+#' RprimerOligo(x)
 #' @importFrom S4Vectors DataFrame
 RprimerOligo <- function(...,
-                           row.names = NULL,
-                           check.names = TRUE,
-                           stringsAsFactors
-) {
-  df <- DataFrame(...,
-                  row.names = row.names,
-                  check.names = check.names,
-                  stringsAsFactors = stringsAsFactors
-  )
-  .RprimerOligo(df)
+                         row.names = NULL,
+                         check.names = TRUE,
+                         stringsAsFactors) {
+    df <- DataFrame(...,
+        row.names = row.names,
+        check.names = check.names,
+        stringsAsFactors = stringsAsFactors
+    )
+    .RprimerOligo(df)
 }
 
 S4Vectors::setValidity2("RprimerOligo", function(object) {
-  msg <- NULL
-#  if (assayNames(object)[1] != "counts") {
-#    msg <- c(msg, "'counts' must be first assay")
-#  }
-  if (is.null(msg)) {
-    TRUE
-  } else msg
+    msg <- NULL
+    #  if (assayNames(object)[1] != "counts") {
+    #    msg <- c(msg, "'counts' must be first assay")
+    #  }
+    if (is.null(msg)) {
+        TRUE
+    } else {
+        msg
+    }
 })
 
 # RprimerAssay ================================================================
@@ -143,6 +155,7 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 #'
 #' @name RprimerAssay-class
 #'
+#' @description
 #' \code{RprimerAssay} extends the \code{S4Vectors::DataFrame} class,
 #' without any additional slots. It has the same accessors and
 #' coercion, subsetting, and combining methods as the parent class, but has
@@ -183,26 +196,31 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 #'
 #' @export
 #'
+#' @examples
+#' data("exampleRprimerAssay")
+#' x <- as.data.frame(exampleRprimerAssay)
+#' RprimerAssay(x)
 #' @importFrom S4Vectors DataFrame
 RprimerAssay <- function(...,
                          row.names = NULL,
                          check.names = TRUE,
-                         stringsAsFactors
-) {
-  df <- DataFrame(...,
-                  row.names = row.names,
-                  check.names = check.names,
-                  stringsAsFactors = stringsAsFactors
-  )
-  .RprimerAssay(df)
+                         stringsAsFactors) {
+    df <- DataFrame(...,
+        row.names = row.names,
+        check.names = check.names,
+        stringsAsFactors = stringsAsFactors
+    )
+    .RprimerAssay(df)
 }
 
 S4Vectors::setValidity2("RprimerAssay", function(object) {
-  msg <- NULL
-#  if (assayNames(object)[1] != "counts") {
-#    msg <- c(msg, "'counts' must be first assay")
-#  }
-  if (is.null(msg)) {
-    TRUE
-  } else msg
+    msg <- NULL
+    #  if (assayNames(object)[1] != "counts") {
+    #    msg <- c(msg, "'counts' must be first assay")
+    #  }
+    if (is.null(msg)) {
+        TRUE
+    } else {
+        msg
+    }
 })

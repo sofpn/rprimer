@@ -18,14 +18,13 @@
 #' data("exampleRprimerProfile")
 #' plotNucleotides(exampleRprimerProfile, from = 1, to = 10)
 #' ## Plot the first 10 bases
-#' plotNucleotides(exampleRprimerProfile, from =  1, to = 10, rc = TRUE)
+#' plotNucleotides(exampleRprimerProfile, from = 1, to = 10, rc = TRUE)
 #' ## As reverse complement
-#'
 #' @export
-plotNucleotides <-  function(x, from = NULL, to = NULL, rc = FALSE) {
- #   if (!methods::is(x, "RprimerProfile")) {
- #       stop("'x' must be an RprimerProfile object.", call. = FALSE)
- #   }
+plotNucleotides <- function(x, from = NULL, to = NULL, rc = FALSE) {
+    if (!methods::is(x, "RprimerProfile")) {
+        stop("'x' must be an RprimerProfile object.", call. = FALSE)
+    }
     if (!(is.logical(rc))) {
         stop("'rc' must be set to 'TRUE' or 'FALSE'.", call. = FALSE)
     }
@@ -40,6 +39,7 @@ plotNucleotides <-  function(x, from = NULL, to = NULL, rc = FALSE) {
     if (from >= to) {
         stop("'from' cannot be greater or equal to 'to'.", call. = FALSE)
     }
+    x <- as.data.frame(x)
     x <- x[x$position >= from & x$position <= to, ]
     x <- dplyr::select(x, c("a", "c", "g", "t", "other"))
     x <- t(as.matrix(x))
@@ -70,51 +70,6 @@ plotNucleotides <-  function(x, from = NULL, to = NULL, rc = FALSE) {
         .themeRprimer(showXAxis = TRUE, showLegend = TRUE)
 }
 
-#' Plot sequence conservation, GC content and gap frequency
-#'
-#' @param x An \code{RprimerProfile} object.
-#'
-#' @param shadeFrom
-#' Optional. If a particular area should be shaded, where the shade
-#' should start (an integer).
-#'
-#' @param shadeTo
-#' Optional. If a particular area should be shaded, where the shade
-#' should end (an integer).
-#'
-#' @return A plot.
-#'
-#' @export
-plotConsensusProfile <- function(x, shadeFrom = NULL, shadeTo = NULL) {
-   # if (!methods::is(x, "RprimerProfile")) {
-#        stop("'x' must be an RprimerProfile object.", call. = FALSE)
-#    }
-    if (is.null(shadeFrom) && is.null(shadeTo)) {
-        shadeFrom <- -Inf
-        shadeTo <- -Inf
-    }
-    if (is.null(shadeFrom) && !is.null(shadeTo)) {
-        shadeFrom <- 0
-    }
-    if (!is.null(shadeFrom) && is.null(shadeTo)) {
-        shadeTo <- nrow(x)
-    }
-    if (!is.null(shadeFrom) && !is.numeric(shadeFrom)) {
-        stop("'shadeFrom' must be a number.", call. = FALSE)
-    }
-    if (!is.null(shadeTo) && !is.numeric(shadeTo)) {
-        stop("'shadeTo' must be a number.", call. = FALSE)
-    }
-    patchwork::wrap_plots(
-            list(
-                .identityPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
-                .entropyPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
-                .gcPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
-                .gapPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo)
-            ),
-            ncol = 1
-        )
-}
 
 # Helpers =====================================================================
 

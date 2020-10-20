@@ -9,7 +9,7 @@ getAssays(
   probes = NULL,
   length = 65:120,
   maxTmDifferencePrimers = 2,
-  tmDifferenceProbes = c(0, 20)
+  tmDifferencePrimersProbe = c(0, 20)
 )
 }
 \arguments{
@@ -26,7 +26,7 @@ An \code{RprimerOligo} object if probes are to be used.}
 Note that the Tm-difference is calculated from the majority primers, and
 may thus be misleading for degenerate (IUPAC) primers.}
 
-\item{tmDifferenceProbes}{Acceptable Tm difference between the primers (average Tm of the
+\item{tmDifferencePrimersProbe}{Acceptable Tm difference between the primers (average Tm of the
 primer pair) and probe. A numeric vector [-20, 20],
 defaults to \code{c(0, 20)}.
 The Tm-difference is calculated by subtracting the
@@ -38,11 +38,105 @@ Note that the Tm-difference is calculated from the majority oligos, and
 may thus be misleading for degenerate (IUPAC) oligos.}
 }
 \value{
+An \code{RprimerAssay} object.
+An error message will return if no assays are found.
 
+The object contains the following information:
+
+\describe{
+  \item{start}{Position where the assay starts.}
+  \item{end}{Position where the assay ends.}
+  \item{ampliconLength}{Length of the amplicon.}
+  \item{tmDifferencePrimer}{Difference in Tm between
+  the forward and reverse primer, absolute value.}
+  \item{meanIdentity}{Average identity score of the primers
+  (and probe if selected)}.
+  \item{totalDegeneracy}{Total number of oligos in the assay.}
+  \item{startFwd}{Position where the forward primer starts.}
+  \item{endFwd}{Position where the reverse primer ends.}
+  \item{lengthFwd}{Length of the forward primer.}
+  \item{majorityFwd}{Majority sequence of the forward primer.}
+  \item{gcMajorityFwd}{GC-content of the forward primer
+  (majority sequence), proportion.}
+  \item{identityFwd}{Average identity of the forward primer.}
+  \item{tmMajorityFwd}{Tm of the forward primer
+  (majority sequence).}
+  \item{iupacFwd}{IUPAC sequence (i.e. with degenerate bases)
+  of the forward primer.}
+  \item{degeneracyFwd}{Number of variants of the forward primer}.
+  \item{startRev}{Position where the reverse primer starts.}
+  \item{endRev}{Position where the reverse primer ends.}
+  \item{lengthRev}{Length of the reverse primer.}
+  \item{majorityRev}{Majority sequence of the reverse primer.}
+  \item{gcMajorityRev}{GC-content of the reverse primer
+  (majority sequence), proportion.}
+  \item{tmMajorityRev}{Tm of the reverse primer
+  (majority sequence).}
+  \item{identityRev}{Average identity of the reverse primer.}
+  \item{iupacRev}{IUPAC sequence (i.e. with degenerate bases)
+  of the reverse primer.}
+  \item{degeneracyRev}{Number of variants of the reverse primer.}
+}
+
+If the option \code{showAllVariants == TRUE} was used for primer design
+in \code{get_oligos()}, the following columns are also added:
+
+\describe{
+  \item{allFwd}{Lists with all sequence variants of the forward primer.}
+  \item{gcAllFwd}{Lists with the GC content of all
+  sequence variants of the forward primer.}
+  \item{tmAllFwd}{Lists with the Tm of all sequence variants of
+  the reverse primer.}
+  \item{allRev}{Lists with all sequence variants of the reverse primer.}
+  \item{gcAllRev}{Lists with the GC content of all
+  sequence variants of the forward primer.}
+  \item{tmAllRev}{Lists with the Tm of all sequence variants of
+  the reverse primer.}
+}
+
+If a probe is used, the following columns are also included:
+
+\describe{
+  \item{tmDifferencePrimerProbe}{Difference in Tm between the average
+  Tm of the primer pair and the probe, majority sequences.}
+  \item{startPr}{Position where the probe starts.}
+  \item{endPr}{Position where the probe ends.}
+  \item{lengthPr}{Length of the probe.}
+  \item{majorityPr}{Majority sequence of the probe.}
+  \item{gcMajorityPr}{GC-content of the probe
+  (majority sequence), proportion.}
+  \item{tmMajorityPr}{Tm of the probe
+  (majority sequence).}
+  \item{identityPr}{Average identity of the probe.}
+  \item{iupacPr}{IUPAC sequence (i.e. with degenerate bases)
+  of the probe.}
+  \item{degeneracyPr}{Number of variants of the probe.}
+  \item{sensePr}{Sense of the probe (pos or neg). If both probes are valid,
+  the probe with the least G:s is selected.}
+}
+
+If the option \code{showAllVariants == TRUE} was used for probe design
+in \code{getOligos()}, the following data are also added:
+
+\describe{
+  \item{allPr}{Lists with all sequence variants of the probe.}
+  \item{gcAllPr}{Lists with the GC content of all
+  sequence variants of the probe.}
+  \item{tmAllPr}{Lists with the Tm of all sequence variants of
+  the probe.}
+}
 }
 \description{
 \code{getAssays()} combines forward and reverse primers
 and (if selected) probes to (RT)-PCR assays.
+}
+\examples{
+data("exampleRprimerOligo")
+## Get assays with only primers, using default settings
+getAssays(exampleRprimerOligo)
+ ## Get assays with primers and probe, using default settings
+getAssays(primers = exampleRprimerOligo, probes = exampleRprimerOligo)
+
 }
 \seealso{
 getOligos

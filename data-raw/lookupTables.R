@@ -159,14 +159,14 @@ nnLookup <- tibble::tibble(bases, dH, dS)
 gasConstant <- 1.987
 
 rprimerGlobals <- list(
-  "allBases" = allBases,
-  "dnaBases" = dnaBases,
-  "complementLookup" = complementLookup,
-  "iupacLookup" = iupacLookup,
-  "degenerateLookup" = degenerateLookup,
-  "degeneracyLookup" = degeneracyLookup,
-  "nnLookup" = nnLookup,
-  "gasConstant" = gasConstant
+    "allBases" = allBases,
+    "dnaBases" = dnaBases,
+    "complementLookup" = complementLookup,
+    "iupacLookup" = iupacLookup,
+    "degenerateLookup" = degenerateLookup,
+    "degeneracyLookup" = degeneracyLookup,
+    "nnLookup" = nnLookup,
+    "gasConstant" = gasConstant
 )
 
 usethis::use_data(

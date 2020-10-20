@@ -55,7 +55,6 @@
 #' @examples
 #' data("exampleRprimerAlignment")
 #' getConsensusProfile(exampleRprimerAlignment)
-#'
 #' @references
 #' This function is a wrapper around \code{Biostrings::consensusMatrix()}:
 #'
@@ -90,6 +89,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     df <- data.frame(
         position, a, c, g, t, other, gaps, majority, identity, iupac, entropy
     )
+    df <- .roundDfDbl(df)
     RprimerProfile(df)
 }
 
@@ -105,7 +105,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #'
 #' @noRd
 .roundDfDbl <- function(x) {
-    dbls <- purrr::map_lgl(x, ~is.double(.x))
+    dbls <- purrr::map_lgl(x, ~ is.double(.x))
     x[dbls] <- round(x[dbls], 2)
     x
 }
@@ -199,7 +199,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
         paste(rownames(x)[y > threshold], collapse = ",")
     })
     basesToInclude <- unname(basesToInclude)
-    consensus <- purrr::map_chr(basesToInclude, ~.asIUPAC(.x))
+    consensus <- purrr::map_chr(basesToInclude, ~ .asIUPAC(.x))
     if (any(is.na(consensus))) {
         warning("The consensus sequence contain NAs. \n
     Try to lower the 'threshold' value.", call. = FALSE)
@@ -246,4 +246,3 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     entropy[is.na(entropy)] <- 0
     entropy
 }
-

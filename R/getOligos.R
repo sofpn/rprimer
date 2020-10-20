@@ -1,9 +1,8 @@
 #' Get oligos
 #'
-#' \code{getOligos()} identifies oligos (primers and probes) from
-#' sequence properties.
+#' \code{getOligos()} identifies oligos (primers and probes) from sequence properties.
 #'
-#' @param x An \code{RprimerProperties} object.
+#' @param x An \code{RprimerProfile} object.
 #'
 #' @param length
 #' Oligo length. The minimum allowed
@@ -82,10 +81,10 @@
 #' places in the target. These checks are based on the majority oligos.
 #'
 #' @return
-#' A tibble (a data frame) with all oligo
-#' candidates. An error message will return if no oligos are found.
+#' An \code{RprimerOligo} object.
+#' An error message will return if no oligos are found.
 #'
-#' The tibble contains the following information:
+#' The object contains the following information:
 #'
 #' If \code{showAllVariants == FALSE}:
 #'
@@ -119,23 +118,25 @@
 #' data("exampleRprimerProfile")
 #'
 #' getOligos(
-#' exampleRprimerProfile,
-#' length = 18:22,
-#' maxGapFrequency = 0.1,
-#' maxDegeneracy = 4,
-#' gcClamp = TRUE,
-#' avoid3EndRuns = TRUE,
-#' avoid5EndG = FALSE,
-#' minEndIdentity = 0.98,
-#' gcRange = c(0.45, 0.55),
-#' tmRange = c(55, 65),
-#' concOligo = 5e-07,
-#' concNa = 0.05,
-#' showAllVariants = TRUE
+#'     exampleRprimerProfile,
+#'     length = 18:22,
+#'     maxGapFrequency = 0.1,
+#'     maxDegeneracy = 4,
+#'     gcClamp = TRUE,
+#'     avoid3EndRuns = TRUE,
+#'     avoid5EndG = FALSE,
+#'     minEndIdentity = 0.98,
+#'     gcRange = c(0.45, 0.55),
+#'     tmRange = c(55, 65),
+#'     concOligo = 5e-07,
+#'     concNa = 0.05,
+#'     showAllVariants = TRUE
 #' )
+#' @seealso getConsensusProfile
 #'
-#' @seealso getAlignmentProperties
-#'
+#' @examples
+#' data("exampleRprimerProfile")
+#' getOligos(exampleRprimerProfile)
 #' @references
 #' Tm-calculation:
 #'
@@ -167,39 +168,47 @@ getOligos <- function(x,
                       tmRange = c(55, 65),
                       concOligo = 5e-07,
                       concNa = 0.05,
-                      showAllVariants = TRUE
-                      ) {
-  if (!is.logical(showAllVariants)) {
-    stop("'showAllVariants' must be set to 'TRUE' or 'FALSE'.", call. = FALSE)
-  }
-  allOligos <- purrr::map_dfr(length, function(i) {
-    oligos <- .generateOligos(
-      x, oligoLength = i, maxGapFrequency = maxGapFrequency,
-      maxDegeneracy = maxDegeneracy
-    )
-    oligos <- .exclude(oligos)
-    oligos <- .addGcContent(oligos, gcRange = gcRange)
-    oligos <- .addTm(
-      oligos, concOligo = concOligo, concNa = concNa, tmRange = tmRange
-    )
-    oligos <- .addReverseComplement(oligos)
-    oligos <- .filterOligos(
-      oligos, gcClamp = gcClamp, avoid5EndG = avoid5EndG,
-      avoid3EndRuns = avoid3EndRuns, minEndIdentity = minEndIdentity
-    )
-    oligos
-  })
-  if (nrow(allOligos) == 0L)
-    stop("No oligos were found.", call. = FALSE)
-  if (showAllVariants) {
-    allOligos <- .expandOligos(
-      allOligos, concOligo = concOligo, concNa = concNa
-    )
-  }
-  drop <- c("identity3End", "identity3EndRc")
-  allOligos <- allOligos[!names(allOligos) %in% drop]
-  allOligos <- .roundDfDbl(allOligos)
-  allOligos
+                      showAllVariants = TRUE) {
+    if (!methods::is(x, "RprimerProfile")) {
+        stop("'x' must be an RprimerProfile object.")
+    }
+    if (!is.logical(showAllVariants)) {
+        stop("'showAllVariants' must be set to 'TRUE' or 'FALSE'.", call. = FALSE)
+    }
+    x <- as.data.frame(x)
+    allOligos <- purrr::map_dfr(length, function(i) {
+        oligos <- .generateOligos(
+            x,
+            oligoLength = i, maxGapFrequency = maxGapFrequency,
+            maxDegeneracy = maxDegeneracy
+        )
+        oligos <- .exclude(oligos)
+        oligos <- .addGcContent(oligos, gcRange = gcRange)
+        oligos <- .addTm(
+            oligos,
+            concOligo = concOligo, concNa = concNa, tmRange = tmRange
+        )
+        oligos <- .addReverseComplement(oligos)
+        oligos <- .filterOligos(
+            oligos,
+            gcClamp = gcClamp, avoid5EndG = avoid5EndG,
+            avoid3EndRuns = avoid3EndRuns, minEndIdentity = minEndIdentity
+        )
+        oligos
+    })
+    if (nrow(allOligos) == 0L) {
+          stop("No oligos were found.", call. = FALSE)
+      }
+    if (showAllVariants) {
+        allOligos <- .expandOligos(
+            allOligos,
+            concOligo = concOligo, concNa = concNa
+        )
+    }
+    drop <- c("identity3End", "identity3EndRc")
+    allOligos <- allOligos[!names(allOligos) %in% drop]
+    allOligos <- .roundDfDbl(allOligos)
+    RprimerOligo(allOligos)
 }
 
 # Helpers =====================================================================
@@ -214,7 +223,7 @@ getOligos <- function(x,
 #'
 #' @noRd
 .splitSequence <- function(x) {
-  unlist(strsplit(x, split = ""), use.names = FALSE)
+    unlist(strsplit(x, split = ""), use.names = FALSE)
 }
 
 #' Divide a DNA sequence into n-sized chunks
@@ -231,12 +240,12 @@ getOligos <- function(x,
 #'
 #' @noRd
 .getNmers <- function(x, n) {
-  start <- seq_len(length(x) - n + 1)
-  end <- start + n - 1
-  nmer <- purrr::map_chr(
-    start, ~ paste(x[start[[.x]]:end[[.x]]], collapse = "")
-  )
-  nmer
+    start <- seq_len(length(x) - n + 1)
+    end <- start + n - 1
+    nmer <- purrr::map_chr(
+        start, ~ paste(x[start[[.x]]:end[[.x]]], collapse = "")
+    )
+    nmer
 }
 
 #' Calculate running sums
@@ -257,9 +266,9 @@ getOligos <- function(x,
 #'
 #' @noRd
 .runningSum <- function(x, n) {
-  cumul <- c(0, cumsum(x))
-  runsum <- cumul[seq(n + 1, length(cumul))] - cumul[seq_len(length(cumul) - n)]
-  runsum
+    cumul <- c(0, cumsum(x))
+    runsum <- cumul[seq(n + 1, length(cumul))] - cumul[seq_len(length(cumul) - n)]
+    runsum
 }
 
 #' Calculate mean identity for 3' ends of oligos.
@@ -277,17 +286,17 @@ getOligos <- function(x,
 #'
 #' @noRd
 .countEndIdentity <- function(x, n) {
-  start <- seq_len(length(x) - n + 1)
-  end <- start + n - 1
-  frame <- purrr::map(start, ~ x[start[[.x]]:end[[.x]]])
-  endScore <- purrr::map(frame, function(x) {
-    lastFive <- min(x[(length(x) - 4):length(x)])
-    firstFive <- min(x[seq_len(5)])
-    c(lastFive, firstFive)
-  })
-  endScore <- do.call("rbind", endScore)
-  colnames(endScore) <- c("pos", "neg")
-  endScore
+    start <- seq_len(length(x) - n + 1)
+    end <- start + n - 1
+    frame <- purrr::map(start, ~ x[start[[.x]]:end[[.x]]])
+    endScore <- purrr::map(frame, function(x) {
+        lastFive <- min(x[(length(x) - 4):length(x)])
+        firstFive <- min(x[seq_len(5)])
+        c(lastFive, firstFive)
+    })
+    endScore <- do.call("rbind", endScore)
+    colnames(endScore) <- c("pos", "neg")
+    endScore
 }
 
 #' Count the degeneracy of a DNA sequence
@@ -304,11 +313,11 @@ getOligos <- function(x,
 #'
 #' @noRd
 .countDegeneracy <- function(x) {
-  x <- toupper(x)
-  x <- .splitSequence(x)
-  nNucleotides <- rprimerGlobals$degeneracyLookup[x]
-  degeneracy <- prod(nNucleotides)
-  degeneracy
+    x <- toupper(x)
+    x <- .splitSequence(x)
+    nNucleotides <- rprimerGlobals$degeneracyLookup[x]
+    degeneracy <- prod(nNucleotides)
+    degeneracy
 }
 
 #' Generate oligos of a specific length
@@ -324,37 +333,37 @@ getOligos <- function(x,
                             oligoLength = 20,
                             maxGapFrequency = 0.1,
                             maxDegeneracy = 4) {
-  if (!(min(oligoLength) >= 14 && max(oligoLength) <= 30)) {
-    stop("'oligoLength' must be from 14 to 30.", call. = FALSE)
-  }
-  if (!(maxGapFrequency >= 0 && maxGapFrequency <= 1)) {
-    stop("'maxGapFrequency' must be from 0 to 1.", call. = FALSE)
-  }
-  if (!(maxDegeneracy >= 1 && maxDegeneracy <= 32)) {
-    stop("'maxDegeneracy' must be from 1 to 32.", call. = FALSE)
-  }
-  majority <- .getNmers(x$majority, n = oligoLength)
-  iupac <- .getNmers(x$iupac, n = oligoLength)
-  degeneracy <- as.integer(purrr::map_dbl(iupac, ~ .countDegeneracy(.x)))
-  start <- seq_along(majority)
-  end <- as.integer(seq_along(majority) + oligoLength - 1)
-  length <- oligoLength
-  identity <- .runningSum(x$identity, n = oligoLength)/oligoLength
-  endIdentity <- .countEndIdentity(x$identity, n = oligoLength)
-  identity3End <- endIdentity[, "pos"]
-  identity3EndRc <- endIdentity[, "neg"]
-  gapBin <- ifelse(x$gaps > maxGapFrequency, 1L, 0L)
-  gapPenalty <- .runningSum(gapBin, n = oligoLength)
-  oligos <- tibble::tibble(
-    start, end, length, majority, identity, identity3End, identity3EndRc,
-    iupac, degeneracy, gapPenalty
-  )
-  uniqueOligos <- match(oligos$majority, unique(oligos$majority))
-  oligos <- oligos[uniqueOligos, ]
-  oligos <- oligos[oligos$gapPenalty == 0, ]
-  oligos <- oligos[oligos$degeneracy <= maxDegeneracy, ]
-  oligos <- dplyr::select(oligos, -gapPenalty)
-  oligos
+    if (!(min(oligoLength) >= 14 && max(oligoLength) <= 30)) {
+        stop("'oligoLength' must be from 14 to 30.", call. = FALSE)
+    }
+    if (!(maxGapFrequency >= 0 && maxGapFrequency <= 1)) {
+        stop("'maxGapFrequency' must be from 0 to 1.", call. = FALSE)
+    }
+    if (!(maxDegeneracy >= 1 && maxDegeneracy <= 32)) {
+        stop("'maxDegeneracy' must be from 1 to 32.", call. = FALSE)
+    }
+    majority <- .getNmers(x$majority, n = oligoLength)
+    iupac <- .getNmers(x$iupac, n = oligoLength)
+    degeneracy <- as.integer(purrr::map_dbl(iupac, ~ .countDegeneracy(.x)))
+    start <- seq_along(majority)
+    end <- as.integer(seq_along(majority) + oligoLength - 1)
+    length <- oligoLength
+    identity <- .runningSum(x$identity, n = oligoLength) / oligoLength
+    endIdentity <- .countEndIdentity(x$identity, n = oligoLength)
+    identity3End <- endIdentity[, "pos"]
+    identity3EndRc <- endIdentity[, "neg"]
+    gapBin <- ifelse(x$gaps > maxGapFrequency, 1L, 0L)
+    gapPenalty <- .runningSum(gapBin, n = oligoLength)
+    oligos <- tibble::tibble(
+        start, end, length, majority, identity, identity3End, identity3EndRc,
+        iupac, degeneracy, gapPenalty
+    )
+    uniqueOligos <- match(oligos$majority, unique(oligos$majority))
+    oligos <- oligos[uniqueOligos, ]
+    oligos <- oligos[oligos$gapPenalty == 0, ]
+    oligos <- oligos[oligos$degeneracy <= maxDegeneracy, ]
+    oligos <- dplyr::select(oligos, -gapPenalty)
+    oligos
 }
 
 #' Exclude non optimal oligos
@@ -376,11 +385,11 @@ getOligos <- function(x,
 #'
 #' @noRd
 .exclude <- function(x) {
-  dinucleotideRepeats <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(TC){4,}|(CT){4,})"
-  mononucleotideRepeates <- "([A-Z])\\1\\1\\1\\1"
-  x <- x[!grepl(dinucleotideRepeats, x$majority), ]
-  x <- x[!grepl(mononucleotideRepeates, x$majority), ]
-  x
+    dinucleotideRepeats <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(TC){4,}|(CT){4,})"
+    mononucleotideRepeates <- "([A-Z])\\1\\1\\1\\1"
+    x <- x[!grepl(dinucleotideRepeats, x$majority), ]
+    x <- x[!grepl(mononucleotideRepeates, x$majority), ]
+    x
 }
 
 #' Get the reverse complement of a DNA sequence
@@ -395,13 +404,13 @@ getOligos <- function(x,
 #'
 #' @noRd
 .reverseComplement <- function(x) {
-  x <- toupper(x)
-  x <- strsplit(x, split = "")
-  complement <- rprimerGlobals$complementLookup[unlist(x)]
-  complement <- unname(complement)
-  rc <- rev(complement)
-  rc <- paste(rc, collapse = "")
-  rc
+    x <- toupper(x)
+    x <- strsplit(x, split = "")
+    complement <- rprimerGlobals$complementLookup[unlist(x)]
+    complement <- unname(complement)
+    rc <- rev(complement)
+    rc <- paste(rc, collapse = "")
+    rc
 }
 
 #' Add reverse complement to generated oligos
@@ -414,11 +423,11 @@ getOligos <- function(x,
 #'
 #' @noRd
 .addReverseComplement <- function(x) {
-  majorityRc <- purrr::map_chr(x$majority, ~.reverseComplement(.x))
-  iupacRc <- purrr::map_chr(x$iupac, ~.reverseComplement(.x))
-  x <- tibble::add_column(x, majorityRc, .after = "majority")
-  x <- tibble::add_column(x, iupacRc, .after = "iupac")
-  x
+    majorityRc <- purrr::map_chr(x$majority, ~ .reverseComplement(.x))
+    iupacRc <- purrr::map_chr(x$iupac, ~ .reverseComplement(.x))
+    x <- tibble::add_column(x, majorityRc, .after = "majority")
+    x <- tibble::add_column(x, iupacRc, .after = "iupac")
+    x
 }
 
 #' Identify GC clamp
@@ -433,12 +442,12 @@ getOligos <- function(x,
 #'
 #' @noRd
 .getOligosWithGcClamp <- function(x) {
-  ends <- purrr::map(x, ~.splitSequence(.x))
-  ends <- purrr::map(ends, ~.x[(length(.x) - 4):length(.x)])
-  gc <- purrr::map_dbl(ends, ~.gcContent(.x))
-  x[gc > 3/5] <- NA
-  x[gc < 2/5] <- NA
-  x
+    ends <- purrr::map(x, ~ .splitSequence(.x))
+    ends <- purrr::map(ends, ~ .x[(length(.x) - 4):length(.x)])
+    gc <- purrr::map_dbl(ends, ~ .gcContent(.x))
+    x[gc > 3 / 5] <- NA
+    x[gc < 2 / 5] <- NA
+    x
 }
 
 #' Replace unwanted oligos with NA
@@ -457,39 +466,41 @@ getOligos <- function(x,
                           avoid5EndG = FALSE,
                           avoid3EndRuns = TRUE,
                           minEndIdentity = NULL) {
-  if (any(!is.logical(
-    c(gcClamp, avoid5EndG, avoid3EndRuns)
-  ))) {
-    stop(
-      "'gcClamp', 'avoid5EndG',  and 'avoid3EndRuns' must be set to \n
-      'TRUE' or 'FALSE'", call. = FALSE
-    )
-  }
-  if (is.null(minEndIdentity)) minEndIdentity <- 0
-  if (minEndIdentity < 0 || minEndIdentity > 1) {
-    stop(
-      "'minEndIdentity' must be either 'NULL' or from 0 to 1.", call. = FALSE
-    )
-  }
-  if (gcClamp) {
-    x$majority <- .getOligosWithGcClamp(x$majority)
-    x$majorityRc <- .getOligosWithGcClamp(x$majorityRc)
-  }
-  if (avoid5EndG) {
-    x$majority[grepl("^G", x$majority)] <- NA
-    x$majorityRc[grepl("^G", x$majorityRc)] <- NA
-  }
-  if (avoid3EndRuns) {
-    x$majority[grepl("([A-Z])\\1\\1$", x$majority)] <- NA
-    x$majorityRc[grepl("([A-Z])\\1\\1$", x$majorityRc)] <- NA
-  }
-  x$majority[x$identity3End < minEndIdentity] <- NA
-  x$majorityRc[x$identity3EndRc < minEndIdentity] <- NA
-  x$iupac[is.na(x$majority)] <- NA
-  x$iupacRc[is.na(x$majorityRc)] <- NA
-  invalidOligos <- is.na(x$majority) & is.na(x$majorityRc)
-  x <- x[!invalidOligos, ]
-  x
+    if (any(!is.logical(
+        c(gcClamp, avoid5EndG, avoid3EndRuns)
+    ))) {
+        stop(
+            "'gcClamp', 'avoid5EndG',  and 'avoid3EndRuns' must be set to \n
+      'TRUE' or 'FALSE'",
+            call. = FALSE
+        )
+    }
+    if (is.null(minEndIdentity)) minEndIdentity <- 0
+    if (minEndIdentity < 0 || minEndIdentity > 1) {
+        stop(
+            "'minEndIdentity' must be either 'NULL' or from 0 to 1.",
+            call. = FALSE
+        )
+    }
+    if (gcClamp) {
+        x$majority <- .getOligosWithGcClamp(x$majority)
+        x$majorityRc <- .getOligosWithGcClamp(x$majorityRc)
+    }
+    if (avoid5EndG) {
+        x$majority[grepl("^G", x$majority)] <- NA
+        x$majorityRc[grepl("^G", x$majorityRc)] <- NA
+    }
+    if (avoid3EndRuns) {
+        x$majority[grepl("([A-Z])\\1\\1$", x$majority)] <- NA
+        x$majorityRc[grepl("([A-Z])\\1\\1$", x$majorityRc)] <- NA
+    }
+    x$majority[x$identity3End < minEndIdentity] <- NA
+    x$majorityRc[x$identity3EndRc < minEndIdentity] <- NA
+    x$iupac[is.na(x$majority)] <- NA
+    x$iupacRc[is.na(x$majorityRc)] <- NA
+    invalidOligos <- is.na(x$majority) & is.na(x$majorityRc)
+    x <- x[!invalidOligos, ]
+    x
 }
 
 #' Calculate GC content of a DNA sequence
@@ -505,11 +516,11 @@ getOligos <- function(x,
 #'
 #' @noRd
 .gcContent <- function(x) {
-  x <- toupper(x)
-  x <- .splitSequence(x)
-  gcCount <- length(which(x == "C" | x == "G"))
-  totalCount <- length(which(x == "A" | x == "C" | x == "G" | x == "T"))
-  gcCount / totalCount
+    x <- toupper(x)
+    x <- .splitSequence(x)
+    gcCount <- length(which(x == "C" | x == "G"))
+    totalCount <- length(which(x == "A" | x == "C" | x == "G" | x == "T"))
+    gcCount / totalCount
 }
 
 #' Add GC content to generated oligos
@@ -524,17 +535,19 @@ getOligos <- function(x,
 #'
 #' @noRd
 .addGcContent <- function(x, gcRange = c(0.45, 0.65)) {
-  if (!(min(gcRange) >= 0 && max(gcRange) <= 1)) {
-    stop(
-      "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).", call. = FALSE
+    if (!(min(gcRange) >= 0 && max(gcRange) <= 1)) {
+        stop(
+            "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).",
+            call. = FALSE
+        )
+    }
+    gcMajority <- purrr::map_dbl(x$majority, ~ .gcContent(.x))
+    x <- tibble::add_column(
+        x, gcMajority,
+        .before = "identity"
     )
-  }
-  gcMajority <- purrr::map_dbl(x$majority, ~ .gcContent(.x))
-  x <- tibble::add_column(
-    x, gcMajority, .before = "identity"
-  )
-  x <- x[x$gcMajority >= min(gcRange) & x$gcMajority <= max(gcRange), ]
-  x
+    x <- x[x$gcMajority >= min(gcRange) & x$gcMajority <= max(gcRange), ]
+    x
 }
 
 #' Split a DNA sequence into nearest neighbors
@@ -551,13 +564,13 @@ getOligos <- function(x,
 #'
 #' @noRd
 .nnSplit <- function(x) {
-  x <- .splitSequence(x)
-  from <- (seq_along(x) - 1)[-1]
-  to <- seq_along(x)[-1]
-  nn <- purrr::map2_chr(from, to, function(i, j) {
-    paste(x[i:j], collapse = "")
-  })
-  nn
+    x <- .splitSequence(x)
+    from <- (seq_along(x) - 1)[-1]
+    to <- seq_along(x)[-1]
+    nn <- purrr::map2_chr(from, to, function(i, j) {
+        paste(x[i:j], collapse = "")
+    })
+    nn
 }
 
 #' Calculate dH or dS of nearest neighbors using lookup tables
@@ -577,33 +590,33 @@ getOligos <- function(x,
 #'
 #' @noRd
 .getNnTableValues <- function(x, table = "dH") {
-  if (table == "dH") {
-    selected <- rprimerGlobals$nnLookup$dH
-  } else {
-    selected <- rprimerGlobals$nnLookup$dS
-  }
-  matching <- selected[match(x, rprimerGlobals$nnLookup$bases)]
-  if (is.null(ncol(x))) {
-    matching
-  } else {
-    matrix(matching, ncol = ncol(x), byrow = FALSE)
-  }
+    if (table == "dH") {
+        selected <- rprimerGlobals$nnLookup$dH
+    } else {
+        selected <- rprimerGlobals$nnLookup$dS
+    }
+    matching <- selected[match(x, rprimerGlobals$nnLookup$bases)]
+    if (is.null(ncol(x))) {
+        matching
+    } else {
+        matrix(matching, ncol = ncol(x), byrow = FALSE)
+    }
 }
 
 .init3End <- function(x) {
-  if (grepl("(T|A)$", x)) {
-    c(H = 2.3 * 1000, S = 4.1)
-  } else {
-    c(H = 0.1 * 1000, S = -2.8)
-  }
+    if (grepl("(T|A)$", x)) {
+        c(H = 2.3 * 1000, S = 4.1)
+    } else {
+        c(H = 0.1 * 1000, S = -2.8)
+    }
 }
 
 .init5End <- function(x) {
-  if (grepl("^(T|A)", x)) {
-    c(H = 2.3 * 1000, S = 4.1)
-  } else {
-    c(H = 0.1 * 1000, S = -2.8)
-  }
+    if (grepl("^(T|A)", x)) {
+        c(H = 2.3 * 1000, S = 4.1)
+    } else {
+        c(H = 0.1 * 1000, S = -2.8)
+    }
 }
 
 #' Melting temperature
@@ -622,43 +635,43 @@ getOligos <- function(x,
 #'
 #' @noRd
 .tm <- function(oligos, concOligo = 5e-07, concNa = 0.05) {
-  if (concOligo < 0.2e-07 || concOligo > 2.0e-06) {
-    stop("'concOligo' must be from
+    if (concOligo < 0.2e-07 || concOligo > 2.0e-06) {
+        stop("'concOligo' must be from
            0.2e-07 M (20 nM) to 2e-06 M (2000 nM).", call. = FALSE)
-  }
-  if (concNa < 0.01 || concNa > 1) {
-    stop("'concNa' must be from 0.01 to 1 M.", call. = FALSE)
-  }
-  oligos <- toupper(oligos)
-  # Find initiation values
-  initH <- purrr::map_dbl(oligos, function(x) {
-    .init5End(x)[["H"]] + .init3End(x)[["H"]]
-  })
-  initS <- purrr::map_dbl(oligos, function(x) {
-    .init5End(x)[["S"]] + .init3End(x)[["S"]]
-  })
-  # Split to nearest neighbors
-  nn <- purrr::map(oligos, .nnSplit)
-  # Check oligo length
-  oligoLength <- purrr::map_int(nn, length)
-  # I made a matrix based tm-calculation,
-  # which means that all oligos must be of the same length
-  if (length(unique(oligoLength)) != 1) {
-    stop("All oligos must be of equal length.", call. = FALSE)
-  }
-  # Find nearest neighbor values for dH and dS
-  nn <- do.call("rbind", nn)
-  dhResult <- .getNnTableValues(nn, "dH")
-  dsResult <- .getNnTableValues(nn, "dS")
-  # Sum dH and dS
-  sumdH <- rowSums(dhResult) + initH
-  sumdS <- rowSums(dsResult) + initS
-  # Correct delta S for salt conc.
-  N <- nchar(oligos[[1]]) - 1 # Number of phosphates
-  sumdS <- sumdS + 0.368 * N * log(concNa)
-  tm <- sumdH / (sumdS + rprimerGlobals$gasConstant * log(concOligo))
-  tm <- tm - 273.15
-  tm
+    }
+    if (concNa < 0.01 || concNa > 1) {
+        stop("'concNa' must be from 0.01 to 1 M.", call. = FALSE)
+    }
+    oligos <- toupper(oligos)
+    # Find initiation values
+    initH <- purrr::map_dbl(oligos, function(x) {
+        .init5End(x)[["H"]] + .init3End(x)[["H"]]
+    })
+    initS <- purrr::map_dbl(oligos, function(x) {
+        .init5End(x)[["S"]] + .init3End(x)[["S"]]
+    })
+    # Split to nearest neighbors
+    nn <- purrr::map(oligos, .nnSplit)
+    # Check oligo length
+    oligoLength <- purrr::map_int(nn, length)
+    # I made a matrix based tm-calculation,
+    # which means that all oligos must be of the same length
+    if (length(unique(oligoLength)) != 1) {
+        stop("All oligos must be of equal length.", call. = FALSE)
+    }
+    # Find nearest neighbor values for dH and dS
+    nn <- do.call("rbind", nn)
+    dhResult <- .getNnTableValues(nn, "dH")
+    dsResult <- .getNnTableValues(nn, "dS")
+    # Sum dH and dS
+    sumdH <- rowSums(dhResult) + initH
+    sumdS <- rowSums(dsResult) + initS
+    # Correct delta S for salt conc.
+    N <- nchar(oligos[[1]]) - 1 # Number of phosphates
+    sumdS <- sumdS + 0.368 * N * log(concNa)
+    tm <- sumdH / (sumdS + rprimerGlobals$gasConstant * log(concOligo))
+    tm <- tm - 273.15
+    tm
 }
 
 #' Add Tm to oligos
@@ -673,19 +686,20 @@ getOligos <- function(x,
 .addTm <- function(x,
                    concOligo = 5e-07,
                    concNa = 0.05,
-                   tmRange = c(55, 65)
-                   ) {
-  if (!(min(tmRange) >= 20 && max(tmRange) <= 90)) {
-    stop(
-      "'tmRange' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE
+                   tmRange = c(55, 65)) {
+    if (!(min(tmRange) >= 20 && max(tmRange) <= 90)) {
+        stop(
+            "'tmRange' must be from 20 to 90, e.g. c(55, 60).",
+            call. = FALSE
+        )
+    }
+    tmMajority <- .tm(x$majority, concOligo = concOligo, concNa = concNa)
+    x <- tibble::add_column(
+        x, tmMajority,
+        .before = "identity"
     )
-  }
-  tmMajority <- .tm(x$majority, concOligo = concOligo, concNa = concNa)
-  x <- tibble::add_column(
-    x, tmMajority, .before = "identity"
-  )
-  x <- x[x$tmMajority >= min(tmRange) & x$tmMajority <= max(tmRange), ]
-  x
+    x <- x[x$tmMajority >= min(tmRange) & x$tmMajority <= max(tmRange), ]
+    x
 }
 
 #' Find all variants of a DNA sequence
@@ -701,20 +715,21 @@ getOligos <- function(x,
 #'
 #' @noRd
 .expandDegenerates <- function(x) {
-  x <- .splitSequence(x)
-  expanded <- purrr::map(x, function(i) {
-    allBases <- unname(rprimerGlobals$degenerateLookup[[i]])
-    allBases <- unlist(strsplit(allBases, split = ","))
-    allBases
-  })
-  expanded <- expand.grid(
-    expanded[seq_along(expanded)], stringsAsFactors = FALSE
-  )
-  expanded <- purrr::map(
-    seq_len(nrow(expanded)), ~paste(expanded[.x, ], collapse = "")
-  )
-  expanded <- unlist(expanded, use.names = FALSE)
-  expanded
+    x <- .splitSequence(x)
+    expanded <- purrr::map(x, function(i) {
+        allBases <- unname(rprimerGlobals$degenerateLookup[[i]])
+        allBases <- unlist(strsplit(allBases, split = ","))
+        allBases
+    })
+    expanded <- expand.grid(
+        expanded[seq_along(expanded)],
+        stringsAsFactors = FALSE
+    )
+    expanded <- purrr::map(
+        seq_len(nrow(expanded)), ~ paste(expanded[.x, ], collapse = "")
+    )
+    expanded <- unlist(expanded, use.names = FALSE)
+    expanded
 }
 
 #' Add info on sequence, GC-content and Tm of all oligo variants
@@ -729,24 +744,24 @@ getOligos <- function(x,
 #'
 #' @noRd
 .expandOligos <- function(x, concOligo = 5e-7, concNa = 0.05) {
-  all <- purrr::map(x$iupac, function(x) {
-    if (is.na(x)) "" else .expandDegenerates(x)
-  })
-  x <- tibble::add_column(x, all, .after = "degeneracy")
-  allRc <- purrr::map(x$iupacRc, function(x) {
-    if (is.na(x)) "" else .expandDegenerates(x)
-  })
-  x <- tibble::add_column(x, allRc, .after = "all")
-  gcAll <- purrr::map(seq_len(nrow(x)), function(i) {
-      toCalculate <- ifelse(!is.na(x[i, ]$majority), x[i, ]$all, x[i, ]$allRc)
-      toCalculate <- unlist(toCalculate)
-      purrr::map_dbl(toCalculate, ~round(.gcContent(.x), 2))
-  })
-  tmAll <- purrr::map(seq_len(nrow(x)), function(i) {
-    toCalculate <- ifelse(!is.na(x[i, ]$majority), x[i, ]$all, x[i, ]$allRc)
-    toCalculate <- unlist(toCalculate)
-    purrr::map_dbl(toCalculate, ~round(.tm(.x), 2))
-  })
-  x <- tibble::add_column(x, gcAll, tmAll)
-  x
+    all <- purrr::map(x$iupac, function(x) {
+        if (is.na(x)) "" else .expandDegenerates(x)
+    })
+    x <- tibble::add_column(x, all, .after = "degeneracy")
+    allRc <- purrr::map(x$iupacRc, function(x) {
+        if (is.na(x)) "" else .expandDegenerates(x)
+    })
+    x <- tibble::add_column(x, allRc, .after = "all")
+    gcAll <- purrr::map(seq_len(nrow(x)), function(i) {
+        toCalculate <- ifelse(!is.na(x[i, ]$majority), x[i, ]$all, x[i, ]$allRc)
+        toCalculate <- unlist(toCalculate)
+        purrr::map_dbl(toCalculate, ~ round(.gcContent(.x), 2))
+    })
+    tmAll <- purrr::map(seq_len(nrow(x)), function(i) {
+        toCalculate <- ifelse(!is.na(x[i, ]$majority), x[i, ]$all, x[i, ]$allRc)
+        toCalculate <- unlist(toCalculate)
+        purrr::map_dbl(toCalculate, ~ round(.tm(.x), 2))
+    })
+    x <- tibble::add_column(x, gcAll, tmAll)
+    x
 }

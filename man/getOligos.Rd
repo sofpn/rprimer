@@ -21,7 +21,7 @@ getOligos(
 )
 }
 \arguments{
-\item{x}{An \code{RprimerProperties} object.}
+\item{x}{An \code{RprimerProfile} object.}
 
 \item{length}{Oligo length. The minimum allowed
 value is 14 and the maximum allowed value is 30.
@@ -77,10 +77,10 @@ variants of each oligo (in case of degenerate bases).
 It defaults to \code{TRUE}.}
 }
 \value{
-A tibble (a data frame) with all oligo
-candidates. An error message will return if no oligos are found.
+An \code{RprimerOligo} object.
+An error message will return if no oligos are found.
 
-The tibble contains the following information:
+The object contains the following information:
 
 If \code{showAllVariants == FALSE}:
 
@@ -111,8 +111,7 @@ If \code{showAllVariants == TRUE}, the following columns are also included:
 }
 }
 \description{
-\code{getOligos()} identifies oligos (primers and probes) from
-sequence properties.
+\code{getOligos()} identifies oligos (primers and probes) from sequence properties.
 }
 \section{Notes}{
 
@@ -146,6 +145,9 @@ concNa = 0.05,
 showAllVariants = TRUE
 )
 
+data("exampleRprimerProfile")
+getOligos(exampleRprimerProfile)
+
 }
 \references{
 Tm-calculation:
@@ -166,5 +168,5 @@ dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
 Proc. Natl. Acad. Sci. USA, 95: 1460-1465.
 }
 \seealso{
-getAlignmentProperties
+getConsensusProfile
 }

@@ -14,6 +14,37 @@ The sequences were collected from NCBI GenBank.
 data("exampleRprimerProfile")
 }
 \description{
-Consensus profile of an alignment of hepatitis E virus sequences
+\describe{
+  \item{position}{Position in the alignment.}
+  \item{a}{Proportion of A.}
+  \item{c}{Proportion of C.}
+  \item{g}{Proportion of G.}
+  \item{t}{Proportion of T.}
+  \item{other}{Proportion of bases other than A, C, G, T.}
+  \item{gaps}{proportion of gaps (recognized as "-" in the alignment).}
+  \item{majority}{Majority consensus sequence.
+  The most frequently occurring nucleotide.}
+  \item{identity}{Proportion of the most common nucleotide.
+  Gaps (-), as well as bases other than A, C, G and T are excluded from this
+  calculation.}
+  \item{iupac}{
+  The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
+  Note that the IUPAC consensus sequence only
+  takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
+  present in the alignment will be skipped. If a position only contains
+  degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
+  position.}
+  \item{entropy}{Shannon entropy.
+  Shannon entropy is a measurement of
+  variability.
+  First, for each nucleotide that occurs at a specific position,
+  \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
+  that nucleotide. Then, these values are summarized,
+  and multiplied by \code{-1}.
+  A value of \code{0} indicate no variability and a high value
+  indicate high variability.
+  Gaps (-), as well as bases other than
+  A, C, G and T are excluded from the calculation.}
+}
 }
 \keyword{datasets}
