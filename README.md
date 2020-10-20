@@ -21,7 +21,7 @@ The design process is built on three functions:
   - `getAssays()`: returns an `RprimerAssay` object.
 
 These objects are extensions of the `DataFrame` class from S4Vectors,
-and thus behave similar to traditional data frames.
+and behave similar to traditional data frames.
 
 ### Installation
 
@@ -64,13 +64,14 @@ myAlignment <- infile %>%
 
 `getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment`
 object as input and returns all the information needed for the
-subsequent design process. Masked positions will be excluded.
+subsequent design process. Masked positions in the alignment will be
+excluded.
 
 ``` r
  myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
 ```
 
-The output can be coerced to a tibble or data frame:
+The output can be coerced to a tibble or data frame, and looks like:
 
 ``` r
 tibble::as_tibble(myConsensusProfile)
