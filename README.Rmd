@@ -19,13 +19,15 @@ knitr::opts_chunk$set(
 
 ### Package overview 
 
-rprimer provides functions for designing (RT)-(q/dd)PCR assays from multiple DNA sequence alignments. In essence, the design process is built on three functions: 
+rprimer provides functions for designing (RT)-(q/dd)PCR assays from multiple DNA sequence alignments. In this document, I demonstrate how to use rprimer by designing an RT-(q/d)PCR assay for detection of hepatitis E virus, which is a highly variable RNA virus. 
 
-* `getConsensusProfile()`
-* `getOligos()`
-* `getAssays()`
+The design process is built on three functions: 
 
-In this document, I demonstrate how to use rprimer by designing an RT-(q/d)PCR assay for detection of hepatitis E virus, which is a highly variable RNA virus. 
+* `getConsensusProfile()`: returns an `RprimerProfile` object, which is used as input for;
+* `getOligos()`: returns an `RprimerOligo` object, which is used as input for; 
+* `getAssays()`: returns an `RprimerAssay` object.
+
+These objects are extensions of the `DataFrame` class from S4Vectors, and thus behave similar to traditional data frames. 
 
 ### Installation
 
@@ -44,9 +46,10 @@ library(magrittr) ## Required for the pipe operator
 library(tibble)
 library(Biostrings) ## Required to import alignments 
 ```
+
 ### To start
 
-The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings can be used for this part. 
+The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings does the work for this part. 
 
 The file "example_alignment.txt" is provided and contains 100 hepatitis E virus sequences. 
 
@@ -55,12 +58,12 @@ infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 
 myAlignment <- infile %>%
   Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
-  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1) ## Mask positions with at least 50 % gaps 
+  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1) 
 ```
 
 ### Step 1: `getConsensusProfile` 
 
-`getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns an `RprimerProfile` object, which contains all the information needed for the subsequent design process. 
+`getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns all the information needed for the subsequent design process. Masked positions will be excluded. 
 
 ```{r}
  myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
@@ -84,10 +87,9 @@ The data can be visualized with `plotData()`, and specific regions can be highli
 ```{r}
 plotData(myConsensusProfile, shadeFrom = 500, shadeTo = 1000)
 ```
+The black lines represent centered running averages and the blue dots represent the value at each position. 
 
-It is also possible to inspect the nucleotide distribution with `plotNucleotides()`. `from` and `to` indicates the plotting range (positions), and `rc` regulates whether the sequence should be displayed as a reverse complement or not. 
-
-**Problems with subsetting**
+It is also possible to inspect the nucleotide distribution with `plotNucleotides()`. Here, `from` and `to` indicates the plotting range (positions), and `rc` regulates whether the sequence should be displayed as a reverse complement or not. 
 
 ```{r, fig.align="center", fig.width=6, fig.height=4}
 ## Plot the first 30 bases 
@@ -111,7 +113,7 @@ plotNucleotides(myConsensusProfile, from = 1, to = 30, rc = FALSE)
 * `concNa` Sodium ion concentration (for Tm calculation), defaults to `0.05` M (50 mM).
 * `showAllVariants` If sequence, GC-content and Tm should be presented for all variants of each oligo (in case of degenerate bases).`TRUE` (slower) or `FALSE` (faster), defaults to `TRUE`. 
 
-In addition, `get_oligos()` avoids:
+In addition, `getOligos()` avoids:
 
 * Majority oligos with more than than three consecutive runs of the same dinucleotide (e.g. "TATATATA")
 * Majority oligos with more than four consecutive runs of the same nucleotide  (e.g. "AAAAA")
@@ -172,6 +174,11 @@ myAssays <- getAssays(primers = myPrimers,
 ## We found 125 assays!  
 nrow(myAssays)
 ```
+### Problems 
+
+subsetting objects for nucleotide-plot 
+primer probe sep functions or not? -> do same function , + start + end pos
+to do: tests , plotFrom, plotTo dataPlot, primer data plot, assay data plot
 
 ### Session info 
 

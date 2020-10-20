@@ -8,16 +8,20 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 ### Package overview
 
 rprimer provides functions for designing (RT)-(q/dd)PCR assays from
-multiple DNA sequence alignments. In essence, the design process is
-built on three functions:
+multiple DNA sequence alignments. In this document, I demonstrate how to
+use rprimer by designing an RT-(q/d)PCR assay for detection of hepatitis
+E virus, which is a highly variable RNA virus.
 
-  - `getConsensusProfile()`
-  - `getOligos()`
-  - `getAssays()`
+The design process is built on three functions:
 
-In this document, I demonstrate how to use rprimer by designing an
-RT-(q/d)PCR assay for detection of hepatitis E virus, which is a highly
-variable RNA virus.
+  - `getConsensusProfile()`: returns an `RprimerProfile` object, which
+    is used as input for;
+  - `getOligos()`: returns an `RprimerOligo` object, which is used as
+    input for;
+  - `getAssays()`: returns an `RprimerAssay` object.
+
+These objects are extensions of the `DataFrame` class from S4Vectors,
+and thus behave similar to traditional data frames.
 
 ### Installation
 
@@ -42,8 +46,8 @@ library(Biostrings) ## Required to import alignments
 
 The first step is to import an alignment with target sequences of
 interest and, if preferred, mask positions with high gap frequency.
-`readDNAMultipleAlignment()` and `maskGaps()` from Biostrings can be
-used for this part.
+`readDNAMultipleAlignment()` and `maskGaps()` from Biostrings does the
+work for this part.
 
 The file “example\_alignment.txt” is provided and contains 100 hepatitis
 E virus sequences.
@@ -53,14 +57,14 @@ infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 
 myAlignment <- infile %>%
   Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
-  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1) ## Mask positions with at least 50 % gaps 
+  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1) 
 ```
 
 ### Step 1: `getConsensusProfile`
 
 `getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment`
-object as input and returns an `RprimerProfile` object, which contains
-all the information needed for the subsequent design process.
+object as input and returns all the information needed for the
+subsequent design process. Masked positions will be excluded.
 
 ``` r
  myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
@@ -109,14 +113,14 @@ e.g:
 plotData(myConsensusProfile, shadeFrom = 500, shadeTo = 1000)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" /> The
+black lines represent centered running averages and the blue dots
+represent the value at each position.
 
 It is also possible to inspect the nucleotide distribution with
-`plotNucleotides()`. `from` and `to` indicates the plotting range
+`plotNucleotides()`. Here, `from` and `to` indicates the plotting range
 (positions), and `rc` regulates whether the sequence should be displayed
 as a reverse complement or not.
-
-**Problems with subsetting**
 
 ``` r
 ## Plot the first 30 bases 
@@ -155,7 +159,7 @@ plotNucleotides(myConsensusProfile, from = 1, to = 30, rc = FALSE)
     for all variants of each oligo (in case of degenerate bases).`TRUE`
     (slower) or `FALSE` (faster), defaults to `TRUE`.
 
-In addition, `get_oligos()` avoids:
+In addition, `getOligos()` avoids:
 
   - Majority oligos with more than than three consecutive runs of the
     same dinucleotide (e.g. “TATATATA”)
@@ -245,6 +249,12 @@ myAssays <- getAssays(primers = myPrimers,
 nrow(myAssays)
 #> [1] 125
 ```
+
+### Problems
+
+subsetting objects for nucleotide-plot primer probe sep functions or
+not? -\> do same function , + start + end pos to do: tests , plotFrom,
+plotTo dataPlot, primer data plot, assay data plot
 
 ### Session info
 
