@@ -87,6 +87,8 @@ plotData(myConsensusProfile, shadeFrom = 500, shadeTo = 1000)
 
 It is also possible to inspect the nucleotide distribution with `plotNucleotides()`. `from` and `to` indicates the plotting range (positions), and `rc` regulates whether the sequence should be displayed as a reverse complement or not. 
 
+**Problems with subsetting**
+
 ```{r, fig.align="center", fig.width=6, fig.height=4}
 ## Plot the first 30 bases 
 plotNucleotides(myConsensusProfile, from = 1, to = 30, rc = FALSE) 
@@ -143,6 +145,9 @@ myProbes <- getOligos(myConsensusProfile,
                       gcRange = c(0.40, 0.60),
                       tmRange = c(50, 75),
                       showAllVariants = TRUE)
+
+## Output, cocered to a tibble:
+tibble::as_tibble(myPrimers)
 ```
 
 ### Step 4: `getAssays`
@@ -163,6 +168,9 @@ myAssays <- getAssays(primers = myPrimers,
                       length = 65:100,
                       maxTmDifferencePrimers = 1.5,
                       tmDifferencePrimersProbe = c(0, 10))
+
+## We found 125 assays!  
+nrow(myAssays)
 ```
 
 ### Session info 
@@ -170,4 +178,3 @@ myAssays <- getAssays(primers = myPrimers,
 ```{r}
 sessionInfo()
 ```
-

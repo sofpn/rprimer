@@ -33,8 +33,6 @@ Initial setup for the code in this document:
 ``` r
 # library(rprimer)
 devtools::load_all(".")
-#> Warning in setup_ns_exports(path, export_all, export_imports): Objects listed as
-#> exports, but not present in namespace: plotConsensusProfile
 library(magrittr) ## Required for the pipe operator 
 library(tibble)
 library(Biostrings) ## Required to import alignments 
@@ -118,8 +116,11 @@ It is also possible to inspect the nucleotide distribution with
 (positions), and `rc` regulates whether the sequence should be displayed
 as a reverse complement or not.
 
+**Problems with subsetting**
+
 ``` r
-plotNucleotides(myConsensusProfile, from = 1, to = 30, rc = FALSE) ## Plot the first 30 bases 
+## Plot the first 30 bases 
+plotNucleotides(myConsensusProfile, from = 1, to = 30, rc = FALSE) 
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" />
@@ -192,6 +193,25 @@ myProbes <- getOligos(myConsensusProfile,
                       gcRange = c(0.40, 0.60),
                       tmRange = c(50, 75),
                       showAllVariants = TRUE)
+
+## Output, cocered to a tibble:
+tibble::as_tibble(myPrimers)
+#> # A tibble: 233 x 15
+#>    start   end length majority majorityRc gcMajority tmMajority identity iupac
+#>    <int> <int>  <int> <chr>    <chr>           <dbl>      <dbl>    <dbl> <chr>
+#>  1    51    68     18 GCTCCTG~ <NA>             0.56       55.9     0.99 GCTC~
+#>  2    52    69     18 CTCCTGG~ <NA>             0.56       54.0     0.99 CTCC~
+#>  3    53    70     18 TCCTGGC~ <NA>             0.56       56.2     0.99 TCCT~
+#>  4    57    74     18 <NA>     AATAGCAGT~       0.44       51.2     0.98 <NA> 
+#>  5    61    78     18 TCACTAC~ <NA>             0.44       50.9     0.98 TYAC~
+#>  6    62    79     18 CACTACT~ <NA>             0.44       51.2     0.98 YACT~
+#>  7    63    80     18 <NA>     CTGCTCAAT~       0.44       50.8     0.99 <NA> 
+#>  8    64    81     18 <NA>     CCTGCTCAA~       0.5        51.7     0.99 <NA> 
+#>  9    65    82     18 <NA>     GCCTGCTCA~       0.5        54.0     0.99 <NA> 
+#> 10    66    83     18 <NA>     AGCCTGCTC~       0.5        55.8     0.99 <NA> 
+#> # ... with 223 more rows, and 6 more variables: iupacRc <chr>,
+#> #   degeneracy <int>, all <I<list>>, allRc <I<list>>, gcAll <I<list>>,
+#> #   tmAll <I<list>>
 ```
 
 ### Step 4: `getAssays`
@@ -220,18 +240,11 @@ myAssays <- getAssays(primers = myPrimers,
                       length = 65:100,
                       maxTmDifferencePrimers = 1.5,
                       tmDifferencePrimersProbe = c(0, 10))
-#> New names:
-#> * majorityRev -> majorityRev...17
-#> * iupacRev -> iupacRev...23
-#> * majorityRev -> majorityRev...27
-#> * iupacRev -> iupacRev...30
+
+## We found 125 assays!  
+nrow(myAssays)
+#> [1] 125
 ```
-
-### Further notes
-
-degeneracy… majority gap masking pitfall
-
-*To do:*
 
 ### Session info
 
