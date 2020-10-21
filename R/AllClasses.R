@@ -63,9 +63,9 @@ RprimerProfile <- function(...,
 # I did very simple validity checks here...
 S4Vectors::setValidity2("RprimerProfile", function(object) {
     msg <- NULL
-    #  if (names(object)[1] != "counts") {
-    #    msg <- c(msg, "'counts' must be first assay")
-    #  }
+      if (ncol(object) != 11) {
+        msg <- c(msg, "The object must have 11 columns.")
+      }
     if (is.null(msg)) {
         TRUE
     } else {

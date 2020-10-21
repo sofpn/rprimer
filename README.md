@@ -5,12 +5,12 @@
 status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 <!-- badges: end -->
 
-### Package overview
+### Overview
 
 rprimer provides functions for designing (RT)-(q/dd)PCR assays from
 multiple DNA sequence alignments. In this document, I demonstrate how to
-use rprimer by designing an RT-(q/d)PCR assay for detection of hepatitis
-E virus, which is a highly variable RNA virus.
+use the package by designing an RT-(q/d)PCR assay for detection of
+hepatitis E virus, which is a highly variable RNA virus.
 
 The design process is built on three functions:
 
@@ -20,8 +20,10 @@ The design process is built on three functions:
     input for;
   - `getAssays()`: returns an `RprimerAssay` object.
 
-These objects are extensions of the `DataFrame` class from S4Vectors,
-and behave similar to traditional data frames.
+The Rprimer-classes are extensions of the `DataFrame` class from
+S4Vectors, and behave in a similar fashion as traditional data frames.
+The objects can be coerced to data frames or tibbles by using
+`as.data.frame()` or `tibble::as_tibble()`.
 
 ### Installation
 
@@ -46,7 +48,7 @@ library(Biostrings) ## Required to import alignments
 
 The first step is to import an alignment with target sequences of
 interest and, if preferred, mask positions with high gap frequency.
-`readDNAMultipleAlignment()` and `maskGaps()` from Biostrings does the
+`readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the
 work for this part.
 
 The file “example\_alignment.txt” is provided and contains 100 hepatitis
@@ -64,57 +66,55 @@ myAlignment <- infile %>%
 
 `getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment`
 object as input and returns all the information needed for the
-subsequent design process. Masked positions in the alignment will be
-excluded.
+subsequent design process. Masked positions (see above) are excluded.
 
 ``` r
- myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
-```
-
-The output can be coerced to a tibble or data frame, and looks like:
-
-``` r
-tibble::as_tibble(myConsensusProfile)
-#> # A tibble: 7,208 x 11
-#>    position     a     c     g     t other  gaps majority identity iupac entropy
-#>       <int> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <chr>       <dbl> <chr>   <dbl>
-#>  1        1  0     0     0.59  0        0 0.41  G            1    G        0   
-#>  2        2  0     0     0.71  0        0 0.290 G            1    G        0   
-#>  3        3  0     0.71  0     0        0 0.290 C            1    C        0   
-#>  4        4  0.71  0     0     0        0 0.290 A            1    A        0   
-#>  5        5  0     0     0.7   0.01     0 0.290 G            0.99 G        0.11
-#>  6        6  0.71  0     0     0        0 0.290 A            1    A        0   
-#>  7        7  0     0.72  0     0        0 0.28  C            1    C        0   
-#>  8        8  0     0.76  0     0        0 0.24  C            1    C        0   
-#>  9        9  0.75  0.01  0     0        0 0.24  A            0.99 A        0.1 
-#> 10       10  0.02  0.75  0     0.03     0 0.2   C            0.94 C        0.4 
-#> # ... with 7,198 more rows
+myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
+head(myConsensusProfile)
+#> RprimerProfile with 6 rows and 11 columns
+#>    position         a         c         g         t     other      gaps
+#>   <integer> <numeric> <numeric> <numeric> <numeric> <numeric> <numeric>
+#> 1         1      0.00      0.00      0.59      0.00         0      0.41
+#> 2         2      0.00      0.00      0.71      0.00         0      0.29
+#> 3         3      0.00      0.71      0.00      0.00         0      0.29
+#> 4         4      0.71      0.00      0.00      0.00         0      0.29
+#> 5         5      0.00      0.00      0.70      0.01         0      0.29
+#> 6         6      0.71      0.00      0.00      0.00         0      0.29
+#>      majority  identity       iupac   entropy
+#>   <character> <numeric> <character> <numeric>
+#> 1           G      1.00           G      0.00
+#> 2           G      1.00           G      0.00
+#> 3           C      1.00           C      0.00
+#> 4           A      1.00           A      0.00
+#> 5           G      0.99           G      0.11
+#> 6           A      1.00           A      0.00
 ```
 
 Some comments on the data:
 
   - Majority refers to the majority consensus sequence, which is the
-    most frequently occurring base, and identity is the proportion of
-    that base in the alignment.
+    most frequently occurring base. Identity is the proportion of that
+    base when gaps and other bases than A, C, G and T are not taken into
+    account.
 
   - The IUPAC consensus sequence includes wobble bases according to the
-    IUPAC-nomenclature. All nucleotides with a frequency higher than the
-    `iupacThreshold` will be taken into account in the IUPAC consensus
-    sequence.
+    IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that
+    occurs with a frequency higher than the `iupacThreshold`.
 
   - Entropy refers to Shannon entropy, which is a measurement of
     variability. A value of zero indicate no variability and a high
     value indicate high variability.
 
 The data can be visualized with `plotData()`, and specific regions can
-be highlighted using the optional arguments `shadeFrom` and `shadeTo`,
-e.g:
+be highlighted using the optional arguments `shadeFrom` and `shadeTo`.
+We can see that the hepatitis E virus genome has a conserved region
+between position 5000-5500:
 
 ``` r
-plotData(myConsensusProfile, shadeFrom = 500, shadeTo = 1000)
+plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" /> The
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" /> The
 black lines represent centered running averages and the blue dots
 represent the value at each position.
 
@@ -128,7 +128,7 @@ as a reverse complement or not.
 plotNucleotides(myConsensusProfile, from = 1, to = 30, rc = FALSE) 
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" />
 
 ### Step 2: `getOligos`
 
@@ -233,7 +233,7 @@ Assays are designed from the following constraints:
   - `tmDifferencePrimersProbe` Acceptable Tm difference between the
     primers (average Tm of the primer pair) and probe, defaults to
     `c(0, 20)`. The Tm-difference is calculated by subtracting the Tm of
-    the probe with the average Tm of the (majority) primer pair. Thus, a
+    the probe with the average Tm of the (majority) primer pair. A
     negative Tm-difference means that the Tm of the probe is lower than
     the average Tm of the primer pair.
 

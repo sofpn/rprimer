@@ -1,0 +1,41 @@
+#test_that("getConsensusProperties works", {
+#    data("exampleRprimerProfile")
+  #  toTest <- as.data.frame(exampleRprimerProfile)
+  #  expect_equal(length(.majorityConsensus(toTest)), ncol(toTest))
+  #  expect_equal(length(.majorityConsensus(toTest[, 1:4])), 4)
+  #  expect_true(is.character(.iupacConsensus(toTest)))
+  #  expect_false(any(grepl("^ACGT-", .majorityConsensus(toTest))))
+  #  expect_warning(.iupacConsensus(toTest[1:2, ], threshold = 0.2))
+  #  identity <- .nucleotideIdentity(toTest)
+  #  expect_true(is.double(identity))
+  #  expect_false(any(identity < 0))
+  #  expect_false(any(identity > 1))
+  #  expect_false(any(is.na(identity)))
+  #  bases <- c("A", "C", "G", "T")
+  #  s <- toTest[which(rownames(toTest) %in% bases), ]
+  #  expect_equal(.nucleotideIdentity(s), identity)
+  #  entropy <- .shannonEntropy(toTest)
+  #  expect_true(is.double(entropy))
+  #  expect_false(any(entropy < 0))
+  #  expect_false(any(is.na(entropy)))
+  #  expect_equal(.shannonEntropy(s), entropy)
+#})
+
+test_that("getConsensusProfile returns an error when it should", {
+    data("exampleRprimerProfile")
+    toTest <- exampleRprimerProfile
+    expect_error(getConsensusProfile(unclass(toTest)))
+    expect_error(getConsensusProfile(toTest, iupacThreshold = 3))
+    expect_error(getConsensusProfile(toTest, iupacThreshold = NA))
+    toTest <- as.data.frame(exampleRprimerProfile)
+    expect_error(.iupacConsensus(toTest, threshold = 3))
+    expect_error(.iupacConsensus(toTest, threshold = NA))
+})
+
+test_that(".asIUPAC works", {
+    expect_true(is.na(.asIUPAC("GC")))
+    expect_equal(.asIUPAC("C,G"), "S")
+    expect_equal(.asIUPAC("C,G,G"), "S")
+    expect_equal(.asIUPAC("C , G"), "S")
+    expect_equal(.asIUPAC("-"), "-")
+})
