@@ -3,11 +3,7 @@
 #' \code{getAssays()} combines forward and reverse primers
 #' and (if selected) probes to (RT)-PCR assays.
 #'
-#' @param primers An \code{RprimerOligo} object.
-#'
-#' @param probes
-#' Optional, defaults to \code{NULL}.
-#' An \code{RprimerOligo} object if probes are to be used.
+#' @param x An \code{RprimerOligo} object, with or without probes.
 #'
 #' @param length
 #' Amplicon length, a numeric vector [40, 5000]. Defaults to
@@ -33,7 +29,7 @@
 #'
 #' @return
 #' An \code{RprimerAssay} object.
-#' An error message will return if no assays are found.
+#' A warning message will return if no assays are found.
 #'
 #' The object contains the following information:
 #'
@@ -86,6 +82,10 @@
 #'   sequence variants of the forward primer.}
 #'   \item{tmAllRev}{Lists with the Tm of all sequence variants of
 #'   the reverse primer.}
+#'   \item{alignmentStart}{Start position of the input consensus profile
+#'   used for oligo design.}
+#'   \item{alingnmentEnd}{End position of the input consensus profile used
+#'   for oligo design.}
 #' }
 #'
 #' If a probe is used, the following columns are also included:
@@ -109,7 +109,7 @@
 #'   the probe with the least G:s is selected.}
 #' }
 #'
-#' If the option \code{showAllVariants == TRUE} was used for probe design
+#' And, if the option \code{showAllVariants == TRUE} was used
 #' in \code{getOligos()}, the following data are also added:
 #'
 #' \describe{
@@ -124,37 +124,36 @@
 #'
 #' @examples
 #' data("exampleRprimerOligo")
-#' ## Get assays with only primers, using default settings
+#' ## Get assays using default settings
 #' getAssays(exampleRprimerOligo)
-#' ## Get assays with primers and probe, using default settings
-#' getAssays(primers = exampleRprimerOligo, probes = exampleRprimerOligo)
+#'
 #' @export
-getAssays <- function(primers,
-                      probes = NULL,
+getAssays <- function(x,
                       length = 65:120,
                       maxTmDifferencePrimers = 2,
                       tmDifferencePrimersProbe = c(0, 20)) {
-    if (!methods::is(primers, "RprimerOligo")) {
-        stop("'x' must be an RprimerProfile object.")
+    if (!methods::is(x, "RprimerOligo")) {
+        stop("'x' must be an RprimerOligo object.")
     }
-    if (!is.null(probes)) {
-        if (!methods::is(primers, "RprimerOligo")) {
-            stop("'x' must be an RprimerProfile object.")
-        }
-    }
-    primers <- as.data.frame(primers)
+    x <- as.data.frame(x)
     assays <- .combinePrimers(
-        primers = primers, length = length,
+        primers = x[x$type == "primer", ], length = length,
         maxTmDifferencePrimers = maxTmDifferencePrimers
     )
-    if (!is.null(probes)) {
-        probes <- as.data.frame(probes)
+    if (any(x$type == "probe")) {
         assays <- .addProbes(
-            assays = assays, probes = probes,
+            assays = assays, probes = x[x$type == "probe", ],
             tmDifferencePrimersProbe = tmDifferencePrimersProbe
         )
     }
+    alignmentStart <- assays$alignmentStartFwd
+    alignmentEnd <- assays$alignmentEndFwd
+    assays <- assays[-grep("type", names(assays))]
+    assays <- assays[-grep("alignmentStart", names(assays))]
+    assays <- assays[-grep("alignmentEnd", names(assays))]
+    assays <- tibble::add_column(assays, alignmentStart, alignmentEnd)
     assays <- .roundDfDbl(assays)
+    assays <- assays[order(assays$start), ]
     RprimerAssay(assays)
 }
 
@@ -215,8 +214,8 @@ getAssays <- function(primers,
     tmDifferencePrimer <- abs(assays$tmMajorityFwd - assays$tmMajorityRev)
     start <- assays$startFwd
     end <- assays$endRev
-    totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
     meanIdentity <- mean(c(assays$identityFwd, assays$identityRev))
+    totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
     assays <- tibble::add_column(
         assays, start, end, ampliconLength,
         tmDifferencePrimer, meanIdentity, totalDegeneracy,
@@ -260,7 +259,7 @@ getAssays <- function(primers,
         min(tmDifferencePrimersProbe) >= -20 && max(tmDifferencePrimersProbe) <= 20)
     ) {
         stop(
-            "'tm_difference' must be from -20 to 20, e.g. c(-1, 5).",
+            "'tmDifference' must be from -20 to 20, e.g. c(-1, 5).",
             call. = FALSE
         )
     }
@@ -289,6 +288,7 @@ getAssays <- function(primers,
                 gContentNeg <- .gContent(y)
                 sense <- ifelse(gContentPos <= gContentNeg, "pos", "neg")
             }
+
             sense
         }
     )

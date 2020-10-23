@@ -181,7 +181,7 @@ plotNucleotides <- function(x, from = NULL, to = NULL, rc = FALSE) {
                     size = 9, color = "grey30",
                     margin = ggplot2::margin(t = 10)
                 ),
-                plot.margin = ggplot2::unit(rep(0, 4), "cm")
+                plot.margin = ggplot2::unit(rep(0.1, 4), "cm")
             )
     } else {
         ggplot2::theme_light() +
@@ -195,7 +195,7 @@ plotNucleotides <- function(x, from = NULL, to = NULL, rc = FALSE) {
                 axis.title.x = ggplot2::element_blank(),
                 axis.text.x = ggplot2::element_blank(),
                 axis.ticks.x = ggplot2::element_blank(),
-                plot.margin = ggplot2::unit(rep(0, 4), "cm")
+                plot.margin = ggplot2::unit(rep(0.1, 4), "cm")
             )
     }
 }

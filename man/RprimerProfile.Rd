@@ -32,5 +32,4 @@ Constructs an \code{RprimerProfile} object in a similar fashion as the
 data("exampleRprimerProfile")
 x <- as.data.frame(exampleRprimerProfile)
 RprimerProfile(x)
-
 }

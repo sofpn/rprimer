@@ -26,7 +26,6 @@ Plot nucleotide distribution
 data("exampleRprimerProfile")
 plotNucleotides(exampleRprimerProfile, from = 1, to = 10)
 ## Plot the first 10 bases
-plotNucleotides(exampleRprimerProfile, from =  1, to = 10, rc = TRUE)
+plotNucleotides(exampleRprimerProfile, from = 1, to = 10, rc = TRUE)
 ## As reverse complement
-
 }

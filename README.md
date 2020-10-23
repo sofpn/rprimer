@@ -8,11 +8,8 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 ### Overview
 
 rprimer provides functions for designing (RT)-(q/dd)PCR assays from
-multiple DNA sequence alignments. In this document, I demonstrate how to
-use the package by designing an RT-(q/d)PCR assay for detection of
-hepatitis E virus, which is a highly variable RNA virus.
-
-The design process is built on three functions:
+multiple DNA sequence alignments. The design process is built on three
+functions:
 
   - `getConsensusProfile()`: returns an `RprimerProfile` object, which
     is used as input for;
@@ -20,10 +17,10 @@ The design process is built on three functions:
     input for;
   - `getAssays()`: returns an `RprimerAssay` object.
 
-The Rprimer-classes are extensions of the `DataFrame` class from
-S4Vectors, and behave in a similar fashion as traditional data frames.
-The objects can be coerced to data frames or tibbles by using
-`as.data.frame()` or `tibble::as_tibble()`.
+The `Rprimer`-classes are extensions of the `DataFrame` class from
+S4Vectors, and behave in a similar manner as traditional data frames.
+They can be coerced to data frames or tibbles by using `as.data.frame()`
+or `tibble::as_tibble()`.
 
 ### Installation
 
@@ -51,8 +48,10 @@ interest and, if preferred, mask positions with high gap frequency.
 `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the
 work for this part.
 
-The file “example\_alignment.txt” is provided and contains 100 hepatitis
-E virus sequences.
+Here, I want to design an RT-(q/d)PCR assay for detection of hepatitis E
+virus, which is a highly variable RNA virus. The file
+“example\_alignment.txt” is provided and contains 100 hepatitis E
+virus sequences.
 
 ``` r
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -66,7 +65,7 @@ myAlignment <- infile %>%
 
 `getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment`
 object as input and returns all the information needed for the
-subsequent design process. Masked positions (see above) are excluded.
+subsequent design process. Masked positions are excluded.
 
 ``` r
 myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
@@ -99,7 +98,7 @@ Some comments on the data:
 
   - The IUPAC consensus sequence includes wobble bases according to the
     IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that
-    occurs with a frequency higher than the `iupacThreshold`.
+    occurs with a frequency higher than the stated `iupacThreshold`.
 
   - Entropy refers to Shannon entropy, which is a measurement of
     variability. A value of zero indicate no variability and a high
@@ -132,30 +131,45 @@ plotNucleotides(myConsensusProfile, from = 1, to = 30, rc = FALSE)
 
 ### Step 2: `getOligos`
 
-`getOligos()` searches for oligos from the following constraints:
+`getOligos()` searches for oligos from an `RprimerProfile`-object. All
+oligos are shown in both majority and IUPAC format. The oligos are
+designed from the following constraints:
 
-  - `maxGapFrequency` Maximum gap frequency, defaults to `0.1`.
-  - `length` Oligo length, defaults to `18:22`.
-  - `maxDegeneracy` Maximum number of degenerate variants of each oligo,
-    defaults to `4`.
-  - `gcClamp` If oligos must have a GC-clamp (recommended for primers),
-    defaults to `TRUE`.
-  - `avoid3endRuns` If oligos with more than two runs of the same
-    nucleotide at the terminal 3’ end should be avodied (recommended for
+  - `lengthPrimer` Primer length, defaults to `18:22`.
+  - `maxGapFrequencyPrimer` Maximum gap frequency for primers, defaults
+    to `0.1`.
+  - `maxDegeneracyPrimer` Maximum number of degenerate variants of each
+    primer, defaults to `4`.
+  - `gcClampPrimer` If primers must have a GC-clamp, defaults to `TRUE`.
+  - `avoid3endRunsPrimer` If primers with more than two runs of the same
+    nucleotide at the terminal 3’ end should be avoided (recommended for
     primers), defaults to `TRUE`.
-  - `avoid5endG` If oligos with a G at the terminal 5’ end should be
-    avoided (recommended for probes), defaults to `FALSE`.
-  - `minEndIdentity` Optional. Minimum allowed identity at the 3’ end
-    (i.e. the last five bases). E.g., if set to `1`, only oligos with
-    complete target conservation at the 3’ end will be considered.
-  - `gcRange` GC-content-range, defaults to `c(0.45, 0.55)`.
-  - `tmRange` Melting temperature (Tm) range, defaults to `c(50, 65)`.
-    Tm is calculated using the nearest-neighbor method. See
-    `?rprimer::getOligos` for a detailed description and references.
-  - `concOligo` Oligo concentration (for Tm calculation), defaults to
+  - `minEndIdentityPrimer` Optional. Minimum allowed identity at the 3’
+    end (i.e. the last five bases). E.g., if set to `1`, only primers
+    with complete target conservation at the 3’ end will be considered.
+  - `gcRangePrimer` GC-content-range for primers, defaults to
+    `c(0.45, 0.55)`.
+  - `tmRangePrimer` Melting temperature (Tm) range for primers, defaults
+    to `c(55, 65)`. Tm is calculated using the nearest-neighbor method.
+    See `?rprimer::getOligos` for a detailed description and references.
+  - `concPrimer` Primer concentration (for Tm calculation), defaults to
     `5e-07` M (500 nM)
-  - `concNa` Sodium ion concentration (for Tm calculation), defaults to
-    `0.05` M (50 mM).
+  - `probe` If probes should be desinged as well, defaults to `TRUE`.
+  - `lengthProbe` Probe length, defaults to `18:22`.
+  - `maxGapFrequencyProbe` Maximum gap frequency for probes, defaults to
+    `0.1`.
+  - `maxDegeneracyProbe` Maximum number of degenerate variants of each
+    probe, defaults to `4`.
+  - `avoid5endGProbe` If probes with a G at the terminal 5’ end should
+    be avoided, defaults to `TRUE`.
+  - `gcRangeProbe` GC-content-range for probes, defaults to
+    `c(0.45, 0.55)`.
+  - `tmRangeProbe` Melting temperature (Tm) range for probes, defaults
+    to `c(55, 70)`.
+  - `concProbe` Primer concentration (for Tm calculation), defaults to
+    `5e-07` M (500 nM)
+  - `concNa` Sodium ion concentration in the PCR reaction (for Tm
+    calculation), defaults to `0.05` M (50 mM).
   - `showAllVariants` If sequence, GC-content and Tm should be presented
     for all variants of each oligo (in case of degenerate bases).`TRUE`
     (slower) or `FALSE` (faster), defaults to `TRUE`.
@@ -169,62 +183,47 @@ In addition, `getOligos()` avoids:
   - Majority oligos that are duplicated (to prevent binding at several
     places on the genome)
 
-An error message will return if no oligos are found.
+A warning message will return if no oligos are found.
 
-Below, I design both primers and probes. I use somewhat different
-settings for the two oligo types.
+Below, I design both primers and probes.
 
 ``` r
-myPrimers <- getOligos(myConsensusProfile,
-                       length = 18:22,
-                       maxGapFrequency = 0.05,
-                       maxDegeneracy = 4,
-                       gcClamp = TRUE,
-                       avoid3EndRuns = TRUE,
-                       avoid5EndG = FALSE,
-                       minEndIdentity = 0.99,
-                       gcRange = c(0.40, 0.60),
-                       tmRange = c(50, 65),
-                       showAllVariants = TRUE)
-
-myProbes <- getOligos(myConsensusProfile,
-                      length = 16:22,
-                      maxGapFrequency = 0.05,
-                      maxDegeneracy = 4,
-                      gcClamp = FALSE,
-                      avoid3EndRuns = FALSE,
-                      avoid5EndG = TRUE,
-                      minEndIdentity = NULL,
-                      gcRange = c(0.40, 0.60),
-                      tmRange = c(50, 75),
+myOligos <- getOligos(myConsensusProfile,
+                      lengthPrimer = 18:22,
+                      maxGapFrequencyPrimer = 0.1,
+                      maxDegeneracyPrimer = 4,
+                      gcClampPrimer = TRUE,
+                      avoid3EndRunsPrimer = TRUE,
+                      minEndIdentityPrimer = 0.98,
+                      gcRangePrimer = c(0.45, 0.65),
+                      tmRangePrimer = c(55, 65),
+                      concPrimer = 5e-07,
+                      probe = TRUE,
+                      lengthProbe = 18:22,
+                      maxGapFrequencyProbe = 0.1,
+                      maxDegeneracyProbe = 4,
+                      avoid5EndGProbe = TRUE, 
+                      gcRangeProbe = c(0.45, 0.65),
+                      tmRangeProbe = c(55, 70),
+                      concProbe = 2.5e-07,
+                      concNa = 0.05,
                       showAllVariants = TRUE)
-
-## Output, cocered to a tibble:
-tibble::as_tibble(myPrimers)
-#> # A tibble: 233 x 15
-#>    start   end length majority majorityRc gcMajority tmMajority identity iupac
-#>    <int> <int>  <int> <chr>    <chr>           <dbl>      <dbl>    <dbl> <chr>
-#>  1    51    68     18 GCTCCTG~ <NA>             0.56       55.9     0.99 GCTC~
-#>  2    52    69     18 CTCCTGG~ <NA>             0.56       54.0     0.99 CTCC~
-#>  3    53    70     18 TCCTGGC~ <NA>             0.56       56.2     0.99 TCCT~
-#>  4    57    74     18 <NA>     AATAGCAGT~       0.44       51.2     0.98 <NA> 
-#>  5    61    78     18 TCACTAC~ <NA>             0.44       50.9     0.98 TYAC~
-#>  6    62    79     18 CACTACT~ <NA>             0.44       51.2     0.98 YACT~
-#>  7    63    80     18 <NA>     CTGCTCAAT~       0.44       50.8     0.99 <NA> 
-#>  8    64    81     18 <NA>     CCTGCTCAA~       0.5        51.7     0.99 <NA> 
-#>  9    65    82     18 <NA>     GCCTGCTCA~       0.5        54.0     0.99 <NA> 
-#> 10    66    83     18 <NA>     AGCCTGCTC~       0.5        55.8     0.99 <NA> 
-#> # ... with 223 more rows, and 6 more variables: iupacRc <chr>,
-#> #   degeneracy <int>, all <I<list>>, allRc <I<list>>, gcAll <I<list>>,
-#> #   tmAll <I<list>>
 ```
 
-### Step 4: `getAssays`
+The object contains many columns, so the most sensible way to inspect it
+is by using `View(as.data.frame(myOligos))`, if you are using RStudio.
+All oligo candidates can be visualized using `plotData()`:
+
+``` r
+plotData(myOligos)
+```
+
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+
+### Step 3: `getAssays`
 
 `getAssays()` finds pairs of forward and reverse primers and combines
-them with probes (optional).
-
-Assays are designed from the following constraints:
+them with probes (if selected), based on the following constraints:
 
   - `length` Amplicon length, defaults to `65:120`.
   - `maxTmDifferencePrimers` Maximum Tm difference between the two
@@ -240,22 +239,21 @@ Assays are designed from the following constraints:
 An error message will return if no assays are found.
 
 ``` r
-myAssays <- getAssays(primers = myPrimers, 
-                      probes = myProbes,
-                      length = 65:100,
-                      maxTmDifferencePrimers = 1.5,
-                      tmDifferencePrimersProbe = c(0, 10))
-
-## We found 125 assays!  
-nrow(myAssays)
-#> [1] 125
+myAssays <- getAssays(myOligos, 
+                      length = 65:120,
+                      maxTmDifferencePrimers = 2,
+                      tmDifferencePrimersProbe = c(-2, 10))
 ```
 
-### Problems
+Again, the object contains many columns, so the most sensible way to
+inspect it is by using `View(as.data.frame(myAssays))`, if you are using
+RStudio. Assay regions can be visualized using `plotData()`:
 
-subsetting objects for nucleotide-plot primer probe sep functions or
-not? -\> do same function , + start + end pos to do: tests , plotFrom,
-plotTo dataPlot, primer data plot, assay data plot
+``` r
+plotData(myAssays)
+```
+
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
 ### Session info
 
@@ -284,17 +282,17 @@ sessionInfo()
 #> loaded via a namespace (and not attached):
 #>  [1] tidyselect_1.1.0  xfun_0.17         remotes_2.2.0     reshape2_1.4.4   
 #>  [5] purrr_0.3.4       colorspace_1.4-1  vctrs_0.3.4       generics_0.0.2   
-#>  [9] usethis_1.6.1     htmltools_0.5.0   yaml_2.2.1        utf8_1.1.4       
-#> [13] rlang_0.4.7       pkgbuild_1.1.0    pillar_1.4.6      glue_1.4.2       
-#> [17] withr_2.2.0       sessioninfo_1.1.1 plyr_1.8.6        lifecycle_0.2.0  
-#> [21] stringr_1.4.0     zlibbioc_1.35.0   munsell_0.5.0     gtable_0.3.0     
-#> [25] devtools_2.3.1    memoise_1.1.0     evaluate_0.14     labeling_0.3     
-#> [29] knitr_1.29        callr_3.4.4       ps_1.3.4          fansi_0.4.1      
-#> [33] Rcpp_1.0.5        backports_1.1.9   scales_1.1.1      desc_1.2.0       
-#> [37] pkgload_1.1.0     farver_2.0.3      fs_1.5.0          ggplot2_3.3.2    
-#> [41] digest_0.6.25     stringi_1.5.3     processx_3.4.4    dplyr_1.0.2      
-#> [45] rprojroot_1.3-2   grid_4.0.2        cli_2.0.2         tools_4.0.2      
-#> [49] patchwork_1.0.1   crayon_1.3.4      pkgconfig_2.0.3   ellipsis_0.3.1   
-#> [53] prettyunits_1.1.1 assertthat_0.2.1  rmarkdown_2.3     rstudioapi_0.11  
-#> [57] R6_2.4.1          compiler_4.0.2
+#>  [9] usethis_1.6.1     htmltools_0.5.0   yaml_2.2.1        rlang_0.4.7      
+#> [13] pkgbuild_1.1.0    pillar_1.4.6      glue_1.4.2        withr_2.2.0      
+#> [17] sessioninfo_1.1.1 plyr_1.8.6        lifecycle_0.2.0   stringr_1.4.0    
+#> [21] zlibbioc_1.35.0   munsell_0.5.0     gtable_0.3.0      devtools_2.3.1   
+#> [25] memoise_1.1.0     evaluate_0.14     labeling_0.3      knitr_1.29       
+#> [29] callr_3.4.4       ps_1.3.4          fansi_0.4.1       Rcpp_1.0.5       
+#> [33] backports_1.1.9   scales_1.1.1      desc_1.2.0        pkgload_1.1.0    
+#> [37] farver_2.0.3      fs_1.5.0          ggplot2_3.3.2     digest_0.6.25    
+#> [41] stringi_1.5.3     processx_3.4.4    dplyr_1.0.2       rprojroot_1.3-2  
+#> [45] grid_4.0.2        cli_2.0.2         tools_4.0.2       patchwork_1.0.1  
+#> [49] crayon_1.3.4      pkgconfig_2.0.3   ellipsis_0.3.1    prettyunits_1.1.1
+#> [53] assertthat_0.2.1  rmarkdown_2.3     rstudioapi_0.11   R6_2.4.1         
+#> [57] compiler_4.0.2
 ```

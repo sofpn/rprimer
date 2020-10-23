@@ -1,66 +1,103 @@
+## Stop message instead of warning
+
 #' Get oligos
 #'
-#' \code{getOligos()} identifies oligos (primers and probes) from sequence properties.
+#' \code{getOligos()} identifies oligos (primers and probes)
+#' from sequence properties.
 #'
 #' @param x An \code{RprimerProfile} object.
 #'
-#' @param length
-#' Oligo length. The minimum allowed
+#' @param lengthPrimer
+#' Primer length. The minimum allowed
 #' value is 14 and the maximum allowed value is 30.
 #' Defaults to \code{18:22}.
 #'
-#' @param maxGapFrequency
-#' Maximum allowed gap frequency.
+#' @param maxGapFrequencyPrimer
+#' Maximum allowed gap frequency for primers.
 #' A number [0, 1]. Defaults to 0.1.
 #'
-#' @param maxDegeneracy
-#' Maximum number of variants. A number [1, 32]. Defaults to 4.
+#' @param maxDegeneracyPrimer
+#' Maximum number of variants for primers. A number [1, 32]. Defaults to 4.
 #'
-#' @param gcClamp
+#' @param gcClampPrimer
 #' \code{TRUE} or \code{FALSE}.
-#' If oligos with no GC-clamp
-#' should be replaced with \code{NA}
-#' (recommended for primers). Defaults to \code{TRUE}. A GC-clamp
+#' If primers with no GC-clamp
+#' should be replaced with \code{NA}.
+#' Defaults to \code{TRUE}. A GC-clamp
 #' is here identified as two to three G or
 #' C:s within the last five bases (3' end) of the oligo.
 #'
-#' @param avoid3EndRuns
+#' @param avoid3EndRunsPrimer
 #' \code{TRUE} or \code{FALSE}.
-#' If oligos with more than two runs
-#' of the same nucleotide at the 3' end should be replaced with \code{NA}
-#' (recommended for primers). Defaults to \code{TRUE}.
+#' If primers with more than two runs
+#' of the same nucleotide at the 3' end should be replaced with \code{NA}.
+#' Defaults to \code{TRUE}.
 #'
-#' @param avoid5EndG
-#' \code{TRUE} or \code{FALSE}. If oligos with G
-#' at the 5' end should be replaced with \code{NA}
-#' (recommended for probes). Defaults to \code{FALSE}.
-#'
-#' @param minEndIdentity
+#' @param minEndIdentityPrimer
 #' Optional. If specified, a number [0, 1]. The minimum allowed identity
-#' at the 3' end (i.e. the last five bases of the oligo).
+#' at the 3' end of the primer (i.e. the last five bases).
 #'
-#' @param gcRange
-#' Accepted GC-content (proportion, not %). A numeric vector [0, 1].
+#' @param gcRangePrimer
+#' Accepted GC-content for primers (proportion, not %). A numeric vector [0, 1].
 #' Defaults to \code{c(0.45, 0.55)}.
 #'
-#' @param tmRange
-#' Accepted Tm. A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
+#' @param tmRangePrimer
+#' Accepted Tm for primers.
+#' A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
 #' Tm is calculated using the nearest-neighbor method,
 #' with the following assumptions:
 #' 1) Oligos are not expected to be self-complementary (i.e. no symmetry
 #' correction is done);
 #' 2) The oligo concentration is assumed to be much higher
-#' than the target concentration.
+#' than the target concentration. See references for table values and equations.
 #'
-#' See references for table values and equations.
+#' @param concPrimer
+#' Primer concentration in M, for Tm calculation. A numeric vector
+#' [0.2e-07, 2e-06], i.e. between 20 nM and 20000 nM.
+#' It defaults to 5e-07 M (500 nM).
 #'
-#' @param concOligo
-#' Oligo concentration in M, for Tm calculation. A numeric vector
+#' @param probe
+#' If probes should be designed, \code{TRUE} or \code{FALSE},
+#' defaults to \code{TRUE}.
+#'
+#' @param lengthProbe
+#' Probe length. The minimum allowed
+#' value is 14 and the maximum allowed value is 30.
+#' Defaults to \code{18:22}.
+#'
+#' @param maxGapFrequencyProbe
+#' Maximum allowed gap frequency for probes.
+#' A number [0, 1]. Defaults to 0.1.
+#'
+#' @param maxDegeneracyProbe
+#' Maximum number of variants for probes. A number [1, 32]. Defaults to 4.
+#'
+#' @param avoid5EndGProbe
+#' \code{TRUE} or \code{FALSE}. If probes with G
+#' at the 5' end should be replaced with \code{NA}
+#' (recommended for probes). Defaults to \code{FALSE}.
+#'
+#' @param gcRangeProbe
+#' Accepted GC-content for probes (proportion, not %). A numeric vector [0, 1].
+#' Defaults to \code{c(0.45, 0.55)}.
+#'
+#' @param tmRangeProbe
+#' Accepted Tm for probes.
+#' A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
+#' Tm is calculated using the nearest-neighbor method,
+#' with the following assumptions:
+#' 1) Oligos are not expected to be self-complementary (i.e. no symmetry
+#' correction is done);
+#' 2) The oligo concentration is assumed to be much higher
+#' than the target concentration. See references for table values and equations.
+#'
+#' @param concProbe
+#' Probe concentration in M, for Tm calculation. A numeric vector
 #' [0.2e-07, 2e-06], i.e. between 20 nM and 20000 nM.
 #' It defaults to 5e-07 M (500 nM).
 #'
 #' @param concNa
-#' The sodium ion concentration in M, for Tm calculation.
+#' The sodium ion concentration in the PCR reaction in M, for Tm calculation.
 #' A numeric vector [0.01, 1]. It defaults to 0.05 M (50 mM).
 #'
 #' @param showAllVariants
@@ -82,7 +119,7 @@
 #'
 #' @return
 #' An \code{RprimerOligo} object.
-#' An error message will return if no oligos are found.
+#' A warning message will return if no oligos are found.
 #'
 #' The object contains the following information:
 #'
@@ -101,6 +138,8 @@
 #'   \item{iupac}{IUPAC sequence (i.e. with degenerate bases).}
 #'   \item{iupacRc}{IUPAC sequence, reverse complement.}
 #'   \item{degeneracy}{Number of variants of the degenerate oligo.}
+#'   \item{alignmentStart}{Start position of the input consensus profile.}
+#'   \item{alingnmentEnd}{End position of the input consensus profile.}
 #' }
 #'
 #' If \code{showAllVariants == TRUE}, the following columns are also included:
@@ -114,29 +153,13 @@
 #'   \item{tmAll}{Lists with the Tm of all sequence variants of the oligos.}
 #' }
 #'
-#' @examples
-#' data("exampleRprimerProfile")
-#'
-#' getOligos(
-#'     exampleRprimerProfile,
-#'     length = 18:22,
-#'     maxGapFrequency = 0.1,
-#'     maxDegeneracy = 4,
-#'     gcClamp = TRUE,
-#'     avoid3EndRuns = TRUE,
-#'     avoid5EndG = FALSE,
-#'     minEndIdentity = 0.98,
-#'     gcRange = c(0.45, 0.55),
-#'     tmRange = c(55, 65),
-#'     concOligo = 5e-07,
-#'     concNa = 0.05,
-#'     showAllVariants = TRUE
-#' )
 #' @seealso getConsensusProfile
 #'
 #' @examples
 #' data("exampleRprimerProfile")
+#'  ## Design primers and probes with default values
 #' getOligos(exampleRprimerProfile)
+#'
 #' @references
 #' Tm-calculation:
 #'
@@ -157,54 +180,65 @@
 #'
 #' @export
 getOligos <- function(x,
-                      length = 18:22,
-                      maxGapFrequency = 0.1,
-                      maxDegeneracy = 4,
-                      gcClamp = TRUE,
-                      avoid3EndRuns = TRUE,
-                      avoid5EndG = FALSE,
-                      minEndIdentity = NULL,
-                      gcRange = c(0.45, 0.55),
-                      tmRange = c(55, 65),
-                      concOligo = 5e-07,
+                      lengthPrimer = 18:22,
+                      maxGapFrequencyPrimer = 0.1,
+                      maxDegeneracyPrimer = 4,
+                      gcClampPrimer = TRUE,
+                      avoid3EndRunsPrimer = TRUE,
+                      minEndIdentityPrimer = 0.98,
+                      gcRangePrimer = c(0.45, 0.55),
+                      tmRangePrimer = c(55, 65),
+                      concPrimer = 5e-07,
+                      probe = TRUE,
+                      lengthProbe = 18:22,
+                      maxGapFrequencyProbe = 0.1,
+                      maxDegeneracyProbe = 4,
+                      avoid5EndGProbe = TRUE,
+                      gcRangeProbe = c(0.45, 0.55),
+                      tmRangeProbe = c(55, 70),
+                      concProbe = 2.5e-07,
                       concNa = 0.05,
                       showAllVariants = TRUE) {
     if (!methods::is(x, "RprimerProfile")) {
         stop("'x' must be an RprimerProfile object.")
     }
     if (!is.logical(showAllVariants)) {
-        stop("'showAllVariants' must be set to 'TRUE' or 'FALSE'.", call. = FALSE)
+        stop(
+          "'showAllVariants' must be set to 'TRUE' or 'FALSE'.", call. = FALSE
+        )
     }
     x <- as.data.frame(x)
-    allOligos <- purrr::map_dfr(length, function(i) {
-        oligos <- .generateOligos(
-            x,
-            oligoLength = i, maxGapFrequency = maxGapFrequency,
-            maxDegeneracy = maxDegeneracy
-        )
-        oligos <- .exclude(oligos)
-        oligos <- .addGcContent(oligos, gcRange = gcRange)
-        oligos <- .addTm(
-            oligos,
-            concOligo = concOligo, concNa = concNa, tmRange = tmRange
-        )
-        oligos <- .addReverseComplement(oligos)
-        oligos <- .filterOligos(
-            oligos,
-            gcClamp = gcClamp, avoid5EndG = avoid5EndG,
-            avoid3EndRuns = avoid3EndRuns, minEndIdentity = minEndIdentity
-        )
-        oligos
-    })
+    allOligos <- .getPrimers(x,
+                             lengthPrimer = lengthPrimer,
+                             maxGapFrequencyPrimer = maxGapFrequencyPrimer,
+                             maxDegeneracyPrimer = maxDegeneracyPrimer,
+                             gcClampPrimer = gcClampPrimer,
+                             avoid3EndRunsPrimer = avoid3EndRunsPrimer,
+                             minEndIdentityPrimer = minEndIdentityPrimer,
+                             gcRangePrimer = gcRangePrimer,
+                             tmRangePrimer = tmRangePrimer,
+                             concPrimer = concPrimer,
+                             concNa = concNa,
+                             showAllVariants = showAllVariants)
     if (nrow(allOligos) == 0L) {
-          stop("No oligos were found.", call. = FALSE)
-      }
-    if (showAllVariants) {
-        allOligos <- .expandOligos(
-            allOligos,
-            concOligo = concOligo, concNa = concNa
-        )
+         warning("No primers were found.")
     }
+    if (probe) {
+     allProbes <- .getProbes(x,
+                             lengthProbe = lengthProbe,
+                             maxGapFrequencyProbe = maxGapFrequencyProbe,
+                             maxDegeneracyProbe = maxDegeneracyProbe,
+                             avoid5EndGProbe = avoid5EndGProbe,
+                             gcRangeProbe = gcRangeProbe,
+                             tmRangeProbe = tmRangeProbe,
+                             concProbe = concProbe,
+                             concNa = concNa,
+                             showAllVariants = showAllVariants)
+    }
+    if (nrow(allProbes) == 0L) {
+      warning("No probes were found.")
+    }
+    allOligos <- dplyr::bind_rows(allOligos, allProbes)
     drop <- c("identity3End", "identity3EndRc")
     allOligos <- allOligos[!names(allOligos) %in% drop]
     allOligos <- .roundDfDbl(allOligos)
@@ -354,9 +388,11 @@ getOligos <- function(x,
     identity3EndRc <- endIdentity[, "neg"]
     gapBin <- ifelse(x$gaps > maxGapFrequency, 1L, 0L)
     gapPenalty <- .runningSum(gapBin, n = oligoLength)
+    alignmentStart <- min(x$position)
+    alignmentEnd <- max(x$position)
     oligos <- tibble::tibble(
         start, end, length, majority, identity, identity3End, identity3EndRc,
-        iupac, degeneracy, gapPenalty
+        iupac, degeneracy, gapPenalty, alignmentStart, alignmentEnd
     )
     uniqueOligos <- match(oligos$majority, unique(oligos$majority))
     oligos <- oligos[uniqueOligos, ]
@@ -747,7 +783,7 @@ getOligos <- function(x,
     all <- purrr::map(x$iupac, function(x) {
         if (is.na(x)) "" else .expandDegenerates(x)
     })
-    x <- tibble::add_column(x, all, .after = "degeneracy")
+    x <- tibble::add_column(x, all, .before = "alignmentStart")
     allRc <- purrr::map(x$iupacRc, function(x) {
         if (is.na(x)) "" else .expandDegenerates(x)
     })
@@ -762,6 +798,94 @@ getOligos <- function(x,
         toCalculate <- unlist(toCalculate)
         purrr::map_dbl(toCalculate, ~ round(.tm(.x), 2))
     })
-    x <- tibble::add_column(x, gcAll, tmAll)
+    x <- tibble::add_column(x, gcAll, tmAll, .before = "alignmentStart")
     x
+}
+
+.getPrimers <- function(x,
+                        lengthPrimer = 18:22,
+                        maxGapFrequencyPrimer = 0.1,
+                        maxDegeneracyPrimer = 4,
+                        gcClampPrimer = TRUE,
+                        avoid3EndRunsPrimer = TRUE,
+                        minEndIdentityPrimer = 0.98,
+                        gcRangePrimer = c(0.45, 0.55),
+                        tmRangePrimer = c(55, 65),
+                        concPrimer = 5e-07,
+                        concNa = 0.05,
+                        showAllVariants = TRUE) {
+  allPrimers <- purrr::map_dfr(lengthPrimer, function(i) {
+    primers <- .generateOligos(
+      x,
+      oligoLength = i, maxGapFrequency = maxGapFrequencyPrimer,
+      maxDegeneracy = maxDegeneracyPrimer
+    )
+    primers <- .exclude(primers)
+    primers <- .addGcContent(primers, gcRange = gcRangePrimer)
+    primers <- .addTm(
+      primers, concOligo = concPrimer,
+      concNa = concNa, tmRange = tmRangePrimer
+    )
+    primers <- .addReverseComplement(primers)
+    primers <- .filterOligos(
+      primers,
+      gcClamp = gcClampPrimer, avoid5EndG = FALSE,
+      avoid3EndRuns = avoid3EndRunsPrimer,
+      minEndIdentity = minEndIdentityPrimer
+    )
+    primers <- tibble::add_column(
+      primers, type = rep("primer", nrow(primers)), .before = "start"
+    )
+    primers
+  })
+  if (showAllVariants) {
+    allPrimers <- .expandOligos(
+      allPrimers,
+      concOligo = concPrimer, concNa = concNa
+    )
+  }
+  allPrimers
+}
+
+.getProbes <- function(x,
+                       lengthProbe = 18:22,
+                       maxGapFrequencyProbe = 0.1,
+                       maxDegeneracyProbe = 4,
+                       avoid5EndGProbe = TRUE,
+                       gcRangeProbe = c(0.45, 0.55),
+                       tmRangeProbe = c(55, 70),
+                       concProbe = 2.5e-07,
+                       concNa = 0.05,
+                       showAllVariants = TRUE) {
+  allProbes <- purrr::map_dfr(lengthProbe, function(i) {
+    probes <- .generateOligos(
+      x,
+      oligoLength = i, maxGapFrequency = maxGapFrequencyProbe,
+      maxDegeneracy = maxDegeneracyProbe
+    )
+    probes <- .exclude(probes)
+    probes <- .addGcContent(probes, gcRange = gcRangeProbe)
+    probes <- .addTm(
+      probes, concOligo = concProbe,
+      concNa = concNa, tmRange = tmRangeProbe
+    )
+    probes <- .addReverseComplement(probes)
+    probes <- .filterOligos(
+      probes,
+      gcClamp = FALSE, avoid5EndG = avoid5EndGProbe,
+      avoid3EndRuns = FALSE,
+      minEndIdentity = NULL
+    )
+    probes <- tibble::add_column(
+      probes, type = rep("probe", nrow(probes)), .before = "start"
+    )
+    probes
+  })
+  if (showAllVariants) {
+    allProbes <- .expandOligos(
+      allProbes,
+      concOligo = concProbe, concNa = concNa
+    )
+  }
+  allProbes
 }

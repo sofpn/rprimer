@@ -3,14 +3,20 @@
 \name{plotData}
 \alias{plotData}
 \alias{plotData,RprimerProfile-method}
+\alias{plotData,RprimerOligo-method}
+\alias{plotData,RprimerAssay-method}
 \title{Plot an Rprimer-object (generic)}
 \usage{
 plotData(x, ...)
 
 \S4method{plotData}{RprimerProfile}(x, shadeFrom = NULL, shadeTo = NULL)
+
+\S4method{plotData}{RprimerOligo}(x)
+
+\S4method{plotData}{RprimerAssay}(x)
 }
 \arguments{
-\item{x}{An \code{RprimerProfile} object.}
+\item{x}{An \code{RprimerAssay} object.}
 
 \item{...}{Additional arguments that should be passed to the plot.}
 
@@ -22,20 +28,36 @@ should end (an integer).}
 }
 \value{
 A plot.
+
+A plot.
+
+A plot.
 }
 \description{
 Plot an Rprimer-object (generic)
 
 Plot an RprimerProfile-object (method)
+
+Plot an RprimerOligo-object (method)
+
+Plot an RprimerAssay-object (method)
 }
 \section{Methods (by class)}{
 \itemize{
 \item \code{RprimerProfile}: 
+
+\item \code{RprimerOligo}: 
+
+\item \code{RprimerAssay}: 
 }}
 
 \examples{
 data("exampleRprimerProfile")
 plotData(exampleRprimerProfile)
 plotData(exampleRprimerProfile, shadeFrom = 500, shadeTo = 1000)
+data("exampleRprimerOligo")
+plotData(exampleRprimerOligo)
+data("exampleRprimerAssay")
+plotData(exampleRprimerAssay)
 
 }

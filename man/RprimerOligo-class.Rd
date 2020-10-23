@@ -45,5 +45,4 @@ Constructs an \code{RprimerOligo} object in a similar fashion as the
 data("exampleRprimerOligo")
 x <- as.data.frame(exampleRprimerOligo)
 RprimerOligo(x)
-
 }

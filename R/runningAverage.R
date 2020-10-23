@@ -1,3 +1,6 @@
+## Set position instead of seq_len - input is the data frame, correct this
+## in plots as well
+
 #' Calculate running average
 #'
 #' \code{.runningAverage} calculates a running average of a

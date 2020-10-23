@@ -5,18 +5,14 @@
 \title{Get (RT)-PCR assays from oligos}
 \usage{
 getAssays(
-  primers,
-  probes = NULL,
+  x,
   length = 65:120,
   maxTmDifferencePrimers = 2,
   tmDifferencePrimersProbe = c(0, 20)
 )
 }
 \arguments{
-\item{primers}{An \code{RprimerOligo} object.}
-
-\item{probes}{Optional, defaults to \code{NULL}.
-An \code{RprimerOligo} object if probes are to be used.}
+\item{x}{An \code{RprimerOligo} object, with or without probes.}
 
 \item{length}{Amplicon length, a numeric vector [40, 5000]. Defaults to
 \code{65:120}.}
@@ -39,7 +35,7 @@ may thus be misleading for degenerate (IUPAC) oligos.}
 }
 \value{
 An \code{RprimerAssay} object.
-An error message will return if no assays are found.
+A warning message will return if no assays are found.
 
 The object contains the following information:
 
@@ -92,6 +88,10 @@ in \code{get_oligos()}, the following columns are also added:
   sequence variants of the forward primer.}
   \item{tmAllRev}{Lists with the Tm of all sequence variants of
   the reverse primer.}
+  \item{alignmentStart}{Start position of the input consensus profile
+  used for oligo design.}
+  \item{alingnmentEnd}{End position of the input consensus profile used
+  for oligo design.}
 }
 
 If a probe is used, the following columns are also included:
@@ -115,7 +115,7 @@ If a probe is used, the following columns are also included:
   the probe with the least G:s is selected.}
 }
 
-If the option \code{showAllVariants == TRUE} was used for probe design
+And, if the option \code{showAllVariants == TRUE} was used
 in \code{getOligos()}, the following data are also added:
 
 \describe{
@@ -132,10 +132,8 @@ and (if selected) probes to (RT)-PCR assays.
 }
 \examples{
 data("exampleRprimerOligo")
-## Get assays with only primers, using default settings
+## Get assays using default settings
 getAssays(exampleRprimerOligo)
- ## Get assays with primers and probe, using default settings
-getAssays(primers = exampleRprimerOligo, probes = exampleRprimerOligo)
 
 }
 \seealso{

@@ -45,5 +45,4 @@ Constructs an \code{RprimerAssay} object in a similar fashion as the
 data("exampleRprimerAssay")
 x <- as.data.frame(exampleRprimerAssay)
 RprimerAssay(x)
-
 }
