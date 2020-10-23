@@ -44,7 +44,6 @@ library(magrittr) ## Required for the pipe operator
 library(tibble)
 library(Biostrings) ## Required to import alignments 
 ```
-
 ### To start
 
 The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the work for this part. 

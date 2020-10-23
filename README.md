@@ -7,9 +7,8 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 
 ### Overview
 
-rprimer provides functions for designing (RT)-(q/dd)PCR assays from
-multiple DNA sequence alignments. The design process is built on three
-functions:
+rprimer provides tools for designing (RT)-(q/dd)PCR assays from multiple
+DNA sequence alignments. The design process is built on three functions:
 
   - `getConsensusProfile()`: returns an `RprimerProfile` object, which
     is used as input for;
