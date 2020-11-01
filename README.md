@@ -5,6 +5,9 @@
 status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 <!-- badges: end -->
 
+**to do: kable extra tables to show data, validate objs, figures, write
+tests**
+
 ### Overview
 
 rprimer provides tools for designing (RT)-(q/dd)PCR assays from multiple
@@ -80,12 +83,12 @@ head(myConsensusProfile)
 #> 6         6      0.71      0.00      0.00      0.00         0      0.29
 #>      majority  identity       iupac   entropy
 #>   <character> <numeric> <character> <numeric>
-#> 1           G      1.00           G      0.00
-#> 2           G      1.00           G      0.00
-#> 3           C      1.00           C      0.00
-#> 4           A      1.00           A      0.00
-#> 5           G      0.99           G      0.11
-#> 6           A      1.00           A      0.00
+#> 1           G  1.000000           G  0.000000
+#> 2           G  1.000000           G  0.000000
+#> 3           C  1.000000           C  0.000000
+#> 4           A  1.000000           A  0.000000
+#> 5           G  0.985915           G  0.106792
+#> 6           A  1.000000           A  0.000000
 ```
 
 Some comments on the data:
@@ -98,6 +101,7 @@ Some comments on the data:
   - The IUPAC consensus sequence includes wobble bases according to the
     IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that
     occurs with a frequency higher than the stated `iupacThreshold`.
+    **The iupac treshold has implications for downstream oligo design.**
 
   - Entropy refers to Shannon entropy, which is a measurement of
     variability. A value of zero indicate no variability and a high
@@ -105,8 +109,8 @@ Some comments on the data:
 
 The data can be visualized with `plotData()`, and specific regions can
 be highlighted using the optional arguments `shadeFrom` and `shadeTo`.
-We can see that the hepatitis E virus genome has a conserved region
-between position 5000-5500:
+We can see that the most conserved region of the hepatitis E virus
+genome is between position 5000-5500:
 
 ``` r
 plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
@@ -123,7 +127,7 @@ as a reverse complement or not.
 
 ``` r
 ## Plot the first 30 bases 
-plotNucleotides(myConsensusProfile, from = 1, to = 30, rc = FALSE) 
+plotNucleotides(myConsensusProfile[1:30, ], rc = FALSE) 
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" />

@@ -30,20 +30,19 @@ getOligos(
 \arguments{
 \item{x}{An \code{RprimerProfile} object.}
 
-\item{lengthPrimer}{Primer length. The minimum allowed
-value is 14 and the maximum allowed value is 30.
+\item{lengthPrimer}{Primer length. A numeric vector [14, 30].
 Defaults to \code{18:22}.}
 
 \item{maxGapFrequencyPrimer}{Maximum allowed gap frequency for primers.
 A number [0, 1]. Defaults to 0.1.}
 
-\item{maxDegeneracyPrimer}{Maximum number of variants for primers. A number [1, 32]. Defaults to 4.}
+\item{maxDegeneracyPrimer}{Maximum number of variants of each primer. A number [1, 32]. Defaults to 4.}
 
 \item{gcClampPrimer}{\code{TRUE} or \code{FALSE}.
 If primers with no GC-clamp
 should be replaced with \code{NA}.
 Defaults to \code{TRUE}. A GC-clamp
-is here identified as two to three G or
+is identified as two to three G or
 C:s within the last five bases (3' end) of the oligo.}
 
 \item{avoid3EndRunsPrimer}{\code{TRUE} or \code{FALSE}.
@@ -54,10 +53,10 @@ Defaults to \code{TRUE}.}
 \item{minEndIdentityPrimer}{Optional. If specified, a number [0, 1]. The minimum allowed identity
 at the 3' end of the primer (i.e. the last five bases).}
 
-\item{gcRangePrimer}{Accepted GC-content for primers (proportion, not %). A numeric vector [0, 1].
+\item{gcRangePrimer}{GC-content range for primers (proportion, not %). A numeric vector [0, 1].
 Defaults to \code{c(0.45, 0.55)}.}
 
-\item{tmRangePrimer}{Accepted Tm for primers.
+\item{tmRangePrimer}{Tm range for primers.
 A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
 Tm is calculated using the nearest-neighbor method,
 with the following assumptions:
@@ -70,26 +69,24 @@ than the target concentration. See references for table values and equations.}
 [0.2e-07, 2e-06], i.e. between 20 nM and 20000 nM.
 It defaults to 5e-07 M (500 nM).}
 
-\item{probe}{If probes should be designed, \code{TRUE} or \code{FALSE},
+\item{probe}{If probes should be designed as  well. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
 
-\item{lengthProbe}{Probe length. The minimum allowed
-value is 14 and the maximum allowed value is 30.
+\item{lengthProbe}{Probe length. A numeric vector [14, 30].
 Defaults to \code{18:22}.}
 
 \item{maxGapFrequencyProbe}{Maximum allowed gap frequency for probes.
 A number [0, 1]. Defaults to 0.1.}
 
-\item{maxDegeneracyProbe}{Maximum number of variants for probes. A number [1, 32]. Defaults to 4.}
+\item{maxDegeneracyProbe}{Maximum number of variants of each probe. A number [1, 32]. Defaults to 4.}
 
 \item{avoid5EndGProbe}{\code{TRUE} or \code{FALSE}. If probes with G
-at the 5' end should be replaced with \code{NA}
-(recommended for probes). Defaults to \code{FALSE}.}
+at the 5' end should be excluded. Defaults to \code{TRUE}.}
 
-\item{gcRangeProbe}{Accepted GC-content for probes (proportion, not %). A numeric vector [0, 1].
+\item{gcRangeProbe}{GC-content range for probes (proportion, not %). A numeric vector [0, 1].
 Defaults to \code{c(0.45, 0.55)}.}
 
-\item{tmRangeProbe}{Accepted Tm for probes.
+\item{tmRangeProbe}{Tm range for probes.
 A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
 Tm is calculated using the nearest-neighbor method,
 with the following assumptions:
@@ -106,17 +103,23 @@ It defaults to 5e-07 M (500 nM).}
 A numeric vector [0.01, 1]. It defaults to 0.05 M (50 mM).}
 
 \item{showAllVariants}{If sequence, GC-content and Tm should be presented for all
-variants of each oligo (in case of degenerate bases).
+variants of each oligo, not just for majority variants
+(in case of degenerate bases).
 \code{TRUE} (slower) or \code{FALSE} (faster).
-It defaults to \code{TRUE}.}
+Defaults to \code{TRUE}.
+
+\code{getOligos()} excludes all oligos with
+more than than three consecutive runs of the same dinucleotide
+(e.g. 'TATATATA') and more than four consecutive runs of the
+same nucleotide (e.g. 'AAAAA').
+It also excludes oligos that are duplicated to prevent binding to several
+places in the target. These checks are done on majority oligos.}
 }
 \value{
 An \code{RprimerOligo} object.
-A warning message will return if no oligos are found.
+An error message will return if no oligos are found.
 
 The object contains the following information:
-
-If \code{showAllVariants == FALSE}:
 
 \describe{
   \item{type}{Type of oligo, primer or probe.}
@@ -150,22 +153,9 @@ If \code{showAllVariants == TRUE}, the following columns are also included:
 \code{getOligos()} identifies oligos (primers and probes)
 from sequence properties.
 }
-\section{Notes}{
-
-GC-content and Tm are calculated based on the majority oligos, and
-may thus be misleading for degenerate (IUPAC) oligos.
-
-\code{getOligos()} excludes all oligos with
-more than than three consecutive runs of the same dinucleotide
-(e.g. 'TATATATA') and more than four consecutive runs of the
-same nucleotide (e.g. 'AAAAA').
-It also excludes oligos that are duplicated to prevent binding to several
-places in the target. These checks are based on the majority oligos.
-}
-
 \examples{
 data("exampleRprimerProfile")
- ## Design primers and probes with default values
+## Design primers and probes with default values
 getOligos(exampleRprimerProfile)
 
 }
@@ -186,7 +176,4 @@ Table values for nearest-neighbors:
 SantaLucia, J (1998) A unified view of polymer,
 dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
 Proc. Natl. Acad. Sci. USA, 95: 1460-1465.
-}
-\seealso{
-getConsensusProfile
 }

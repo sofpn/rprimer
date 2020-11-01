@@ -17,6 +17,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+**to do: kable extra tables to show data, validate objs, figures, write tests**
+
 ### Overview 
 
 rprimer provides tools for designing (RT)-(q/dd)PCR assays from multiple DNA sequence alignments. The design process is built on three functions: 
@@ -71,22 +73,22 @@ Some comments on the data:
 
 * Majority refers to the majority consensus sequence, which is the most frequently occurring base. Identity is the proportion of that base when gaps and other bases than A, C, G and T are not taken into account. 
 
-* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`.
+* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`. **The iupac treshold has implications for downstream oligo design.**
 
 * Entropy refers to Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability.
 
-The data can be visualized with `plotData()`, and specific regions can be highlighted using the optional arguments `shadeFrom` and `shadeTo`. We can see that the hepatitis E virus genome has a conserved region between position 5000-5500:
+The data can be visualized with `plotData()`, and specific regions can be highlighted using the optional arguments `shadeFrom` and `shadeTo`. We can see that the most conserved region of the hepatitis E virus genome is between position 5000-5500:
 
-```{r}
+```{r, fig.width=12, fig.height=6}
 plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
 ```
 The black lines represent centered running averages and the blue dots represent the value at each position. 
 
 It is also possible to inspect the nucleotide distribution with `plotNucleotides()`. Here, `from` and `to` indicates the plotting range (positions), and `rc` regulates whether the sequence should be displayed as a reverse complement or not. 
 
-```{r, fig.align="center", fig.width=6, fig.height=4}
+```{r, fig.align="center", fig.width=6, fig.height=6}
 ## Plot the first 30 bases 
-plotNucleotides(myConsensusProfile, from = 1, to = 30, rc = FALSE) 
+plotNucleotides(myConsensusProfile[1:30, ], rc = FALSE) 
 ```
 
 ### Step 2: `getOligos`
@@ -148,7 +150,7 @@ myOligos <- getOligos(myConsensusProfile,
 
 The object contains many columns, so the most sensible way to inspect it is by using `View(as.data.frame(myOligos))`, if you are using RStudio. All oligo candidates can be visualized using `plotData()`:
 
-```{r, fig.width=6, fig.height=4}
+```{r, fig.width=12, fig.height=8}
 plotData(myOligos)
 ```
 

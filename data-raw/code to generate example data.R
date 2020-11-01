@@ -10,7 +10,7 @@ exampleRprimerProfile <- getConsensusProfile(
 
 exampleRprimerOligo <- getOligos(exampleRprimerProfile)
 
-exampleRprimerAssay <- getAssays(exampleRprimerOligo, exampleRprimerOligo)
+exampleRprimerAssay <- getAssays(exampleRprimerOligo)
 
 save(exampleRprimerAlignment, file = "exampleRprimerAlignment.RData")
 save(exampleRprimerProfile, file = "exampleRprimerProfile.RData")

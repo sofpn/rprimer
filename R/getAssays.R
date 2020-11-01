@@ -29,7 +29,7 @@
 #'
 #' @return
 #' An \code{RprimerAssay} object.
-#' A warning message will return if no assays are found.
+#' An error message will return if no assays are found.
 #'
 #' The object contains the following information:
 #'
@@ -152,7 +152,6 @@ getAssays <- function(x,
     assays <- assays[-grep("alignmentStart", names(assays))]
     assays <- assays[-grep("alignmentEnd", names(assays))]
     assays <- tibble::add_column(assays, alignmentStart, alignmentEnd)
-    assays <- .roundDfDbl(assays)
     assays <- assays[order(assays$start), ]
     RprimerAssay(assays)
 }
@@ -234,8 +233,8 @@ getAssays <- function(x,
     assays <- assays[assays$ampliconLength <= max(length), ]
     assays <- assays[assays$tmDifferencePrimer <= maxTmDifferencePrimers, ]
     if (nrow(assays) == 0L) {
-          stop("No assays were found.", call. = FALSE)
-      }
+        stop("No assays were found.", call. = FALSE)
+    }
     assays
 }
 
@@ -256,7 +255,8 @@ getAssays <- function(x,
 #' @noRd
 .addProbes <- function(assays, probes, tmDifferencePrimersProbe = c(0, 20)) {
     if (!(is.numeric(tmDifferencePrimersProbe) &&
-        min(tmDifferencePrimersProbe) >= -20 && max(tmDifferencePrimersProbe) <= 20)
+        min(tmDifferencePrimersProbe) >= -20 &&
+        max(tmDifferencePrimersProbe) <= 20)
     ) {
         stop(
             "'tmDifference' must be from -20 to 20, e.g. c(-1, 5).",
@@ -288,7 +288,6 @@ getAssays <- function(x,
                 gContentNeg <- .gContent(y)
                 sense <- ifelse(gContentPos <= gContentNeg, "pos", "neg")
             }
-
             sense
         }
     )
@@ -315,8 +314,7 @@ getAssays <- function(x,
         }
     )
     assays <- tibble::add_column(
-        assays, tmDifferencePrimerProbe,
-        .after = "tmDifferencePrimer"
+        assays, tmDifferencePrimerProbe, .after = "tmDifferencePrimer"
     )
     assays <- assays[
         assays$tmDifferencePrimerProbe >= min(tmDifferencePrimersProbe),

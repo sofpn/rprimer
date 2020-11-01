@@ -10,7 +10,8 @@
 #' A number [0, 0.2].
 #' At each position, all nucleotides with a proportion
 #' higher than the \code{iupacThreshold} will be included in
-#' the IUPAC consensus sequence. Defaults to 0.
+#' the IUPAC consensus sequence. Defaults to 0. This has implications for
+#' downstream oligo design. .....
 #'
 #' @return
 #' An \code{RprimerProfile} object, which contains the following information:
@@ -84,12 +85,11 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     gaps <- unname(x["-", ])
     majority <- .majorityConsensus(x)
     identity <- .nucleotideIdentity(x)
-    iupac <- .iupacConsensus(x, threshold = iupacThreshold)
+    iupac <- .iupacConsensus(x, iupacThreshold = iupacThreshold)
     entropy <- .shannonEntropy(x)
     df <- data.frame(
         position, a, c, g, t, other, gaps, majority, identity, iupac, entropy
     )
-    df <- .roundDfDbl(df)
     RprimerProfile(df)
 }
 
@@ -175,7 +175,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #'
 #' @param x A numeric matrix.
 #'
-#' @param threshold
+#' @param iupacThreshold
 #' Optional. A number [0, 0.2]
 #' At each position, all nucleotides with a proportion
 #' higher or equal to the threshold will be included in
@@ -189,20 +189,22 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' @keywords internal
 #'
 #' @noRd
-.iupacConsensus <- function(x, threshold = 0) {
-    if (!is.double(threshold) || threshold < 0 || threshold > 0.2) {
-        stop(paste0("'treshold' must be from 0 to 0.2."), call. = FALSE)
+.iupacConsensus <- function(x, iupacThreshold = 0) {
+    if (
+        !is.double(iupacThreshold) || iupacThreshold < 0 || iupacThreshold > 0.2
+        ) {
+        stop(paste0("'iupacThreshold' must be from 0 to 0.2."), call. = FALSE)
     }
     bases <- c("A", "C", "G", "T", "-")
     x <- x[rownames(x) %in% bases, ]
     basesToInclude <- apply(x, 2, function(y) {
-        paste(rownames(x)[y > threshold], collapse = ",")
+        paste(rownames(x)[y > iupacThreshold], collapse = ",")
     })
     basesToInclude <- unname(basesToInclude)
     consensus <- purrr::map_chr(basesToInclude, ~ .asIUPAC(.x))
     if (any(is.na(consensus))) {
         warning("The consensus sequence contain NAs. \n
-    Try to lower the 'threshold' value.", call. = FALSE)
+    Try to lower the 'iupacThreshold' value.", call. = FALSE)
     }
     consensus
 }

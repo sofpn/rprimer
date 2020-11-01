@@ -25,19 +25,6 @@
 #' @param ... A data frame or list to be converted into an \code{RprimerProfile}
 #' object.
 #'
-#' @param row.names
-#' \code{NULL} or a single integer or character string specifying a column to be
-#' used as row names, or a character or integer vector giving the row names
-#' for the data frame.
-#'
-#' @param check.names
-#' logical. If \code{TRUE} then the names of the variables in the data frame are
-#' checked to ensure that they are syntactically valid variable names and
-#' are not duplicated.
-#'
-#' @param stringsAsFactors
-#' logical. If character vectors should be converted to factors.
-#'
 #' @return An \code{RprimerAssay} object if validation succeeds, an error
 #' message otherwise.
 #'
@@ -48,24 +35,17 @@
 #' x <- as.data.frame(exampleRprimerProfile)
 #' RprimerProfile(x)
 #' @importFrom S4Vectors DataFrame
-RprimerProfile <- function(...,
-                           row.names = NULL,
-                           check.names = TRUE,
-                           stringsAsFactors) {
-    df <- DataFrame(...,
-        row.names = row.names,
-        check.names = check.names,
-        stringsAsFactors = stringsAsFactors
-    )
+RprimerProfile <- function(...) {
+    df <- DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerProfile(df)
 }
 
 # I did very simple validity checks here...
 S4Vectors::setValidity2("RprimerProfile", function(object) {
     msg <- NULL
-      if (ncol(object) != 11) {
+    if (ncol(object) != 11) {
         msg <- c(msg, "The object must have 11 columns.")
-      }
+    }
     if (is.null(msg)) {
         TRUE
     } else {
@@ -102,19 +82,6 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 #' @param ... A data frame or list to be converted into an \code{RprimerProfile}
 #' object.
 #'
-#' @param row.names
-#' \code{NULL} or a single integer or character string specifying a column to be
-#' used as row names, or a character or integer vector giving the row names
-#' for the data frame.
-#'
-#' @param check.names
-#' logical. If \code{TRUE} then the names of the variables in the data frame are
-#' checked to ensure that they are syntactically valid variable names and
-#' are not duplicated.
-#'
-#' @param stringsAsFactors
-#' logical. If character vectors should be converted to factors.
-#'
 #' @return An \code{RprimerOligo} object if validation succeeds, an error
 #' message otherwise.
 #'
@@ -125,15 +92,8 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 #' x <- as.data.frame(exampleRprimerOligo)
 #' RprimerOligo(x)
 #' @importFrom S4Vectors DataFrame
-RprimerOligo <- function(...,
-                         row.names = NULL,
-                         check.names = TRUE,
-                         stringsAsFactors) {
-    df <- DataFrame(...,
-        row.names = row.names,
-        check.names = check.names,
-        stringsAsFactors = stringsAsFactors
-    )
+RprimerOligo <- function(...) {
+    df <- DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerOligo(df)
 }
 
@@ -178,19 +138,6 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 #' @param ... A data frame or list to be converted into an \code{RprimerProfile}
 #' object.
 #'
-#' @param row.names
-#' \code{NULL} or a single integer or character string specifying a column to be
-#' used as row names, or a character or integer vector giving the row names
-#' for the data frame.
-#'
-#' @param check.names
-#' logical. If \code{TRUE} then the names of the variables in the data frame are
-#' checked to ensure that they are syntactically valid variable names and
-#' are not duplicated.
-#'
-#' @param stringsAsFactors
-#' logical. If character vectors should be converted to factors.
-#'
 #' @return An \code{RprimerAssay} object if validation succeeds, an error
 #' message otherwise.
 #'
@@ -201,16 +148,9 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 #' x <- as.data.frame(exampleRprimerAssay)
 #' RprimerAssay(x)
 #' @importFrom S4Vectors DataFrame
-RprimerAssay <- function(...,
-                         row.names = NULL,
-                         check.names = TRUE,
-                         stringsAsFactors) {
-    df <- DataFrame(...,
-        row.names = row.names,
-        check.names = check.names,
-        stringsAsFactors = stringsAsFactors
-    )
-    .RprimerAssay(df)
+RprimerAssay <- function(...) {
+  df <- DataFrame(..., row.names = NULL, check.names = TRUE)
+  .RprimerAssay(df)
 }
 
 S4Vectors::setValidity2("RprimerAssay", function(object) {

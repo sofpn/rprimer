@@ -4,14 +4,10 @@
 \alias{plotNucleotides}
 \title{Plot nucleotide distribution}
 \usage{
-plotNucleotides(x, from = NULL, to = NULL, rc = FALSE)
+plotNucleotides(x, rc = FALSE)
 }
 \arguments{
 \item{x}{An \code{RprimerProfile} object.}
-
-\item{from}{Optional. Start position (an integer).}
-
-\item{to}{Optional. End position (an integer).}
 
 \item{rc}{\code{TRUE} or {FALSE}. If the plotted sequence should be displayed
 as reverse complement or not. Defaults to \code{FALSE}.}
@@ -24,8 +20,8 @@ Plot nucleotide distribution
 }
 \examples{
 data("exampleRprimerProfile")
-plotNucleotides(exampleRprimerProfile, from = 1, to = 10)
+plotNucleotides(exampleRprimerProfile[1:10, ])
 ## Plot the first 10 bases
-plotNucleotides(exampleRprimerProfile, from = 1, to = 10, rc = TRUE)
+plotNucleotides(exampleRprimerProfile[1:10, ], rc = TRUE)
 ## As reverse complement
 }

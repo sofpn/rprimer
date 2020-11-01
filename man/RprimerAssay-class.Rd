@@ -7,21 +7,11 @@
 \alias{RprimerAssay}
 \title{An S4 class for representation of PCR assays}
 \usage{
-RprimerAssay(..., row.names = NULL, check.names = TRUE, stringsAsFactors)
+RprimerAssay(...)
 }
 \arguments{
 \item{...}{A data frame or list to be converted into an \code{RprimerProfile}
 object.}
-
-\item{row.names}{\code{NULL} or a single integer or character string specifying a column to be
-used as row names, or a character or integer vector giving the row names
-for the data frame.}
-
-\item{check.names}{logical. If \code{TRUE} then the names of the variables in the data frame are
-checked to ensure that they are syntactically valid variable names and
-are not duplicated.}
-
-\item{stringsAsFactors}{logical. If character vectors should be converted to factors.}
 }
 \value{
 An \code{RprimerAssay} object if validation succeeds, an error

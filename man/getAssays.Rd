@@ -35,7 +35,7 @@ may thus be misleading for degenerate (IUPAC) oligos.}
 }
 \value{
 An \code{RprimerAssay} object.
-A warning message will return if no assays are found.
+An error message will return if no assays are found.
 
 The object contains the following information:
 
