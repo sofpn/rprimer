@@ -5,24 +5,9 @@
 status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 <!-- badges: end -->
 
-**to do: kable extra tables to show data, validate objs, figures, write
-tests**
-
-### Overview
-
-rprimer provides tools for designing (RT)-(q/dd)PCR assays from multiple
-DNA sequence alignments. The design process is built on three functions:
-
-  - `getConsensusProfile()`: returns an `RprimerProfile` object, which
-    is used as input for;
-  - `getOligos()`: returns an `RprimerOligo` object, which is used as
-    input for;
-  - `getAssays()`: returns an `RprimerAssay` object.
-
-The `Rprimer`-classes are extensions of the `DataFrame` class from
-S4Vectors, and behave in a similar manner as traditional data frames.
-They can be coerced to data frames or tibbles by using `as.data.frame()`
-or `tibble::as_tibble()`.
+**to do: validate objs, kolla documentation/alla defaults, write tests,
+skriv vingette, new test files, installera, jmfr med existerande,
+skicka**
 
 ### Installation
 
@@ -38,12 +23,26 @@ Initial setup for the code in this document:
 ``` r
 # library(rprimer)
 devtools::load_all(".")
-library(magrittr) ## Required for the pipe operator 
-library(tibble)
-library(Biostrings) ## Required to import alignments 
+library(magrittr) # Required for the pipe operator 
+library(Biostrings) # Required to import alignment
 ```
 
-### To start
+### Overview
+
+rprimer provides tools for designing (RT)-(q/dd)PCR assays from multiple
+DNA sequence alignments. The design process is built on three functions:
+
+  - `getConsensusProfile()`: returns an `RprimerProfile` object, which
+    is used as input for;
+  - `getOligos()`: returns an `RprimerOligo` object, which is used as
+    input for;
+  - `getAssays()`: returns an `RprimerAssay` object.
+
+The `Rprimer`-classes are extensions of the `DataFrame` class from
+S4Vectors, and behave in a similar manner as traditional data frames,
+and can be coerced to such by using `as.data.frame()`.
+
+### Import data
 
 The first step is to import an alignment with target sequences of
 interest and, if preferred, mask positions with high gap frequency.
@@ -71,25 +70,18 @@ subsequent design process. Masked positions are excluded.
 
 ``` r
 myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
-head(myConsensusProfile)
-#> RprimerProfile with 6 rows and 11 columns
-#>    position         a         c         g         t     other      gaps
-#>   <integer> <numeric> <numeric> <numeric> <numeric> <numeric> <numeric>
-#> 1         1      0.00      0.00      0.59      0.00         0      0.41
-#> 2         2      0.00      0.00      0.71      0.00         0      0.29
-#> 3         3      0.00      0.71      0.00      0.00         0      0.29
-#> 4         4      0.71      0.00      0.00      0.00         0      0.29
-#> 5         5      0.00      0.00      0.70      0.01         0      0.29
-#> 6         6      0.71      0.00      0.00      0.00         0      0.29
-#>      majority  identity       iupac   entropy
-#>   <character> <numeric> <character> <numeric>
-#> 1           G  1.000000           G  0.000000
-#> 2           G  1.000000           G  0.000000
-#> 3           C  1.000000           C  0.000000
-#> 4           A  1.000000           A  0.000000
-#> 5           G  0.985915           G  0.106792
-#> 6           A  1.000000           A  0.000000
 ```
+
+Output:
+
+| position |    a |    c |    g |    t | other | gaps | majority | identity | iupac | entropy |
+| -------: | ---: | ---: | ---: | ---: | ----: | ---: | :------- | -------: | :---- | ------: |
+|        1 | 0.00 | 0.00 | 0.59 | 0.00 |     0 | 0.41 | G        |     1.00 | G     |    0.00 |
+|        2 | 0.00 | 0.00 | 0.71 | 0.00 |     0 | 0.29 | G        |     1.00 | G     |    0.00 |
+|        3 | 0.00 | 0.71 | 0.00 | 0.00 |     0 | 0.29 | C        |     1.00 | C     |    0.00 |
+|        4 | 0.71 | 0.00 | 0.00 | 0.00 |     0 | 0.29 | A        |     1.00 | A     |    0.00 |
+|        5 | 0.00 | 0.00 | 0.70 | 0.01 |     0 | 0.29 | G        |     0.99 | G     |    0.11 |
+|        6 | 0.71 | 0.00 | 0.00 | 0.00 |     0 | 0.29 | A        |     1.00 | A     |    0.00 |
 
 Some comments on the data:
 
@@ -105,32 +97,33 @@ Some comments on the data:
 
   - Entropy refers to Shannon entropy, which is a measurement of
     variability. A value of zero indicate no variability and a high
-    value indicate high variability.
+    value indicate high variability. Gaps and other bases than A, C, G
+    and T are not included in this calculation.
 
-The data can be visualized with `plotData()`, and specific regions can
-be highlighted using the optional arguments `shadeFrom` and `shadeTo`.
-We can see that the most conserved region of the hepatitis E virus
-genome is between position 5000-5500:
+The target genome can be visualized with `plotData()`, and specific
+regions can be highlighted using the optional arguments `shadeFrom` and
+`shadeTo`. We can see that the most conserved region of the hepatitis E
+virus genome is between position 5000-5500:
 
 ``` r
 plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" /> The
-black lines represent centered running averages and the blue dots
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+
+The black lines represent centered running averages and the blue dots
 represent the value at each position.
 
 It is also possible to inspect the nucleotide distribution with
-`plotNucleotides()`. Here, `from` and `to` indicates the plotting range
-(positions), and `rc` regulates whether the sequence should be displayed
-as a reverse complement or not.
+`plotNucleotides()`. Here, `rc` regulates whether the sequence should be
+displayed as a reverse complement or not.
 
 ``` r
 ## Plot the first 30 bases 
 plotNucleotides(myConsensusProfile[1:30, ], rc = FALSE) 
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" />
 
 ### Step 2: `getOligos`
 
@@ -155,9 +148,9 @@ designed from the following constraints:
   - `tmRangePrimer` Melting temperature (Tm) range for primers, defaults
     to `c(55, 65)`. Tm is calculated using the nearest-neighbor method.
     See `?rprimer::getOligos` for a detailed description and references.
-  - `concPrimer` Primer concentration (for Tm calculation), defaults to
-    `5e-07` M (500 nM)
-  - `probe` If probes should be desinged as well, defaults to `TRUE`.
+  - `concPrimer` Primer concentration in nM (for Tm calculation),
+    defaults to `500`.
+  - `probe` If probes should be designed as well, defaults to `TRUE`.
   - `lengthProbe` Probe length, defaults to `18:22`.
   - `maxGapFrequencyProbe` Maximum gap frequency for probes, defaults to
     `0.1`.
@@ -169,8 +162,8 @@ designed from the following constraints:
     `c(0.45, 0.55)`.
   - `tmRangeProbe` Melting temperature (Tm) range for probes, defaults
     to `c(55, 70)`.
-  - `concProbe` Primer concentration (for Tm calculation), defaults to
-    `5e-07` M (500 nM)
+  - `concProbe` Probe concentration in nM (for Tm calculation), defaults
+    to `250`.
   - `concNa` Sodium ion concentration in the PCR reaction (for Tm
     calculation), defaults to `0.05` M (50 mM).
   - `showAllVariants` If sequence, GC-content and Tm should be presented
@@ -200,7 +193,7 @@ myOligos <- getOligos(myConsensusProfile,
                       minEndIdentityPrimer = 0.98,
                       gcRangePrimer = c(0.45, 0.65),
                       tmRangePrimer = c(55, 65),
-                      concPrimer = 5e-07,
+                      concPrimer = 500,
                       probe = TRUE,
                       lengthProbe = 18:22,
                       maxGapFrequencyProbe = 0.1,
@@ -208,7 +201,7 @@ myOligos <- getOligos(myConsensusProfile,
                       avoid5EndGProbe = TRUE, 
                       gcRangeProbe = c(0.45, 0.65),
                       tmRangeProbe = c(55, 70),
-                      concProbe = 2.5e-07,
+                      concProbe = 250,
                       concNa = 0.05,
                       showAllVariants = TRUE)
 ```
@@ -221,7 +214,16 @@ All oligo candidates can be visualized using `plotData()`:
 plotData(myOligos)
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+
+It is also possible, by subsetting, to select oligos targeting a
+specific region:
+
+``` r
+plotData(myOligos[myOligos$start > 5000 & myOligos$end < 6000, ])
+```
+
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
 ### Step 3: `getAssays`
 
@@ -250,13 +252,13 @@ myAssays <- getAssays(myOligos,
 
 Again, the object contains many columns, so the most sensible way to
 inspect it is by using `View(as.data.frame(myAssays))`, if you are using
-RStudio. Assay regions can be visualized using `plotData()`:
+RStudio. The assays can also be visualized using `plotData()`:
 
 ``` r
 plotData(myAssays)
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 ### Session info
 
@@ -279,8 +281,8 @@ sessionInfo()
 #> 
 #> other attached packages:
 #> [1] Biostrings_2.57.2   XVector_0.29.3      IRanges_2.23.10    
-#> [4] S4Vectors_0.27.12   BiocGenerics_0.35.4 tibble_3.0.3       
-#> [7] magrittr_1.5        rprimer_0.99.0      testthat_2.3.2     
+#> [4] S4Vectors_0.27.12   BiocGenerics_0.35.4 magrittr_1.5       
+#> [7] rprimer_0.99.0      testthat_2.3.2     
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] tidyselect_1.1.0  xfun_0.17         remotes_2.2.0     reshape2_1.4.4   
@@ -290,12 +292,12 @@ sessionInfo()
 #> [17] sessioninfo_1.1.1 plyr_1.8.6        lifecycle_0.2.0   stringr_1.4.0    
 #> [21] zlibbioc_1.35.0   munsell_0.5.0     gtable_0.3.0      devtools_2.3.1   
 #> [25] memoise_1.1.0     evaluate_0.14     labeling_0.3      knitr_1.29       
-#> [29] callr_3.4.4       ps_1.3.4          fansi_0.4.1       Rcpp_1.0.5       
-#> [33] backports_1.1.9   scales_1.1.1      desc_1.2.0        pkgload_1.1.0    
-#> [37] farver_2.0.3      fs_1.5.0          ggplot2_3.3.2     digest_0.6.25    
-#> [41] stringi_1.5.3     processx_3.4.4    dplyr_1.0.2       rprojroot_1.3-2  
-#> [45] grid_4.0.2        cli_2.0.2         tools_4.0.2       patchwork_1.0.1  
-#> [49] crayon_1.3.4      pkgconfig_2.0.3   ellipsis_0.3.1    prettyunits_1.1.1
-#> [53] assertthat_0.2.1  rmarkdown_2.3     rstudioapi_0.11   R6_2.4.1         
-#> [57] compiler_4.0.2
+#> [29] callr_3.4.4       ps_1.3.4          fansi_0.4.1       highr_0.8        
+#> [33] Rcpp_1.0.5        backports_1.1.9   scales_1.1.1      desc_1.2.0       
+#> [37] pkgload_1.1.0     farver_2.0.3      fs_1.5.0          ggplot2_3.3.2    
+#> [41] digest_0.6.25     stringi_1.5.3     processx_3.4.4    dplyr_1.0.2      
+#> [45] rprojroot_1.3-2   grid_4.0.2        cli_2.0.2         tools_4.0.2      
+#> [49] patchwork_1.0.1   tibble_3.0.3      crayon_1.3.4      pkgconfig_2.0.3  
+#> [53] ellipsis_0.3.1    prettyunits_1.1.1 assertthat_0.2.1  rmarkdown_2.3    
+#> [57] rstudioapi_0.11   R6_2.4.1          compiler_4.0.2
 ```

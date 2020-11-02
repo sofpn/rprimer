@@ -1,6 +1,3 @@
-# assay feature plot # also histograms/barchart for oligo features
-# color blind palette
-
 #' Plot an RprimerProfile-object (method)
 #'
 #' @param x An \code{RprimerProfile} object.
@@ -108,7 +105,7 @@ plotNucleotides <- function(x, rc = FALSE) {
         stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
     if (!(is.logical(rc))) {
-        stop("'rc' must be set to 'TRUE' or 'FALSE'.", call. = FALSE)
+        stop("'rc' must be set to TRUE or FALSE.", call. = FALSE)
     }
     x <- as.data.frame(x)
     x <- dplyr::select(x, c("a", "c", "g", "t", "other"))
@@ -131,12 +128,15 @@ plotNucleotides <- function(x, rc = FALSE) {
     if (rc == TRUE) {
         x$Position <- factor(x$Position, levels = rev(levels(x$Position)))
     }
-    cols <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038", "gray")
+    basePalette <- c(
+        "other" = "#E8E9ED", "A" = "#FFC759", "C" = "#FF7B9C",
+        "G" = "#607196", "T" = "#BABFD1"
+    )
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = Position, y = Frequency, fill = Base)
     ) +
         ggplot2::geom_bar(stat = "identity") +
-        ggplot2::scale_fill_manual(values = cols) +
+        ggplot2::scale_fill_manual(values = basePalette) +
         .themeRprimer(showLegend = TRUE)
 }
 
@@ -150,10 +150,17 @@ plotNucleotides <- function(x, rc = FALSE) {
     }
 }
 
+basePalette <- c(
+    "other" = "#E8E9ED", "A" = "#FFC759", "C" = "#FF7B9C",
+    "G" = "#607196", "T" = "#BABFD1"
+)
+
 .primerPlot <- function(x) {
     start <- x$alignmentStart[[1]]
     end <- x$alignmentEnd[[1]]
-    colors <- c("#7B95A9", "#E7D0D8")
+    colors <- c(
+        fwd = "#A4A7B6", rev = "#82879B",
+        prPlus = "#64697D", prMinus = "#525666")
     nPrimer <- nrow(x[x$type == "primer" & !is.na(x$majority), ])
     nPrimerRc <- nrow(x[x$type == "primer" & !is.na(x$majorityRc), ])
     ggplot2::ggplot() +
@@ -166,23 +173,23 @@ plotNucleotides <- function(x, rc = FALSE) {
         ) +
         ggplot2::geom_rect(
             data = x[x$type == "primer" & !is.na(x$majority), ], ggplot2::aes(
-                xmin = start, xmax = end, ymin = 0.05, ymax = 0.35
-            ), fill = "#7B95A9"
+                xmin = start, xmax = end, ymin = 0.35, ymax = 0.65
+            ), fill = colors["fwd"]
         ) +
         ggplot2::geom_rect(
             data = x[x$type == "primer" & !is.na(x$majorityRc), ],
             ggplot2::aes(
-                xmin = start, xmax = end, ymin = 0.35, ymax = 0.65
-            ), fill = "#E7D0D8"
+                xmin = start, xmax = end, ymin = 0.05, ymax = 0.35
+            ), fill = colors["rev"]
         ) +
         ggplot2::annotate(
             "label",
             x = start, y = seq(0.89, length.out = 2, by = 0.07),
             label = c(
-                paste("Forward primer n =", nPrimer),
-                paste("Reverse primer n =", nPrimerRc)
+                paste("Reverse primer n =", nPrimerRc),
+                paste("Forward primer n =", nPrimer)
             ), size = 3, hjust = 0, fontface = 2,
-            color = colors, fill = "white", label.size = NA
+            color = rev(colors), fill = "white", label.size = NA
         ) +
         .themeRprimer(showYAxis = FALSE)
 }
@@ -190,7 +197,9 @@ plotNucleotides <- function(x, rc = FALSE) {
 .primerProbePlot <- function(x) {
     start <- x$alignmentStart[[1]]
     end <- x$alignmentEnd[[1]]
-    colors <- c("#7B95A9", "#E7D0D8", "#D09F99", "#404038")
+    colors <- c(
+        fwd = "#A4A7B6", rev = "#82879B",
+        prPlus = "#64697D", prMinus = "#525666")
     nPrimer <- nrow(x[x$type == "primer" & !is.na(x$majority), ])
     nPrimerRc <- nrow(x[x$type == "primer" & !is.na(x$majorityRc), ])
     nProbe <- nrow(x[x$type == "probe" & !is.na(x$majority), ])
@@ -205,40 +214,40 @@ plotNucleotides <- function(x, rc = FALSE) {
         ) +
         ggplot2::geom_rect(
             data = x[x$type == "primer" & !is.na(x$majority), ], ggplot2::aes(
-                xmin = start, xmax = end, ymin = 0.05, ymax = 0.20
-            ), fill = "#7B95A9"
+                xmin = start, xmax = end, ymin = 0.5, ymax = 0.65
+            ), fill = colors["fwd"]
         ) +
         ggplot2::geom_rect(
             data = x[x$type == "primer" & !is.na(x$majorityRc), ],
             ggplot2::aes(
-                xmin = start, xmax = end, ymin = 0.20, ymax = 0.35
-            ), fill = "#E7D0D8"
+                xmin = start, xmax = end, ymin = 0.35, ymax = 0.5
+            ), fill = colors["rev"]
         ) +
         ggplot2::geom_rect(
             data = x[x$type == "probe" & !is.na(x$majority), ], ggplot2::aes(
-                xmin = start, xmax = end, ymin = 0.35, ymax = 0.5
-            ), fill = "#D09F99"
+                xmin = start, xmax = end, ymin = 0.20, ymax = 0.35
+            ), fill = colors["prPlus"]
         ) +
         ggplot2::geom_rect(
             data = x[x$type == "probe" & !is.na(x$majorityRc), ], ggplot2::aes(
-                xmin = start, xmax = end, ymin = 0.5, ymax = 0.65
-            ), fill = "#404038"
+                xmin = start, xmax = end, ymin = 0.05, ymax = 0.20
+            ), fill = colors["prMinus"]
         ) +
         ggplot2::annotate(
             "label",
             x = start, y = seq(0.75, length.out = 4, by = 0.07),
             label = c(
-                paste("Forward primer n =", nPrimer),
-                paste("Reverse primer n =", nPrimerRc),
+                paste("Probe (-) n =", nProbeRc),
                 paste("Probe (+) n =", nProbe),
-                paste("Probe (-) n =", nProbeRc)
+                paste("Reverse primer n =", nPrimerRc),
+                paste("Forward primer n =", nPrimer)
             ), size = 3, hjust = 0, fontface = 2,
-            color = colors, fill = "white", label.size = NA
+            color = rev(colors), fill = "white", label.size = NA
         ) +
         .themeRprimer(showYAxis = FALSE)
 }
 
-.violinPlot <- function(data, y, title = "", color = "#7B95A9") {
+.violinPlot <- function(data, y, title = "", color = "grey30") {
     ggplot2::ggplot() +
         ggplot2::geom_violin(
             data = data, ggplot2::aes(x = 1, y = y),
@@ -256,28 +265,49 @@ plotNucleotides <- function(x, rc = FALSE) {
         .themeRprimer(showXAxis = FALSE)
 }
 
-.gcTmIdentityPlot <- function(x, color = "grey60", type = "Primers") {
+.barPlot <- function(data, y, title = "", color = "grey30") {
+    ggplot2::ggplot(data, ggplot2::aes(factor(y))) +
+        ggplot2::geom_bar(
+            fill = color, color = color, alpha = 0.4
+        ) +
+        ggplot2::xlab("") +
+        ggplot2::ylab("") +
+        ggplot2::labs(title = title) +
+        .themeRprimer(showXAxis = TRUE)
+}
+
+.gcTmIdentityPlot <- function(x, color = "grey30", type = "Primers") {
     patchwork::wrap_plots(
         list(
             .violinPlot(
-                x, x$gcMajority, paste(type, "\nGC-content"), color = color
+                x, x$gcMajority,
+                paste0("\n", type, "\n\nGC-content"), color = color
             ),
-            .violinPlot(x, x$tmMajority, "\nTm", color = color),
-            .violinPlot(x, x$identity, "\nIdentity", color = color)
+            .violinPlot(x, x$tmMajority, "\n\n\nTm", color = color),
+            .violinPlot(x, x$identity, "\n\n\nIdentity", color = color),
+            .barPlot(x, x$length, "\n\n\nLength", color = color),
+            .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color =  color)
         ),
-        ncol = 3
+        ncol = 5
     )
 }
 
 .oligoFeaturePlot <- function(x) {
     if (any(x$type == "probe")) {
         patchwork::wrap_plots(list(
-            .gcTmIdentityPlot(x[x$type == "probe", ], type = "Probes"),
-            .gcTmIdentityPlot(x[x$type == "primer", ], type = "Primers")
+            .gcTmIdentityPlot(
+                x[x$type == "primer", ], color = "grey30", type = "Primers"
+            ),
+            .gcTmIdentityPlot(
+                x[x$type == "probe", ], color = "grey30", type = "Probes"
+            )
         ), ncol = 1)
     } else {
         patchwork::wrap_plots(list(
-            .gcTmIdentityPlot(x[x$type == "primer", ], type = "Primers")
+            .gcTmIdentityPlot(
+                x[x$type == "primer", ], color = "grey30",
+                type = "Primers"
+            )
         ), ncol = 1)
     }
 }
@@ -287,7 +317,6 @@ plotNucleotides <- function(x, rc = FALSE) {
     end <- x$alignmentEnd[[1]]
     row <- seq_len(nrow(x))
     x <- tibble::add_column(x, row)
-    colors <- c("#7B95A9", "#E7D0D8")
     ggplot2::ggplot() +
         ggplot2::xlim(start, end) +
         ggplot2::ylim(0, nrow(x) * 1.05) +
@@ -299,14 +328,14 @@ plotNucleotides <- function(x, rc = FALSE) {
         ggplot2::geom_rect(
             data = x, ggplot2::aes(
                 xmin = start, xmax = end, ymin = row, ymax = row + 0.3
-            ), fill = "#7B95A9"
+            ), fill = "#64697D"
         ) +
         ggplot2::annotate(
             "label", x = start, y = nrow(x),
             label = paste(
-                "Assays, n =", nrow(x)
+                "Assays n =", nrow(x)
             ), size = 3, hjust = 0, fontface = 2,
-            color = "#7B95A9", fill = "white", label.size = NA
+            color = "#64697D", fill = "white", label.size = NA
         ) +
         .themeRprimer(showYAxis = FALSE)
 }
@@ -314,10 +343,17 @@ plotNucleotides <- function(x, rc = FALSE) {
 .assayFeaturePlot <- function(x, color = "grey30") {
     patchwork::wrap_plots(
         list(
-            .violinPlot(x, x$totalDegeneracy, "Total degeneracy", color = color),
-            .violinPlot(x, x$meanIdentity, "Mean identity", color = color)
+            .violinPlot(
+                x, x$tmDifferencePrimer, "\n\nTm diff., primers", color = color
+            ),
+            .violinPlot(
+                x, x$tmDifferencePrimerProbe, "\n\nTm diff., primers-probe",
+                color = color
+            ),
+            .violinPlot(x, x$meanIdentity, "\n\nMean identity", color = color),
+            .barPlot(x, x$totalDegeneracy, "\n\nTotal degeneracy", color = color)
         ),
-        ncol = 2
+        ncol = 4
     )
 }
 
@@ -332,13 +368,13 @@ plotNucleotides <- function(x, rc = FALSE) {
         .shadeArea(shadeFrom = shadeFrom, shadeTo = shadeTo) +
         ggplot2::geom_point(size = 0.3, ggplot2::aes(colour = identity)) +
         ggplot2::geom_line(
-            data = averages,  color = "#404038",
+            data = averages,  color = "#1B1C22",
             ggplot2::aes(x = position, y = average)
         ) +
         ggplot2::ylim(0, 1) +
         ggplot2::ylab("Identity") +
         ggplot2::xlab("") +
-        ggplot2::scale_color_gradient(low = "#a9bac785", high = "#a9bac785") +
+        ggplot2::scale_color_gradient(low = "#BABFD1", high = "#BABFD1") +
         .themeRprimer(showXAxis = FALSE)
 }
 
@@ -353,12 +389,12 @@ plotNucleotides <- function(x, rc = FALSE) {
         .shadeArea(shadeFrom = shadeFrom, shadeTo = shadeTo) +
         ggplot2::geom_point(size = 0.3, ggplot2::aes(colour = entropy)) +
         ggplot2::geom_line(
-            data = averages,  color = "#404038",
+            data = averages,  color = "#1B1C22",
             ggplot2::aes(x = position, y = average)
         ) +
         ggplot2::ylab("Entropy") +
         ggplot2::xlab("") +
-        ggplot2::scale_color_gradient(low = "#a9bac785", high = "#a9bac785") +
+        ggplot2::scale_color_gradient(low = "#BABFD1", high = "#BABFD1") +
         .themeRprimer(showXAxis = FALSE)
 }
 
@@ -369,14 +405,14 @@ plotNucleotides <- function(x, rc = FALSE) {
     averages$position <- averages$position + xadj
     ggplot2::ggplot(data = x, ggplot2::aes(x = position)) +
         ggplot2::geom_segment(
-            color = "#a9bac7",
+            color = "#BABFD1",
             ggplot2::aes(
                 x = min(position), xend = max(position), y = 0.5, yend = 0.5
             )
         ) +
         .shadeArea(shadeFrom = shadeFrom, shadeTo = shadeTo) +
         ggplot2::geom_line(
-            data = averages, color = "#404038",
+            data = averages, color = "#1B1C22",
             ggplot2::aes(x = position, y = average)
         ) +
         ggplot2::xlab("") +
@@ -394,7 +430,7 @@ plotNucleotides <- function(x, rc = FALSE) {
         ggplot2::ylim(0, 1) +
         ggplot2::xlab("Position") +
         ggplot2::ylab("Gaps") +
-        ggplot2::scale_color_gradient(low = "#a9bac785", high = "#a9bac785") +
+        ggplot2::scale_color_gradient(low = "#BABFD1", high = "#BABFD1") +
         .themeRprimer()
 }
 
@@ -402,7 +438,7 @@ plotNucleotides <- function(x, rc = FALSE) {
     ggplot2::annotate(
         "rect",
         xmin = shadeFrom, xmax = shadeTo, ymin = -Inf, ymax = Inf,
-        color = "grey80", alpha = 0.2
+        color = "white", alpha = 0.2, fill = "grey30"
     )
 }
 

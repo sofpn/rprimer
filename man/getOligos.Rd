@@ -14,7 +14,7 @@ getOligos(
   minEndIdentityPrimer = 0.98,
   gcRangePrimer = c(0.45, 0.55),
   tmRangePrimer = c(55, 65),
-  concPrimer = 5e-07,
+  concPrimer = 500,
   probe = TRUE,
   lengthProbe = 18:22,
   maxGapFrequencyProbe = 0.1,
@@ -22,7 +22,7 @@ getOligos(
   avoid5EndGProbe = TRUE,
   gcRangeProbe = c(0.45, 0.55),
   tmRangeProbe = c(55, 70),
-  concProbe = 2.5e-07,
+  concProbe = 250,
   concNa = 0.05,
   showAllVariants = TRUE
 )
@@ -65,9 +65,8 @@ correction is done);
 2) The oligo concentration is assumed to be much higher
 than the target concentration. See references for table values and equations.}
 
-\item{concPrimer}{Primer concentration in M, for Tm calculation. A numeric vector
-[0.2e-07, 2e-06], i.e. between 20 nM and 20000 nM.
-It defaults to 5e-07 M (500 nM).}
+\item{concPrimer}{Primer concentration in nM, for Tm calculation. A numeric vector
+[20, 2000] Defaults to 500 nM.}
 
 \item{probe}{If probes should be designed as  well. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
@@ -95,9 +94,8 @@ correction is done);
 2) The oligo concentration is assumed to be much higher
 than the target concentration. See references for table values and equations.}
 
-\item{concProbe}{Probe concentration in M, for Tm calculation. A numeric vector
-[0.2e-07, 2e-06], i.e. between 20 nM and 20000 nM.
-It defaults to 5e-07 M (500 nM).}
+\item{concProbe}{Primer concentration in nM, for Tm calculation. A numeric vector
+[20, 2000] Defaults to 250 nM.}
 
 \item{concNa}{The sodium ion concentration in the PCR reaction in M, for Tm calculation.
 A numeric vector [0.01, 1]. It defaults to 0.05 M (50 mM).}

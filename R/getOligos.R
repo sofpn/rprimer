@@ -1,4 +1,4 @@
-## shorter fns, sort primers, nM instead of M!
+## shorter fns,
 # double check gap frequency!!! df instead of tibble?
 
 #' Get oligos
@@ -52,9 +52,8 @@
 #' than the target concentration. See references for table values and equations.
 #'
 #' @param concPrimer
-#' Primer concentration in M, for Tm calculation. A numeric vector
-#' [0.2e-07, 2e-06], i.e. between 20 nM and 20000 nM.
-#' It defaults to 5e-07 M (500 nM).
+#' Primer concentration in nM, for Tm calculation. A numeric vector
+#' [20, 2000] Defaults to 500 nM.
 #'
 #' @param probe
 #' If probes should be designed as  well. \code{TRUE} or \code{FALSE},
@@ -90,9 +89,8 @@
 #' than the target concentration. See references for table values and equations.
 #'
 #' @param concProbe
-#' Probe concentration in M, for Tm calculation. A numeric vector
-#' [0.2e-07, 2e-06], i.e. between 20 nM and 20000 nM.
-#' It defaults to 5e-07 M (500 nM).
+#' Primer concentration in nM, for Tm calculation. A numeric vector
+#' [20, 2000] Defaults to 250 nM.
 #'
 #' @param concNa
 #' The sodium ion concentration in the PCR reaction in M, for Tm calculation.
@@ -179,7 +177,7 @@ getOligos <- function(x,
                       minEndIdentityPrimer = 0.98,
                       gcRangePrimer = c(0.45, 0.55),
                       tmRangePrimer = c(55, 65),
-                      concPrimer = 5e-07,
+                      concPrimer = 500,
                       probe = TRUE,
                       lengthProbe = 18:22,
                       maxGapFrequencyProbe = 0.1,
@@ -187,7 +185,7 @@ getOligos <- function(x,
                       avoid5EndGProbe = TRUE,
                       gcRangeProbe = c(0.45, 0.55),
                       tmRangeProbe = c(55, 70),
-                      concProbe = 2.5e-07,
+                      concProbe = 250,
                       concNa = 0.05,
                       showAllVariants = TRUE) {
     if (!methods::is(x, "RprimerProfile")) {
@@ -235,6 +233,7 @@ getOligos <- function(x,
     allOligos <- dplyr::bind_rows(allOligos, allProbes)
     drop <- c("identity3End", "identity3EndRc")
     allOligos <- allOligos[!names(allOligos) %in% drop]
+    allOligos <- allOligos[order(allOligos$start), ]
     RprimerOligo(allOligos)
 }
 
@@ -392,7 +391,6 @@ getOligos <- function(x,
     oligos <- oligos[oligos$gapPenalty == 0, ]
     oligos <- oligos[oligos$degeneracy <= maxDegeneracy, ]
     oligos <- dplyr::select(oligos, -gapPenalty)
-    assays <- oligos[order(oligos$start), ]
     oligos
 }
 
@@ -664,14 +662,15 @@ getOligos <- function(x,
 #' @keywords internal
 #'
 #' @noRd
-.tm <- function(oligos, concOligo = 5e-07, concNa = 0.05) {
-    if (concOligo < 0.2e-07 || concOligo > 2.0e-06) {
+.tm <- function(oligos, concOligo = 500, concNa = 0.05) {
+    if (concOligo < 20 || concOligo > 2000) {
         stop("'concOligo' must be from
-           0.2e-07 M (20 nM) to 2e-06 M (2000 nM).", call. = FALSE)
+           20 nM to 2000 nM.", call. = FALSE)
     }
     if (concNa < 0.01 || concNa > 1) {
         stop("'concNa' must be from 0.01 to 1 M.", call. = FALSE)
     }
+    concOligo <- concOligo*10^(-9)
     oligos <- toupper(oligos)
     # Find initiation values
     initH <- purrr::map_dbl(oligos, function(x) {
@@ -714,7 +713,7 @@ getOligos <- function(x,
 #'
 #' @noRd
 .addTm <- function(x,
-                   concOligo = 5e-07,
+                   concOligo = 500,
                    concNa = 0.05,
                    tmRange = c(55, 65)) {
     if (!(min(tmRange) >= 20 && max(tmRange) <= 90)) {
@@ -805,7 +804,7 @@ getOligos <- function(x,
                         minEndIdentityPrimer = 0.98,
                         gcRangePrimer = c(0.45, 0.55),
                         tmRangePrimer = c(55, 65),
-                        concPrimer = 5e-07,
+                        concPrimer = 500,
                         concNa = 0.05,
                         showAllVariants = TRUE) {
     allPrimers <- purrr::map_dfr(lengthPrimer, function(i) {
@@ -850,7 +849,7 @@ getOligos <- function(x,
                        avoid5EndGProbe = TRUE,
                        gcRangeProbe = c(0.45, 0.55),
                        tmRangeProbe = c(55, 70),
-                       concProbe = 2.5e-07,
+                       concProbe = 250,
                        concNa = 0.05,
                        showAllVariants = TRUE) {
     allProbes <- purrr::map_dfr(lengthProbe, function(i) {
