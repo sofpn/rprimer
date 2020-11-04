@@ -10,8 +10,7 @@
 #' A number [0, 0.2].
 #' At each position, all nucleotides with a proportion
 #' higher than the \code{iupacThreshold} will be included in
-#' the IUPAC consensus sequence. Defaults to 0. This has implications for
-#' downstream oligo design. .....
+#' the IUPAC consensus sequence. Defaults to 0.
 #'
 #' @return
 #' An \code{RprimerProfile} object, which contains the following information:
@@ -68,14 +67,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     if (!methods::is(x, "DNAMultipleAlignment")) {
         stop("'x' must be a DNAMultipleAlignment object.")
     }
-    x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
-    x <- x[, colSums(!is.na(x)) > 0]
-    colnames(x) <- seq_len(ncol(x))
-    x <- x[(rownames(x) != "+" & rownames(x) != "."), ]
-    bases <- c("A", "C", "G", "T", "-")
-    other <- colSums(x[!rownames(x) %in% bases, ])
-    x <- x[rownames(x) %in% bases, ]
-    x <- rbind(x, other)
+    x <- .getConsensusMatrix(x)
     position <- seq_len(ncol(x))
     a <- unname(x["A", ])
     c <- unname(x["C", ])
@@ -95,27 +87,30 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 
 # Helpers =====================================================================
 
-#' Round all doubles in a data frame
+#' Get consensus matrix
 #'
-#' @param x A data frame.
+#' @param x A \code{Biostrings::DNAMultipleAlignment} object.
 #'
-#' @return A data frame where all vectors of type double are rounded.
+#' @return A consensus matrix.
 #'
 #' @keywords internal
 #'
 #' @noRd
-.roundDfDbl <- function(x) {
-    dbls <- purrr::map_lgl(x, ~ is.double(.x))
-    x[dbls] <- round(x[dbls], 2)
+.getConsensusMatrix <- function(x) {
+    x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
+    x <- x[, colSums(!is.na(x)) > 0]
+    colnames(x) <- seq_len(ncol(x))
+    x <- x[(rownames(x) != "+" & rownames(x) != "."), ]
+    bases <- c("A", "C", "G", "T", "-")
+    other <- colSums(x[!rownames(x) %in% bases, ])
+    x <- x[rownames(x) %in% bases, ]
+    x <- rbind(x, other)
     x
 }
 
 #' Majority consensus sequence
 #'
-#' \code{.majorityConsensus()} returns the majority consensus sequence of an
-#' alignment of DNA sequences.
-#'
-#' @param x A numeric matrix.
+#' @param x A consensus matrix.
 #'
 #' @return The majority consensus sequence (a character vector).
 #'
@@ -162,7 +157,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     x <- unique(x)
     bases <- c("A", "C", "G", "T", "-")
     match <- x %in% bases
-    x <- x[!(match == FALSE)]
+    x <- x[match]
     x <- paste(x, collapse = ",")
     iupacBase <- unname(rprimerGlobals$iupacLookup[x])
     iupacBase
@@ -170,15 +165,12 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 
 #' IUPAC consensus sequence
 #'
-#' \code{.iupacConsensus()} returns the IUPAC consensus sequence from an
-#' PrprimerProfile object.
-#'
-#' @param x A numeric matrix.
+#' @param x A consensus matrix.
 #'
 #' @param iupacThreshold
 #' Optional. A number [0, 0.2]
 #' At each position, all nucleotides with a proportion
-#' higher or equal to the threshold will be included in
+#' higher than the threshold will be included in
 #' the IUPAC consensus sequence. The default is 0.
 #'
 #' @return The consensus sequence (a character vector).
@@ -191,9 +183,13 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' @noRd
 .iupacConsensus <- function(x, iupacThreshold = 0) {
     if (
-        !is.double(iupacThreshold) || iupacThreshold < 0 || iupacThreshold > 0.2
-        ) {
-        stop(paste0("'iupacThreshold' must be from 0 to 0.2."), call. = FALSE)
+        !is.numeric(iupacThreshold) ||
+            iupacThreshold < 0 || iupacThreshold > 0.2
+    ) {
+        stop(
+            paste0("'iupacThreshold' must be a number from 0 to 0.2."),
+            call. = FALSE
+        )
     }
     bases <- c("A", "C", "G", "T", "-")
     x <- x[rownames(x) %in% bases, ]
@@ -211,7 +207,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 
 #' Nucleotide identity
 #'
-#' @param x A numeric matrix.
+#' @param x A consensus matrix.
 #'
 #' @return The nucleotide identity (a numeric vector).
 #'
@@ -224,13 +220,13 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     s <- apply(s, 2, function(x) x / sum(x))
     identity <- apply(s, 2, max)
     identity <- unname(identity)
-    identity[is.na(identity)] <- 0
+    identity[is.na(identity)] <- 1
     identity
 }
 
 #' Shannon entropy
 #'
-#' @param x A numeric matrix.
+#' @param x A consensus matrix.
 #'
 #' @return The Shannon entropy (a numeric vector).
 #'

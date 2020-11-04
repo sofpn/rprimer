@@ -11,7 +11,7 @@
 #' If not specified, the size will be set to the nearest positive, nonzero
 #' integer to \code{length(x)/100}.
 #'
-#' @return A tibble with position and running average of x.
+#' @return A data frame with position and running average of x.
 #'
 #' @keywords internal
 #'
@@ -44,8 +44,7 @@
         midpoint <- size / 2
         position <- position - midpoint
     }
-    df <- tibble::tibble(position, average)
-    df
+    data.frame(position, average)
 }
 
 #' Calculate GC running average
@@ -62,7 +61,7 @@
 #' If not specified, the size will be set to the nearest positive, nonzero
 #' integer to \code{length(x)/100}.
 #'
-#' @return A tibble with position and running average of x.
+#' @return A data frame with position and running average of x.
 #'
 #' @seealso gcContent
 #'
@@ -100,6 +99,5 @@
         midpoint <- size / 2
         position <- position - midpoint
     }
-    df <- tibble::tibble(position, average)
-    df
+    data.frame(position, average)
 }

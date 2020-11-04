@@ -1,10 +1,7 @@
-## shorter fns,
-# double check gap frequency!!! df instead of tibble?
-
 #' Get oligos
 #'
 #' \code{getOligos()} identifies oligos (primers and probes)
-#' from sequence properties.
+#' from an \code{RprimerProfile} object.
 #'
 #' @param x An \code{RprimerProfile} object.
 #'
@@ -38,8 +35,8 @@
 #' at the 3' end of the primer (i.e. the last five bases).
 #'
 #' @param gcRangePrimer
-#' GC-content range for primers (proportion, not %). A numeric vector [0, 1].
-#' Defaults to \code{c(0.45, 0.55)}.
+#' GC-content range for primers (proportion, not percent).
+#' A numeric vector [0, 1]. Defaults to \code{c(0.45, 0.55)}.
 #'
 #' @param tmRangePrimer
 #' Tm range for primers.
@@ -52,7 +49,7 @@
 #' than the target concentration. See references for table values and equations.
 #'
 #' @param concPrimer
-#' Primer concentration in nM, for Tm calculation. A numeric vector
+#' Primer concentration in nM, for Tm calculation. A number
 #' [20, 2000] Defaults to 500 nM.
 #'
 #' @param probe
@@ -94,7 +91,7 @@
 #'
 #' @param concNa
 #' The sodium ion concentration in the PCR reaction in M, for Tm calculation.
-#' A numeric vector [0.01, 1]. It defaults to 0.05 M (50 mM).
+#' A numeric vector [0.01, 1]. Defaults to 0.05 M (50 mM).
 #'
 #' @param showAllVariants
 #' If sequence, GC-content and Tm should be presented for all
@@ -103,6 +100,7 @@
 #' \code{TRUE} (slower) or \code{FALSE} (faster).
 #' Defaults to \code{TRUE}.
 #'
+#' @section Excluded oligos:
 #' \code{getOligos()} excludes all oligos with
 #' more than than three consecutive runs of the same dinucleotide
 #' (e.g. 'TATATATA') and more than four consecutive runs of the
@@ -114,7 +112,7 @@
 #' An \code{RprimerOligo} object.
 #' An error message will return if no oligos are found.
 #'
-#' The object contains the following information:
+#' The object contains the following columns:
 #'
 #' \describe{
 #'   \item{type}{Type of oligo, primer or probe.}
@@ -148,7 +146,6 @@
 #' data("exampleRprimerProfile")
 #' ## Design primers and probes with default values
 #' getOligos(exampleRprimerProfile)
-#'
 #' @references
 #' Tm-calculation:
 #'
@@ -197,6 +194,14 @@ getOligos <- function(x,
             call. = FALSE
         )
     }
+    if (nrow(x) < max(c(lengthPrimer, lengthProbe))) {
+        stop(paste(
+            "In order to search for oligos, the number of rows in 'x'
+        must be at least", max(c(lengthPrimer, lengthProbe), ".")
+        ),
+        call. = FALSE
+        )
+    }
     x <- as.data.frame(x)
     allOligos <- .getPrimers(x,
         lengthPrimer = lengthPrimer,
@@ -226,11 +231,11 @@ getOligos <- function(x,
             concNa = concNa,
             showAllVariants = showAllVariants
         )
+        if (nrow(allProbes) == 0L) {
+            stop("No probes were found.", call. = FALSE)
+        }
+        allOligos <- dplyr::bind_rows(allOligos, allProbes)
     }
-    if (nrow(allProbes) == 0L) {
-        stop("No probes were found.", call. = FALSE)
-    }
-    allOligos <- dplyr::bind_rows(allOligos, allProbes)
     drop <- c("identity3End", "identity3EndRc")
     allOligos <- allOligos[!names(allOligos) %in% drop]
     allOligos <- allOligos[order(allOligos$start), ]
@@ -268,9 +273,9 @@ getOligos <- function(x,
 .getNmers <- function(x, n) {
     start <- seq_len(length(x) - n + 1)
     end <- start + n - 1
-    nmer <- purrr::map_chr(
-        start, ~ paste(x[start[[.x]]:end[[.x]]], collapse = "")
-    )
+    nmer <- purrr::map_chr(start, function(i) {
+        paste(x[start[[i]]:end[[i]]], collapse = "")
+    })
     nmer
 }
 
@@ -350,7 +355,7 @@ getOligos <- function(x,
 #'
 #' @inheritParams getOligos
 #'
-#' @return A tibble with oligos.
+#' @return A data frame.
 #'
 #' @keywords internal
 #'
@@ -382,7 +387,7 @@ getOligos <- function(x,
     gapPenalty <- .runningSum(gapBin, n = oligoLength)
     alignmentStart <- min(x$position)
     alignmentEnd <- max(x$position)
-    oligos <- tibble::tibble(
+    oligos <- data.frame(
         start, end, length, majority, identity, identity3End, identity3EndRc,
         iupac, degeneracy, gapPenalty, alignmentStart, alignmentEnd
     )
@@ -399,7 +404,7 @@ getOligos <- function(x,
 #' \code{.exclude()} replaces oligos with many consecutive
 #' mono- or dinucleotides with \code{NA}.
 #'
-#' @param x A tibble with oligos.
+#' @param x A data frame with oligos.
 #'
 #' @details
 #' An oligo is excluded if:
@@ -407,7 +412,7 @@ getOligos <- function(x,
 #' - It has more than four runs of the same nucleotide (e.g. "AAAAA")
 #'
 #' @return
-#' A tibble where non optimal oligos have been excluded.
+#' A data frame where non optimal oligos have been excluded.
 #'
 #' @keywords internal
 #'
@@ -458,79 +463,6 @@ getOligos <- function(x,
     x
 }
 
-#' Identify GC clamp
-#'
-#' @param x One or more oligo sequences (a character vector).
-#'
-#' @return
-#' A character vector, where oligo sequences without GC clamp have
-#' been replaced with NA.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.getOligosWithGcClamp <- function(x) {
-    ends <- purrr::map(x, ~ .splitSequence(.x))
-    ends <- purrr::map(ends, ~ .x[(length(.x) - 4):length(.x)])
-    gc <- purrr::map_dbl(ends, ~ .gcContent(.x))
-    x[gc > 3 / 5] <- NA
-    x[gc < 2 / 5] <- NA
-    x
-}
-
-#' Replace unwanted oligos with NA
-#'
-#' @param x A tibble with oligos (with reverse complements).
-#'
-#' @inheritParams getOligos
-#'
-#' @return A tibble where unwanted oligos are replaced with NA.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.filterOligos <- function(x,
-                          gcClamp = TRUE,
-                          avoid5EndG = FALSE,
-                          avoid3EndRuns = TRUE,
-                          minEndIdentity = NULL) {
-    if (any(!is.logical(
-        c(gcClamp, avoid5EndG, avoid3EndRuns)
-    ))) {
-        stop(
-            "'gcClamp', 'avoid5EndG',  and 'avoid3EndRuns' must be set to \n
-      'TRUE' or 'FALSE'",
-            call. = FALSE
-        )
-    }
-    if (is.null(minEndIdentity)) minEndIdentity <- 0
-    if (minEndIdentity < 0 || minEndIdentity > 1) {
-        stop(
-            "'minEndIdentity' must be either 'NULL' or from 0 to 1.",
-            call. = FALSE
-        )
-    }
-    if (gcClamp) {
-        x$majority <- .getOligosWithGcClamp(x$majority)
-        x$majorityRc <- .getOligosWithGcClamp(x$majorityRc)
-    }
-    if (avoid5EndG) {
-        x$majority[grepl("^G", x$majority)] <- NA
-        x$majorityRc[grepl("^G", x$majorityRc)] <- NA
-    }
-    if (avoid3EndRuns) {
-        x$majority[grepl("([A-Z])\\1\\1$", x$majority)] <- NA
-        x$majorityRc[grepl("([A-Z])\\1\\1$", x$majorityRc)] <- NA
-    }
-    x$majority[x$identity3End < minEndIdentity] <- NA
-    x$majorityRc[x$identity3EndRc < minEndIdentity] <- NA
-    x$iupac[is.na(x$majority)] <- NA
-    x$iupacRc[is.na(x$majorityRc)] <- NA
-    invalidOligos <- is.na(x$majority) & is.na(x$majorityRc)
-    x <- x[!invalidOligos, ]
-    x
-}
-
 #' Calculate GC content of a DNA sequence
 #'
 #' \code{.gcContent()} finds the GC content of a DNA sequence.
@@ -553,11 +485,11 @@ getOligos <- function(x,
 
 #' Add GC content to generated oligos
 #'
-#' @param x A tibble with oligos.
+#' @param x A data frame with oligos.
 #'
 #' @inheritParams getOligos
 #'
-#' @return A tibble.
+#' @return A data frame.
 #'
 #' @keywords internal
 #'
@@ -565,16 +497,83 @@ getOligos <- function(x,
 .addGcContent <- function(x, gcRange = c(0.45, 0.65)) {
     if (!(min(gcRange) >= 0 && max(gcRange) <= 1)) {
         stop(
-            "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).",
-            call. = FALSE
+            "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).", call. = FALSE
         )
     }
     gcMajority <- purrr::map_dbl(x$majority, ~ .gcContent(.x))
-    x <- tibble::add_column(
-        x, gcMajority,
-        .before = "identity"
-    )
+    x <- tibble::add_column(x, gcMajority, .before = "identity")
     x <- x[x$gcMajority >= min(gcRange) & x$gcMajority <= max(gcRange), ]
+    x
+}
+
+#' Identify GC clamp
+#'
+#' @param x One or more oligo sequences (a character vector).
+#'
+#' @return
+#' A character vector, where oligo sequences without GC clamp have
+#' been replaced with NA.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.getOligosWithGcClamp <- function(x) {
+    ends <- purrr::map(x, ~ .splitSequence(.x))
+    ends <- purrr::map(ends, ~ .x[(length(.x) - 4):length(.x)])
+    gc <- purrr::map_dbl(ends, ~ .gcContent(.x))
+    x[gc > 3 / 5] <- NA
+    x[gc < 2 / 5] <- NA
+    x
+}
+
+#' Replace unwanted oligos with NA
+#'
+#' @param x A data frame with oligos (with reverse complements).
+#'
+#' @inheritParams getOligos
+#'
+#' @return A data frame where unwanted oligos are replaced with NA.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.filterOligos <- function(x,
+                          gcClamp = TRUE,
+                          avoid5EndG = FALSE,
+                          avoid3EndRuns = TRUE,
+                          minEndIdentity = NULL) {
+    if (any(!is.logical(c(gcClamp, avoid5EndG, avoid3EndRuns)))) {
+        stop(
+            "'gcClamp', 'avoid5EndG',  and 'avoid3EndRuns' must be set to
+        TRUE or FALSE",
+            call. = FALSE
+        )
+    }
+    if (is.null(minEndIdentity)) minEndIdentity <- 0
+    if (minEndIdentity < 0 || minEndIdentity > 1) {
+        stop(
+            "'minEndIdentity' must be either NULL or from 0 to 1.",
+            call. = FALSE
+        )
+    }
+    if (gcClamp) {
+        x$majority <- .getOligosWithGcClamp(x$majority)
+        x$majorityRc <- .getOligosWithGcClamp(x$majorityRc)
+    }
+    if (avoid5EndG) {
+        x$majority[grepl("^G", x$majority)] <- NA
+        x$majorityRc[grepl("^G", x$majorityRc)] <- NA
+    }
+    if (avoid3EndRuns) {
+        x$majority[grepl("([A-Z])\\1\\1$", x$majority)] <- NA
+        x$majorityRc[grepl("([A-Z])\\1\\1$", x$majorityRc)] <- NA
+    }
+    x$majority[x$identity3End < minEndIdentity] <- NA
+    x$majorityRc[x$identity3EndRc < minEndIdentity] <- NA
+    x$iupac[is.na(x$majority)] <- NA
+    x$iupacRc[is.na(x$majorityRc)] <- NA
+    invalidOligos <- is.na(x$majority) & is.na(x$majorityRc)
+    x <- x[!invalidOligos, ]
     x
 }
 
@@ -664,13 +663,12 @@ getOligos <- function(x,
 #' @noRd
 .tm <- function(oligos, concOligo = 500, concNa = 0.05) {
     if (concOligo < 20 || concOligo > 2000) {
-        stop("'concOligo' must be from
-           20 nM to 2000 nM.", call. = FALSE)
+        stop("'concOligo' must be from 20 nM to 2000 nM.", call. = FALSE)
     }
     if (concNa < 0.01 || concNa > 1) {
         stop("'concNa' must be from 0.01 to 1 M.", call. = FALSE)
     }
-    concOligo <- concOligo*10^(-9)
+    concOligo <- concOligo * 10^(-9)
     oligos <- toupper(oligos)
     # Find initiation values
     initH <- purrr::map_dbl(oligos, function(x) {
@@ -712,21 +710,16 @@ getOligos <- function(x,
 #' @keywords internal
 #'
 #' @noRd
-.addTm <- function(x,
-                   concOligo = 500,
-                   concNa = 0.05,
-                   tmRange = c(55, 65)) {
+.addTm <- function(x, concOligo = 500, concNa = 0.05, tmRange = c(55, 65)) {
     if (!(min(tmRange) >= 20 && max(tmRange) <= 90)) {
-        stop(
-            "'tmRange' must be from 20 to 90, e.g. c(55, 60).",
-            call. = FALSE
-        )
+        stop("'tmRange' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE)
     }
-    tmMajority <- .tm(x$majority, concOligo = concOligo, concNa = concNa)
-    x <- tibble::add_column(
-        x, tmMajority,
-        .before = "identity"
-    )
+    if (nrow(x) >= 1) {
+        tmMajority <- .tm(x$majority, concOligo = concOligo, concNa = concNa)
+    } else {
+        tmMajority <- numeric(0)
+    }
+    x <- tibble::add_column(x, tmMajority, .before = "identity")
     x <- x[x$tmMajority >= min(tmRange) & x$tmMajority <= max(tmRange), ]
     x
 }

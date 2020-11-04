@@ -12,8 +12,7 @@ getConsensusProfile(x, iupacThreshold = 0)
 \item{iupacThreshold}{A number [0, 0.2].
 At each position, all nucleotides with a proportion
 higher than the \code{iupacThreshold} will be included in
-the IUPAC consensus sequence. Defaults to 0. This has implications for
-downstream oligo design. .....}
+the IUPAC consensus sequence. Defaults to 0.}
 }
 \value{
 An \code{RprimerProfile} object, which contains the following information:
@@ -62,6 +61,7 @@ of DNA sequences.
 \examples{
 data("exampleRprimerAlignment")
 getConsensusProfile(exampleRprimerAlignment)
+
 }
 \references{
 This function is a wrapper around \code{Biostrings::consensusMatrix()}:

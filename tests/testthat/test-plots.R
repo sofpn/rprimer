@@ -1,0 +1,26 @@
+data("exampleRprimerProfile")
+data("exampleRprimerOligo")
+data("exampleRprimerAssay")
+
+test_that("plotData works", {
+    p <- plotData(exampleRprimerProfile)
+    expect_true(ggplot2::is.ggplot(p))
+    p <- plotData(exampleRprimerOligo)
+    expect_true(ggplot2::is.ggplot(p))
+    p <- plotData(exampleRprimerOligo[exampleRprimerOligo$type == "primer", ])
+    expect_true(ggplot2::is.ggplot(p))
+    p <- plotData(exampleRprimerAssay)
+    expect_true(ggplot2::is.ggplot(p))
+    p <- plotNucleotides(exampleRprimerProfile[1:10, ])
+    expect_true(ggplot2::is.ggplot(p))
+    p <- plotNucleotides(exampleRprimerProfile[1:10, ], rc = TRUE)
+    expect_true(ggplot2::is.ggplot(p))
+})
+
+test_that("plotData returns an error when it should", {
+    expect_error(plotData(unclass(exampleRprimerProfile)))
+    expect_error(plotData(exampleRprimerProfile, shadeFrom = FALSE))
+    expect_error(plotData(exampleRprimerProfile, shadeTo = FALSE))
+    expect_error(plotNucleotides(exampleRprimerProfile, rc = "FALSE"))
+    expect_error(plotNucleotides(exampleRprimerOligo))
+})

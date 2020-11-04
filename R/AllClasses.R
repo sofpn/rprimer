@@ -1,3 +1,6 @@
+# Profile - needs to be at least 10 bases or somethng
+# positions must be consequtive
+
 # RprimerProfile ==============================================================
 
 #' An S4 class for representation of a consensus profile
@@ -43,8 +46,15 @@ RprimerProfile <- function(...) {
 # I did very simple validity checks here...
 S4Vectors::setValidity2("RprimerProfile", function(object) {
     msg <- NULL
-    if (ncol(object) != 11) {
-        msg <- c(msg, "The object must have 11 columns.")
+    colnames <- c(
+        "position", "a", "c", "g", "t", "other", "gaps", "majority", "identity",
+        "iupac", "entropy"
+    )
+    if (!all(colnames %in% names(object))) {
+        msg <- c(
+            msg, "The object must have the following columns: \n
+                 position, a, c, g, t, other, gaps, majority, identity."
+        )
     }
     if (is.null(msg)) {
         TRUE
@@ -149,8 +159,8 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 #' RprimerAssay(x)
 #' @importFrom S4Vectors DataFrame
 RprimerAssay <- function(...) {
-  df <- DataFrame(..., row.names = NULL, check.names = TRUE)
-  .RprimerAssay(df)
+    df <- DataFrame(..., row.names = NULL, check.names = TRUE)
+    .RprimerAssay(df)
 }
 
 S4Vectors::setValidity2("RprimerAssay", function(object) {

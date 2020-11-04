@@ -20,34 +20,33 @@
 setMethod("plotData", "RprimerProfile", function(x,
                                                  shadeFrom = NULL,
                                                  shadeTo = NULL) {
-        if (is.null(shadeFrom) && is.null(shadeTo)) {
-            shadeFrom <- -Inf
-            shadeTo <- -Inf
-        }
-        if (is.null(shadeFrom) && !is.null(shadeTo)) {
-            shadeFrom <- 0
-        }
-        if (!is.null(shadeFrom) && is.null(shadeTo)) {
-            shadeTo <- nrow(x)
-        }
-        if (!is.null(shadeFrom) && !is.numeric(shadeFrom)) {
-            stop("'shadeFrom' must be a number.", call. = FALSE)
-        }
-        if (!is.null(shadeTo) && !is.numeric(shadeTo)) {
-            stop("'shadeTo' must be a number.", call. = FALSE)
-        }
-        x <- as.data.frame(x)
-        patchwork::wrap_plots(
-            list(
-                .identityPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
-                .entropyPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
-                .gcPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
-                .gapPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo)
-            ),
-            ncol = 1
-        )
+    if (is.null(shadeFrom) && is.null(shadeTo)) {
+        shadeFrom <- -Inf
+        shadeTo <- -Inf
     }
-)
+    if (is.null(shadeFrom) && !is.null(shadeTo)) {
+        shadeFrom <- 0
+    }
+    if (!is.null(shadeFrom) && is.null(shadeTo)) {
+        shadeTo <- nrow(x)
+    }
+    if (!is.null(shadeFrom) && !is.numeric(shadeFrom)) {
+        stop("'shadeFrom' must be a number.", call. = FALSE)
+    }
+    if (!is.null(shadeTo) && !is.numeric(shadeTo)) {
+        stop("'shadeTo' must be a number.", call. = FALSE)
+    }
+    x <- as.data.frame(x)
+    patchwork::wrap_plots(
+        list(
+            .identityPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
+            .entropyPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
+            .gcPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
+            .gapPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo)
+        ),
+        ncol = 1
+    )
+})
 
 #' Plot an RprimerOligo-object (method)
 #'
@@ -59,12 +58,12 @@ setMethod("plotData", "RprimerProfile", function(x,
 #'
 #' @export
 setMethod("plotData", "RprimerOligo", function(x) {
-        x <- as.data.frame(x)
-        patchwork::wrap_plots(
-            list(.oligoPlot(x), .oligoFeaturePlot(x)), ncol = 1
-        )
-    }
-)
+    x <- as.data.frame(x)
+    patchwork::wrap_plots(
+        list(.oligoPlot(x), .oligoFeaturePlot(x)),
+        ncol = 1
+    )
+})
 
 #' Plot an RprimerAssay-object (method)
 #'
@@ -76,12 +75,12 @@ setMethod("plotData", "RprimerOligo", function(x) {
 #'
 #' @export
 setMethod("plotData", "RprimerAssay", function(x) {
-        x <- as.data.frame(x)
-        patchwork::wrap_plots(
-            list(.assayPlot(x), .assayFeaturePlot(x)), ncol = 1
-        )
-    }
-)
+    x <- as.data.frame(x)
+    patchwork::wrap_plots(
+        list(.assayPlot(x), .assayFeaturePlot(x)),
+        ncol = 1
+    )
+})
 
 #' Plot nucleotide distribution
 #'
@@ -107,9 +106,11 @@ plotNucleotides <- function(x, rc = FALSE) {
     if (!(is.logical(rc))) {
         stop("'rc' must be set to TRUE or FALSE.", call. = FALSE)
     }
+    position <- x$position
     x <- as.data.frame(x)
     x <- dplyr::select(x, c("a", "c", "g", "t", "other"))
     x <- t(as.matrix(x))
+    colnames(x) <- position
     rownames(x)[-5] <- toupper(rownames(x))[-5]
     if (rc) {
         rownames(x) <- unname(rprimerGlobals$complementLookup[rownames(x)])
@@ -125,7 +126,7 @@ plotNucleotides <- function(x, rc = FALSE) {
     names(x) <- c("Base", "Position", "Frequency")
     x$Base <- factor(x$Base)
     x$Position <- factor(x$Position)
-    if (rc == TRUE) {
+    if (rc) {
         x$Position <- factor(x$Position, levels = rev(levels(x$Position)))
     }
     basePalette <- c(
@@ -150,19 +151,12 @@ plotNucleotides <- function(x, rc = FALSE) {
     }
 }
 
-basePalette <- c(
-    "other" = "#E8E9ED", "A" = "#FFC759", "C" = "#FF7B9C",
-    "G" = "#607196", "T" = "#BABFD1"
-)
-
 .primerPlot <- function(x) {
     start <- x$alignmentStart[[1]]
     end <- x$alignmentEnd[[1]]
     colors <- c(
-        fwd = "#A4A7B6", rev = "#82879B",
-        prPlus = "#64697D", prMinus = "#525666")
-    nPrimer <- nrow(x[x$type == "primer" & !is.na(x$majority), ])
-    nPrimerRc <- nrow(x[x$type == "primer" & !is.na(x$majorityRc), ])
+        fwd = "#A4A7B6", rev = "#82879B", prPos = "#64697D", prNeg = "#525666"
+    )
     ggplot2::ggplot() +
         ggplot2::xlim(start, end) +
         ggplot2::ylim(0, 1) +
@@ -186,24 +180,27 @@ basePalette <- c(
             "label",
             x = start, y = seq(0.89, length.out = 2, by = 0.07),
             label = c(
-                paste("Reverse primer n =", nPrimerRc),
-                paste("Forward primer n =", nPrimer)
+                paste(
+                    "Reverse primer n =",
+                    nrow(x[x$type == "primer" & !is.na(x$majorityRc), ])
+                ),
+                paste(
+                    "Forward primer n =",
+                    nrow(x[x$type == "primer" & !is.na(x$majority), ])
+                )
             ), size = 3, hjust = 0, fontface = 2,
-            color = rev(colors), fill = "white", label.size = NA
+            color = rev(colors[seq_len(2)]), fill = "white", label.size = NA
         ) +
         .themeRprimer(showYAxis = FALSE)
 }
+
 
 .primerProbePlot <- function(x) {
     start <- x$alignmentStart[[1]]
     end <- x$alignmentEnd[[1]]
     colors <- c(
-        fwd = "#A4A7B6", rev = "#82879B",
-        prPlus = "#64697D", prMinus = "#525666")
-    nPrimer <- nrow(x[x$type == "primer" & !is.na(x$majority), ])
-    nPrimerRc <- nrow(x[x$type == "primer" & !is.na(x$majorityRc), ])
-    nProbe <- nrow(x[x$type == "probe" & !is.na(x$majority), ])
-    nProbeRc <- nrow(x[x$type == "probe" & !is.na(x$majorityRc), ])
+        fwd = "#A4A7B6", rev = "#82879B", prPos = "#64697D", prNeg = "#525666"
+    )
     ggplot2::ggplot() +
         ggplot2::xlim(start, end) +
         ggplot2::ylim(0, 1) +
@@ -226,21 +223,33 @@ basePalette <- c(
         ggplot2::geom_rect(
             data = x[x$type == "probe" & !is.na(x$majority), ], ggplot2::aes(
                 xmin = start, xmax = end, ymin = 0.20, ymax = 0.35
-            ), fill = colors["prPlus"]
+            ), fill = colors["prPos"]
         ) +
         ggplot2::geom_rect(
             data = x[x$type == "probe" & !is.na(x$majorityRc), ], ggplot2::aes(
                 xmin = start, xmax = end, ymin = 0.05, ymax = 0.20
-            ), fill = colors["prMinus"]
+            ), fill = colors["prNeg"]
         ) +
         ggplot2::annotate(
             "label",
             x = start, y = seq(0.75, length.out = 4, by = 0.07),
             label = c(
-                paste("Probe (-) n =", nProbeRc),
-                paste("Probe (+) n =", nProbe),
-                paste("Reverse primer n =", nPrimerRc),
-                paste("Forward primer n =", nPrimer)
+                paste(
+                    "Probe (-) n =",
+                    nrow(x[x$type == "probe" & !is.na(x$majorityRc), ])
+                ),
+                paste(
+                    "Probe (+) n =",
+                    nrow(x[x$type == "probe" & !is.na(x$majority), ])
+                ),
+                paste(
+                    "Reverse primer n =",
+                    nrow(x[x$type == "primer" & !is.na(x$majorityRc), ])
+                ),
+                paste(
+                    "Forward primer n =",
+                    nrow(x[x$type == "primer" & !is.na(x$majority), ])
+                )
             ), size = 3, hjust = 0, fontface = 2,
             color = rev(colors), fill = "white", label.size = NA
         ) +
@@ -281,12 +290,13 @@ basePalette <- c(
         list(
             .violinPlot(
                 x, x$gcMajority,
-                paste0("\n", type, "\n\nGC-content"), color = color
+                paste0("\n", type, "\n\nGC-content"),
+                color = color
             ),
             .violinPlot(x, x$tmMajority, "\n\n\nTm", color = color),
             .violinPlot(x, x$identity, "\n\n\nIdentity", color = color),
             .barPlot(x, x$length, "\n\n\nLength", color = color),
-            .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color =  color)
+            .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
         ),
         ncol = 5
     )
@@ -296,16 +306,19 @@ basePalette <- c(
     if (any(x$type == "probe")) {
         patchwork::wrap_plots(list(
             .gcTmIdentityPlot(
-                x[x$type == "primer", ], color = "grey30", type = "Primers"
+                x[x$type == "primer", ],
+                color = "grey30", type = "Primers"
             ),
             .gcTmIdentityPlot(
-                x[x$type == "probe", ], color = "grey30", type = "Probes"
+                x[x$type == "probe", ],
+                color = "grey30", type = "Probes"
             )
         ), ncol = 1)
     } else {
         patchwork::wrap_plots(list(
             .gcTmIdentityPlot(
-                x[x$type == "primer", ], color = "grey30",
+                x[x$type == "primer", ],
+                color = "grey30",
                 type = "Primers"
             )
         ), ncol = 1)
@@ -331,7 +344,8 @@ basePalette <- c(
             ), fill = "#64697D"
         ) +
         ggplot2::annotate(
-            "label", x = start, y = nrow(x),
+            "label",
+            x = start, y = nrow(x),
             label = paste(
                 "Assays n =", nrow(x)
             ), size = 3, hjust = 0, fontface = 2,
@@ -344,16 +358,24 @@ basePalette <- c(
     patchwork::wrap_plots(
         list(
             .violinPlot(
-                x, x$tmDifferencePrimer, "\n\nTm diff., primers", color = color
+                x, x$tmDifferencePrimer, "\n\nTm diff., primers",
+                color = color
             ),
             .violinPlot(
                 x, x$tmDifferencePrimerProbe, "\n\nTm diff., primers-probe",
                 color = color
             ),
             .violinPlot(x, x$meanIdentity, "\n\nMean identity", color = color),
-            .barPlot(x, x$totalDegeneracy, "\n\nTotal degeneracy", color = color)
+            .barPlot(
+                x, x$ampliconLength, "\n\nAmplicon length",
+                color = color
+            ),
+            .barPlot(
+                x, x$totalDegeneracy, "\n\nTotal degeneracy",
+                color = color
+            )
         ),
-        ncol = 4
+        ncol = 5
     )
 }
 
@@ -424,7 +446,8 @@ basePalette <- c(
 .gapPlot <- function(x, shadeFrom = NULL, shadeTo = NULL) {
     position <- gaps <- NULL
     ggplot2::ggplot(
-        data = x, ggplot2::aes(x = position, y = gaps)) +
+        data = x, ggplot2::aes(x = position, y = gaps)
+    ) +
         .shadeArea(shadeFrom = shadeFrom, shadeTo = shadeTo) +
         ggplot2::geom_point(size = 0.3, ggplot2::aes(color = gaps)) +
         ggplot2::ylim(0, 1) +

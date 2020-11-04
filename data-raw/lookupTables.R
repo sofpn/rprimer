@@ -52,7 +52,8 @@ iupacLookup <- c(
     "A,C,G" = "V",
     "-,A,C,G,T" = "N",
     "A,C,G,T" = "N",
-    "-" = "-"
+    "-" = "-",
+    "other" = "other"
 )
 
 degenerateLookup <- c(

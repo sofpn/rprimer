@@ -53,8 +53,8 @@ Defaults to \code{TRUE}.}
 \item{minEndIdentityPrimer}{Optional. If specified, a number [0, 1]. The minimum allowed identity
 at the 3' end of the primer (i.e. the last five bases).}
 
-\item{gcRangePrimer}{GC-content range for primers (proportion, not %). A numeric vector [0, 1].
-Defaults to \code{c(0.45, 0.55)}.}
+\item{gcRangePrimer}{GC-content range for primers (proportion, not percent).
+A numeric vector [0, 1]. Defaults to \code{c(0.45, 0.55)}.}
 
 \item{tmRangePrimer}{Tm range for primers.
 A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
@@ -65,7 +65,7 @@ correction is done);
 2) The oligo concentration is assumed to be much higher
 than the target concentration. See references for table values and equations.}
 
-\item{concPrimer}{Primer concentration in nM, for Tm calculation. A numeric vector
+\item{concPrimer}{Primer concentration in nM, for Tm calculation. A number
 [20, 2000] Defaults to 500 nM.}
 
 \item{probe}{If probes should be designed as  well. \code{TRUE} or \code{FALSE},
@@ -98,26 +98,19 @@ than the target concentration. See references for table values and equations.}
 [20, 2000] Defaults to 250 nM.}
 
 \item{concNa}{The sodium ion concentration in the PCR reaction in M, for Tm calculation.
-A numeric vector [0.01, 1]. It defaults to 0.05 M (50 mM).}
+A numeric vector [0.01, 1]. Defaults to 0.05 M (50 mM).}
 
 \item{showAllVariants}{If sequence, GC-content and Tm should be presented for all
 variants of each oligo, not just for majority variants
 (in case of degenerate bases).
 \code{TRUE} (slower) or \code{FALSE} (faster).
-Defaults to \code{TRUE}.
-
-\code{getOligos()} excludes all oligos with
-more than than three consecutive runs of the same dinucleotide
-(e.g. 'TATATATA') and more than four consecutive runs of the
-same nucleotide (e.g. 'AAAAA').
-It also excludes oligos that are duplicated to prevent binding to several
-places in the target. These checks are done on majority oligos.}
+Defaults to \code{TRUE}.}
 }
 \value{
 An \code{RprimerOligo} object.
 An error message will return if no oligos are found.
 
-The object contains the following information:
+The object contains the following columns:
 
 \describe{
   \item{type}{Type of oligo, primer or probe.}
@@ -149,8 +142,18 @@ If \code{showAllVariants == TRUE}, the following columns are also included:
 }
 \description{
 \code{getOligos()} identifies oligos (primers and probes)
-from sequence properties.
+from an \code{RprimerProfile} object.
 }
+\section{Excluded oligos}{
+
+\code{getOligos()} excludes all oligos with
+more than than three consecutive runs of the same dinucleotide
+(e.g. 'TATATATA') and more than four consecutive runs of the
+same nucleotide (e.g. 'AAAAA').
+It also excludes oligos that are duplicated to prevent binding to several
+places in the target. These checks are done on majority oligos.
+}
+
 \examples{
 data("exampleRprimerProfile")
 ## Design primers and probes with default values

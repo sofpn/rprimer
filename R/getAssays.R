@@ -1,7 +1,7 @@
 #' Get (RT)-PCR assays from oligos
 #'
 #' \code{getAssays()} combines forward and reverse primers
-#' and (if selected) probes to (RT)-PCR assays.
+#' and probes (if selected) to (RT)-PCR assays.
 #'
 #' @param x An \code{RprimerOligo} object, with or without probes.
 #'
@@ -12,7 +12,7 @@
 #' @param maxTmDifferencePrimers
 #' Maximum Tm difference between the two primers
 #' (absolute value). A number [0, 30]. Defaults to 2.
-#' Note that the Tm-difference is calculated from the majority primers, and
+#' Note that the Tm-difference is calculated from the majority oligos, and
 #' may thus be misleading for degenerate (IUPAC) primers.
 #'
 #' @param tmDifferencePrimersProbe
@@ -26,6 +26,10 @@
 #' primer pair.
 #' Note that the Tm-difference is calculated from the majority oligos, and
 #' may thus be misleading for degenerate (IUPAC) oligos.
+#'
+#' @section Probe direction:
+#' If an assay has both a valid positive sense and negative sense probe,
+#' the probe with the least G:s will be selected.
 #'
 #' @return
 #' An \code{RprimerAssay} object.
@@ -126,7 +130,6 @@
 #' data("exampleRprimerOligo")
 #' ## Get assays using default settings
 #' getAssays(exampleRprimerOligo)
-#'
 #' @export
 getAssays <- function(x,
                       length = 65:120,
@@ -177,6 +180,24 @@ getAssays <- function(x,
     gCount / totalCount
 }
 
+.findAllPrimerCombinations <- function(primers) {
+    fwd <- primers[!is.na(primers$majority), ]
+    rev <- primers[!is.na(primers$majorityRc), ]
+    combinations <- expand.grid(
+        fwd$majority, rev$majorityRc,
+        stringsAsFactors = FALSE
+    )
+    names(combinations) <- c("fwdMajority", "revMajority")
+    indexFwd <- match(combinations$fwdMajority, primers$majority)
+    indexRev <- match(combinations$revMajority, primers$majorityRc)
+    fwd <- primers[indexFwd, ]
+    rev <- primers[indexRev, ]
+    names(fwd) <- paste0(names(fwd), "Fwd")
+    names(rev) <- paste0(names(rev), "Rev")
+    assays <- dplyr::bind_cols(fwd, rev)
+    assays
+}
+
 #' Combine primers to assays
 #'
 #' @inheritParams getAssays
@@ -193,21 +214,7 @@ getAssays <- function(x,
     if (!(min(length) >= 40 && max(length) <= 5000)) {
         stop("'length' must be from 40 to 5000.", call. = FALSE)
     }
-    fwd <- primers[!is.na(primers$majority), ]
-    rev <- primers[!is.na(primers$majorityRc), ]
-    combinations <- expand.grid(
-        fwd$majority, rev$majorityRc,
-        stringsAsFactors = FALSE
-    )
-    names(combinations) <- c("fwdMajority", "revMajority")
-    indexFwd <- match(combinations$fwdMajority, primers$majority)
-    indexRev <- match(combinations$revMajority, primers$majorityRc)
-    fwd <- primers[indexFwd, ]
-    rev <- primers[indexRev, ]
-    names(fwd) <- paste0(names(fwd), "Fwd")
-    names(rev) <- paste0(names(rev), "Rev")
-    assays <- dplyr::bind_cols(fwd, rev)
-    assays <- tibble::tibble(assays)
+    assays <- .findAllPrimerCombinations(primers)
     ampliconLength <- assays$endRev - assays$startFwd + 1
     ampliconLength <- as.integer(ampliconLength)
     tmDifferencePrimer <- abs(assays$tmMajorityFwd - assays$tmMajorityRev)
@@ -236,6 +243,29 @@ getAssays <- function(x,
         stop("No assays were found.", call. = FALSE)
     }
     assays
+}
+
+.selectProbeSense <- function(probeCandidates) {
+    sense <- purrr::map2_chr(
+        probeCandidates$majority, probeCandidates$majorityRc, function(x, y) {
+            if (is.na(x)) sense <- "neg"
+            if (is.na(y)) sense <- "pos"
+            if (!is.na(x) && !is.na(y)) {
+                gContentPos <- .gContent(x)
+                gContentNeg <- .gContent(y)
+                sense <- ifelse(gContentPos <= gContentNeg, "pos", "neg")
+            }
+            sense
+        }
+    )
+    probeCandidates$majority <- ifelse(
+        sense == "pos", probeCandidates$majority, probeCandidates$majorityRc
+    )
+    probeCandidates$iupac <- ifelse(
+        sense == "pos", probeCandidates$iupac, probeCandidates$iupacRc
+    )
+    probeCandidates <- tibble::add_column(probeCandidates, sense)
+    probeCandidates
 }
 
 #' Add probes to (RT)-PCR assays
@@ -279,25 +309,7 @@ getAssays <- function(x,
         stop("No assays with probes could be generated.", call. = FALSE)
     }
     probeCandidates <- do.call("rbind", probeCandidates)
-    sense <- purrr::map2_chr(
-        probeCandidates$majority, probeCandidates$majorityRc, function(x, y) {
-            if (is.na(x)) sense <- "neg"
-            if (is.na(y)) sense <- "pos"
-            if (!is.na(x) && !is.na(y)) {
-                gContentPos <- .gContent(x)
-                gContentNeg <- .gContent(y)
-                sense <- ifelse(gContentPos <= gContentNeg, "pos", "neg")
-            }
-            sense
-        }
-    )
-    probeCandidates$majority <- ifelse(
-        sense == "pos", probeCandidates$majority, probeCandidates$majorityRc
-    )
-    probeCandidates$iupac <- ifelse(
-        sense == "pos", probeCandidates$iupac, probeCandidates$iupacRc
-    )
-    probeCandidates <- tibble::add_column(probeCandidates, sense)
+    probeCandidates <- .selectProbeSense(probeCandidates)
     drop <- c("majorityRc", "iupacRc")
     probeCandidates <- probeCandidates[!names(probeCandidates) %in% drop]
     names(probeCandidates) <- paste0(names(probeCandidates), "Pr")
@@ -314,13 +326,12 @@ getAssays <- function(x,
         }
     )
     assays <- tibble::add_column(
-        assays, tmDifferencePrimerProbe, .after = "tmDifferencePrimer"
+        assays, tmDifferencePrimerProbe,
+        .after = "tmDifferencePrimer"
     )
     assays <- assays[
-        assays$tmDifferencePrimerProbe >= min(tmDifferencePrimersProbe),
-    ]
-    assays <- assays[
-        assays$tmDifferencePrimerProbe <= max(tmDifferencePrimersProbe),
+        assays$tmDifferencePrimerProbe >= min(tmDifferencePrimersProbe) &
+            assays$tmDifferencePrimerProbe <= max(tmDifferencePrimersProbe),
     ]
     if (nrow(assays) == 0L) {
         stop("No assays with probes could be generated.", call. = FALSE)

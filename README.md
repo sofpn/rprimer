@@ -6,7 +6,7 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 <!-- badges: end -->
 
 **to do: validate objs, kolla documentation/alla defaults, write tests,
-skriv vingette, new test files, installera, jmfr med existerande,
+skriv vingette, installera, jmfr med existerande (primer3, open primer),
 skicka**
 
 ### Installation
@@ -39,15 +39,16 @@ DNA sequence alignments. The design process is built on three functions:
   - `getAssays()`: returns an `RprimerAssay` object.
 
 The `Rprimer`-classes are extensions of the `DataFrame` class from
-S4Vectors, and behave in a similar manner as traditional data frames,
-and can be coerced to such by using `as.data.frame()`.
+S4Vectors, and behave in a similar manner as traditional data frames
+(with methods for e.g. \[, head, tail), and can be coerced to such by
+using `as.data.frame()`.
 
 ### Import data
 
 The first step is to import an alignment with target sequences of
-interest and, if preferred, mask positions with high gap frequency.
-`readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the
-work for this part.
+interest and, if preferred, mask positions with high gap frequency
+(caution when removing gaps though\!). `readDNAMultipleAlignment()` and
+`maskGaps()` from Biostrings do the work for this part.
 
 Here, I want to design an RT-(q/d)PCR assay for detection of hepatitis E
 virus, which is a highly variable RNA virus. The file
@@ -114,16 +115,15 @@ plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
 The black lines represent centered running averages and the blue dots
 represent the value at each position.
 
-It is also possible to inspect the nucleotide distribution with
-`plotNucleotides()`. Here, `rc` regulates whether the sequence should be
-displayed as a reverse complement or not.
+You can also subset the data to look at a certain region in more detail:
 
 ``` r
-## Plot the first 30 bases 
-plotNucleotides(myConsensusProfile[1:30, ], rc = FALSE) 
+mySubset <- myConsensusProfile[myConsensusProfile$position > 5000 & myConsensusProfile$position < 5500, ]
+
+plotData(mySubset)
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ### Step 2: `getOligos`
 
@@ -138,8 +138,8 @@ designed from the following constraints:
     primer, defaults to `4`.
   - `gcClampPrimer` If primers must have a GC-clamp, defaults to `TRUE`.
   - `avoid3endRunsPrimer` If primers with more than two runs of the same
-    nucleotide at the terminal 3’ end should be avoided (recommended for
-    primers), defaults to `TRUE`.
+    nucleotide at the terminal 3’ end should be avoided, defaults to
+    `TRUE`.
   - `minEndIdentityPrimer` Optional. Minimum allowed identity at the 3’
     end (i.e. the last five bases). E.g., if set to `1`, only primers
     with complete target conservation at the 3’ end will be considered.
@@ -195,7 +195,7 @@ myOligos <- getOligos(myConsensusProfile,
                       tmRangePrimer = c(55, 65),
                       concPrimer = 500,
                       probe = TRUE,
-                      lengthProbe = 18:22,
+                      lengthProbe = 16:24,
                       maxGapFrequencyProbe = 0.1,
                       maxDegeneracyProbe = 4,
                       avoid5EndGProbe = TRUE, 
@@ -206,15 +206,40 @@ myOligos <- getOligos(myConsensusProfile,
                       showAllVariants = TRUE)
 ```
 
-The object contains many columns, so the most sensible way to inspect it
-is by using `View(as.data.frame(myOligos))`, if you are using RStudio.
+Output:
+
+| type   | start | end | length | majority                | majorityRc              | gcMajority | tmMajority | identity | iupac                   | iupacRc                 | degeneracy | all        | allRc      | gcAll      | tmAll      | alignmentStart | alignmentEnd |
+| :----- | ----: | --: | -----: | :---------------------- | :---------------------- | ---------: | ---------: | -------: | :---------------------- | :---------------------- | ---------: | :--------- | :--------- | :--------- | :--------- | -------------: | -----------: |
+| probe  |    39 |  61 |     23 | CAGTTTATCAAGGCTCCTGGCAT | ATGCCAGGAGCCTTGATAAACTG |       0.48 |      58.64 |     0.98 | CAGTTYATYAAGGCTCCTGGCAT | ATGCCAGGAGCCTTRATRAACTG |          4 | CAGTTCAT…. | ATGCCAGG…. | 0.52, 0….. | 61.64, 5…. |              1 |         7208 |
+| primer |    40 |  61 |     22 | AGTTTATCAAGGCTCCTGGCAT  | NA                      |       0.45 |      58.53 |     0.98 | AGTTYATYAAGGCTCCTGGCAT  | NA                      |          4 | AGTTCATC…. |            | 0.5, 0.4…. | 60.8, 58…. |              1 |         7208 |
+| probe  |    40 |  59 |     20 | AGTTTATCAAGGCTCCTGGC    | NA                      |       0.50 |      55.90 |     0.98 | AGTTYATYAAGGCTCCTGGC    | NA                      |          4 | AGTTCATC…. |            | 0.55, 0….. | 59.34, 5…. |              1 |         7208 |
+| probe  |    40 |  60 |     21 | AGTTTATCAAGGCTCCTGGCA   | TGCCAGGAGCCTTGATAAACT   |       0.48 |      57.44 |     0.98 | AGTTYATYAAGGCTCCTGGCA   | TGCCAGGAGCCTTRATRAACT   |          4 | AGTTCATC…. | TGCCAGGA…. | 0.52, 0….. | 60.75, 5…. |              1 |         7208 |
+| probe  |    40 |  61 |     22 | AGTTTATCAAGGCTCCTGGCAT  | ATGCCAGGAGCCTTGATAAACT  |       0.45 |      57.62 |     0.98 | AGTTYATYAAGGCTCCTGGCAT  | ATGCCAGGAGCCTTRATRAACT  |          4 | AGTTCATC…. | ATGCCAGG…. | 0.5, 0.4…. | 60.8, 58…. |              1 |         7208 |
+| primer |    41 |  61 |     21 | GTTTATCAAGGCTCCTGGCAT   | NA                      |       0.48 |      57.38 |     0.98 | GTTYATYAAGGCTCCTGGCAT   | NA                      |          4 | GTTCATCA…. |            | 0.52, 0….. | 59.72, 5…. |              1 |         7208 |
+
+NA means that the oligo was invalid.
+
+For the `RprimerProfile` object, it is possible to inspect the
+nucleotide distribution with `plotNucleotides()`. For instance, we can
+select to plot the region where the first primer appears. `rc` regulates
+whether the sequence should be displayed as a reverse complement or not.
+
+``` r
+## Select position 40-61 in the genome 
+myOligoRegion <- myConsensusProfile[myConsensusProfile$position >= 40 & myConsensusProfile$position <= 61, ] 
+
+plotNucleotides(myOligoRegion, rc = FALSE) 
+```
+
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;" />
+
 All oligo candidates can be visualized using `plotData()`:
 
 ``` r
 plotData(myOligos)
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
 It is also possible, by subsetting, to select oligos targeting a
 specific region:
@@ -223,7 +248,7 @@ specific region:
 plotData(myOligos[myOligos$start > 5000 & myOligos$end < 6000, ])
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 ### Step 3: `getAssays`
 
@@ -237,9 +262,9 @@ them with probes (if selected), based on the following constraints:
   - `tmDifferencePrimersProbe` Acceptable Tm difference between the
     primers (average Tm of the primer pair) and probe, defaults to
     `c(0, 20)`. The Tm-difference is calculated by subtracting the Tm of
-    the probe with the average Tm of the (majority) primer pair. A
-    negative Tm-difference means that the Tm of the probe is lower than
-    the average Tm of the primer pair.
+    the (majority) probe with the average Tm of the (majority) primer
+    pair. A negative Tm-difference means that the Tm of the probe is
+    lower than the average Tm of the primer pair.
 
 An error message will return if no assays are found.
 
@@ -250,15 +275,38 @@ myAssays <- getAssays(myOligos,
                       tmDifferencePrimersProbe = c(-2, 10))
 ```
 
-Again, the object contains many columns, so the most sensible way to
-inspect it is by using `View(as.data.frame(myAssays))`, if you are using
-RStudio. The assays can also be visualized using `plotData()`:
+Output:
+
+``` r
+knitr::kable(myAssays[10:15, ], digits = 2)
+```
+
+| start | end | ampliconLength | tmDifferencePrimer | tmDifferencePrimerProbe | meanIdentity | totalDegeneracy | startFwd | endFwd | lengthFwd | majorityFwd           | gcMajorityFwd | tmMajorityFwd | identityFwd | iupacFwd              | degeneracyFwd | allFwd     | gcAllFwd   | tmAllFwd   | startRev | endRev | lengthRev | majorityRev         | gcMajorityRev | tmMajorityRev | identityRev | iupacRev            | degeneracyRev | allRev     | gcAllRev   | tmAllRev   | startPr | endPr | lengthPr | majorityPr               | gcMajorityPr | tmMajorityPr | identityPr | iupacPr                  | degeneracyPr | allPr      | allRcPr    | gcAllPr    | tmAllPr      | sensePr | alignmentStart | alignmentEnd |
+| ----: | --: | -------------: | -----------------: | ----------------------: | -----------: | --------------: | -------: | -----: | --------: | :-------------------- | ------------: | ------------: | ----------: | :-------------------- | ------------: | :--------- | :--------- | :--------- | -------: | -----: | --------: | :------------------ | ------------: | ------------: | ----------: | :------------------ | ------------: | :--------- | :--------- | :--------- | ------: | ----: | -------: | :----------------------- | -----------: | -----------: | ---------: | :----------------------- | -----------: | :--------- | :--------- | :--------- | :----------- | :------ | -------------: | -----------: |
+|    41 | 133 |             93 |               0.97 |                    3.53 |         0.99 |              10 |       41 |     61 |        21 | GTTTATCAAGGCTCCTGGCAT |          0.48 |         57.38 |        0.98 | GTTYATYAAGGCTCCTGGCAT |             4 | GTTCATCA…. | 0.52, 0….. | 59.72, 5…. |      115 |    133 |        19 | GGCCTAACTACCACAGCAT |          0.53 |         56.41 |        0.98 | GGCCKAACYACCACAGCAT |             4 | GGCCGAAC…. | 0.63, 0….. | 62.82, 5…. |      64 |    87 |       24 | CTACTGCTATTGAGCAGGCTGCTC |         0.54 |        60.91 |       0.99 | CTACTGCYATTGAGCAGGCTGCTC |            2 | CTACTGCC…. |            | 0.58, 0.54 | 64.19, 61.72 | pos     |              1 |         7208 |
+|    41 | 133 |             93 |               0.97 |                  \-1.64 |         0.99 |              10 |       41 |     61 |        21 | GTTTATCAAGGCTCCTGGCAT |          0.48 |         57.38 |        0.98 | GTTYATYAAGGCTCCTGGCAT |             4 | GTTCATCA…. | 0.52, 0….. | 59.72, 5…. |      115 |    133 |        19 | GGCCTAACTACCACAGCAT |          0.53 |         56.41 |        0.98 | GGCCKAACYACCACAGCAT |             4 | GGCCGAAC…. | 0.63, 0….. | 62.82, 5…. |      65 |    84 |       20 | CAGCCTGCTCAATAGCAGTA     |         0.50 |        55.74 |       0.99 | CAGCCTGCTCAATRGCAGTA     |            2 | TACTGCCA…. | CAGCCTGC…. | 0.55, 0.5  | 59.7, 56.71  | neg     |              1 |         7208 |
+|    41 | 133 |             93 |               0.97 |                    1.22 |         0.99 |              10 |       41 |     61 |        21 | GTTTATCAAGGCTCCTGGCAT |          0.48 |         57.38 |        0.98 | GTTYATYAAGGCTCCTGGCAT |             4 | GTTCATCA…. | 0.52, 0….. | 59.72, 5…. |      115 |    133 |        19 | GGCCTAACTACCACAGCAT |          0.53 |         56.41 |        0.98 | GGCCKAACYACCACAGCAT |             4 | GGCCGAAC…. | 0.63, 0….. | 62.82, 5…. |      65 |    85 |       21 | TACTGCTATTGAGCAGGCTGC    |         0.52 |        58.59 |       0.99 | TACTGCYATTGAGCAGGCTGC    |            2 | TACTGCCA…. |            | 0.57, 0.52 | 62.36, 59.52 | pos     |              1 |         7208 |
+|    41 | 133 |             93 |               0.97 |                    2.31 |         0.99 |              10 |       41 |     61 |        21 | GTTTATCAAGGCTCCTGGCAT |          0.48 |         57.38 |        0.98 | GTTYATYAAGGCTCCTGGCAT |             4 | GTTCATCA…. | 0.52, 0….. | 59.72, 5…. |      115 |    133 |        19 | GGCCTAACTACCACAGCAT |          0.53 |         56.41 |        0.98 | GGCCKAACYACCACAGCAT |             4 | GGCCGAAC…. | 0.63, 0….. | 62.82, 5…. |      65 |    86 |       22 | AGCAGCCTGCTCAATAGCAGTA   |         0.50 |        59.69 |       0.99 | AGCAGCCTGCTCAATRGCAGTA   |            2 | TACTGCCA…. | AGCAGCCT…. | 0.55, 0.5  | 63.35, 60.59 | neg     |              1 |         7208 |
+|    41 | 133 |             93 |               0.97 |                    2.95 |         0.99 |              10 |       41 |     61 |        21 | GTTTATCAAGGCTCCTGGCAT |          0.48 |         57.38 |        0.98 | GTTYATYAAGGCTCCTGGCAT |             4 | GTTCATCA…. | 0.52, 0….. | 59.72, 5…. |      115 |    133 |        19 | GGCCTAACTACCACAGCAT |          0.53 |         56.41 |        0.98 | GGCCKAACYACCACAGCAT |             4 | GGCCGAAC…. | 0.63, 0….. | 62.82, 5…. |      65 |    87 |       23 | TACTGCTATTGAGCAGGCTGCTC  |         0.52 |        60.33 |       0.99 | TACTGCYATTGAGCAGGCTGCTC  |            2 | TACTGCCA…. |            | 0.57, 0.52 | 63.79, 61.19 | pos     |              1 |         7208 |
+|    41 | 133 |             93 |               0.97 |                    3.91 |         0.99 |              10 |       41 |     61 |        21 | GTTTATCAAGGCTCCTGGCAT |          0.48 |         57.38 |        0.98 | GTTYATYAAGGCTCCTGGCAT |             4 | GTTCATCA…. | 0.52, 0….. | 59.72, 5…. |      115 |    133 |        19 | GGCCTAACTACCACAGCAT |          0.53 |         56.41 |        0.98 | GGCCKAACYACCACAGCAT |             4 | GGCCGAAC…. | 0.63, 0….. | 62.82, 5…. |      65 |    88 |       24 | TACTGCTATTGAGCAGGCTGCTCT |         0.50 |        61.29 |       0.99 | TACTGCYATTGAGCAGGCTGCTCT |            2 | TACTGCCA…. | AGAGCAGC…. | 0.54, 0.5  | 64.65, 62.12 | pos     |              1 |         7208 |
+
+The output can be visualized using `plotData()`:
 
 ``` r
 plotData(myAssays)
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+
+### Example data
+
+Example data sets of each class can be loaded by:
+
+``` r
+data("exampleRprimerProfile")
+data("exampleRprimerOligo")
+data("exampleRprimerAssay")
+```
 
 ### Session info
 

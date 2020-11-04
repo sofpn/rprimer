@@ -19,7 +19,7 @@ getAssays(
 
 \item{maxTmDifferencePrimers}{Maximum Tm difference between the two primers
 (absolute value). A number [0, 30]. Defaults to 2.
-Note that the Tm-difference is calculated from the majority primers, and
+Note that the Tm-difference is calculated from the majority oligos, and
 may thus be misleading for degenerate (IUPAC) primers.}
 
 \item{tmDifferencePrimersProbe}{Acceptable Tm difference between the primers (average Tm of the
@@ -128,8 +128,14 @@ in \code{getOligos()}, the following data are also added:
 }
 \description{
 \code{getAssays()} combines forward and reverse primers
-and (if selected) probes to (RT)-PCR assays.
+and probes (if selected) to (RT)-PCR assays.
 }
+\section{Probe direction}{
+
+If an assay has both a valid positive sense and negative sense probe,
+the probe with the least G:s will be selected.
+}
+
 \examples{
 data("exampleRprimerOligo")
 ## Get assays using default settings
