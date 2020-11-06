@@ -9,10 +9,9 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
 
-**att göra: \* validate objs, dokumentera s4 klasser  
-\* snurra på x axlar plottar, \* randomly select hev sequences -\> new
-example files \* installera, jmfr med existerande (primer3, open
-primer), \* skicka**
+**att göra: \* validate objs, dokumentera och testa s4 klasserna  
+\* snurra på x axlar plottar, (15 nov) \* installera, jmfr med
+existerande (primer3, open primer) + skicka \* github release?**
 
 ## Installation
 

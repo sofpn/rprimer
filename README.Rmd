@@ -91,27 +91,7 @@ plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
 
 ### Step 2: `getOligos`
 
-`getOligos()` searches for oligos from an `RprimerProfile`-object. All oligos are shown in both majority (without degenerate bases) and IUPAC format (with degenerate bases). The oligos are designed from the following constraints:  
-
-* `lengthPrimer` Primer length, defaults to `18:22`
-* `maxGapFrequencyPrimer` Maximum gap frequency for primers, defaults to `0.1`
-* `maxDegeneracyPrimer` Maximum number of variants of each primer, defaults to `4`
-* `gcClampPrimer` If primers must have a GC-clamp, defaults to `TRUE`
-* `avoid3endRunsPrimer` If primers with more than two runs of the same nucleotide at the terminal 3' end should be avoided, defaults to `TRUE`
-* `minEndIdentityPrimer` Optional. Minimum allowed identity at the 3' end (i.e. the last five bases). E.g., if set to `1`, only primers with complete target conservation at the 3' end will be considered
-* `gcRangePrimer` GC-content-range for primers, defaults to `c(0.45, 0.55)`
-* `tmRangePrimer` Melting temperature (Tm) range for primers, defaults to `c(55, 65)`. Tm is calculated using the nearest-neighbor method. See `?rprimer::getOligos` for a detailed description and references
-* `concPrimer` Primer concentration in nM (for Tm calculation), defaults to `500`
-* `probe` If probes should be designed as well, defaults to `TRUE`
-* `lengthProbe` Probe length, defaults to `18:22`
-* `maxGapFrequencyProbe` Maximum gap frequency for probes, defaults to `0.1` 
-* `maxDegeneracyProbe` Maximum number of variants of each probe, defaults to `4`
-* `avoid5endGProbe` If probes with a G at the terminal 5' end should be avoided, defaults to `TRUE`
-* `gcRangeProbe` GC-content-range for probes, defaults to `c(0.45, 0.55)`
-* `tmRangeProbe` Melting temperature (Tm) range for probes, defaults to `c(55, 70)`
-* `concProbe` Probe concentration in nM (for Tm calculation), defaults to `250`
-* `concNa` Sodium ion concentration in the PCR reaction (for Tm calculation), defaults to `0.05` M (50 mM)
-* `showAllVariants` If sequence, GC-content and Tm should be presented for all variants of each oligo (in case of degenerate bases).`TRUE` (slower) or `FALSE` (faster), defaults to `TRUE`
+`getOligos()` searches for oligos from an `RprimerProfile`-object. All oligos are shown in both majority (without degenerate bases) and IUPAC format (with degenerate bases). 
 
 ``` {r}
 myOligos <- getOligos(myConsensusProfile,
@@ -144,11 +124,7 @@ plotData(myOligos)
 
 ### Step 3: `getAssays`
 
-`getAssays()` finds pairs of forward and reverse primers and combines them with probes (if selected). The design process is based on the following constraints: 
-
-* `length` Amplicon length, defaults to `65:120`
-* `maxTmDifferencePrimers` Maximum Tm difference between the two primers (absolute value, calculated for majority primers), defaults to `2`
-* `tmDifferencePrimersProbe` Acceptable Tm difference between the primers (average Tm of the primer pair) and probe, defaults to `c(0, 20)`. The Tm-difference is calculated by subtracting the Tm of the (majority) probe with the average Tm of the (majority) primer pair. A negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair
+`getAssays()` finds pairs of forward and reverse primers and combines them with probes (if selected).
 
 ```{r}
 myAssays <- getAssays(myOligos, 
