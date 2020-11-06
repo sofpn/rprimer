@@ -124,7 +124,7 @@ plotData(myOligos)
 
 ### Step 3: `getAssays`
 
-`getAssays()` finds pairs of forward and reverse primers and combines them with probes (if selected).
+`getAssays()` finds pairs of forward and reverse primers and, if selected, combines them with probes.
 
 ```{r}
 myAssays <- getAssays(myOligos, 
