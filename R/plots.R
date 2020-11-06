@@ -340,12 +340,12 @@ plotNucleotides <- function(x, rc = FALSE) {
         ) +
         ggplot2::geom_rect(
             data = x, ggplot2::aes(
-                xmin = start, xmax = end, ymin = 0.05, ymax = 0.95
+                xmin = start, xmax = end, ymin = 0.05, ymax = 0.65
             ), fill = "#64697D"
         ) +
         ggplot2::annotate(
             "label",
-            x = start, y = nrow(x),
+            x = start, y = 0.8,
             label = paste(
                 "Assays n =", nrow(x)
             ), size = 3, hjust = 0, fontface = 2,

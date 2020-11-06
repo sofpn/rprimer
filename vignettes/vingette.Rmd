@@ -52,7 +52,7 @@ The first step is to import an alignment with target sequences of interest and, 
 
 Here, I  want to design an RT-(q/d)PCR assay for detection of hepatitis E virus, which is a highly variable RNA virus. The file "example_alignment.txt" is provided with the package and contains 100 hepatitis E virus sequences.  
 
-I mask all positions with at least 50 % gaps. However, masking positions with high gap frequency should we done with caution, since it may lead to that oligos are placed in positions were some sequences have inserts **(should I add an  avoid mask option in get oligos?)**
+I mask all positions with at least 50 % gaps. But note that masking positions with high gap frequency should we done with caution, since it may lead to that oligos are placed in positions were some sequences have inserts **(should I add an  avoid mask option in get oligos?)**
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -240,6 +240,7 @@ myAssays <- filepath %>%
 Example data sets of each class are provided with the package, and can be loaded by: 
 
 ```{r}
+data("exampleRprimerAlignment")
 data("exampleRprimerProfile")
 data("exampleRprimerOligo")
 data("exampleRprimerAssay")

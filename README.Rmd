@@ -22,9 +22,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-**to do: validate objs, snurra på x axlar, geom paths gaps (warn false?), randomly select hev sequences, new examples, kortare readme, kolla documentation/alla defaults, installera, jmfr med existerande (primer3, open primer), skicka**
+**att göra: 
+* validate objs, dokumentera och testa s4 klasserna  
+* snurra på x axlar plottar, (15 nov)
+* installera, jmfr med existerande (primer3, open primer) + skicka
+* github release?**
 
-### Installation
+## Installation
 
 You can install rprimer from [GitHub](https://github.com/) with:
 
@@ -41,7 +45,7 @@ library(magrittr) # Required for the pipe operator
 library(Biostrings) # Required to import alignment
 ```
 
-### Overview 
+## Overview 
 
 rprimer provides tools for designing (RT)-(q/dd)PCR assays from multiple DNA sequence alignments. The design process is built on three functions: 
 
@@ -49,15 +53,13 @@ rprimer provides tools for designing (RT)-(q/dd)PCR assays from multiple DNA seq
 * `getOligos()`: returns an `RprimerOligo` object, which is used as input for; 
 * `getAssays()`: returns an `RprimerAssay` object.
 
-### Data structures 
+The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors, and behave in a similar manner as traditional data frames. 
 
-The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors, and behave in a similar manner as traditional data frames (with methods for e.g. [, head, tail), and can be coerced to such by using `as.data.frame()`.
+## Workflow 
 
 ### Import data 
 
-The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with high gap frequency (caution when removing gaps though!). `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the work for this part. 
-
-Here, I  want to design an RT-(q/d)PCR assay for detection of hepatitis E virus, which is a highly variable RNA virus. The file "example_alignment.txt" is provided with the package and contains 100 hepatitis E virus sequences.  
+The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the work for this part. 
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -69,7 +71,7 @@ myAlignment <- infile %>%
 
 ### Step 1: `getConsensusProfile` 
 
-`getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns all the information needed for the subsequent design process. Note that masked positions are excluded. 
+`getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns all the information needed for the subsequent design process. 
 
 ```{r}
 myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
@@ -81,28 +83,10 @@ Output:
 knitr::kable(head(myConsensusProfile), digits = 2)
 ```
 
-Some comments on the data: 
-
-* Majority refers to the majority consensus sequence, which is the most frequently occurring base. Identity is the proportion of that base when gaps and other bases than A, C, G and T are not taken into account
-
-* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`
-
-* Entropy refers to Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. Gaps and other bases than A, C, G and T are not included in this calculation 
-
-The data can be visualized with `plotData()`, and specific regions can be highlighted using the optional arguments `shadeFrom` and `shadeTo`. The most conserved region of the hepatitis E virus genome appears to be between position 5000-5500:
+The output can be visualized with `plotData()`, and specific regions can be highlighted using the optional arguments `shadeFrom` and `shadeTo`. 
 
 ```{r, fig.width=12, fig.height=6}
 plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
-```
-
-The black lines represent centered running averages and the blue dots represent the value at each position. 
-
-I subset the data to look at the conserved region in more detail: 
-
-```{r, fig.width=12, fig.height=6}
-mySubset <- myConsensusProfile[myConsensusProfile$position > 5000 & myConsensusProfile$position < 5500, ]
-
-plotData(mySubset)
 ```
 
 ### Step 2: `getOligos`
@@ -129,30 +113,20 @@ plotData(mySubset)
 * `concNa` Sodium ion concentration in the PCR reaction (for Tm calculation), defaults to `0.05` M (50 mM)
 * `showAllVariants` If sequence, GC-content and Tm should be presented for all variants of each oligo (in case of degenerate bases).`TRUE` (slower) or `FALSE` (faster), defaults to `TRUE`
 
-In addition, `getOligos()` avoids:
-
-* Majority oligos with more than than three consecutive runs of the same dinucleotide (e.g. "TATATATA")
-* Majority oligos with more than four consecutive runs of the same nucleotide  (e.g. "AAAAA")
-* Majority oligos that are duplicated (to prevent binding at several places on the genome)
-
-An error message will return if no oligos are found. 
-
-Below, I design both primers and probes for my hepatitis E virus target.
-
 ``` {r}
 myOligos <- getOligos(myConsensusProfile,
                       lengthPrimer = 18:22,
-                      maxGapFrequencyPrimer = 0.1,
-                      maxDegeneracyPrimer = 4,
+                      maxGapFrequencyPrimer = 0.05,
+                      maxDegeneracyPrimer = 2,
                       gcClampPrimer = TRUE,
                       avoid3EndRunsPrimer = TRUE,
-                      minEndIdentityPrimer = 0.98,
+                      minEndIdentityPrimer = 1,
                       gcRangePrimer = c(0.45, 0.65),
                       tmRangePrimer = c(55, 65),
                       concPrimer = 500,
                       probe = TRUE,
                       lengthProbe = 16:24,
-                      maxGapFrequencyProbe = 0.1,
+                      maxGapFrequencyProbe = 0.05,
                       maxDegeneracyProbe = 4,
                       avoid5EndGProbe = TRUE, 
                       gcRangeProbe = c(0.45, 0.65),
@@ -162,37 +136,12 @@ myOligos <- getOligos(myConsensusProfile,
                       showAllVariants = TRUE)
 ```
 
-Output: 
-
-```{r, echo=FALSE}
-knitr::kable(myOligos[10:15, ], digits = 2)
-```
-
-Some comments on the data:
-
-* NA means that the oligo was invalid, due to e.g. missing GC-clamp or an end-identity below the threshold. 
-
-All oligo candidates can be visualized using `plotData()`:
+The oligo candidates can be visualized using `plotData()`:
 
 ```{r, fig.width=12, fig.height=8}
 plotData(myOligos)
 ```
 
-It is also possible, by subsetting, to select oligos targeting a specific region: 
-
-```{r, fig.width=12, fig.height=8}
-plotData(myOligos[myOligos$start > 5000 & myOligos$end < 6000, ])
-```
-
-For the `RprimerProfile` object, it is possible to inspect the nucleotide distribution with `plotNucleotides()`. For instance, we can select to plot the region where the first primer appears. `rc` regulates whether the sequence should be displayed as a reverse complement or not.
-
-```{r, fig.align="center", fig.width=5, fig.height=4}
-## Select position 40-61 in the genome 
-myOligoRegion <- myConsensusProfile[myConsensusProfile$position >= 40 & myConsensusProfile$position <= 61, ] 
-
-plotNucleotides(myOligoRegion, rc = FALSE) 
-```
-  
 ### Step 3: `getAssays`
 
 `getAssays()` finds pairs of forward and reverse primers and combines them with probes (if selected). The design process is based on the following constraints: 
@@ -201,8 +150,6 @@ plotNucleotides(myOligoRegion, rc = FALSE)
 * `maxTmDifferencePrimers` Maximum Tm difference between the two primers (absolute value, calculated for majority primers), defaults to `2`
 * `tmDifferencePrimersProbe` Acceptable Tm difference between the primers (average Tm of the primer pair) and probe, defaults to `c(0, 20)`. The Tm-difference is calculated by subtracting the Tm of the (majority) probe with the average Tm of the (majority) primer pair. A negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair
 
-An error message will return if no assays are found.
-
 ```{r}
 myAssays <- getAssays(myOligos, 
                       length = 65:120,
@@ -210,54 +157,12 @@ myAssays <- getAssays(myOligos,
                       tmDifferencePrimersProbe = c(-2, 10))
 ```
 
-Output: 
-
-```{r, echo=FALSE}
-knitr::kable(myAssays[10:15, ], digits = 2)
-```
-
-Some comments on the data: 
-
-* Probes can be either positive or negative sense. If both the positive and negative sense probe are considered valid for a specific assay, the probe with the least number of Gs will be selected. 
-
-The output can be visualized using `plotData()`: 
+The assay candidates can be visualized using `plotData()`: 
 
 ```{r, fig.width=12, fig.height=6}
 plotData(myAssays)
 ```
 
-### Example data 
+## More information
 
-Example data sets of each class are provided with the package, and can be loaded by: 
-
-```{r}
-data("exampleRprimerProfile")
-data("exampleRprimerOligo")
-data("exampleRprimerAssay")
-```
-
-### Summary 
-
-The design process is summarized in the following pipeline. In this case, I use default settings for oligo and assay design. I save all the different objects so I can plot them, or write them to a .txt or .csv file. 
-
-```{r}
-## Enter the filepath to the alignment here 
-filepath <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
-
-myAssays <- filepath %>%
-  Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
-  {Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1) ->> myAlignment} %>%
-  {getConsensusProfile(., iupacThreshold = 0.05) ->> myConsensusProfile} %>%
-  {getOligos(.) ->> myOligos} %>%
-  getAssays(.)
-  
-# plotData(myConsensusProfile)
-# plotData(myOligos)
-# plotData(myAssays)
-```
-
-### Session info 
-
-```{r}
-sessionInfo()
-```
+Please see the package vingette for a more detailed description of rprimer and its functionality. 

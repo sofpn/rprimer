@@ -158,7 +158,6 @@ places in the target. These checks are done on majority oligos.
 data("exampleRprimerProfile")
 ## Design primers and probes with default values
 getOligos(exampleRprimerProfile)
-
 }
 \references{
 Tm-calculation:

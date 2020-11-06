@@ -375,7 +375,7 @@ getOligos <- function(x,
     }
     majority <- .getNmers(x$majority, n = oligoLength)
     iupac <- .getNmers(x$iupac, n = oligoLength)
-    degeneracy <- as.integer(purrr::map_dbl(iupac, ~ .countDegeneracy(.x)))
+    degeneracy <- purrr::map_dbl(iupac, ~ .countDegeneracy(.x))
     start <- seq_along(majority)
     end <- as.integer(seq_along(majority) + oligoLength - 1)
     length <- oligoLength
