@@ -5,9 +5,14 @@
 status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 <!-- badges: end -->
 
-**to do: validate objs, kolla documentation/alla defaults, write tests,
-skriv vingette, installera, jmfr med existerande (primer3, open primer),
-skicka**
+<!-- badges: start --> [![Codecov test
+coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
+<!-- badges: end -->
+
+**to do: validate objs, snurra på x axlar, geom paths gaps (warn
+false?), randomly select hev sequences, new examples, kortare readme,
+kolla documentation/alla defaults, installera, jmfr med existerande
+(primer3, open primer), skicka**
 
 ### Installation
 
@@ -38,6 +43,8 @@ DNA sequence alignments. The design process is built on three functions:
     input for;
   - `getAssays()`: returns an `RprimerAssay` object.
 
+### Data structures
+
 The `Rprimer`-classes are extensions of the `DataFrame` class from
 S4Vectors, and behave in a similar manner as traditional data frames
 (with methods for e.g. \[, head, tail), and can be coerced to such by
@@ -52,8 +59,8 @@ interest and, if preferred, mask positions with high gap frequency
 
 Here, I want to design an RT-(q/d)PCR assay for detection of hepatitis E
 virus, which is a highly variable RNA virus. The file
-“example\_alignment.txt” is provided and contains 100 hepatitis E
-virus sequences.
+“example\_alignment.txt” is provided with the package and contains 100
+hepatitis E virus sequences.
 
 ``` r
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -67,7 +74,7 @@ myAlignment <- infile %>%
 
 `getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment`
 object as input and returns all the information needed for the
-subsequent design process. Masked positions are excluded.
+subsequent design process. Note that masked positions are excluded.
 
 ``` r
 myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
@@ -89,22 +96,21 @@ Some comments on the data:
   - Majority refers to the majority consensus sequence, which is the
     most frequently occurring base. Identity is the proportion of that
     base when gaps and other bases than A, C, G and T are not taken into
-    account.
+    account
 
   - The IUPAC consensus sequence includes wobble bases according to the
     IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that
-    occurs with a frequency higher than the stated `iupacThreshold`.
-    **The iupac treshold has implications for downstream oligo design.**
+    occurs with a frequency higher than the stated `iupacThreshold`
 
   - Entropy refers to Shannon entropy, which is a measurement of
     variability. A value of zero indicate no variability and a high
     value indicate high variability. Gaps and other bases than A, C, G
-    and T are not included in this calculation.
+    and T are not included in this calculation
 
-The target genome can be visualized with `plotData()`, and specific
-regions can be highlighted using the optional arguments `shadeFrom` and
-`shadeTo`. We can see that the most conserved region of the hepatitis E
-virus genome is between position 5000-5500:
+The data can be visualized with `plotData()`, and specific regions can
+be highlighted using the optional arguments `shadeFrom` and `shadeTo`.
+The most conserved region of the hepatitis E virus genome appears to be
+between position 5000-5500:
 
 ``` r
 plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
@@ -115,7 +121,7 @@ plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
 The black lines represent centered running averages and the blue dots
 represent the value at each position.
 
-You can also subset the data to look at a certain region in more detail:
+I subset the data to look at the conserved region in more detail:
 
 ``` r
 mySubset <- myConsensusProfile[myConsensusProfile$position > 5000 & myConsensusProfile$position < 5500, ]
@@ -128,47 +134,48 @@ plotData(mySubset)
 ### Step 2: `getOligos`
 
 `getOligos()` searches for oligos from an `RprimerProfile`-object. All
-oligos are shown in both majority and IUPAC format. The oligos are
-designed from the following constraints:
+oligos are shown in both majority (without degenerate bases) and IUPAC
+format (with degenerate bases). The oligos are designed from the
+following constraints:
 
-  - `lengthPrimer` Primer length, defaults to `18:22`.
+  - `lengthPrimer` Primer length, defaults to `18:22`
   - `maxGapFrequencyPrimer` Maximum gap frequency for primers, defaults
-    to `0.1`.
-  - `maxDegeneracyPrimer` Maximum number of degenerate variants of each
-    primer, defaults to `4`.
-  - `gcClampPrimer` If primers must have a GC-clamp, defaults to `TRUE`.
+    to `0.1`
+  - `maxDegeneracyPrimer` Maximum number of variants of each primer,
+    defaults to `4`
+  - `gcClampPrimer` If primers must have a GC-clamp, defaults to `TRUE`
   - `avoid3endRunsPrimer` If primers with more than two runs of the same
     nucleotide at the terminal 3’ end should be avoided, defaults to
-    `TRUE`.
+    `TRUE`
   - `minEndIdentityPrimer` Optional. Minimum allowed identity at the 3’
     end (i.e. the last five bases). E.g., if set to `1`, only primers
-    with complete target conservation at the 3’ end will be considered.
+    with complete target conservation at the 3’ end will be considered
   - `gcRangePrimer` GC-content-range for primers, defaults to
-    `c(0.45, 0.55)`.
+    `c(0.45, 0.55)`
   - `tmRangePrimer` Melting temperature (Tm) range for primers, defaults
     to `c(55, 65)`. Tm is calculated using the nearest-neighbor method.
-    See `?rprimer::getOligos` for a detailed description and references.
+    See `?rprimer::getOligos` for a detailed description and references
   - `concPrimer` Primer concentration in nM (for Tm calculation),
-    defaults to `500`.
-  - `probe` If probes should be designed as well, defaults to `TRUE`.
-  - `lengthProbe` Probe length, defaults to `18:22`.
+    defaults to `500`
+  - `probe` If probes should be designed as well, defaults to `TRUE`
+  - `lengthProbe` Probe length, defaults to `18:22`
   - `maxGapFrequencyProbe` Maximum gap frequency for probes, defaults to
-    `0.1`.
-  - `maxDegeneracyProbe` Maximum number of degenerate variants of each
-    probe, defaults to `4`.
+    `0.1`
+  - `maxDegeneracyProbe` Maximum number of variants of each probe,
+    defaults to `4`
   - `avoid5endGProbe` If probes with a G at the terminal 5’ end should
-    be avoided, defaults to `TRUE`.
+    be avoided, defaults to `TRUE`
   - `gcRangeProbe` GC-content-range for probes, defaults to
-    `c(0.45, 0.55)`.
+    `c(0.45, 0.55)`
   - `tmRangeProbe` Melting temperature (Tm) range for probes, defaults
-    to `c(55, 70)`.
+    to `c(55, 70)`
   - `concProbe` Probe concentration in nM (for Tm calculation), defaults
-    to `250`.
+    to `250`
   - `concNa` Sodium ion concentration in the PCR reaction (for Tm
-    calculation), defaults to `0.05` M (50 mM).
+    calculation), defaults to `0.05` M (50 mM)
   - `showAllVariants` If sequence, GC-content and Tm should be presented
     for all variants of each oligo (in case of degenerate bases).`TRUE`
-    (slower) or `FALSE` (faster), defaults to `TRUE`.
+    (slower) or `FALSE` (faster), defaults to `TRUE`
 
 In addition, `getOligos()` avoids:
 
@@ -179,9 +186,9 @@ In addition, `getOligos()` avoids:
   - Majority oligos that are duplicated (to prevent binding at several
     places on the genome)
 
-A warning message will return if no oligos are found.
+An error message will return if no oligos are found.
 
-Below, I design both primers and probes.
+Below, I design both primers and probes for my hepatitis E virus target.
 
 ``` r
 myOligos <- getOligos(myConsensusProfile,
@@ -217,7 +224,27 @@ Output:
 | probe  |    40 |  61 |     22 | AGTTTATCAAGGCTCCTGGCAT  | ATGCCAGGAGCCTTGATAAACT  |       0.45 |      57.62 |     0.98 | AGTTYATYAAGGCTCCTGGCAT  | ATGCCAGGAGCCTTRATRAACT  |          4 | AGTTCATC…. | ATGCCAGG…. | 0.5, 0.4…. | 60.8, 58…. |              1 |         7208 |
 | primer |    41 |  61 |     21 | GTTTATCAAGGCTCCTGGCAT   | NA                      |       0.48 |      57.38 |     0.98 | GTTYATYAAGGCTCCTGGCAT   | NA                      |          4 | GTTCATCA…. |            | 0.52, 0….. | 59.72, 5…. |              1 |         7208 |
 
-NA means that the oligo was invalid.
+Some comments on the data:
+
+  - NA means that the oligo was invalid, due to e.g. missing GC-clamp or
+    an end-identity below the threshold.
+
+All oligo candidates can be visualized using `plotData()`:
+
+``` r
+plotData(myOligos)
+```
+
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+
+It is also possible, by subsetting, to select oligos targeting a
+specific region:
+
+``` r
+plotData(myOligos[myOligos$start > 5000 & myOligos$end < 6000, ])
+```
+
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
 For the `RprimerProfile` object, it is possible to inspect the
 nucleotide distribution with `plotNucleotides()`. For instance, we can
@@ -231,40 +258,24 @@ myOligoRegion <- myConsensusProfile[myConsensusProfile$position >= 40 & myConsen
 plotNucleotides(myOligoRegion, rc = FALSE) 
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;" />
-
-All oligo candidates can be visualized using `plotData()`:
-
-``` r
-plotData(myOligos)
-```
-
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
-
-It is also possible, by subsetting, to select oligos targeting a
-specific region:
-
-``` r
-plotData(myOligos[myOligos$start > 5000 & myOligos$end < 6000, ])
-```
-
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;" />
 
 ### Step 3: `getAssays`
 
 `getAssays()` finds pairs of forward and reverse primers and combines
-them with probes (if selected), based on the following constraints:
+them with probes (if selected). The design process is based on the
+following constraints:
 
-  - `length` Amplicon length, defaults to `65:120`.
+  - `length` Amplicon length, defaults to `65:120`
   - `maxTmDifferencePrimers` Maximum Tm difference between the two
     primers (absolute value, calculated for majority primers), defaults
-    to `2`.
+    to `2`
   - `tmDifferencePrimersProbe` Acceptable Tm difference between the
     primers (average Tm of the primer pair) and probe, defaults to
     `c(0, 20)`. The Tm-difference is calculated by subtracting the Tm of
     the (majority) probe with the average Tm of the (majority) primer
     pair. A negative Tm-difference means that the Tm of the probe is
-    lower than the average Tm of the primer pair.
+    lower than the average Tm of the primer pair
 
 An error message will return if no assays are found.
 
@@ -277,10 +288,6 @@ myAssays <- getAssays(myOligos,
 
 Output:
 
-``` r
-knitr::kable(myAssays[10:15, ], digits = 2)
-```
-
 | start | end | ampliconLength | tmDifferencePrimer | tmDifferencePrimerProbe | meanIdentity | totalDegeneracy | startFwd | endFwd | lengthFwd | majorityFwd           | gcMajorityFwd | tmMajorityFwd | identityFwd | iupacFwd              | degeneracyFwd | allFwd     | gcAllFwd   | tmAllFwd   | startRev | endRev | lengthRev | majorityRev         | gcMajorityRev | tmMajorityRev | identityRev | iupacRev            | degeneracyRev | allRev     | gcAllRev   | tmAllRev   | startPr | endPr | lengthPr | majorityPr               | gcMajorityPr | tmMajorityPr | identityPr | iupacPr                  | degeneracyPr | allPr      | allRcPr    | gcAllPr    | tmAllPr      | sensePr | alignmentStart | alignmentEnd |
 | ----: | --: | -------------: | -----------------: | ----------------------: | -----------: | --------------: | -------: | -----: | --------: | :-------------------- | ------------: | ------------: | ----------: | :-------------------- | ------------: | :--------- | :--------- | :--------- | -------: | -----: | --------: | :------------------ | ------------: | ------------: | ----------: | :------------------ | ------------: | :--------- | :--------- | :--------- | ------: | ----: | -------: | :----------------------- | -----------: | -----------: | ---------: | :----------------------- | -----------: | :--------- | :--------- | :--------- | :----------- | :------ | -------------: | -----------: |
 |    41 | 133 |             93 |               0.97 |                    3.53 |         0.99 |              10 |       41 |     61 |        21 | GTTTATCAAGGCTCCTGGCAT |          0.48 |         57.38 |        0.98 | GTTYATYAAGGCTCCTGGCAT |             4 | GTTCATCA…. | 0.52, 0….. | 59.72, 5…. |      115 |    133 |        19 | GGCCTAACTACCACAGCAT |          0.53 |         56.41 |        0.98 | GGCCKAACYACCACAGCAT |             4 | GGCCGAAC…. | 0.63, 0….. | 62.82, 5…. |      64 |    87 |       24 | CTACTGCTATTGAGCAGGCTGCTC |         0.54 |        60.91 |       0.99 | CTACTGCYATTGAGCAGGCTGCTC |            2 | CTACTGCC…. |            | 0.58, 0.54 | 64.19, 61.72 | pos     |              1 |         7208 |
@@ -290,22 +297,54 @@ knitr::kable(myAssays[10:15, ], digits = 2)
 |    41 | 133 |             93 |               0.97 |                    2.95 |         0.99 |              10 |       41 |     61 |        21 | GTTTATCAAGGCTCCTGGCAT |          0.48 |         57.38 |        0.98 | GTTYATYAAGGCTCCTGGCAT |             4 | GTTCATCA…. | 0.52, 0….. | 59.72, 5…. |      115 |    133 |        19 | GGCCTAACTACCACAGCAT |          0.53 |         56.41 |        0.98 | GGCCKAACYACCACAGCAT |             4 | GGCCGAAC…. | 0.63, 0….. | 62.82, 5…. |      65 |    87 |       23 | TACTGCTATTGAGCAGGCTGCTC  |         0.52 |        60.33 |       0.99 | TACTGCYATTGAGCAGGCTGCTC  |            2 | TACTGCCA…. |            | 0.57, 0.52 | 63.79, 61.19 | pos     |              1 |         7208 |
 |    41 | 133 |             93 |               0.97 |                    3.91 |         0.99 |              10 |       41 |     61 |        21 | GTTTATCAAGGCTCCTGGCAT |          0.48 |         57.38 |        0.98 | GTTYATYAAGGCTCCTGGCAT |             4 | GTTCATCA…. | 0.52, 0….. | 59.72, 5…. |      115 |    133 |        19 | GGCCTAACTACCACAGCAT |          0.53 |         56.41 |        0.98 | GGCCKAACYACCACAGCAT |             4 | GGCCGAAC…. | 0.63, 0….. | 62.82, 5…. |      65 |    88 |       24 | TACTGCTATTGAGCAGGCTGCTCT |         0.50 |        61.29 |       0.99 | TACTGCYATTGAGCAGGCTGCTCT |            2 | TACTGCCA…. | AGAGCAGC…. | 0.54, 0.5  | 64.65, 62.12 | pos     |              1 |         7208 |
 
+Some comments on the data:
+
+  - Probes can be either positive or negative sense. If both the
+    positive and negative sense probe are considered valid for a
+    specific assay, the probe with the least number of Gs will be
+    selected.
+
 The output can be visualized using `plotData()`:
 
 ``` r
 plotData(myAssays)
+#> Warning: Removed 1 rows containing missing values (geom_label).
 ```
 
 <img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
 ### Example data
 
-Example data sets of each class can be loaded by:
+Example data sets of each class are provided with the package, and can
+be loaded by:
 
 ``` r
 data("exampleRprimerProfile")
 data("exampleRprimerOligo")
 data("exampleRprimerAssay")
+```
+
+### Summary
+
+The design process is summarized in the following pipeline. In this
+case, I use default settings for oligo and assay design. I save all the
+different objects so I can plot them, or write them to a .txt or .csv
+file.
+
+``` r
+## Enter the filepath to the alignment here 
+filepath <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
+
+myAssays <- filepath %>%
+  Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
+  {Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1) ->> myAlignment} %>%
+  {getConsensusProfile(., iupacThreshold = 0.05) ->> myConsensusProfile} %>%
+  {getOligos(.) ->> myOligos} %>%
+  getAssays(.)
+  
+# plotData(myConsensusProfile)
+# plotData(myOligos)
+# plotData(myAssays)
 ```
 
 ### Session info

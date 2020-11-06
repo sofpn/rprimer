@@ -208,7 +208,7 @@ getAssays <- function(x,
 .combinePrimers <- function(primers,
                             length = 65:120,
                             maxTmDifferencePrimers = 2) {
-    if (!(maxTmDifferencePrimers > 0 && maxTmDifferencePrimers < 30)) {
+    if (!(maxTmDifferencePrimers >= 0 && maxTmDifferencePrimers <= 30)) {
         stop("'maxTmDifferencePrimers' must be from 0 to 30.", call. = FALSE)
     }
     if (!(min(length) >= 40 && max(length) <= 5000)) {
@@ -245,6 +245,26 @@ getAssays <- function(x,
     assays
 }
 
+#' Find all possible probe candidates to assays
+#'
+#' @keywords internal
+#'
+#' @noRd
+.getAllProbeCandidates <- function(assays, probes) {
+    probeCandidates <- purrr::map(seq_len(nrow(assays)), function(i) {
+        from <- assays$endFwd[[i]] + 2
+        to <- assays$startRev[[i]] - 2
+        probe <- probes[probes$start >= from & probes$end <= to, ]
+        probe
+    })
+    probeCandidates
+}
+
+#' Find which sense a probe should be in
+#'
+#' @keywords internal
+#'
+#' @noRd
 .selectProbeSense <- function(probeCandidates) {
     sense <- purrr::map2_chr(
         probeCandidates$majority, probeCandidates$majorityRc, function(x, y) {
@@ -268,40 +288,21 @@ getAssays <- function(x,
     probeCandidates
 }
 
-#' Add probes to (RT)-PCR assays
-#'
-#' \code{.addProbes()} adds probes to (RT)-PCR assays.
-#'
-#' @param assays Assays to add probes to.
-#'
-#' @param probes Candidate probes.
+#' Combine primers and probes
 #'
 #' @inheritParams getAssays
-#'
-#' @return Assays with probes. A tibble (a data frame).
 #'
 #' @keywords internal
 #'
 #' @noRd
-.addProbes <- function(assays, probes, tmDifferencePrimersProbe = c(0, 20)) {
-    if (!(is.numeric(tmDifferencePrimersProbe) &&
-        min(tmDifferencePrimersProbe) >= -20 &&
-        max(tmDifferencePrimersProbe) <= 20)
-    ) {
-        stop(
-            "'tmDifference' must be from -20 to 20, e.g. c(-1, 5).",
-            call. = FALSE
-        )
-    }
-    probeCandidates <- purrr::map(seq_len(nrow(assays)), function(i) {
-        from <- assays$endFwd[[i]] + 2
-        to <- assays$startRev[[i]] - 2
-        probe <- probes[probes$start >= from & probes$end <= to, ]
-        probe
-    })
+.combinePrimersAndProbes <- function(assays,
+                                     probeCandidates,
+                                     tmDifferencePrimersProbe) {
     numberOfProbes <- purrr::map_int(probeCandidates, nrow)
     rowsToSelect <- purrr::map(
-        seq_along(numberOfProbes), ~ rep(.x, numberOfProbes[[.x]])
+        seq_along(numberOfProbes), function(x) {
+            rep(x, numberOfProbes[[x]])
+        }
     )
     rowsToSelect <- unlist(rowsToSelect, use.names = FALSE)
     assays <- assays[rowsToSelect, ]
@@ -333,6 +334,40 @@ getAssays <- function(x,
         assays$tmDifferencePrimerProbe >= min(tmDifferencePrimersProbe) &
             assays$tmDifferencePrimerProbe <= max(tmDifferencePrimersProbe),
     ]
+    assays
+}
+
+#' Add probes to (RT)-PCR assays
+#'
+#' \code{.addProbes()} adds probes to (RT)-PCR assays.
+#'
+#' @param assays Assays to add probes to.
+#'
+#' @param probes Candidate probes.
+#'
+#' @inheritParams getAssays
+#'
+#' @return Assays with probes. A tibble (a data frame).
+#'
+#' @keywords internal
+#'
+#' @noRd
+.addProbes <- function(assays, probes, tmDifferencePrimersProbe = c(0, 20)) {
+    if (!(is.numeric(tmDifferencePrimersProbe) &&
+        min(tmDifferencePrimersProbe) >= -20 &&
+        max(tmDifferencePrimersProbe) <= 20)
+    ) {
+        stop(
+            "'tmDifferencePrimersProbe' must be from -20 to 20, e.g. c(-1, 5).",
+            call. = FALSE
+        )
+    }
+    probeCandidates <- .getAllProbeCandidates(assays, probes)
+    assays <- .combinePrimersAndProbes(
+        assays,
+        probeCandidates,
+        tmDifferencePrimersProbe
+    )
     if (nrow(assays) == 0L) {
         stop("No assays with probes could be generated.", call. = FALSE)
     }

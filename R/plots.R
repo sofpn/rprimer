@@ -138,7 +138,7 @@ plotNucleotides <- function(x, rc = FALSE) {
     ) +
         ggplot2::geom_bar(stat = "identity") +
         ggplot2::scale_fill_manual(values = basePalette) +
-        .themeRprimer(showLegend = TRUE)
+        .themeRprimer(showLegend = TRUE, rotateX = TRUE)
 }
 
 # Helpers ======================================================================
@@ -282,7 +282,7 @@ plotNucleotides <- function(x, rc = FALSE) {
         ggplot2::xlab("") +
         ggplot2::ylab("") +
         ggplot2::labs(title = title) +
-        .themeRprimer(showXAxis = TRUE)
+        .themeRprimer(showXAxis = TRUE, rotateX = TRUE)
 }
 
 .gcTmIdentityPlot <- function(x, color = "grey30", type = "Primers") {
@@ -332,7 +332,7 @@ plotNucleotides <- function(x, rc = FALSE) {
     x <- tibble::add_column(x, row)
     ggplot2::ggplot() +
         ggplot2::xlim(start, end) +
-        ggplot2::ylim(0, nrow(x) * 1.05) +
+        ggplot2::ylim(0, 1) +
         ggplot2::labs(x = "Position", y = "") +
         ggplot2::geom_segment(
             color = "grey", lwd = 2,
@@ -340,7 +340,7 @@ plotNucleotides <- function(x, rc = FALSE) {
         ) +
         ggplot2::geom_rect(
             data = x, ggplot2::aes(
-                xmin = start, xmax = end, ymin = row, ymax = row + 0.3
+                xmin = start, xmax = end, ymin = 0.05, ymax = 0.95
             ), fill = "#64697D"
         ) +
         ggplot2::annotate(
@@ -467,7 +467,8 @@ plotNucleotides <- function(x, rc = FALSE) {
 
 .themeRprimer <- function(showXAxis = TRUE,
                           showYAxis = TRUE,
-                          showLegend = FALSE) {
+                          showLegend = FALSE,
+                          rotateX = FALSE) {
     if (showXAxis && showYAxis) {
         .showXYAxes(showLegend = showLegend)
     } else if (showXAxis && !showYAxis) {
@@ -479,7 +480,7 @@ plotNucleotides <- function(x, rc = FALSE) {
     }
 }
 
-.showXYAxes <- function(showLegend = TRUE) {
+.showXYAxes <- function(showLegend = TRUE, rotateX = FALSE) {
     ggplot2::theme_light() +
         ggplot2::theme(
             legend.title = ggplot2::element_blank(),
@@ -493,12 +494,15 @@ plotNucleotides <- function(x, rc = FALSE) {
                 size = 9, color = "grey30",
                 margin = ggplot2::margin(t = 10)
             ),
+            axis.text.x = ggplot2::element_text(
+                angle = ifelse(rotateX, 90, 0), vjust = 0.5, hjust = 1
+            ),
             plot.title = ggplot2::element_text(size = 9, color = "grey30"),
             plot.margin = ggplot2::unit(rep(0.1, 4), "cm")
         )
 }
 
-.showXAxisHideYAxis <- function(showLegend = TRUE) {
+.showXAxisHideYAxis <- function(showLegend = TRUE, rotateX = FALSE) {
     ggplot2::theme_light() +
         ggplot2::theme(
             legend.title = ggplot2::element_blank(),
@@ -507,6 +511,9 @@ plotNucleotides <- function(x, rc = FALSE) {
             axis.title.x = ggplot2::element_text(
                 size = 9, color = "grey30",
                 margin = ggplot2::margin(t = 10)
+            ),
+            axis.text.x = ggplot2::element_text(
+                angle = ifelse(rotateX, 90, 0), vjust = 0.5, hjust = 1
             ),
             axis.title.y = ggplot2::element_blank(),
             axis.text.y = ggplot2::element_blank(),

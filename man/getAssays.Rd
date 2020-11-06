@@ -140,7 +140,6 @@ the probe with the least G:s will be selected.
 data("exampleRprimerOligo")
 ## Get assays using default settings
 getAssays(exampleRprimerOligo)
-
 }
 \seealso{
 getOligos

@@ -497,7 +497,8 @@ getOligos <- function(x,
 .addGcContent <- function(x, gcRange = c(0.45, 0.65)) {
     if (!(min(gcRange) >= 0 && max(gcRange) <= 1)) {
         stop(
-            "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).", call. = FALSE
+            "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).",
+            call. = FALSE
         )
     }
     gcMajority <- purrr::map_dbl(x$majority, ~ .gcContent(.x))
