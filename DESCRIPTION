@@ -35,7 +35,6 @@ Imports:
 Suggests: 
     BiocStyle,
     covr,
-    kableExtra,
     knitr,
     magrittr,
     rmarkdown,

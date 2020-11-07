@@ -24,9 +24,8 @@ knitr::opts_chunk$set(
 
 **att göra: 
 * validate objs, dokumentera och testa s4 klasserna  
-* snurra på x axlar plottar, (15 nov)
+* snurra på x axlar plottar, stäng av varningar plottar 
 * installera, jmfr med existerande (primer3, open primer) + skicka
-* github release?**
 
 ## Installation
 

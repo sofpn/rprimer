@@ -16,15 +16,41 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Introduction 
+to do: references 
 
-rprimer provides tools for designing broadly reactive (RT)-(q/dd)PCR assays from multiple DNA sequence alignments. The design process is built on three functions: 
+# Introduction
 
-* `getConsensusProfile()`: returns an `RprimerProfile` object, which is used as input for;
+Primer and probe design is a central part of (RT)-PCR assay development, but the design process is not always straight forward. Successful target amplification and detection depends on several interacting factors, such as primer and probe length, GC-content, melting temperature and sequence complexity. 
+
+A typical design approach for a sequence variable target starts by finding a conserved region of the genome. 
+
+Due to the high number of sequences available, these can be several thousands. ----
+
+rprimer provides tools for designing (RT)-(q/dd)PCR assays from a multiple DNA sequence alignment. The number of input sequences can range from one to several thousands. Primers and probes are designed from user specified constraints on length, target gap frequency, degeneracy, target sequence complexity, GC-content and melting temperature. For primers, it is also possible to specify a threshold for minimum 3'-end conservation, to increase the probability of successful amplification. Assays can be generated with or without probes, and are designed from user specified criteria on amplicon length and maximum allowed difference in melting temperature between the oligos. 
+
+## Main functions
+
+The design process is built on three functions: 
+
+* `getConsensusProfile()`: takes a `Biostrings::MultipleDNAAlignment` object (REF) as input and returns an `RprimerProfile` object, which is used as input for;
 * `getOligos()`: returns an `RprimerOligo` object, which is used as input for; 
 * `getAssays()`: returns an `RprimerAssay` object
 
-The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors, and behave in a similar manner as traditional data frames (with methods for e.g. [, head, tail), and can be coerced to such by using `as.data.frame()`.
+## Data structures 
+
+The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors, and behave in a similar manner as traditional data frames (with methods for e.g. [, $, head, tail). They can be coerced to traditional data frames by using `as.data.frame()`. 
+
+Example data sets of each class are provided with the package, and can be loaded by: 
+
+```{r}
+data("exampleRprimerProfile")
+data("exampleRprimerOligo")
+data("exampleRprimerAssay")
+```
+
+These classes can be visualized using the generic function `plotData()`, e.g. `plotData(exampleRprimerProfile)`. 
+
+To provide reproducible examples, I've also included an alignment of class `Biostrings::MultipleDNAAlignment` (REF), which can be loaded by `data("exampleRprimerAlignment")`.
 
 # Installation
 
@@ -46,13 +72,13 @@ library(Biostrings)
 
 # Workflow 
 
-## Import data 
+## Import data
 
-The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the work for this part. 
+The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings (REF) do the work for this part. 
 
-Here, I  want to design an RT-(q/d)PCR assay for detection of hepatitis E virus, which is a highly variable RNA virus. The file "example_alignment.txt" is provided with the package and contains 100 hepatitis E virus sequences.  
+In this document, I demonstrate how to use rprimer by designing an RT-(q/d)PCR assay for detection of hepatitis E virus, which is a highly variable RNA virus. The file "example_alignment.txt" is provided with the package and contains 100 hepatitis E virus sequences.  
 
-I mask all positions with at least 50 % gaps. But note that masking positions with high gap frequency should we done with caution, since it may lead to that oligos are placed in positions were some sequences have inserts **(should I add an  avoid mask option in get oligos?)**
+I mask all positions with at least 50 % gaps. However, masking positions with high gap frequency should we done with caution, since it may lead to that oligos are placed in positions were some sequences have inserts. A good idea could be to test both with and without gap mask. 
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -64,7 +90,7 @@ myAlignment <- infile %>%
 
 ## Step 1: `getConsensusProfile` 
 
-`getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns all the information needed for the subsequent design process. Note that masked positions are excluded. 
+`getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns all the information needed for the subsequent design process. Note that positions that are masked in the previous step are excluded. 
 
 ```{r}
 myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
@@ -80,7 +106,7 @@ Some comments on the data:
 
 * Majority refers to the majority consensus sequence, which is the most frequently occurring base. Identity is the proportion of that base when gaps and other bases than A, C, G and T are not taken into account
 
-* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`. In my example, I set the threshold to `0.05`, which means that all bases that occur in more than 5 % of the sequences will be accounted for when the IUPAC base will be determined. 
+* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`. In my example, I set the threshold to `0.05`, which means that all bases that occur in more than 5 % of the sequences will be accounted for when the IUPAC base will be determined 
 
 * Entropy refers to Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. Gaps and other bases than A, C, G and T are not included in this calculation 
 
@@ -124,7 +150,7 @@ In addition, `getOligos()` avoids:
 
 An error message will return if no oligos are found. 
 
-Below, I design both primers and probes for my hepatitis E virus target. I want an assay that targets a conserved region as possible. For this reason, I use very strict constraints on degeneracy (not more than 2) and minimum end identity (1) for primers.
+Below, I design both primers and probes for my hepatitis E virus target. To find conserved primer binding regions, I use very strict constraints on degeneracy (not more than 2) and minimum end identity (1) for primers.
 
 ``` {r}
 myOligos <- getOligos(myConsensusProfile,
@@ -149,9 +175,21 @@ myOligos <- getOligos(myConsensusProfile,
                       showAllVariants = TRUE)
 ```
 
+Of course, you can design primers using default settings, or change just a few settings, for instance:  
+
+```r
+getOligos(myConsensusProfile)
+
+getOligos(myConsensusProfile, maxDegeneracyPrimer = 8, probe = FALSE)
+```
+
+**Subsetting allows you to specify a region of interest ------ **
+
+
 Some comments on the output:
 
 * NA means that the oligo was invalid, due to e.g. missing GC-clamp or an end-identity below the threshold
+* All variants: -- why is this good? 
 
 All oligo candidates can be visualized using `plotData()`:
 
@@ -159,13 +197,15 @@ All oligo candidates can be visualized using `plotData()`:
 plotData(myOligos)
 ```
 
+This plot shows the location of the primer and probe candidates, together with .... 
+
 ## Step 3: `getAssays`
 
-`getAssays()` finds pairs of forward and reverse primers and combines them with probes (if selected). The design process is based on the following constraints: 
+`getAssays()` finds pairs of forward and reverse primers and combines them with probes, if present (i.e., if `probe = TRUE` was used in the previous step). The design process is based on the following constraints: 
 
 * `length` Amplicon length, defaults to `65:120`
 * `maxTmDifferencePrimers` Maximum Tm difference between the two primers (absolute value, calculated for majority primers), defaults to `2`
-* `tmDifferencePrimersProbe` Acceptable Tm difference between the primers (average Tm of the primer pair) and probe, defaults to `c(0, 20)`. The Tm-difference is calculated by subtracting the Tm of the (majority) probe with the average Tm of the (majority) primer pair. A negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair
+* `tmDifferencePrimersProbe` Acceptable Tm difference between the primers (average Tm of the primer pair) and probe, defaults to `c(0, 20)`. The Tm-difference is calculated by subtracting the Tm of the (majority) probe with the average Tm of the (majority) primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair
 
 An error message will return if no assays are found.
 
@@ -235,16 +275,7 @@ myAssays <- filepath %>%
 # plotData(myAssays)
 ```
 
-# Example data 
-
-Example data sets of each class are provided with the package, and can be loaded by: 
-
-```{r}
-data("exampleRprimerAlignment")
-data("exampleRprimerProfile")
-data("exampleRprimerOligo")
-data("exampleRprimerAssay")
-```
+# Conclusion/limitations 
 
 # Session info 
 
