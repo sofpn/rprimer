@@ -24,7 +24,11 @@ knitr::opts_chunk$set(
 
 **att göra: 
 * validate objs, dokumentera och testa s4 klasserna  
-* snurra på x axlar plottar, stäng av varningar plottar 
+* paket man, 
+*inst extdata, ->inst script 
+* bioc cmd check options
+* bort med barplot ist boxplot stäng av varningar plottar, 
+* gå tillbaka till gammal assay plot 
 * installera, jmfr med existerande (primer3, open primer) + skicka
 
 ## Installation
@@ -140,4 +144,4 @@ plotData(myAssays)
 
 ## More information
 
-Please see the package vingette for a more detailed description of rprimer and its functionality. 
+The package vignette containes more detailed description of rprimer and its functionality. 

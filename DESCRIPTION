@@ -10,7 +10,7 @@ Description: Functions and workflow to design
     user specified constraints on e.g. oligo and amplicon length, 
     GC-content, melting temperature and maximum allowed number degenerate 
     variants. For more information about rprimer and its 
-    functionality, please see the github-page or the package vingette.
+    functionality, please see the package vignette.
 Authors@R: 
     person(given = "Sofia",
            family = "Persson",
@@ -35,6 +35,7 @@ Imports:
 Suggests: 
     BiocStyle,
     covr,
+    kableExtra,
     knitr,
     magrittr,
     rmarkdown,

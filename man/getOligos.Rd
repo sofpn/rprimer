@@ -146,12 +146,14 @@ from an \code{RprimerProfile} object.
 }
 \section{Excluded oligos}{
 
-\code{getOligos()} excludes all oligos with
-more than than three consecutive runs of the same dinucleotide
-(e.g. 'TATATATA') and more than four consecutive runs of the
-same nucleotide (e.g. 'AAAAA').
-It also excludes oligos that are duplicated to prevent binding to several
-places in the target. These checks are done on majority oligos.
+\code{getOligos()} excludes:
+
+* Majority oligos with more than than three consecutive runs of
+the same dinucleotide (e.g. "TATATATA")
+* Majority oligos with more than four consecutive runs of
+the same nucleotide  (e.g. "AAAAA")
+* Majority oligos that are duplicated
+(to prevent binding at several places on the genome)
 }
 
 \examples{
@@ -170,10 +172,10 @@ Biochemistry, 35: 3555-3562
 Duplex initiation parameters:
 Allawi, H. & SantaLucia, J. (1997)
 Thermodynamics and NMR of Internal G-T Mismatches in DNA.
-Biochemistry, 36, 34: 10581–10594
+Biochemistry, 36, 34: 10581-10594
 
 Table values for nearest-neighbors:
 SantaLucia, J (1998) A unified view of polymer,
 dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
-Proc. Natl. Acad. Sci. USA, 95: 1460-1465.
+Proc. Natl. Acad. Sci. USA, 95: 1460-1465
 }
