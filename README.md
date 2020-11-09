@@ -9,9 +9,11 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
 
-**att göra: \* validate objs, dokumentera och testa s4 klasserna  
-\* snurra på x axlar plottar, (15 nov) \* installera, jmfr med
-existerande (primer3, open primer) + skicka \* github release?**
+\*\*att göra: \* validate objs, dokumentera och testa s4 klasserna  
+\* paket man, *inst extdata, -\>inst script * bioc cmd check options \*
+bort med barplot ist boxplot stäng av varningar plottar, \* gå tillbaka
+till gammal assay plot \* installera, jmfr med existerande (primer3,
+open primer) + skicka
 
 ## Installation
 
@@ -151,5 +153,5 @@ plotData(myAssays)
 
 ## More information
 
-Please see the package vingette for a more detailed description of
-rprimer and its functionality.
+The package vignette containes more detailed description of rprimer and
+its functionality.
