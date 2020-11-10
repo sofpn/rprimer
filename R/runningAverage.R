@@ -33,7 +33,7 @@
         )
     }
     if (size < 1) {
-        stop("'size' must be greater than 1.", call. = FALSE)
+        stop("'size' must be at least 1.", call. = FALSE)
     }
     sums <- c(0, cumsum(x))
     from <- seq_len(length(sums) - size)
@@ -85,7 +85,7 @@
         )
     }
     if (size < 1) {
-        stop("'size' must be greater than 1.", call. = FALSE)
+        stop("'size' must be at least 1.", call. = FALSE)
     }
     x <- toupper(x)
     begins <- seq_len(length(x) - size + 1)

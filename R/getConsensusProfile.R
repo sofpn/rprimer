@@ -156,8 +156,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     x <- x[order(x)]
     x <- unique(x)
     bases <- c("A", "C", "G", "T", "-")
-    match <- x %in% bases
-    x <- x[match]
+    x <- x[x %in% bases]
     x <- paste(x, collapse = ",")
     iupacBase <- unname(rprimerGlobals$iupacLookup[x])
     iupacBase

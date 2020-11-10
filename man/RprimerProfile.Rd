@@ -7,8 +7,7 @@
 RprimerProfile(...)
 }
 \arguments{
-\item{...}{A data frame or list to be converted into an \code{RprimerProfile}
-object.}
+\item{...}{A data frame or list to be converted into an \code{RprimerProfile} object.}
 }
 \value{
 An \code{RprimerAssay} object if validation succeeds, an error
@@ -16,10 +15,11 @@ message otherwise.
 }
 \description{
 Constructs an \code{RprimerProfile} object in a similar fashion as the
-\code{S4Vectors::DataFrame} constructor, without any additional arguments.
+\code{S4Vectors::DataFrame} constructor.
 }
 \examples{
 data("exampleRprimerProfile")
 x <- as.data.frame(exampleRprimerProfile)
 RprimerProfile(x)
+
 }

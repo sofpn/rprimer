@@ -24,7 +24,7 @@ coercion, subsetting, and combining methods as the parent class, but has
 some additional checks for validity.
 
 Constructs an \code{RprimerAssay} object in a similar fashion as the
-\code{S4Vectors::DataFrame} constructor, without any additional arguments.
+\code{S4Vectors::DataFrame} constructor.
 }
 \section{Functions}{
 \itemize{
@@ -35,4 +35,5 @@ Constructs an \code{RprimerAssay} object in a similar fashion as the
 data("exampleRprimerAssay")
 x <- as.data.frame(exampleRprimerAssay)
 RprimerAssay(x)
+
 }

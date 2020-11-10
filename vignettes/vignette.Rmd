@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 Primer and probe design is a central part of PCR assay development. Successful amplification and detection depend on many factors, such as primer and probe length, GC-content, melting temperature, sequence complexity and target sequence conservation. For a set of target sequences of interest, it is often difficult to identify regions that meet all, or even most of these requirements.
 
-rprimer provides tools for designing (RT)-(q/d)PCR assays from a multiple DNA sequence alignment, which can contain up to several thousands of sequences. Primers and probes are designed from user specified criteria on length, GC-content and melting temperature, maximum allowed degeneracy and target gap frequency. Target regions with low sequence complexity are avoided. For primers, it is also possible to specify a threshold for minimum 3'-end conservation and enforce a GC-clamp to increase the probability of amplification. Assays can be generated with or without probe, and are designed upon user specified amplicon length and maximum allowed difference in melting temperature between primers, and between the primer pair and probe.  
+rprimer provides tools for designing (RT)-(q/d)PCR assays from a multiple DNA sequence alignment, which can contain up to several thousands of sequences. It is especially developed for design of broadly-reactive assays to sequence variable RNA viruses. Primers and probes are designed from user specified criteria on length, GC-content and melting temperature, maximum allowed degeneracy and target gap frequency. Target regions with low sequence complexity are avoided. For primers, it is also possible to specify a threshold for minimum 3'-end conservation and enforce a GC-clamp to increase the probability of amplification. Assays can be generated with or without probe, and are designed upon user specified amplicon length and maximum allowed difference in melting temperature between primers, and between the primer pair and probe.  
 
 In this document, I demonstrate how to use rprimer by designing an RT-q/dPCR assay for detection of hepatitis E virus, which is a highly variable RNA virus. 
 
@@ -34,9 +34,9 @@ The design process is built on three functions:
 
 ## Data structures 
 
-The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors (Pagès et al., 2020), and behave in a similar manner as traditional data frames (with methods for e.g. [, $, nrow, ncol, head, tail). They can be coerced to traditional data frames by using `as.data.frame()`. 
+The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors (Pagès et al., 2020), and behave in a similar manner as traditional data frames (with methods for e.g. [, $, nrow, ncol, head, tail). They can be coerced to traditional such by using `as.data.frame()`. 
 
-Example data sets of each class are provided with the package, and can be loaded by: 
+Example data sets of each class are provided, and are loaded by: 
 
 ```{r, warning=FALSE}
 data("exampleRprimerProfile")
@@ -46,7 +46,7 @@ data("exampleRprimerAssay")
 
 These classes can be visualized using the generic function `plotData()`, e.g. `plotData(exampleRprimerProfile)`. 
 
-To provide reproducible examples, I've also included an alignment of class `Biostrings::MultipleDNAAlignment` (Pagès et al., 2020), which can be loaded by `data("exampleRprimerAlignment")`.
+To provide reproducible examples, I've also included an alignment of class `Biostrings::MultipleDNAAlignment` (Pagès et al., 2020), which is loaded by `data("exampleRprimerAlignment")`.
 
 # Installation
 
@@ -108,9 +108,9 @@ Some comments on the data:
 
 * The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`. In my example, I set the threshold to `0.05`, which means that all bases that occur in more than 5 % of the sequences will be accounted for when the IUPAC base will be determined 
 
-* Entropy refers to Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. Gaps and other bases than A, C, G and T are not included in this calculation 
+* Entropy refers to Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. Gaps and other bases than A, C, G and T are not included in the calculation 
 
-The data can be visualized with `plotData()`, and specific regions can be highlighted using the optional arguments `shadeFrom` and `shadeTo`. The most conserved region of the sequences in my data appears to be between position 5000-5500:
+The data can be visualized with `plotData()`, and specific regions can be highlighted using the optional arguments `shadeFrom` and `shadeTo`. The most conserved region of the hepatitis E virus genome appears to be between position 5000-5500:
 
 ```{r, fig.width=12, fig.height=6}
 plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
@@ -120,7 +120,7 @@ The black lines represent centered running averages and the blue dots represent 
 
 ## Step 2: `getOligos`
 
-`getOligos()` searches for oligos (primers and probes) from an `RprimerProfile`-object. All oligos are shown in both majority (without degenerate bases) and IUPAC format (with degenerate bases). Oligos are designed from the following constraints:  
+`getOligos()` searches for primers or primers and probes from an `RprimerProfile`-object. All oligos are shown in both majority (without degenerate bases) and IUPAC format (with degenerate bases). Oligos are designed from the following constraints:  
 
 * `lengthPrimer` Primer length, defaults to `18:22`
 * `maxGapFrequencyPrimer` Maximum gap frequency for primers, defaults to `0.1`
@@ -193,29 +193,31 @@ myOligos[1:10, ] %>%
 Some comments on the data: 
 
 * Type indicates whether the oligo is a primer or probe candidate 
-* `NA` means that the particular oligo did not meet the specified design criteria (e.g if a primer lacked GC-clamp when `gcClampPrimer` was set to `TRUE`)
+* An `NA` indicates that the oligo did not meet the specified design criteria (e.g if a primer lacked GC-clamp when `gcClampPrimer` was set to `TRUE`)
 * Degeneracy tells how many variants there are of that particular oligo. An oligo without wobble bases will have a value of 1
 * Melting temperature is calculated using the nearest-neighbor method (SantaLucia, 1998), with initiation parameters as described by Allawi & SantaLucia 1997, and salt correction formula as described by SantaLucia et al., 1996
-* Identity shows the average identity score of the oligo. A high identity score indicates that the target binding region is conserved
+* Identity shows the average identity score of the oligo. A high identity score indicates a conserved target region 
 * If `showAllVariants` was set to `TRUE`, the columns `all` and `allRc` contain all sequence variants of the forward and reverse variant of the primer, respectively. Take the first primer candidate as an example:
 
 ```{r}
 myOligos$iupac[1] # The IUPAC variant of the first oligo 
 myOligos$all[[1]] # All variants of that oligo 
 ```
+
 * The columns `gcAll` and `tmAll` give the GC-content and melting temperature of each variant:  
 
 ```{r}
 myOligos$gcAll[[1]] 
 myOligos$tmAll[[1]] 
 ```
+
 All primer and probe candidates can be visualized using `plotData()`:
 
 ```{r, fig.align="center", fig.width=12, fig.height=8}
 plotData(myOligos)
 ```
 
-The upper plot shows the location of the primer and probe candidates, and the lower plots shows the characteristics of the oligo candidates. 
+The upper plot shows the location of the primer and probe candidates, and the lower plots shows the distribution of the characteristics of all oligo candidates. 
 
 ## Step 3: `getAssays`
 
@@ -243,7 +245,7 @@ myAssays[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The output contains many columns, so the most sensible way of inspecting it is probably to use `View(myAssays)`, if you are using RStudio. 
+The output contains many columns, so the most sensible way of inspecting it is probably to use `View(as.data.frame(myAssays))`, if you are using RStudio. 
 
 Some comments on the output: 
 
@@ -284,6 +286,7 @@ The nucleotide distribution within the amplicon can be visualized with `plotNucl
 ```{r, fig.width=12, fig.height=4}
 plotNucleotides(myAssayRegion, rc = FALSE) 
 ```
+
 I can of course also use `plotData()` for the assay region:
 
 ```{r, fig.width=12, fig.height=6}
@@ -295,6 +298,7 @@ The majority amplicon sequence can be obtained by:
 ```{r}
 paste(myAssayRegion$majority, collapse = "")
 ```
+
 The results can be saved to .txt or .csv-files, for instance: 
 
 ```r
@@ -321,7 +325,7 @@ myAssays <- getAssays(myOligos)
 
 # Limitations  
 
-rprimer takes many factors into account in primer, probe and assay design, but not all. For instance, successful amplification is highly dependent on the absence of stable dimers and hairpin structures of primers and probes. Also, secondary structures within the target region can greatly affect reverse transcription efficiency. It is therefore a good idea to make predicitons in silico before selecting the final candidate(s) for wet-lab evaluation.  
+rprimer takes many factors into account in primer, probe and assay design, but not all. For instance, successful amplification is highly dependent on the absence of stable dimers and hairpin structures of primers and probes. Also, secondary structures within the target region can greatly affect reverse transcription efficiency. It is therefore a good idea to make predictions on the oligos in silico before selecting the final assay candidate(s) for wet-lab evaluation.  
 
 # Session info 
 
