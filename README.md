@@ -9,18 +9,12 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
 
-\*\*att göra: \* validate objs, testa s4 klasserna
-
+  - validate objs, testa s4 klasserna  
   - bioc cmd check options
-
   - bort med barplot ist boxplot stäng av varningar plottar,
-
   - gå tillbaka till gammal assay plot , make work with one oligo only
-
   - if majority gap = iupac gap
-
   - installera, jmfr med existerande (primer3, open primer) + skicka
-    \*\*
 
 ## Installation
 
@@ -42,8 +36,9 @@ library(Biostrings) # Required to import alignment
 
 ## Overview
 
-rprimer provides tools for designing (RT)-(q/dd)PCR assays from multiple
-DNA sequence alignments. The design process is built on three functions:
+rprimer provides tools for designing (RT)-(q/dd)PCR assays from a
+multiple DNA sequence alignment. The design process is built on three
+functions:
 
   - `getConsensusProfile()`: returns an `RprimerProfile` object, which
     is used as input for;
@@ -160,5 +155,5 @@ plotData(myAssays)
 
 ## More information
 
-The package vignette contains more detailed description of rprimer and
-its functionality. It is loaded by `browseVignettes("rprimer")`.
+The package vignette contains more information. It is loaded by
+`browseVignettes("rprimer")`.
