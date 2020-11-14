@@ -1,7 +1,7 @@
 ## Code to generate example data
 library(magrittr)
 
-exampleRprimerAlignment <- system.file('extdata', 'example_alignment.txt', package = 'rprimer') %>%
+exampleRprimerAlignment <- system.file("extdata", "example_alignment.txt", package = "rprimer") %>%
     Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
     Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1)
 

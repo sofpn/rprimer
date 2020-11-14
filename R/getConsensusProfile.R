@@ -78,6 +78,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     majority <- .majorityConsensus(x)
     identity <- .nucleotideIdentity(x)
     iupac <- .iupacConsensus(x, iupacThreshold = iupacThreshold)
+    iupac[majority == "-"] <- "-"
     entropy <- .shannonEntropy(x)
     df <- data.frame(
         position, a, c, g, t, other, gaps, majority, identity, iupac, entropy

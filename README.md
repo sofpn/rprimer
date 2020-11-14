@@ -11,10 +11,8 @@ coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](ht
 
   - validate objs, testa s4 klasserna  
   - bioc cmd check options
-  - bort med barplot ist boxplot stäng av varningar plottar,
-  - gå tillbaka till gammal assay plot , make work with one oligo only
-  - if majority gap = iupac gap
-  - installera, jmfr med existerande (primer3, open primer) + skicka
+  - bort med barplot ist violin plot not \< 10 nrows  
+  - gå tillbaka till gammal assay plot
 
 ## Installation
 

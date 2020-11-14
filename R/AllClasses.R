@@ -38,7 +38,6 @@
 #' data("exampleRprimerProfile")
 #' x <- as.data.frame(exampleRprimerProfile)
 #' RprimerProfile(x)
-#'
 #' @importFrom S4Vectors DataFrame
 RprimerProfile <- function(...) {
     df <- DataFrame(..., row.names = NULL, check.names = TRUE)
@@ -104,7 +103,6 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 #' data("exampleRprimerOligo")
 #' x <- as.data.frame(exampleRprimerOligo)
 #' RprimerOligo(x)
-#'
 #' @importFrom S4Vectors DataFrame
 RprimerOligo <- function(...) {
     df <- DataFrame(..., row.names = NULL, check.names = TRUE)
@@ -163,7 +161,6 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 #' data("exampleRprimerAssay")
 #' x <- as.data.frame(exampleRprimerAssay)
 #' RprimerAssay(x)
-#'
 #' @importFrom S4Vectors DataFrame
 RprimerAssay <- function(...) {
     df <- DataFrame(..., row.names = NULL, check.names = TRUE)
