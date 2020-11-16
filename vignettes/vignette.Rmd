@@ -18,11 +18,11 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Primer and probe design is a central part of PCR assay development. Successful amplification and detection depend on many factors, such as primer and probe length, GC-content, melting temperature, sequence complexity and target sequence conservation. For a set of target sequences of interest, it is often difficult to identify regions that meet all, or even most of these requirements.
+Primer and probe design is the most central part of PCR assay development. Successful amplification and detection depend on several factors, such as optimal primer and probe length, GC-content, melting temperature, sequence complexity and target sequence conservation. For a set of target sequences of interest, it is often difficult to identify regions that meet all, or even most of these requirements.
 
-rprimer provides tools for designing (RT)-(q/d)PCR assays from a multiple DNA sequence alignment, which can contain up to several thousands of sequences. It is especially developed for design of broadly-reactive assays to sequence variable RNA viruses. Primers and probes are designed from user specified criteria on length, GC-content and melting temperature, maximum allowed degeneracy and target gap frequency. Target regions with low sequence complexity are avoided. For primers, it is also possible to specify a threshold for minimum 3'-end conservation and enforce a GC-clamp to increase the probability of amplification. Assays can be generated with or without probe, and are designed upon user specified amplicon length and maximum allowed difference in melting temperature between primers, and between the primer pair and probe.  
+rprimer provides tools for designing (RT)-(q/d)PCR assays from a multiple DNA sequence alignment. It is especially developed to find broadly reactive assays for sequence variable RNA viruses. Primers and probes are designed from user specified constraints on length, GC-content and melting temperature, maximum allowed degeneracy and target gap frequency. Target regions with low sequence complexity are avoided. For primers, it is also possible to specify a threshold for minimum 3'-end conservation and enforce a GC-clamp, to increase the probability of amplification. Assays can be generated with or without probe, and are designed upon user specified amplicon length and maximum allowed difference in melting temperature between primers, and between the primer pair and probe.  
 
-In this document, I demonstrate how to use rprimer by designing an RT-q/dPCR assay for detection of hepatitis E virus, which is a highly variable RNA virus. 
+In this document, I demonstrate how to use rprimer by designing an RT-q/dPCR assay for detection of hepatitis E virus, which is an RNA virus with high genetic diversity. 
 
 ## Functions
 
@@ -34,9 +34,9 @@ The design process is built on three functions:
 
 ## Data structures 
 
-The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors (Pagès et al., 2020), and behave in a similar manner as traditional data frames (with methods for e.g. [, $, nrow, ncol, head, tail). They can be coerced to traditional such by using `as.data.frame()`. 
+The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors (Pagès et al., 2020), and behave in a similar manner as traditional data frames (with methods for `[`, `$`, `nrow`, `ncol`, `head`, `tail`, etc.). They can be coerced to such by using `as.data.frame()`. 
 
-Example data sets of each class are provided, and are loaded by: 
+Example data sets of each class are provided with the package, and are loaded by: 
 
 ```{r, warning=FALSE}
 data("exampleRprimerProfile")
@@ -44,9 +44,9 @@ data("exampleRprimerOligo")
 data("exampleRprimerAssay")
 ```
 
-These classes can be visualized using the generic function `plotData()`, e.g. `plotData(exampleRprimerProfile)`. 
+These objects can be visualized using the generic function `plotData()`, e.g. `plotData(exampleRprimerProfile)`. 
 
-To provide reproducible examples, I've also included an alignment of class `Biostrings::MultipleDNAAlignment` (Pagès et al., 2020), which is loaded by `data("exampleRprimerAlignment")`.
+To provide reproducible examples, I've also included an alignment of class `Biostrings::MultipleDNAAlignment` (Pagès et al., 2020). It is loaded by `data("exampleRprimerAlignment")`.
 
 # Installation
 
@@ -73,9 +73,11 @@ library(Biostrings)
 
 ## To start: import data
 
-The first step is to import the alignment with the target sequences of interest and, if preferred, mask positions with high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings (Pagès et al., 2020) do the work for this part. The file "example_alignment.txt" is provided with the package and contains 100 hepatitis E virus sequences.  
+The first step is to import the alignment with the target sequences of interest and, if preferred, mask positions with high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings (Pagès et al., 2020) do the work for this part. The input file can contain up to several thousands of sequences. 
 
-I mask all positions with at least 50 % gaps. However, masking positions with high gap frequency should be done with caution, since it may lead to that oligos are placed in positions were some sequences have inserts. A good idea could therefore be to test both with and without gap mask. 
+The file "example_alignment.txt" is provided with the package and contains 100 hepatitis E virus sequences.  
+
+I import the file and mask all positions with at least 50 % gaps. However, masking positions with high gap frequency should be done with caution, since it may lead to placement of oligos in insert-rich regions. If gap mask is used, a good idea could be to confirm the design process without gap mask. 
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -106,17 +108,27 @@ Some comments on the data:
 
 * Majority refers to the majority consensus sequence, which is the most frequently occurring base. Identity is the proportion of that base when gaps and other bases than A, C, G and T are not taken into account
 
-* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`. In my example, I set the threshold to `0.05`, which means that all bases that occur in more than 5 % of the sequences will be accounted for when the IUPAC base will be determined 
+* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`. In my example, I set the threshold to `0.05`, which means that all bases that occur in more than 5 % of the sequences will be accounted for when the IUPAC base will be determined. This has implications for subsequent oligo design. For a sequence variable target, a low threshold will generate oligos with more degenerate bases. 
 
 * Entropy refers to Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. Gaps and other bases than A, C, G and T are not included in the calculation 
 
-The data can be visualized with `plotData()`, and specific regions can be highlighted using the optional arguments `shadeFrom` and `shadeTo`. The most conserved region of the hepatitis E virus genome appears to be between position 5000-5500:
+The data can be visualized with `plotData()`, and specific regions can be highlighted using the optional arguments `shadeFrom` and `shadeTo`. The most conserved region of the hepatitis E virus genome seems to be between position 5000-5500:
 
 ```{r, fig.width=12, fig.height=6}
 plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
 ```
 
 The black lines represent centered running averages and the blue dots represent the value at each position. 
+
+It is also possible to select a specific region of interest. For instance, I can zoom into the shaded region:  
+
+```{r, fig.width=12, fig.height=6}
+myRoi <- myConsensusProfile[
+  myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5500, 
+  ]
+
+plotData(myRoi)
+```
 
 ## Step 2: `getOligos`
 
@@ -194,9 +206,9 @@ Some comments on the data:
 
 * Type indicates whether the oligo is a primer or probe candidate 
 * An `NA` indicates that the oligo did not meet the specified design criteria (e.g if a primer lacked GC-clamp when `gcClampPrimer` was set to `TRUE`)
-* Degeneracy tells how many variants there are of that particular oligo. An oligo without wobble bases will have a value of 1
+* Degeneracy tells how many variants there are of that particular oligo. An oligo without wobble bases will have a value of one
 * Melting temperature is calculated using the nearest-neighbor method (SantaLucia, 1998), with initiation parameters as described by Allawi & SantaLucia 1997, and salt correction formula as described by SantaLucia et al., 1996
-* Identity shows the average identity score of the oligo. A high identity score indicates a conserved target region 
+* Identity shows the average identity score of the oligo. A high identity score indicates a conserved target region. The maximum value is 1
 * If `showAllVariants` was set to `TRUE`, the columns `all` and `allRc` contain all sequence variants of the forward and reverse variant of the primer, respectively. Take the first primer candidate as an example:
 
 ```{r}
@@ -217,11 +229,13 @@ All primer and probe candidates can be visualized using `plotData()`:
 plotData(myOligos)
 ```
 
-The upper plot shows the location of the primer and probe candidates, and the lower plots shows the distribution of the characteristics of all oligo candidates. 
+The upper plot shows the location of the primer and probe candidates, and the lower plots shows the characteristics of all oligo candidates. I allowed probes to contain more degenerate sites than primers, which is why the number of probe candidates are much higher than the number of primer candidates. 
 
 ## Step 3: `getAssays`
 
-`getAssays()` finds pairs of forward and reverse primers and combines them with probes, if present (i.e., if `probe = TRUE` was used in the previous step). The design process is based on the following criteria:
+`getAssays()` finds pairs of forward and reverse primers, and combines them with probes (if `probe = TRUE` was used in the previous step). 
+
+The design process is based on the following criteria:
 
 * `length` Amplicon length, defaults to `65:120`
 * `maxTmDifferencePrimers` Maximum Tm difference between the two primers (absolute value, calculated for majority primers), defaults to `2`
@@ -287,7 +301,7 @@ The nucleotide distribution within the amplicon can be visualized with `plotNucl
 plotNucleotides(myAssayRegion, rc = FALSE) 
 ```
 
-I can of course also use `plotData()` for the assay region:
+It is of course also possible to use `plotData()` for the assay region:
 
 ```{r, fig.width=12, fig.height=6}
 plotData(myAssayRegion)
@@ -312,14 +326,14 @@ The design process can be summarized in the following pipeline. In this case, I 
 
 ```r
 ## Enter the filepath to the alignment here 
-filepath <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
+# filepath <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 
-myAlignment <- filepath %>%
-  Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
-  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1)
-myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
-myOligos <- getOligos(myConsensusProfile)
-myAssays <- getAssays(myOligos)
+# myAlignment <- filepath %>%
+#  Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
+#  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1)
+# myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
+# myOligos <- getOligos(myConsensusProfile)
+# myAssays <- getAssays(myOligos)
 
 ```
 
@@ -341,6 +355,6 @@ Pagès, H., Aboyoun, P., Gentleman, R., & DebRoy, S. (2020). Biostrings: Efficie
 
 Pagès, H., Lawrence M., & Aboyoun, P. (2020). S4Vectors: Foundation of vector-like and list-like containers in Bioconductor. R package version 0.27.12
 
-SantaLucia, J., et al. (1996) Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability. Biochemistry, 35: 3555-3562
+SantaLucia, J., Hatim, T., Allawi H., & Seneviratne, A. (1996) Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability. Biochemistry, 35: 3555-3562
 
 SantaLucia, J. (1998) A unified view of polymer, dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics. Proc. Natl. Acad. Sci. USA, 95: 1460-1465

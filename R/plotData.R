@@ -257,6 +257,30 @@ setMethod("plotData", "RprimerAssay", function(x) {
         .themeRprimer(showXAxis = FALSE)
 }
 
+.boxPlot <- function(data, y, title = "", color = "grey30") {
+  ggplot2::ggplot() +
+    ggplot2::geom_point(
+      data = data, ggplot2::aes(x = 1, y = y), alpha = 0.05, color = color
+    ) +
+    ggplot2::geom_boxplot(
+      data = data, ggplot2::aes(x = 1, y = y), width = 0.1,
+      color = color, fill = color, alpha = 0.2
+    ) +
+    ggplot2::ylab("") +
+    ggplot2::labs(title = title) +
+    .themeRprimer(showXAxis = FALSE)
+}
+
+.dotPlot <- function(data, y, title = "", color = "grey30") {
+  ggplot2::ggplot() +
+    ggplot2::geom_point(
+      data = data, ggplot2::aes(x = 1, y = y), alpha = 0.5, color = color
+    ) +
+    ggplot2::ylab("") +
+    ggplot2::labs(title = title) +
+    .themeRprimer(showXAxis = FALSE)
+}
+
 .barPlot <- function(data, y, title = "", color = "grey30") {
     ggplot2::ggplot(data, ggplot2::aes(factor(y))) +
         ggplot2::geom_bar(
@@ -269,20 +293,37 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .gcTmIdentityPlot <- function(x, color = "grey30", type = "Primers") {
+  if (nrow(x) >= 10) {
     patchwork::wrap_plots(
-        list(
-            .violinPlot(
-                x, x$gcMajority,
-                paste0("\n", type, "\n\nGC-content"),
-                color = color
-            ),
-            .violinPlot(x, x$tmMajority, "\n\n\nTm", color = color),
-            .violinPlot(x, x$identity, "\n\n\nIdentity", color = color),
-            .barPlot(x, x$length, "\n\n\nLength", color = color),
-            .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
+      list(
+        .violinPlot(
+          x, x$gcMajority,
+          paste0("\n", type, "\n\nGC-content"),
+          color = color
         ),
-        ncol = 5
+        .violinPlot(x, x$tmMajority, "\n\n\nTm", color = color),
+        .violinPlot(x, x$identity, "\n\n\nIdentity", color = color),
+        .barPlot(x, x$length, "\n\n\nLength", color = color),
+        .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
+      ),
+      ncol = 5
     )
+  } else {
+    patchwork::wrap_plots(
+      list(
+        .dotPlot(
+          x, x$gcMajority,
+          paste0("\n", type, "\n\nGC-content"),
+          color = color
+        ),
+        .dotPlot(x, x$tmMajority, "\n\n\nTm", color = color),
+        .dotPlot(x, x$identity, "\n\n\nIdentity", color = color),
+        .barPlot(x, x$length, "\n\n\nLength", color = color),
+        .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
+      ),
+      ncol = 5
+    )
+  }
 }
 
 .oligoFeaturePlot <- function(x) {
@@ -311,8 +352,6 @@ setMethod("plotData", "RprimerAssay", function(x) {
 .assayPlot <- function(x) {
     start <- x$alignmentStart[[1]]
     end <- x$alignmentEnd[[1]]
-    row <- seq_len(nrow(x))
-    x <- tibble::add_column(x, row)
     ggplot2::ggplot() +
         ggplot2::xlim(start, end) +
         ggplot2::ylim(0, 1) +
@@ -338,28 +377,46 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .assayFeaturePlot <- function(x, color = "grey30") {
+  if (nrow(x) >= 10) {
     patchwork::wrap_plots(
-        list(
-            .violinPlot(
-                x, x$tmDifferencePrimer, "\n\nTm diff., primers",
-                color = color
-            ),
-            .violinPlot(
-                x, x$tmDifferencePrimerProbe, "\n\nTm diff., primers-probe",
-                color = color
-            ),
-            .violinPlot(x, x$meanIdentity, "\n\nMean identity", color = color),
-            .barPlot(
-                x, x$ampliconLength, "\n\nAmplicon length",
-                color = color
-            ),
-            .barPlot(
-                x, x$totalDegeneracy, "\n\nTotal degeneracy",
-                color = color
-            )
+      list(
+        .violinPlot(
+          x, x$tmDifferencePrimer, "\n\nTm differende, primers",
+          color = color
         ),
-        ncol = 5
+        .violinPlot(x, x$meanIdentity, "\n\nMean identity", color = color),
+        .boxPlot(
+          x, x$ampliconLength, "\n\nAmplicon length",
+          color = color
+        ),
+        .barPlot(
+          x, x$totalDegeneracy, "\n\nTotal degeneracy",
+          color = color
+        )
+      ),
+      ncol = 4
     )
+  } else {
+    patchwork::wrap_plots(
+      list(
+        .dotPlot(
+          x, x$tmDifferencePrimer, "\n\nTm difference, primers",
+          color = color
+        ),
+        .dotPlot(x, x$meanIdentity, "\n\nMean identity", color = color),
+        .barPlot(
+          x, x$ampliconLength, "\n\nAmplicon length",
+          color = color
+        ),
+        .barPlot(
+          x, x$totalDegeneracy, "\n\nTotal degeneracy",
+          color = color
+        )
+      ),
+      ncol = 4
+    )
+  }
+
 }
 
 .identityPlot <- function(x, shadeFrom = NULL, shadeTo = NULL) {
@@ -477,9 +534,6 @@ setMethod("plotData", "RprimerAssay", function(x) {
                 size = 9, color = "grey30",
                 margin = ggplot2::margin(t = 10)
             ),
-            axis.text.x = ggplot2::element_text(
-                angle = ifelse(rotateX, 90, 0), vjust = 0.5, hjust = 1
-            ),
             plot.title = ggplot2::element_text(size = 9, color = "grey30"),
             plot.margin = ggplot2::unit(rep(0.1, 4), "cm")
         )
@@ -494,9 +548,6 @@ setMethod("plotData", "RprimerAssay", function(x) {
             axis.title.x = ggplot2::element_text(
                 size = 9, color = "grey30",
                 margin = ggplot2::margin(t = 10)
-            ),
-            axis.text.x = ggplot2::element_text(
-                angle = ifelse(rotateX, 90, 0), vjust = 0.5, hjust = 1
             ),
             axis.title.y = ggplot2::element_blank(),
             axis.text.y = ggplot2::element_blank(),

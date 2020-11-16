@@ -61,5 +61,4 @@ data("exampleRprimerOligo")
 plotData(exampleRprimerOligo)
 data("exampleRprimerAssay")
 plotData(exampleRprimerAssay)
-
 }

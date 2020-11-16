@@ -23,9 +23,6 @@ knitr::opts_chunk$set(
 ```
 
 * validate objs, testa s4 klasserna  
-* bioc cmd check options
-* bort med barplot ist violin plot not < 10 nrows  
-* gå tillbaka till gammal assay plot 
 
 ## Installation
 

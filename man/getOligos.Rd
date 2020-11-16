@@ -160,7 +160,6 @@ the same nucleotide  (e.g. "AAAAA")
 data("exampleRprimerProfile")
 ## Design primers and probes with default values
 getOligos(exampleRprimerProfile)
-
 }
 \references{
 Tm-calculation:
