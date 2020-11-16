@@ -9,10 +9,7 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
 
-  - validate objs, testa s4 klasserna  
-  - bioc cmd check options
-  - bort med barplot ist violin plot not \< 10 nrows  
-  - gå tillbaka till gammal assay plot
+  - validate objs, testa s4 klasserna
 
 ## Installation
 
