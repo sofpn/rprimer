@@ -1,5 +1,3 @@
-# nrow density violin set limit
-
 #' Plot an Rprimer-object (generic)
 #'
 #' @param x
@@ -138,10 +136,12 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .oligoPlot <- function(x) {
-    if (any(x$type == "probe")) {
-        .primerProbePlot(x)
+    if (all(x$type == "primer")) {
+      .primerPlot(x)
+    } else if (all(x$type == "probe")) {
+      .probePlot(x)
     } else {
-        .primerPlot(x)
+      .primerProbePlot(x)
     }
 }
 
@@ -182,6 +182,45 @@ setMethod("plotData", "RprimerAssay", function(x) {
             color = rev(colors), fill = "white", label.size = NA
         ) +
         .themeRprimer(showYAxis = FALSE)
+}
+
+.probePlot <- function(x) {
+  start <- end <- NULL
+  alignmentStart <- x$alignmentStart[[1]]
+  alignmentEnd <- x$alignmentEnd[[1]]
+  colors <- c(prPos = "#64697D", prNeg = "#525666")
+  oligos <- .splitOligoDf(x)
+  ggplot2::ggplot() +
+    ggplot2::xlim(alignmentStart, alignmentEnd) +
+    ggplot2::ylim(0, 1) +
+    ggplot2::labs(x = "Position", y = "") +
+    ggplot2::geom_segment(
+      color = "grey", lwd = 2, ggplot2::aes(
+        x = alignmentStart, xend = alignmentEnd, y = 0, yend = 0
+      )
+    ) +
+    ggplot2::geom_rect(data = oligos$prPos, ggplot2::aes(
+      xmin = start, xmax = end, ymin = 0.35, ymax = 0.65
+    ), fill = colors["prPos"]) +
+    ggplot2::geom_rect(data = oligos$prNeg, ggplot2::aes(
+      xmin = start, xmax = end, ymin = 0.05, ymax = 0.35
+    ), fill = colors["prNeg"]) +
+    ggplot2::annotate(
+      "label",
+      x = alignmentStart,
+      y = seq(0.89, length.out = 2, by = 0.07), label = c(
+        paste(
+          "Probe (-) n =",
+          nrow(oligos$prNeg[!is.na(oligos$prNeg$length), ])
+        ),
+        paste(
+          "Probe (+) n =",
+          nrow(oligos$prPos[!is.na(oligos$prPos$length), ])
+        )
+      ), size = 3, hjust = 0, fontface = 2,
+      color = rev(colors), fill = "white", label.size = NA
+    ) +
+    .themeRprimer(showYAxis = FALSE)
 }
 
 .primerProbePlot <- function(x) {
