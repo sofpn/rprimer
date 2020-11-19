@@ -1,14 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<!-- badges: start --> [![R build
-status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
-<!-- badges: end -->
-
-<!-- badges: start --> [![Codecov test
-coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
-<!-- badges: end -->
-
   - validate objs, testa s4 klasserna
 
 ## Installation
@@ -16,7 +8,8 @@ coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](ht
 You can install rprimer from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
+if (!requireNamespace("devtools", quietly = TRUE))
+  install.packages("devtools")
 devtools::install_github("sofpn/rprimer")
 ```
 

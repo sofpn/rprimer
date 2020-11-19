@@ -4,7 +4,7 @@ author: "Sofia Persson"
 package: rprimer
 output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Getting started with rprimer}
+  %\VignetteIndexEntry{Getting started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -34,7 +34,7 @@ The design process is built on three functions:
 
 ## Data structures 
 
-The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors (Pagès et al., 2020), and behave in a similar manner as traditional data frames (with methods for `[`, `$`, `nrow`, `ncol`, `head`, `tail`, etc.). They can be coerced to such by using `as.data.frame()`. 
+The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors (Pagès et al., 2020), and behave in a similar manner as traditional data frames (with methods for `[`, `$`, `nrow`, `ncol`, `head`, `tail`, etc.). They can be coerced to traditional data frames by using `as.data.frame()`. 
 
 Example data sets of each class are provided with the package, and are loaded by: 
 
@@ -53,7 +53,8 @@ To provide reproducible examples, I've also included an alignment of class `Bios
 rprimer can be installed from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
+if (!requireNamespace("devtools", quietly = TRUE))
+    install.packages("devtools")
 devtools::install_github("sofpn/rprimer")
 ```
 
@@ -61,12 +62,12 @@ Setup for the code in this document:
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
+#devtools::load_all(".")
 ```
 ```{r setup, message = FALSE, warning = FALSE}
 library(rprimer)
 library(magrittr)
 library(Biostrings)
-#devtools::load_all(".")
 ```
 
 # Workflow
@@ -77,7 +78,7 @@ The first step is to import the alignment with the target sequences of interest 
 
 The file "example_alignment.txt" is provided with the package and contains 100 hepatitis E virus sequences.  
 
-I import the file and mask all positions with at least 50 % gaps. However, masking positions with high gap frequency should be done with caution, since it may lead to placement of oligos in insert-rich regions. If gap mask is used, a good idea could be to confirm the design process without gap mask. 
+I import the file and mask all positions with at least 50 % gaps. However, masking positions with high gap frequency should be done with caution, since it may lead to placement of oligos in insert-rich regions. 
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -132,7 +133,7 @@ plotData(myRoi)
 
 ## Step 2: `getOligos`
 
-`getOligos()` searches for primers or primers and probes from an `RprimerProfile`-object. All oligos are shown in both majority (without degenerate bases) and IUPAC format (with degenerate bases). Oligos are designed from the following constraints:  
+`getOligos()` searches for oligos (primers and probes) from an `RprimerProfile`-object. All oligos are shown in both majority (without degenerate bases) and IUPAC format (with degenerate bases). Oligos are designed from the following constraints:  
 
 * `lengthPrimer` Primer length, defaults to `18:22`
 * `maxGapFrequencyPrimer` Maximum gap frequency for primers, defaults to `0.1`
@@ -160,9 +161,9 @@ In addition, `getOligos()` avoids:
 * Majority oligos with more than four consecutive runs of the same nucleotide  (e.g. "AAAAA")
 * Majority oligos that are duplicated (to prevent binding at several places on the genome)
 
-An error message will return if no oligos are found. 
+An error message will return if no oligos are found. If no oligos are found, a good idea could be to re run the process from Step 1 and increase the `iupacThreshold` in `getConsensusProfile()` and/or to relax the design constraints in `getOligos()`.
 
-Below, I design both primers and probes. For primers, I use very strict constraints on degeneracy (not more than 2) and minimum end identity (= 1). This means that only the most conserved regions will be considered as primer binding sites. 
+Below, I design both primers and probes. For primers, I use very strict constraints on degeneracy (not more than 2) and minimum end identity (1). This means that only the most conserved regions will be considered as primer binding sites. 
 
 ``` {r}
 myOligos <- getOligos(myConsensusProfile,
@@ -281,7 +282,7 @@ I notice that all assays are located in the conserved region between position 50
 myAssays <- myAssays[order(myAssays$totalDegeneracy), ]
 ```
 
-It is also possible to extract assays fulfilling specific criteria, for instance, assays with a total degeneracy below 6:
+It is also possible to extract assays that fulfill specific criteria, for instance, assays with a total degeneracy below 6:
 
 ```{r}
 mySelectedAssays <- myAssays[myAssays$totalDegeneracy < 6, ]
@@ -289,11 +290,15 @@ mySelectedAssays <- myAssays[myAssays$totalDegeneracy < 6, ]
 
 ## Further handling of the data 
 
-The oligo or assay region(s) can be inspected further by using the `RprimerProfile` object. As an example, I select to look at the first assay in `myAssays`: 
+Oligo and assay region(s) can be inspected further by using the `RprimerProfile` object. As an example, I select to look at the first assay in my assay dataset (`myAssays`): 
 
 ```{r}
+
+## Find start and end positions for the first assay 
 assayStart <- myAssays[1, ]$start
 assayEnd <- myAssays[1, ]$end
+
+## Subset the RprimerProfile object (myConsensusProfile) based on these positions
 myAssayRegion <- myConsensusProfile[myConsensusProfile$position >= assayStart & myConsensusProfile$position <= assayEnd, ] 
 ```
 
@@ -303,7 +308,7 @@ The nucleotide distribution within the amplicon can be visualized with `plotNucl
 plotNucleotides(myAssayRegion, rc = FALSE) 
 ```
 
-It is of course also possible to use `plotData()` for the assay region:
+Of course, it is also possible to use `plotData()` for the assay region:
 
 ```{r, fig.width=12, fig.height=6}
 plotData(myAssayRegion)
@@ -341,6 +346,7 @@ myAssays <- getAssays(myOligos)
 
 # Limitations  
 - does not determine deltaG for homo and heterodimer, or hairpin formation etc.
+- tm only takes primer conc and na conc into account
 
 # Session info 
 
