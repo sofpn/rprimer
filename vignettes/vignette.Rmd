@@ -20,9 +20,9 @@ knitr::opts_chunk$set(
 
 Primer and probe design is the most central part of PCR assay development. Successful amplification and detection depend on several factors, such as optimal primer and probe length, GC-content, melting temperature, sequence complexity and target sequence conservation. For a set of target sequences of interest, it is often difficult to identify regions that meet all, or even most of these requirements.
 
-rprimer provides tools for designing (RT)-(q/d)PCR assays from a multiple DNA sequence alignment. It is especially developed to find broadly reactive assays for sequence variable RNA viruses. Primers and probes are designed from user specified constraints on length, GC-content, melting temperature, maximum allowed degeneracy and target gap frequency. Target regions with low sequence complexity are avoided. For primers, it is also possible to specify a threshold for minimum 3'-end conservation and enforce a GC-clamp, to increase the probability of amplification. Assays can be generated with or without probe, and are designed upon user specified amplicon length and maximum allowed difference in melting temperature between primers, and between the primer pair and probe.  
+rprimer provides tools for designing (RT)-(q/d)PCR assays from a multiple DNA sequence alignment. It is especially developed for finding broadly reactive assays for sequence variable RNA viruses. Primers and probes are designed from user specified constraints on length, GC-content, melting temperature, maximum allowed degeneracy and target gap frequency. Target regions with low sequence complexity are avoided. For primers, it is also possible to specify a threshold for minimum 3'-end conservation and enforce a GC-clamp, to increase the probability of amplification. Assays can be generated with or without probe, and are designed upon user specified amplicon length and maximum allowed difference in melting temperature between primers, and between the primer pair and probe.  
 
-In this document, I demonstrate how to use the package by designing an RT-q/dPCR assay for detection of hepatitis E virus, which is a genetically diverse RNA virus. 
+In this document, I demonstrate how to use rprimer by designing an RT-q/dPCR assay for detection of hepatitis E virus, which is a genetically diverse RNA virus. 
 
 ## Functions
 
@@ -57,17 +57,12 @@ if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
 devtools::install_github("sofpn/rprimer")
 ```
-
-Setup for the code in this document: 
-
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
 #devtools::load_all(".")
 ```
 ```{r setup, message = FALSE, warning = FALSE}
 library(rprimer)
-library(magrittr)
-library(Biostrings)
 ```
 
 # Workflow
@@ -83,9 +78,10 @@ I import the file and mask all positions with at least 50 % gaps. However, maski
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 
-myAlignment <- infile %>%
-  Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
-  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1) 
+myAlignment <- Biostrings::readDNAMultipleAlignment(infile, format = "fasta")
+myAlignment <- Biostrings::maskGaps(myAlignment, 
+                                    min.fraction = 0.5, 
+                                    min.block.width = 1) 
 ```
 
 ## Step 1: `getConsensusProfile` 
@@ -133,7 +129,7 @@ plotData(myRoi)
 
 ## Step 2: `getOligos`
 
-`getOligos()` searches for oligos (primers and probes) from an `RprimerProfile`-object. All oligos are shown in both majority (without degenerate bases) and IUPAC format (with degenerate bases). Oligos are designed from the following constraints:  
+`getOligos()` searches for oligos (primers and probes) from an `RprimerProfile`-object. All oligos are shown in both majority (without degenerate bases) and IUPAC format (with degenerate bases). The following settings can be used for primer and probe design:
 
 * `lengthPrimer` Primer length, defaults to `18:22`
 * `maxGapFrequencyPrimer` Maximum gap frequency for primers, defaults to `0.1`
@@ -161,9 +157,9 @@ In addition, `getOligos()` avoids:
 * Majority oligos with more than four consecutive runs of the same nucleotide  (e.g. "AAAAA")
 * Majority oligos that are duplicated (to prevent binding at several places on the genome)
 
-An error message will return if no oligos are found. If no oligos are found, a good idea could be to re run the process from Step 1 and increase the `iupacThreshold` in `getConsensusProfile()` and/or to relax the design constraints in `getOligos()`.
+An error message will return if no oligos are found. If so, a good idea could be to re-run the process from Step 1 and increase the `iupacThreshold` in `getConsensusProfile()` and/or to relax the design constraints in `getOligos()`.
 
-Below, I design both primers and probes. For primers, I use very strict constraints on degeneracy (not more than 2) and minimum end identity (1). This means that only the most conserved regions will be considered as primer binding sites. 
+Below, I design both primers and probes. For primers, I use very strict criteria on degeneracy (not more than 2) and minimum end identity (1). This means that only the most conserved regions will be considered as primer binding sites. 
 
 ``` {r}
 myOligos <- getOligos(myConsensusProfile,
@@ -230,9 +226,9 @@ All primer and probe candidates can be visualized using `plotData()`:
 plotData(myOligos)
 ```
 
-The upper plot shows the location of the primer and probe candidates, and the lower plots shows the characteristics of all oligo candidates. 
+The upper plot shows the location of the primer and probe candidates, and the lower plots show the characteristics of all oligo candidates. 
 
-I allowed probes to contain more degenerate sites than primers, which is why the number of probe candidates are much higher than the number of primer candidates. 
+I allowed probes to contain more degenerate sites than primers, which is why the number of probe candidates is much higher than the number of primer candidates. 
 
 ## Step 3: `getAssays`
 
@@ -276,7 +272,9 @@ Again, the output can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-I notice that all assays are located in the conserved region between position 5000-5500. There are many assay candidates, and they can be sorted based on e.g. total degeneracy score: 
+I notice that all assays are located in the conserved region between position 5000-5500. 
+
+The assay candidates can be sorted based on e.g. total degeneracy score: 
 
 ```{r}
 myAssays <- myAssays[order(myAssays$totalDegeneracy), ]
@@ -335,9 +333,8 @@ The design process can be summarized in the following pipeline. In this case, I 
 ## Enter the filepath to the alignment here 
 filepath <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 
-myAlignment <- filepath %>%
- Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
- Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1)
+myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta") 
+myAlignment <- Biostrings::maskGaps(myAlignment, min.fraction = 0.5, min.block.width = 1)
 myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
 myOligos <- getOligos(myConsensusProfile)
 myAssays <- getAssays(myOligos)

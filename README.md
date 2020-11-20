@@ -13,13 +13,9 @@ if (!requireNamespace("devtools", quietly = TRUE))
 devtools::install_github("sofpn/rprimer")
 ```
 
-Initial setup for the code in this document:
-
 ``` r
 # library(rprimer)
 devtools::load_all(".")
-library(magrittr) # Required for the pipe operator 
-library(Biostrings) # Required to import alignment
 ```
 
 ## Overview
@@ -49,9 +45,10 @@ work for this part.
 ``` r
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 
-myAlignment <- infile %>%
-  Biostrings::readDNAMultipleAlignment(., format = "fasta") %>%
-  Biostrings::maskGaps(., min.fraction = 0.5, min.block.width = 1) 
+myAlignment <- Biostrings::readDNAMultipleAlignment(infile, format = "fasta")
+myAlignment <- Biostrings::maskGaps(myAlignment, 
+                                    min.fraction = 0.5, 
+                                    min.block.width = 1) 
 ```
 
 ### Step 1: `getConsensusProfile`
