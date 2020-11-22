@@ -105,7 +105,7 @@ Some comments on the data:
 
 * Majority refers to the majority consensus sequence, which is the most frequently occurring base. Identity is the proportion of that base when gaps and other bases than A, C, G and T are not taken into account
 
-* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`. In my example, I set the threshold to `0.05`, which means that all bases that occur in more than 5 % of the sequences will be accounted for when the IUPAC base will be determined
+* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`. In my example, I set the threshold to `0.05`, which means that all bases that occur in more than 5 % of the sequences will be accounted for when the IUPAC base is determined
 
 * Entropy refers to Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. Gaps and other bases than A, C, G and T are not included in the calculation 
 
@@ -232,7 +232,7 @@ I allowed probes to contain more degenerate sites than primers, which is why the
 
 ## Step 3: `getAssays`
 
-`getAssays()` finds pairs of forward and reverse primers, and combines them with probes (if `probe = TRUE` was used in the previous step). 
+`getAssays()` finds pairs of forward and reverse primers, and combines them with probes if `probe = TRUE` was used in the previous step. 
 
 The design process is based on the following criteria:
 
@@ -318,6 +318,8 @@ The majority amplicon sequence can be obtained by:
 paste(myAssayRegion$majority, collapse = "")
 ```
 
+## Save to file  
+
 The results can be saved to .txt or .csv-files, for instance: 
 
 ```r
@@ -327,7 +329,7 @@ write.table(myAssays, file = "myAssays.txt", quote = FALSE, row.names = FALSE)
 
 ## Summary 
 
-The design process can be summarized in the following pipeline. In this case, I use default settings for oligo and assay design. 
+The design process can be summarized in the following code. In this case, I use default settings for oligo and assay design. 
 
 ```r
 ## Enter the filepath to the alignment here 
