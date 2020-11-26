@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 * validate objs, testa s4 klasserna  
 * define primer binding and probe binding regions
 * offtarget?
+* maxtak antal oligos? 
+* ta bort jattteobjektet 
 
 ## Installation
 

@@ -1,8 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-  - validate objs, testa s4 klasserna
+<!-- badges: start --> [![Codecov test
+coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
+<!-- badges: end -->
+
+  - validate objs, testa s4 klasserna  
   - define primer binding and probe binding regions
+  - offtarget?
 
 ## Installation
 
