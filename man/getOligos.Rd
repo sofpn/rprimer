@@ -148,18 +148,21 @@ from an \code{RprimerProfile} object.
 
 \code{getOligos()} excludes:
 
-* Majority oligos with more than than three consecutive runs of
+\itemize{
+\item Majority oligos with more than than three consecutive runs of
 the same dinucleotide (e.g. "TATATATA")
-* Majority oligos with more than four consecutive runs of
+\item Majority oligos with more than four consecutive runs of
 the same nucleotide  (e.g. "AAAAA")
-* Majority oligos that are duplicated
+\item Majority oligos that are duplicated
 (to prevent binding at several places on the genome)
+}
 }
 
 \examples{
 data("exampleRprimerProfile")
 ## Design primers and probes with default values
 getOligos(exampleRprimerProfile)
+
 }
 \references{
 Tm-calculation:

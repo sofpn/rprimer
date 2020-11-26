@@ -46,7 +46,7 @@ RprimerProfile <- function(...) {
     .RprimerProfile(df)
 }
 
-# I did very simple validity checks here...
+# to do..................
 S4Vectors::setValidity2("RprimerProfile", function(object) {
     msg <- NULL
     colnames <- c(

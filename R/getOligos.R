@@ -103,12 +103,14 @@
 #' @section Excluded oligos:
 #' \code{getOligos()} excludes:
 #'
-#' * Majority oligos with more than than three consecutive runs of
+#' \itemize{
+#' \item Majority oligos with more than than three consecutive runs of
 #' the same dinucleotide (e.g. "TATATATA")
-#' * Majority oligos with more than four consecutive runs of
+#' \item Majority oligos with more than four consecutive runs of
 #' the same nucleotide  (e.g. "AAAAA")
-#' * Majority oligos that are duplicated
+#' \item Majority oligos that are duplicated
 #' (to prevent binding at several places on the genome)
+#' }
 #'
 #' @return
 #' An \code{RprimerOligo} object.
@@ -148,6 +150,7 @@
 #' data("exampleRprimerProfile")
 #' ## Design primers and probes with default values
 #' getOligos(exampleRprimerProfile)
+#'
 #' @references
 #' Tm-calculation:
 #'
@@ -378,8 +381,8 @@ getOligos <- function(x,
     majority <- .getNmers(x$majority, n = oligoLength)
     iupac <- .getNmers(x$iupac, n = oligoLength)
     degeneracy <- purrr::map_dbl(iupac, ~ .countDegeneracy(.x))
-    start <- seq_along(majority)
-    end <- as.integer(seq_along(majority) + oligoLength - 1)
+    start <- seq_along(majority) + min(x$position) - 1
+    end <- seq_along(majority) + oligoLength - 1 + min(x$position) - 1
     length <- oligoLength
     identity <- .runningSum(x$identity, n = oligoLength) / oligoLength
     endIdentity <- .countEndIdentity(x$identity, n = oligoLength)

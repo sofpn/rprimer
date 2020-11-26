@@ -2,6 +2,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
   - validate objs, testa s4 klasserna
+  - define primer binding and probe binding regions
 
 ## Installation
 
