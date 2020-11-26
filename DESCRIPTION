@@ -26,7 +26,7 @@ License: GPL-3
 URL: https://github.com/sofpn/rprimer
 BugReports: https://github.com/sofpn/rprimer/issues
 Depends: 
-    R (>= 4.0)
+    R (>= 4.1)
 Imports:
     Biostrings,
     dplyr,
