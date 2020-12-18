@@ -453,9 +453,9 @@ getOligos <- function(x,
 
 #' Add reverse complement to generated oligos
 #'
-#' @param x A tibble with oligos.
+#' @param x A data frame with oligos.
 #'
-#' @return A tibble.
+#' @return A data frame.
 #'
 #' @keywords internal
 #'
@@ -709,7 +709,7 @@ getOligos <- function(x,
 
 #' Add Tm to oligos
 #'
-#' @param x A tibble with oligos.
+#' @param x A data frame with oligos.
 #'
 #' @inheritParams getOligos
 #'
@@ -762,11 +762,11 @@ getOligos <- function(x,
 
 #' Add info on sequence, GC-content and Tm of all oligo variants
 #'
-#' @param x A tibble with oligos.
+#' @param x A data frame with oligos.
 #'
 #' @inheritParams getOligos
 #'
-#' @return A tibble with oligos, including all variants.
+#' @return A data frame with oligos, including all variants.
 #'
 #' @keywords internal
 #'

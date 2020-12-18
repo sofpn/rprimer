@@ -55,7 +55,7 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
     )
     if (!all(colnames %in% names(object))) {
         msg <- c(
-            msg, "The object must have the following columns: \n
+            msg, "The object must contain the following columns: \n
                  position, a, c, g, t, other, gaps, majority, identity."
         )
     }
