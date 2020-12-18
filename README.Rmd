@@ -5,7 +5,6 @@ output: github_document
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
   <!-- badges: start -->
-  [![Codecov test coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
   <!-- badges: end -->
 
 ```{r, include = FALSE}
@@ -18,9 +17,6 @@ knitr::opts_chunk$set(
 ```
 
 * validate objs, testa s4 klasserna  
-* define primer binding and probe binding regions
-* offtarget?
-* maxtak antal oligos? 
 * ta bort jattteobjektet 
 
 ## Installation
