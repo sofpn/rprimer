@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
 ```
 
 * validate objs, testa s4 klasserna  
-* ta bort jattteobjektet 
 
 ## Installation
 
@@ -35,7 +34,7 @@ devtools::load_all(".")
 
 ## Overview 
 
-rprimer provides tools for designing (RT)-(q/dd)PCR assays from a multiple DNA sequence alignment. The design process is built on three functions: 
+rprimer provides tools for designing broadly reactive (RT)-(q/dd)PCR assays from a multiple DNA sequence alignment. The design process is built on three functions: 
 
 * `getConsensusProfile()`: returns an `RprimerProfile` object, which is used as input for;
 * `getOligos()`: returns an `RprimerOligo` object, which is used as input for; 

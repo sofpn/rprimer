@@ -3,8 +3,7 @@
 
 <!-- badges: start --> <!-- badges: end -->
 
-  - validate objs, testa s4 klasserna  
-  - ta bort jattteobjektet
+  - validate objs, testa s4 klasserna
 
 ## Installation
 

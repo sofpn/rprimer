@@ -24,6 +24,10 @@ rprimer provides tools for designing (RT)-(q/d)PCR assays from a multiple DNA se
 
 In this document, I demonstrate how to use rprimer by designing an RT-q/dPCR assay for detection of hepatitis E virus, which is a genetically diverse RNA virus. 
 
+## The big picture 
+
+MAKE FLOWCHART
+
 ## Functions
 
 The design process is built on three functions: 
@@ -70,6 +74,8 @@ library(rprimer)
 ## To start: import data
 
 The first step is to import the alignment with the target sequences of interest. `readDNAMultipleAlignment()` from Biostrings (Pagès et al., 2020) do the work for this part. The input file can contain up to several thousands of sequences. 
+
+MASK GAPS . It is generally not recommended to mask gaps, may lead to placement of oligos in regions where some sequences have inserts, but I use it in this example to , to get positions more accurate..... A good idea could be to verify the design without gap mask as well. .....
 
 The file "example_alignment.txt" is provided with the package and contains 100 hepatitis E virus sequences.  
 
