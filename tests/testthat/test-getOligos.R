@@ -38,10 +38,6 @@ test_that("getOligos returns an error when it should", {
     expect_error(getOligos(testdata[1:100, ], maxDegeneracyProbe = 1))
 })
 
-test_that(".splitSequence works", {
-    expect_equal(.splitSequence("ACCG"), c("A", "C", "C", "G"))
-})
-
 test_that(".getNmers works", {
     nmers <- .getNmers(testdata$majority, n = 5)
     expect_equal(nmers[1], paste(testdata$majority[1:5], collapse = ""))
@@ -56,6 +52,10 @@ test_that(".getNmers works", {
 
 test_that(".getNmers returns an error when it should", {
     expect_error(nmers <- .getNmers(testdata$majority[1:20], n = 22))
+})
+
+test_that(".splitSequence works", {
+    expect_equal(.splitSequence("ACCG"), c("A", "C", "C", "G"))
 })
 
 test_that(".runningSum works", {
@@ -115,7 +115,7 @@ test_that(".generateOligos returns an error when it should", {
     expect_error(.generateOligos(testdata, maxDegeneracy = 33))
 })
 
-test_that(".exclude work", {
+test_that(".exclude works", {
     oligos <- data.frame( # Two invalid oligos and two valid
         majority = c("ATATATAT", "ATCCCCCT", "ATATATCC", "ATCCCCT"),
         mockvector = rep(NA, 4)
@@ -137,7 +137,7 @@ test_that(".reverseComplement works", {
     expect_equal(.reverseComplement("-a"), "T-")
 })
 
-test_that(".addReverseComplement work", {
+test_that(".addReverseComplement works", {
     oligos <- .generateOligos(testdata[1:50, ])
     # Should work even if there is 0 oligos
     oligosEmpty <- oligos[-(1:nrow(oligos)), ]
@@ -214,12 +214,8 @@ test_that(".filterOligos returns an error when it should.", {
 
 test_that(".nnSplit, .getNnTableValues, .init3End and .init5End work,", {
     expect_equal(.nnSplit("CGGGT"), c("CG", "GG", "GG", "GT"))
-    expect_equal(.getNnTableValues("GC", "dH"), -9800)
-    expect_equal(.getNnTableValues("GC", "dS"), -24.4)
-    expect_equal(.init3End("CGGT"), c("H" = 2300.0, "S" = 4.1))
-    expect_equal(.init3End("CGGG"), c("H" = 100.0, "S" = -2.8))
-    expect_equal(.init5End("TGGT"), c("H" = 2300.0, "S" = 4.1))
-    expect_equal(.init5End("CGGG"), c("H" = 100.0, "S" = -2.8))
+    expect_equal(.getStackValue("GC", "dH"), -9800)
+    expect_equal(.getStackValue("GC", "dS"), -24.4)
 })
 
 test_that(".tm works", {
@@ -255,32 +251,4 @@ test_that(".expandDegenerates works", {
     expect_equal(.expandDegenerates("CAGR"), c("CAGA", "CAGG"))
     expect_equal(.expandDegenerates("CAGN"), c("CAGA", "CAGC", "CAGG", "CAGT"))
     expect_error(.expandDegenerates("X"))
-})
-
-test_that(".expandOligos works", {
-    oligos <- getOligos(testdata, showAllVariants = FALSE)
-    oligos <- as.data.frame(oligos)
-    oligos <- .expandOligos(oligos)
-    expect_true(all(c("all", "allRc", "tmAll", "gcAll") %in% colnames(oligos)))
-    expect_true(is.list(oligos$all[1]))
-    oligos <- getOligos(testdata[1:100, ], showAllVariants = FALSE)
-    oligos <- oligos[-(1:nrow(oligos)), ]
-    oligos <- as.data.frame(oligos)
-    oligos <- .expandOligos(oligos)
-    expect_true(all(c("all", "allRc", "tmAll", "gcAll") %in% colnames(oligos)))
-    expect_true(is.list(oligos$all[1]))
-})
-
-test_that(".getPrimers works", {
-    primers <- .getPrimers(testdata[1:50, ], showAllVariants = FALSE)
-    expect_false(all(c("all", "allRc", "gcAll", "tmAll") %in% names(primers)))
-    primers <- .getPrimers(testdata[1:50, ], showAllVariants = TRUE)
-    expect_true(all(c("all", "allRc", "gcAll", "tmAll") %in% names(primers)))
-})
-
-test_that(".getProbes works", {
-    probes <- .getProbes(testdata[1:50, ], showAllVariants = FALSE)
-    expect_false(all(c("all", "allRc", "gcAll", "tmAll") %in% names(probes)))
-    probes <- .getProbes(testdata[1:50, ], showAllVariants = TRUE)
-    expect_true(all(c("all", "allRc", "gcAll", "tmAll") %in% names(probes)))
 })

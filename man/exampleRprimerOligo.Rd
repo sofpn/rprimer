@@ -32,6 +32,10 @@ The object contains the following information:
   \item{gcAll}{Lists with the GC content of all
   sequence variants of the oligos.}
   \item{tmAll}{Lists with the Tm of all sequence variants of the oligos.}
+  \item{alignmentStart}{Start position of the input consensus profile
+  used for oligo design.}
+  \item{alingnmentEnd}{End position of the input consensus profile used
+  for oligo design.}
 }
 }
 \keyword{datasets}

@@ -130,18 +130,18 @@ setMethod("plotData", "RprimerAssay", function(x) {
     }
     numberOfRows <- purrr::map_int(all, nrow)
     all[numberOfRows == 0] <- purrr::map(all[numberOfRows == 0], function(x) {
-      .addRowToEmptyDf(x)
+        .addRowToEmptyDf(x)
     })
     all
 }
 
 .oligoPlot <- function(x) {
     if (all(x$type == "primer")) {
-      .primerPlot(x)
+        .primerPlot(x)
     } else if (all(x$type == "probe")) {
-      .probePlot(x)
+        .probePlot(x)
     } else {
-      .primerProbePlot(x)
+        .primerProbePlot(x)
     }
 }
 
@@ -157,7 +157,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         ggplot2::labs(x = "Position", y = "") +
         ggplot2::geom_segment(
             color = "grey", lwd = 2, ggplot2::aes(
-              x = alignmentStart, xend = alignmentEnd, y = 0, yend = 0
+                x = alignmentStart, xend = alignmentEnd, y = 0, yend = 0
             )
         ) +
         ggplot2::geom_rect(data = oligos$fwd, ggplot2::aes(
@@ -185,42 +185,42 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .probePlot <- function(x) {
-  start <- end <- NULL
-  alignmentStart <- x$alignmentStart[[1]]
-  alignmentEnd <- x$alignmentEnd[[1]]
-  colors <- c(prPos = "#64697D", prNeg = "#525666")
-  oligos <- .splitOligoDf(x)
-  ggplot2::ggplot() +
-    ggplot2::xlim(alignmentStart, alignmentEnd) +
-    ggplot2::ylim(0, 1) +
-    ggplot2::labs(x = "Position", y = "") +
-    ggplot2::geom_segment(
-      color = "grey", lwd = 2, ggplot2::aes(
-        x = alignmentStart, xend = alignmentEnd, y = 0, yend = 0
-      )
-    ) +
-    ggplot2::geom_rect(data = oligos$prPos, ggplot2::aes(
-      xmin = start, xmax = end, ymin = 0.35, ymax = 0.65
-    ), fill = colors["prPos"]) +
-    ggplot2::geom_rect(data = oligos$prNeg, ggplot2::aes(
-      xmin = start, xmax = end, ymin = 0.05, ymax = 0.35
-    ), fill = colors["prNeg"]) +
-    ggplot2::annotate(
-      "label",
-      x = alignmentStart,
-      y = seq(0.89, length.out = 2, by = 0.07), label = c(
-        paste(
-          "Probe (-) n =",
-          nrow(oligos$prNeg[!is.na(oligos$prNeg$length), ])
-        ),
-        paste(
-          "Probe (+) n =",
-          nrow(oligos$prPos[!is.na(oligos$prPos$length), ])
-        )
-      ), size = 3, hjust = 0, fontface = 2,
-      color = rev(colors), fill = "white", label.size = NA
-    ) +
-    .themeRprimer(showYAxis = FALSE)
+    start <- end <- NULL
+    alignmentStart <- x$alignmentStart[[1]]
+    alignmentEnd <- x$alignmentEnd[[1]]
+    colors <- c(prPos = "#64697D", prNeg = "#525666")
+    oligos <- .splitOligoDf(x)
+    ggplot2::ggplot() +
+        ggplot2::xlim(alignmentStart, alignmentEnd) +
+        ggplot2::ylim(0, 1) +
+        ggplot2::labs(x = "Position", y = "") +
+        ggplot2::geom_segment(
+            color = "grey", lwd = 2, ggplot2::aes(
+                x = alignmentStart, xend = alignmentEnd, y = 0, yend = 0
+            )
+        ) +
+        ggplot2::geom_rect(data = oligos$prPos, ggplot2::aes(
+            xmin = start, xmax = end, ymin = 0.35, ymax = 0.65
+        ), fill = colors["prPos"]) +
+        ggplot2::geom_rect(data = oligos$prNeg, ggplot2::aes(
+            xmin = start, xmax = end, ymin = 0.05, ymax = 0.35
+        ), fill = colors["prNeg"]) +
+        ggplot2::annotate(
+            "label",
+            x = alignmentStart,
+            y = seq(0.89, length.out = 2, by = 0.07), label = c(
+                paste(
+                    "Probe (-) n =",
+                    nrow(oligos$prNeg[!is.na(oligos$prNeg$length), ])
+                ),
+                paste(
+                    "Probe (+) n =",
+                    nrow(oligos$prPos[!is.na(oligos$prPos$length), ])
+                )
+            ), size = 3, hjust = 0, fontface = 2,
+            color = rev(colors), fill = "white", label.size = NA
+        ) +
+        .themeRprimer(showYAxis = FALSE)
 }
 
 .primerProbePlot <- function(x) {
@@ -237,7 +237,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         ggplot2::labs(x = "Position", y = "") +
         ggplot2::geom_segment(
             color = "grey", lwd = 2, ggplot2::aes(
-              x = alignmentStart, xend = alignmentEnd, y = 0, yend = 0
+                x = alignmentStart, xend = alignmentEnd, y = 0, yend = 0
             )
         ) +
         ggplot2::geom_rect(data = oligos$fwd, ggplot2::aes(
@@ -297,27 +297,27 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .boxPlot <- function(data, y, title = "", color = "grey30") {
-  ggplot2::ggplot() +
-    ggplot2::geom_point(
-      data = data, ggplot2::aes(x = 1, y = y), alpha = 0.05, color = color
-    ) +
-    ggplot2::geom_boxplot(
-      data = data, ggplot2::aes(x = 1, y = y), width = 0.1,
-      color = color, fill = color, alpha = 0.2
-    ) +
-    ggplot2::ylab("") +
-    ggplot2::labs(title = title) +
-    .themeRprimer(showXAxis = FALSE)
+    ggplot2::ggplot() +
+        ggplot2::geom_point(
+            data = data, ggplot2::aes(x = 1, y = y), alpha = 0.05, color = color
+        ) +
+        ggplot2::geom_boxplot(
+            data = data, ggplot2::aes(x = 1, y = y), width = 0.1,
+            color = color, fill = color, alpha = 0.2
+        ) +
+        ggplot2::ylab("") +
+        ggplot2::labs(title = title) +
+        .themeRprimer(showXAxis = FALSE)
 }
 
 .dotPlot <- function(data, y, title = "", color = "grey30") {
-  ggplot2::ggplot() +
-    ggplot2::geom_point(
-      data = data, ggplot2::aes(x = 1, y = y), alpha = 0.5, color = color
-    ) +
-    ggplot2::ylab("") +
-    ggplot2::labs(title = title) +
-    .themeRprimer(showXAxis = FALSE)
+    ggplot2::ggplot() +
+        ggplot2::geom_point(
+            data = data, ggplot2::aes(x = 1, y = y), alpha = 0.5, color = color
+        ) +
+        ggplot2::ylab("") +
+        ggplot2::labs(title = title) +
+        .themeRprimer(showXAxis = FALSE)
 }
 
 .barPlot <- function(data, y, title = "", color = "grey30") {
@@ -332,37 +332,37 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .gcTmIdentityPlot <- function(x, color = "grey30", type = "Primers") {
-  if (nrow(x) >= 10) {
-    patchwork::wrap_plots(
-      list(
-        .violinPlot(
-          x, x$gcMajority,
-          paste0("\n", type, "\n\nGC-content"),
-          color = color
-        ),
-        .violinPlot(x, x$tmMajority, "\n\n\nTm", color = color),
-        .violinPlot(x, x$identity, "\n\n\nIdentity", color = color),
-        .barPlot(x, x$length, "\n\n\nLength", color = color),
-        .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
-      ),
-      ncol = 5
-    )
-  } else {
-    patchwork::wrap_plots(
-      list(
-        .dotPlot(
-          x, x$gcMajority,
-          paste0("\n", type, "\n\nGC-content"),
-          color = color
-        ),
-        .dotPlot(x, x$tmMajority, "\n\n\nTm", color = color),
-        .dotPlot(x, x$identity, "\n\n\nIdentity", color = color),
-        .barPlot(x, x$length, "\n\n\nLength", color = color),
-        .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
-      ),
-      ncol = 5
-    )
-  }
+    if (nrow(x) >= 10) {
+        patchwork::wrap_plots(
+            list(
+                .violinPlot(
+                    x, x$gcMajority,
+                    paste0("\n", type, "\n\nGC-content"),
+                    color = color
+                ),
+                .violinPlot(x, x$tmMajority, "\n\n\nTm", color = color),
+                .violinPlot(x, x$identity, "\n\n\nIdentity", color = color),
+                .barPlot(x, x$length, "\n\n\nLength", color = color),
+                .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
+            ),
+            ncol = 5
+        )
+    } else {
+        patchwork::wrap_plots(
+            list(
+                .dotPlot(
+                    x, x$gcMajority,
+                    paste0("\n", type, "\n\nGC-content"),
+                    color = color
+                ),
+                .dotPlot(x, x$tmMajority, "\n\n\nTm", color = color),
+                .dotPlot(x, x$identity, "\n\n\nIdentity", color = color),
+                .barPlot(x, x$length, "\n\n\nLength", color = color),
+                .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
+            ),
+            ncol = 5
+        )
+    }
 }
 
 .oligoFeaturePlot <- function(x) {
@@ -416,46 +416,43 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .assayFeaturePlot <- function(x, color = "grey30") {
-  if (nrow(x) >= 10) {
-    patchwork::wrap_plots(
-      list(
-        .violinPlot(
-          x, x$tmDifferencePrimer, "\n\nTm differende, primers",
-          color = color
-        ),
-        .violinPlot(x, x$meanIdentity, "\n\nMean identity", color = color),
-        .boxPlot(
-          x, x$ampliconLength, "\n\nAmplicon length",
-          color = color
-        ),
-        .barPlot(
-          x, x$totalDegeneracy, "\n\nTotal degeneracy",
-          color = color
+    if (nrow(x) >= 10) {
+        patchwork::wrap_plots(
+            list(
+                .violinPlot(
+                    x, x$tmDifferencePrimer, "\n\nTm differende, primers",
+                    color = color
+                ),
+                .boxPlot(
+                    x, x$ampliconLength, "\n\nAmplicon length",
+                    color = color
+                ),
+                .barPlot(
+                    x, x$totalDegeneracy, "\n\nTotal degeneracy",
+                    color = color
+                )
+            ),
+            ncol = 3
         )
-      ),
-      ncol = 4
-    )
-  } else {
-    patchwork::wrap_plots(
-      list(
-        .dotPlot(
-          x, x$tmDifferencePrimer, "\n\nTm difference, primers",
-          color = color
-        ),
-        .dotPlot(x, x$meanIdentity, "\n\nMean identity", color = color),
-        .barPlot(
-          x, x$ampliconLength, "\n\nAmplicon length",
-          color = color
-        ),
-        .barPlot(
-          x, x$totalDegeneracy, "\n\nTotal degeneracy",
-          color = color
+    } else {
+        patchwork::wrap_plots(
+            list(
+                .dotPlot(
+                    x, x$tmDifferencePrimer, "\n\nTm difference, primers",
+                    color = color
+                ),
+                .barPlot(
+                    x, x$ampliconLength, "\n\nAmplicon length",
+                    color = color
+                ),
+                .barPlot(
+                    x, x$totalDegeneracy, "\n\nTotal degeneracy",
+                    color = color
+                )
+            ),
+            ncol = 3
         )
-      ),
-      ncol = 4
-    )
-  }
-
+    }
 }
 
 .identityPlot <- function(x, shadeFrom = NULL, shadeTo = NULL) {

@@ -23,8 +23,7 @@ getOligos(
   gcRangeProbe = c(0.45, 0.55),
   tmRangeProbe = c(55, 70),
   concProbe = 250,
-  concNa = 0.05,
-  showAllVariants = TRUE
+  concNa = 0.05
 )
 }
 \arguments{
@@ -86,25 +85,13 @@ at the 5' end should be excluded. Defaults to \code{TRUE}.}
 Defaults to \code{c(0.45, 0.55)}.}
 
 \item{tmRangeProbe}{Tm range for probes.
-A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
-Tm is calculated using the nearest-neighbor method,
-with the following assumptions:
-1) Oligos are not expected to be self-complementary (i.e. no symmetry
-correction is done);
-2) The oligo concentration is assumed to be much higher
-than the target concentration. See references for table values and equations.}
+A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.}
 
 \item{concProbe}{Primer concentration in nM, for Tm calculation. A numeric vector
 [20, 2000] Defaults to 250 nM.}
 
 \item{concNa}{The sodium ion concentration in the PCR reaction in M, for Tm calculation.
 A numeric vector [0.01, 1]. Defaults to 0.05 M (50 mM).}
-
-\item{showAllVariants}{If sequence, GC-content and Tm should be presented for all
-variants of each oligo, not just for majority variants
-(in case of degenerate bases).
-\code{TRUE} (slower) or \code{FALSE} (faster).
-Defaults to \code{TRUE}.}
 }
 \value{
 An \code{RprimerOligo} object.
@@ -125,19 +112,14 @@ The object contains the following columns:
   \item{iupac}{IUPAC sequence (i.e. with degenerate bases).}
   \item{iupacRc}{IUPAC sequence, reverse complement.}
   \item{degeneracy}{Number of variants of the degenerate oligo.}
-  \item{alignmentStart}{Start position of the input consensus profile.}
-  \item{alingnmentEnd}{End position of the input consensus profile.}
-}
-
-If \code{showAllVariants == TRUE}, the following columns are also included:
-
-\describe{
   \item{all}{Lists with all sequence variants of the oligos.}
   \item{allRc}{Lists with all sequence variants of the oligos, reverse
   complements.}
   \item{gcAll}{Lists with the GC content of all
   sequence variants of the oligos.}
   \item{tmAll}{Lists with the Tm of all sequence variants of the oligos.}
+  \item{alignmentStart}{Start position of the input consensus profile.}
+  \item{alingnmentEnd}{End position of the input consensus profile.}
 }
 }
 \description{
@@ -158,6 +140,22 @@ the same nucleotide  (e.g. "AAAAA")
 }
 }
 
+\section{Tm-calculation}{
+
+
+Melting temperatures are calculated using SantaLucia's nearest-neighbor
+method, with the following assumptions:
+
+\itemize{
+  \item Oligos are not expected to be self-complementary (i.e. no symmetry
+  correction is done).
+  \item The oligo concentration is assumed to be much higher
+  than the target concentration.
+}
+
+See references for table values and equations.  INSERT FORMULA
+}
+
 \examples{
 data("exampleRprimerProfile")
 ## Design primers and probes with default values
@@ -165,20 +163,7 @@ getOligos(exampleRprimerProfile)
 
 }
 \references{
-Tm-calculation:
-
-Formula and salt correction method:
-SantaLucia, J, et al. (1996)
-Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
-Biochemistry, 35: 3555-3562
-
-Duplex initiation parameters:
-Allawi, H. & SantaLucia, J. (1997)
-Thermodynamics and NMR of Internal G-T Mismatches in DNA.
-Biochemistry, 36, 34: 10581-10594
-
-Table values for nearest-neighbors:
-SantaLucia, J (1998) A unified view of polymer,
-dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
-Proc. Natl. Acad. Sci. USA, 95: 1460-1465
+SantaLucia Jr, J., & Hicks, D. (2004).
+The thermodynamics of DNA structural motifs.
+Annu. Rev. Biophys. Biomol. Struct., 33, 415-440.
 }

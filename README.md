@@ -22,15 +22,16 @@ devtools::load_all(".")
 
 ## Overview
 
-rprimer provides tools for designing (RT)-(q/dd)PCR assays from a
-multiple DNA sequence alignment. The design process is built on three
-functions:
+rprimer provides tools for designing broadly reactive (RT)-(q/dd)PCR
+assays from a multiple DNA sequence alignment. The design process is
+built on three functions:
 
   - `getConsensusProfile()`: returns an `RprimerProfile` object, which
     is used as input for;
-  - `getOligos()`: returns an `RprimerOligo` object, which is used as
-    input for;
-  - `getAssays()`: returns an `RprimerAssay` object.
+  - `getOligos()`: returns an `RprimerOligo` object (all the oligo
+    candidates), which is used as input for;
+  - `getAssays()`: returns an `RprimerAssay` object (all the assay
+    candidates).
 
 The `Rprimer`-classes are extensions of the `DataFrame` class from
 S4Vectors, and behave in a similar manner as traditional data frames.
@@ -40,7 +41,7 @@ S4Vectors, and behave in a similar manner as traditional data frames.
 ### Import data
 
 The first step is to import an alignment with target sequences of
-interest and, if preferred, mask positions with high gap frequency.
+interest and, if preferred, mask positions with e.g. high gap frequency.
 `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the
 work for this part.
 
@@ -108,8 +109,7 @@ myOligos <- getOligos(myConsensusProfile,
                       gcRangeProbe = c(0.45, 0.65),
                       tmRangeProbe = c(55, 70),
                       concProbe = 250,
-                      concNa = 0.05,
-                      showAllVariants = TRUE)
+                      concNa = 0.05)
 ```
 
 The oligo candidates can be visualized using `plotData()`:

@@ -43,8 +43,6 @@
 #'   \item{ampliconLength}{Length of the amplicon.}
 #'   \item{tmDifferencePrimer}{Difference in Tm between
 #'   the forward and reverse primer, absolute value.}
-#'   \item{meanIdentity}{Average identity score of the primers
-#'   (and probe if selected)}.
 #'   \item{totalDegeneracy}{Total number of oligos in the assay.}
 #'   \item{startFwd}{Position where the forward primer starts.}
 #'   \item{endFwd}{Position where the reverse primer ends.}
@@ -111,12 +109,6 @@
 #'   \item{degeneracyPr}{Number of variants of the probe.}
 #'   \item{sensePr}{Sense of the probe (pos or neg). If both probes are valid,
 #'   the probe with the least G:s is selected.}
-#' }
-#'
-#' And, if the option \code{showAllVariants == TRUE} was used
-#' in \code{getOligos()}, the following data are also added:
-#'
-#' \describe{
 #'   \item{allPr}{Lists with all sequence variants of the probe.}
 #'   \item{gcAllPr}{Lists with the GC content of all
 #'   sequence variants of the probe.}
@@ -220,11 +212,10 @@ getAssays <- function(x,
     tmDifferencePrimer <- abs(assays$tmMajorityFwd - assays$tmMajorityRev)
     start <- assays$startFwd
     end <- assays$endRev
-    meanIdentity <- mean(c(assays$identityFwd, assays$identityRev))
     totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
     assays <- tibble::add_column(
         assays, start, end, ampliconLength,
-        tmDifferencePrimer, meanIdentity, totalDegeneracy,
+        tmDifferencePrimer, totalDegeneracy,
         .before = "startFwd"
     )
     drop <- c("majorityRcFwd", "iupacRcFwd", "majorityRev", "iupacRev")
@@ -315,9 +306,6 @@ getAssays <- function(x,
     probeCandidates <- probeCandidates[!names(probeCandidates) %in% drop]
     names(probeCandidates) <- paste0(names(probeCandidates), "Pr")
     assays <- dplyr::bind_cols(assays, probeCandidates)
-    assays$meanIdentity <- mean(
-        c(assays$identityFwd, assays$identityRev, assays$identityPr)
-    )
     assays$totalDegeneracy <- assays$totalDegeneracy + probeCandidates$degeneracyPr
     tmDifferencePrimerProbe <- purrr::map_dbl(
         seq_len(nrow(assays)), function(x) {

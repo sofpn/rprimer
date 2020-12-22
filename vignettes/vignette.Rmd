@@ -18,13 +18,21 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Primer and probe design is the most central part of PCR assay development. Successful amplification and detection depend on several factors, such as optimal primer and probe length, GC-content, melting temperature, sequence complexity and target sequence conservation. For a set of target sequences of interest, it is often difficult to identify regions that meet all, or even most of these requirements.
+Primer and probe design is the most central part of PCR assay development. Successful amplification and detection depend on several factors, such as optimal primer and probe length, GC-content, melting temperature, sequence complexity and target sequence conservation.
 
-rprimer provides tools for designing (RT)-(q/d)PCR assays from a multiple DNA sequence alignment. It is especially developed for finding broadly reactive assays for sequence variable RNA viruses. Primers and probes are designed from user specified constraints on length, GC-content, melting temperature, maximum allowed degeneracy and target gap frequency. Target regions with low sequence complexity are avoided. For primers, it is also possible to specify a threshold for minimum 3'-end conservation and enforce a GC-clamp, to increase the probability of amplification. Assays can be generated with or without probe, and are designed upon user specified amplicon length and maximum allowed difference in melting temperature between primers, and between the primer pair and probe.  
+For a set of target sequences of interest, it is often difficult to identify regions that meet all, or even most of these requirements.It is especially developed for finding broadly reactive assays for sequence variable RNA viruses. 
 
-In this document, I demonstrate how to use rprimer by designing an RT-q/dPCR assay for detection of hepatitis E virus, which is a genetically diverse RNA virus. 
+Primer design for RNA viruses can be difficult due to
+-main criteria may be to find the most conserved region 
+-high sequence variation, few conserved regions  
+-with increased ability for ngs -> number of sequences growing -> need for overvrew 
 
-## The big picture 
+
+rprimer provides tools for designing (RT)-(q/d)PCR assays from a multiple DNA sequence alignment. Primers and probes are designed from user specified constraints on length, GC-content, melting temperature, maximum allowed degeneracy and target gap frequency. Target regions with low sequence complexity are avoided. For primers, it is also possible to specify a threshold for minimum 3'-end conservation and enforce a GC-clamp, to increase the probability of amplification. Assays can be generated with or without probe, and are designed upon user specified amplicon length and maximum allowed difference in melting temperature between primers, and between the primer pair and probe.  
+
+In this document, I demonstrate how to use rprimer by searching for RT-q/dPCR assay candidates for detection of hepatitis E virus.
+
+## Overview 
 
 MAKE FLOWCHART
 
@@ -32,7 +40,7 @@ MAKE FLOWCHART
 
 The design process is built on three functions: 
 
-* `getConsensusProfile()`: takes a `Biostrings::MultipleDNAAlignment` object (Pagès et al., 2020) as input and returns an `RprimerProfile` object, which is used as input for;
+* `getConsensusProfile()`: takes a `Biostrings::MultipleDNAAlignment` object (Pagès et al., 2020) as input and returns .... (organised as an `RprimerProfile` object), which is used as input for;
 * `getOligos()`: returns an `RprimerOligo` object, which is used as input for; 
 * `getAssays()`: returns an `RprimerAssay` object
 
@@ -153,7 +161,6 @@ plotData(myRoi)
 * `tmRangeProbe` Melting temperature range of probes, defaults to `c(55, 70)`
 * `concProbe` Probe concentration in nM (for Tm calculation), defaults to `250`
 * `concNa` Sodium ion concentration in the PCR reaction (for Tm calculation), defaults to `0.05` M (50 mM)
-* `showAllVariants` If sequence, GC-content and Tm should be presented for all variants of each oligo (in case of degenerate bases).`TRUE` (slower) or `FALSE` (faster), defaults to `TRUE`
 
 In addition, `getOligos()` avoids:
 
@@ -184,8 +191,7 @@ myOligos <- getOligos(myConsensusProfile,
                       gcRangeProbe = c(0.45, 0.65),
                       tmRangeProbe = c(55, 70),
                       concProbe = 250,
-                      concNa = 0.05,
-                      showAllVariants = TRUE)
+                      concNa = 0.05)
 ```
 
 Of course, it is possible to design primers and probes with default settings, or by changing just a few settings. For instance:  
@@ -210,7 +216,7 @@ Some comments on the data:
 * Degeneracy tells how many variants there are of that particular oligo. An oligo without wobble bases will have a value of 1
 * Melting temperature is calculated using the nearest-neighbor method, with table values from SantaLucia, 1998, initiation parameters as described by Allawi & SantaLucia 1997 and salt correction formula from SantaLucia et al., 1996
 * Identity shows the average identity score of the oligo. A high identity score indicates a conserved target region. The maximum value is 1
-* If `showAllVariants` was set to `TRUE`, the columns `all` and `allRc` contain all sequence variants of the forward and reverse variant of the primer, respectively. The first oligo candidate is shown here as an example:
+* The columns `all` and `allRc` contain all sequence variants of the forward and reverse variant of the primer, respectively. The first oligo candidate is shown here as an example:
 
 ```{r}
 myOligos$iupac[1] # The IUPAC variant of the first oligo 

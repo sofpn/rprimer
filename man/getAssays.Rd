@@ -45,8 +45,6 @@ The object contains the following information:
   \item{ampliconLength}{Length of the amplicon.}
   \item{tmDifferencePrimer}{Difference in Tm between
   the forward and reverse primer, absolute value.}
-  \item{meanIdentity}{Average identity score of the primers
-  (and probe if selected)}.
   \item{totalDegeneracy}{Total number of oligos in the assay.}
   \item{startFwd}{Position where the forward primer starts.}
   \item{endFwd}{Position where the reverse primer ends.}
@@ -113,12 +111,6 @@ If a probe is used, the following columns are also included:
   \item{degeneracyPr}{Number of variants of the probe.}
   \item{sensePr}{Sense of the probe (pos or neg). If both probes are valid,
   the probe with the least G:s is selected.}
-}
-
-And, if the option \code{showAllVariants == TRUE} was used
-in \code{getOligos()}, the following data are also added:
-
-\describe{
   \item{allPr}{Lists with all sequence variants of the probe.}
   \item{gcAllPr}{Lists with the GC content of all
   sequence variants of the probe.}

@@ -78,12 +78,6 @@
 #' @param tmRangeProbe
 #' Tm range for probes.
 #' A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
-#' Tm is calculated using the nearest-neighbor method,
-#' with the following assumptions:
-#' 1) Oligos are not expected to be self-complementary (i.e. no symmetry
-#' correction is done);
-#' 2) The oligo concentration is assumed to be much higher
-#' than the target concentration. See references for table values and equations.
 #'
 #' @param concProbe
 #' Primer concentration in nM, for Tm calculation. A numeric vector
@@ -92,13 +86,6 @@
 #' @param concNa
 #' The sodium ion concentration in the PCR reaction in M, for Tm calculation.
 #' A numeric vector [0.01, 1]. Defaults to 0.05 M (50 mM).
-#'
-#' @param showAllVariants
-#' If sequence, GC-content and Tm should be presented for all
-#' variants of each oligo, not just for majority variants
-#' (in case of degenerate bases).
-#' \code{TRUE} (slower) or \code{FALSE} (faster).
-#' Defaults to \code{TRUE}.
 #'
 #' @section Excluded oligos:
 #' \code{getOligos()} excludes:
@@ -111,6 +98,20 @@
 #' \item Majority oligos that are duplicated
 #' (to prevent binding at several places on the genome)
 #' }
+#'
+#' @section Tm-calculation:
+#'
+#' Melting temperatures are calculated using SantaLucia's nearest-neighbor
+#' method, with the following assumptions:
+#'
+#' \itemize{
+#'   \item Oligos are not expected to be self-complementary (i.e. no symmetry
+#'   correction is done).
+#'   \item The oligo concentration is assumed to be much higher
+#'   than the target concentration.
+#' }
+#'
+#' See references for table values and equations.  INSERT FORMULA
 #'
 #' @return
 #' An \code{RprimerOligo} object.
@@ -131,19 +132,14 @@
 #'   \item{iupac}{IUPAC sequence (i.e. with degenerate bases).}
 #'   \item{iupacRc}{IUPAC sequence, reverse complement.}
 #'   \item{degeneracy}{Number of variants of the degenerate oligo.}
-#'   \item{alignmentStart}{Start position of the input consensus profile.}
-#'   \item{alingnmentEnd}{End position of the input consensus profile.}
-#' }
-#'
-#' If \code{showAllVariants == TRUE}, the following columns are also included:
-#'
-#' \describe{
 #'   \item{all}{Lists with all sequence variants of the oligos.}
 #'   \item{allRc}{Lists with all sequence variants of the oligos, reverse
 #'   complements.}
 #'   \item{gcAll}{Lists with the GC content of all
 #'   sequence variants of the oligos.}
 #'   \item{tmAll}{Lists with the Tm of all sequence variants of the oligos.}
+#'   \item{alignmentStart}{Start position of the input consensus profile.}
+#'   \item{alingnmentEnd}{End position of the input consensus profile.}
 #' }
 #'
 #' @examples
@@ -152,22 +148,9 @@
 #' getOligos(exampleRprimerProfile)
 #'
 #' @references
-#' Tm-calculation:
-#'
-#' Formula and salt correction method:
-#' SantaLucia, J, et al. (1996)
-#' Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability.
-#' Biochemistry, 35: 3555-3562
-#'
-#' Duplex initiation parameters:
-#' Allawi, H. & SantaLucia, J. (1997)
-#' Thermodynamics and NMR of Internal G-T Mismatches in DNA.
-#' Biochemistry, 36, 34: 10581-10594
-#'
-#' Table values for nearest-neighbors:
-#' SantaLucia, J (1998) A unified view of polymer,
-#' dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics.
-#' Proc. Natl. Acad. Sci. USA, 95: 1460-1465
+#' SantaLucia Jr, J., & Hicks, D. (2004).
+#' The thermodynamics of DNA structural motifs.
+#' Annu. Rev. Biophys. Biomol. Struct., 33, 415-440.
 #'
 #' @export
 getOligos <- function(x,
@@ -188,16 +171,9 @@ getOligos <- function(x,
                       gcRangeProbe = c(0.45, 0.55),
                       tmRangeProbe = c(55, 70),
                       concProbe = 250,
-                      concNa = 0.05,
-                      showAllVariants = TRUE) {
+                      concNa = 0.05) {
     if (!methods::is(x, "RprimerProfile")) {
         stop("'x' must be an RprimerProfile object.")
-    }
-    if (!is.logical(showAllVariants)) {
-        stop(
-            "'showAllVariants' must be set to TRUE or FALSE.",
-            call. = FALSE
-        )
     }
     if (nrow(x) < max(c(lengthPrimer, lengthProbe))) {
         stop(paste(
@@ -218,8 +194,7 @@ getOligos <- function(x,
         gcRangePrimer = gcRangePrimer,
         tmRangePrimer = tmRangePrimer,
         concPrimer = concPrimer,
-        concNa = concNa,
-        showAllVariants = showAllVariants
+        concNa = concNa
     )
     if (nrow(allOligos) == 0L) {
         stop("No primers were found.", call. = FALSE)
@@ -233,8 +208,7 @@ getOligos <- function(x,
             gcRangeProbe = gcRangeProbe,
             tmRangeProbe = tmRangeProbe,
             concProbe = concProbe,
-            concNa = concNa,
-            showAllVariants = showAllVariants
+            concNa = concNa
         )
         if (nrow(allProbes) == 0L) {
             stop("No probes were found.", call. = FALSE)
@@ -583,130 +557,6 @@ getOligos <- function(x,
     x
 }
 
-#' Split a DNA sequence into nearest neighbors
-#'
-#' \code{.nnSplit()} splits an oligo sequence into nearest neighbors
-#' (for calculation of deltaG, deltaH and Tm)
-#'
-#' @param x a DNA sequence with at least two bases, e.g. 'CTTA'
-#' (a character vector of length one).
-#'
-#' @return The nearest neighbors of x (a character vector).
-#'
-#' @keywords internal
-#'
-#' @noRd
-.nnSplit <- function(x) {
-    x <- .splitSequence(x)
-    from <- (seq_along(x) - 1)[-1]
-    to <- seq_along(x)[-1]
-    nn <- purrr::map2_chr(from, to, function(i, j) {
-        paste(x[i:j], collapse = "")
-    })
-    nn
-}
-
-#' Calculate dH or dS of nearest neighbors using lookup tables
-#'
-#' \code{.getNnTableValues()} finds the corresponding dH or dS values
-#' for nearest-neighbor pairs.
-#'
-#' @param x A matrix (of type character) with nearest-neighbor pairs
-#' of DNA sequences (e.g. \code{c('CT', 'TT', 'TA')})
-#'
-#' @param table The lookup table that should be used.
-#' Either 'dH' (entropy) or 'dS' (enthalpy).
-#'
-#' @return The corresponding values for dH or dS (in cal/M).
-#'
-#' @keywords internal
-#'
-#' @noRd
-.getNnTableValues <- function(x, table = "dH") {
-    if (table == "dH") {
-        selected <- rprimerGlobals$nnLookup$dH
-    } else {
-        selected <- rprimerGlobals$nnLookup$dS
-    }
-    matching <- selected[match(x, rprimerGlobals$nnLookup$bases)]
-    if (is.null(ncol(x))) {
-        matching
-    } else {
-        matrix(matching, ncol = ncol(x), byrow = FALSE)
-    }
-}
-
-.init3End <- function(x) {
-    if (grepl("(T|A)$", x)) {
-        c(H = 2.3 * 1000, S = 4.1)
-    } else {
-        c(H = 0.1 * 1000, S = -2.8)
-    }
-}
-
-.init5End <- function(x) {
-    if (grepl("^(T|A)", x)) {
-        c(H = 2.3 * 1000, S = 4.1)
-    } else {
-        c(H = 0.1 * 1000, S = -2.8)
-    }
-}
-
-#' Melting temperature
-#'
-#' \code{.tm} calculates the melting temperature of one or
-#' more perfectly matching DNA duplexes (i.e. oligo-target duplexes),
-#' using the nearest neighbor method.
-#'
-#' @param oligos One or more DNA sequences (a character vector).
-#'
-#' @inheritParams getOligos
-#'
-#' @return The melting temperature(s) of x.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.tm <- function(oligos, concOligo = 500, concNa = 0.05) {
-    if (concOligo < 20 || concOligo > 2000) {
-        stop("'concOligo' must be from 20 nM to 2000 nM.", call. = FALSE)
-    }
-    if (concNa < 0.01 || concNa > 1) {
-        stop("'concNa' must be from 0.01 to 1 M.", call. = FALSE)
-    }
-    concOligo <- concOligo * 10^(-9)
-    oligos <- toupper(oligos)
-    # Find initiation values
-    initH <- purrr::map_dbl(oligos, function(x) {
-        .init5End(x)[["H"]] + .init3End(x)[["H"]]
-    })
-    initS <- purrr::map_dbl(oligos, function(x) {
-        .init5End(x)[["S"]] + .init3End(x)[["S"]]
-    })
-    # Split to nearest neighbors
-    nn <- purrr::map(oligos, .nnSplit)
-    # Check oligo length
-    oligoLength <- purrr::map_int(nn, length)
-    # I made a matrix based tm-calculation,
-    # which means that all oligos must be of the same length
-    if (length(unique(oligoLength)) != 1) {
-        stop("All oligos must be of equal length.", call. = FALSE)
-    }
-    # Find nearest neighbor values for dH and dS
-    nn <- do.call("rbind", nn)
-    dhResult <- .getNnTableValues(nn, "dH")
-    dsResult <- .getNnTableValues(nn, "dS")
-    # Sum dH and dS
-    sumdH <- rowSums(dhResult) + initH
-    sumdS <- rowSums(dsResult) + initS
-    # Correct delta S for salt conc.
-    N <- nchar(oligos[[1]]) - 1 # Number of phosphates
-    sumdS <- sumdS + 0.368 * N * log(concNa)
-    tm <- sumdH / (sumdS + rprimerGlobals$gasConstant * log(concOligo))
-    tm <- tm - 273.15
-    tm
-}
-
 #' Add Tm to oligos
 #'
 #' @param x A data frame with oligos.
@@ -804,8 +654,7 @@ getOligos <- function(x,
                         gcRangePrimer = c(0.45, 0.55),
                         tmRangePrimer = c(55, 65),
                         concPrimer = 500,
-                        concNa = 0.05,
-                        showAllVariants = TRUE) {
+                        concNa = 0.05) {
     allPrimers <- purrr::map_dfr(lengthPrimer, function(i) {
         primers <- .generateOligos(
             x,
@@ -832,12 +681,10 @@ getOligos <- function(x,
         )
         primers
     })
-    if (showAllVariants) {
-        allPrimers <- .expandOligos(
-            allPrimers,
-            concOligo = concPrimer, concNa = concNa
-        )
-    }
+    allPrimers <- .expandOligos(
+        allPrimers,
+        concOligo = concPrimer, concNa = concNa
+    )
     allPrimers
 }
 
@@ -849,8 +696,7 @@ getOligos <- function(x,
                        gcRangeProbe = c(0.45, 0.55),
                        tmRangeProbe = c(55, 70),
                        concProbe = 250,
-                       concNa = 0.05,
-                       showAllVariants = TRUE) {
+                       concNa = 0.05) {
     allProbes <- purrr::map_dfr(lengthProbe, function(i) {
         probes <- .generateOligos(
             x,
@@ -877,11 +723,9 @@ getOligos <- function(x,
         )
         probes
     })
-    if (showAllVariants) {
-        allProbes <- .expandOligos(
-            allProbes,
-            concOligo = concProbe, concNa = concNa
-        )
-    }
+    allProbes <- .expandOligos(
+        allProbes,
+        concOligo = concProbe, concNa = concNa
+    )
     allProbes
 }

@@ -56,6 +56,31 @@ The object contains the following information:
   sequence variants of the forward primer.}
   \item{tmAllRev}{Lists with the Tm of all sequence variants of
   the reverse primer.}
+  \item{tmDifferencePrimerProbe}{Difference in Tm between the average
+  Tm of the primer pair and the probe, majority sequences.}
+  \item{startPr}{Position where the probe starts.}
+  \item{endPr}{Position where the probe ends.}
+  \item{lengthPr}{Length of the probe.}
+  \item{majorityPr}{Majority sequence of the probe.}
+  \item{gcMajorityPr}{GC-content of the probe
+  (majority sequence), proportion.}
+  \item{tmMajorityPr}{Tm of the probe
+  (majority sequence).}
+  \item{identityPr}{Average identity of the probe.}
+  \item{iupacPr}{IUPAC sequence (i.e. with degenerate bases)
+  of the probe.}
+  \item{degeneracyPr}{Number of variants of the probe.}
+  \item{sensePr}{Sense of the probe (pos or neg). If both probes are valid,
+  the probe with the least G:s is selected.}
+  \item{allPr}{Lists with all sequence variants of the probe.}
+  \item{gcAllPr}{Lists with the GC content of all
+  sequence variants of the probe.}
+  \item{tmAllPr}{Lists with the Tm of all sequence variants of
+  the probe.}
+  \item{alignmentStart}{Start position of the input consensus profile
+  used for oligo design.}
+  \item{alingnmentEnd}{End position of the input consensus profile used
+  for oligo design.}
 }
 }
 \keyword{datasets}
