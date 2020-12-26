@@ -1,3 +1,21 @@
+# Work in progress! ============================================================
+
+#x <- purrr::map(y, .expandDegenerates)
+.mergeDegenerates <- function(x) {
+    degeneracy <- purrr::map_int(x, length)
+    id <- purrr::map(seq_along(degeneracy), ~rep(.x, degeneracy[.x]))
+    id <- unlist(id)
+    x <- unlist(x)
+    names(x) <- id
+    x
+}
+#z <- .mergeDegenerates(x)
+#tm <- .tm(z)
+#tm <- split(unname(tm), f = as.integer(names(tm)))
+#meanTm <- purrr::map_dbl(tm, mean)
+
+#===============================================================================
+
 #' Get oligos
 #'
 #' \code{getOligos()} identifies oligos (primers and probes)
@@ -41,12 +59,6 @@
 #' @param tmRangePrimer
 #' Tm range for primers.
 #' A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
-#' Tm is calculated using the nearest-neighbor method,
-#' with the following assumptions:
-#' 1) Oligos are not expected to be self-complementary (i.e. no symmetry
-#' correction is done);
-#' 2) The oligo concentration is assumed to be much higher
-#' than the target concentration. See references for table values and equations.
 #'
 #' @param concPrimer
 #' Primer concentration in nM, for Tm calculation. A number
@@ -215,8 +227,8 @@ getOligos <- function(x,
         }
         allOligos <- dplyr::bind_rows(allOligos, allProbes)
     }
-    drop <- c("identity3End", "identity3EndRc")
-    allOligos <- allOligos[!names(allOligos) %in% drop]
+    drop <- c("identity3End", "identity3EndRc")########################
+    allOligos <- allOligos[!names(allOligos) %in% drop] ###################
     allOligos <- allOligos[order(allOligos$start), ]
     RprimerOligo(allOligos)
 }
@@ -253,7 +265,7 @@ getOligos <- function(x,
     start <- seq_len(length(x) - n + 1)
     end <- start + n - 1
     nmer <- purrr::map_chr(start, function(i) {
-        paste(x[start[[i]]:end[[i]]], collapse = "")
+        paste(x[start[i]:end[i]], collapse = "")
     })
     nmer
 }
@@ -298,7 +310,7 @@ getOligos <- function(x,
 .countEndIdentity <- function(x, n) {
     start <- seq_len(length(x) - n + 1)
     end <- start + n - 1
-    frame <- purrr::map(start, ~ x[start[[.x]]:end[[.x]]])
+    frame <- purrr::map(start, ~ x[start[.x]:end[.x]])
     endScore <- purrr::map(frame, function(x) {
         lastFive <- min(x[(length(x) - 4):length(x)])
         firstFive <- min(x[seq_len(5)])
@@ -325,7 +337,7 @@ getOligos <- function(x,
 .countDegeneracy <- function(x) {
     x <- toupper(x)
     x <- .splitSequence(x)
-    nNucleotides <- rprimerGlobals$degeneracyLookup[x]
+    nNucleotides <- lookup$degeneracy[x]
     degeneracy <- prod(nNucleotides)
     degeneracy
 }
@@ -418,11 +430,10 @@ getOligos <- function(x,
 .reverseComplement <- function(x) {
     x <- toupper(x)
     x <- strsplit(x, split = "")
-    complement <- rprimerGlobals$complementLookup[unlist(x)]
+    complement <- lookup$complement[unlist(x)]
     complement <- unname(complement)
     rc <- rev(complement)
-    rc <- paste(rc, collapse = "")
-    rc
+    paste(rc, collapse = "")
 }
 
 #' Add reverse complement to generated oligos
@@ -595,19 +606,17 @@ getOligos <- function(x,
 .expandDegenerates <- function(x) {
     x <- .splitSequence(x)
     expanded <- purrr::map(x, function(i) {
-        allBases <- unname(rprimerGlobals$degenerateLookup[[i]])
-        allBases <- unlist(strsplit(allBases, split = ","))
-        allBases
+        all <- unname(lookup$degenerates[[i]])
+        unlist(strsplit(all, split = ","))
     })
     expanded <- expand.grid(
         expanded[seq_along(expanded)],
         stringsAsFactors = FALSE
     )
-    expanded <- purrr::map(
-        seq_len(nrow(expanded)), ~ paste(expanded[.x, ], collapse = "")
-    )
-    expanded <- unlist(expanded, use.names = FALSE)
-    expanded
+    expanded <- purrr::map(seq_len(nrow(expanded)), function(x) {
+        paste(expanded[x, ], collapse = "")
+    })
+    unlist(expanded, use.names = FALSE)
 }
 
 #' Add info on sequence, GC-content and Tm of all oligo variants

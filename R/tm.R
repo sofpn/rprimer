@@ -1,7 +1,7 @@
 #' Split a DNA sequence into nearest neighbors
 #'
 #' \code{.nnSplit()} splits a DNA sequence into nearest neighbors
-#' (for calculation of deltaG, deltaH and Tm)
+#' (for calculation of deltaS, deltaH, deltaG and Tm)
 #'
 #' @param x a DNA sequence with at least two bases, e.g. 'CTTA'
 #' (a character vector of length one).
@@ -15,10 +15,9 @@
     x <- .splitSequence(x)
     from <- (seq_along(x) - 1)[-1]
     to <- seq_along(x)[-1]
-    nn <- purrr::map2_chr(from, to, function(i, j) {
+    purrr::map2_chr(from, to, function(i, j) {
         paste(x[i:j], collapse = "")
     })
-    nn
 }
 
 #' Calculate stack values for dH or dS of nearest neighbors
@@ -38,8 +37,8 @@
 #'
 #' @noRd
 .getStackValue <- function(x, table = "dH") {
-    tableValues <- rprimerGlobals$nnLookup[[table]]
-    stack <- tableValues[match(x, rprimerGlobals$nnLookup$bases)]
+    tableValues <- lookup$nn[[table]]
+    stack <- tableValues[match(x, lookup$nn$bases)]
     if (!is.null(ncol(x))) {
         stack <- matrix(stack, ncol = ncol(x), byrow = FALSE)
     }
@@ -63,18 +62,13 @@
 #'
 #' @noRd
 .getInitiationValue <- function(x, table = "dH") {
-    initValue <- rprimerGlobals$nnLookup[
-        rprimerGlobals$nnLookup$bases == "Initiation",
-    ][[table]]
-    penaltyValue <- rprimerGlobals$nnLookup[
-        rprimerGlobals$nnLookup$bases == "Terminal_AT_penalty",
-    ][[table]]
-    first <- x[, 1]
-    last <- x[, ncol(x)]
-    penaltyFirst <- ifelse(first == "AT" | first == "TA", penaltyValue, 0)
-    penaltyLast <- ifelse(last == "AT" | last == "TA", penaltyValue, 0)
-    value <- penaltyFirst + penaltyLast + initValue
-    value
+    initiation <- lookup$nn[lookup$nn$bases == "Initiation", ][[table]]
+    penalty <- lookup$nn[lookup$nn$bases == "AT_penalty", ][[table]]
+    penaltyFirst <- ifelse(x[, 1] == "AT" | x[, 1] == "TA", penalty, 0)
+    penaltyLast <- ifelse(
+        x[, ncol(x)] == "AT" | x[, ncol(x)] == "TA", penalty, 0
+    )
+    initiation + penaltyFirst + penaltyLast
 }
 
 #' Melting temperature
@@ -113,8 +107,6 @@
     dsInit <- .getInitiationValue(nn, "dS")
     sumdH <- dhStack + dhInit
     sumdS <- dsStack + dsInit
-    N <- nchar(x[[1]]) - 1 # Number of phosphates
-    tm <- sumdH / (sumdS + 0.368 * N * log(concNa) + 1.987 * log(concOligo))
-    tm <- tm - 273.15
-    tm
+    N <- nchar(x[1]) - 1 # Number of phosphates
+    sumdH / (sumdS + 0.368 * N * log(concNa) + 1.987 * log(concOligo)) - 273.15
 }

@@ -56,13 +56,7 @@ at the 3' end of the primer (i.e. the last five bases).}
 A numeric vector [0, 1]. Defaults to \code{c(0.45, 0.55)}.}
 
 \item{tmRangePrimer}{Tm range for primers.
-A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
-Tm is calculated using the nearest-neighbor method,
-with the following assumptions:
-1) Oligos are not expected to be self-complementary (i.e. no symmetry
-correction is done);
-2) The oligo concentration is assumed to be much higher
-than the target concentration. See references for table values and equations.}
+A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.}
 
 \item{concPrimer}{Primer concentration in nM, for Tm calculation. A number
 [20, 2000] Defaults to 500 nM.}

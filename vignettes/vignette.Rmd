@@ -224,7 +224,6 @@ myOligos$all[[1]] # All variants of that oligo
 ```
 
 * The columns `gcAll` and `tmAll` give the GC-content and melting temperature of each variant:  
-
 ```{r}
 myOligos$gcAll[[1]] # GC content of all variants of the first oligo 
 myOligos$tmAll[[1]] # Tm of all variants of the first oligo 

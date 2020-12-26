@@ -61,6 +61,7 @@ of DNA sequences.
 \examples{
 data("exampleRprimerAlignment")
 getConsensusProfile(exampleRprimerAlignment)
+
 }
 \references{
 This function is a wrapper around \code{Biostrings::consensusMatrix()}:

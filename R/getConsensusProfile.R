@@ -55,6 +55,7 @@
 #' @examples
 #' data("exampleRprimerAlignment")
 #' getConsensusProfile(exampleRprimerAlignment)
+#'
 #' @references
 #' This function is a wrapper around \code{Biostrings::consensusMatrix()}:
 #'
@@ -99,14 +100,13 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' @noRd
 .getConsensusMatrix <- function(x) {
     x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
-    x <- x[, colSums(!is.na(x)) > 0]
+    x <- x[, colSums(!is.na(x)) > 0] # Removes the masked columns
     colnames(x) <- seq_len(ncol(x))
     x <- x[(rownames(x) != "+" & rownames(x) != "."), ]
     bases <- c("A", "C", "G", "T", "-")
     other <- colSums(x[!rownames(x) %in% bases, ])
     x <- x[rownames(x) %in% bases, ]
-    x <- rbind(x, other)
-    x
+    rbind(x, other)
 }
 
 #' Majority consensus sequence
@@ -121,14 +121,11 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 .majorityConsensus <- function(x) {
     .findMostCommonBase <- function(x, y) {
         mostCommon <- rownames(x)[y == max(y)]
-        if (length(mostCommon > 1)) {
-            mostCommon <- sample(mostCommon, 1)
-        }
+        if (length(mostCommon > 1)) mostCommon <- sample(mostCommon, 1)
         mostCommon
     }
     consensus <- apply(x, 2, function(y) .findMostCommonBase(x, y))
-    consensus <- unname(consensus)
-    consensus
+    unname(consensus)
 }
 
 #' Convert DNA nucleotides into the corresponding IUPAC base
@@ -159,8 +156,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     bases <- c("A", "C", "G", "T", "-")
     x <- x[x %in% bases]
     x <- paste(x, collapse = ",")
-    iupacBase <- unname(rprimerGlobals$iupacLookup[x])
-    iupacBase
+    unname(lookup$iupac[x])
 }
 
 #' IUPAC consensus sequence

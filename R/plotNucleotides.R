@@ -29,7 +29,7 @@ plotNucleotides <- function(x, rc = FALSE) {
     colnames(x) <- position
     rownames(x)[-5] <- toupper(rownames(x))[-5]
     if (rc) {
-        rownames(x) <- unname(rprimerGlobals$complementLookup[rownames(x)])
+        rownames(x) <- unname(lookup$complement[rownames(x)])
         x <- x[order(rownames(x)), ]
         if ("other" %in% rownames(x)) {
             swap <- c(which(rownames(x) == "other"), nrow(x))

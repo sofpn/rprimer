@@ -1,6 +1,5 @@
 # Profile - needs to be at least 10 bases or somethng
 # positions must be consecutive
-
 # oligo - type can only be primer or probe
 
 # RprimerProfile ==============================================================

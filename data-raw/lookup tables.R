@@ -1,7 +1,7 @@
 allBases <- "ACGTRYSWKMBDHVN-"
 dnaBases <- "ACGT-"
 
-complementLookup <- c(
+complement <- c(
     "A" = "T",
     "T" = "A",
     "G" = "C",
@@ -21,7 +21,7 @@ complementLookup <- c(
     "other" = "other"
 )
 
-iupacLookup <- c(
+iupac <- c(
     "-,A" = "A",
     "A" = "A",
     "-,C" = "C",
@@ -56,7 +56,7 @@ iupacLookup <- c(
     "other" = "other"
 )
 
-degenerateLookup <- c(
+degenerates <- c(
     "A" = "A",
     "C" = "C",
     "G" = "G",
@@ -77,7 +77,7 @@ degenerateLookup <- c(
     "-" = "-"
 )
 
-degeneracyLookup <- c(
+degeneracy <- c(
     "A" = 1,
     "C" = 1,
     "C" = 1,
@@ -115,8 +115,8 @@ bases <- c(
     "GG",
     "CC",
     "Initiation",
-    "Terminal_AT_penalty",
-    "Symmetry_correction"
+    "AT_penalty",
+    "Symmetry_corr"
 )
 dH <- c(
     7.6,
@@ -139,6 +139,7 @@ dH <- c(
     -2.2,
     0
 ) * -1 * 1000
+
 dS <- c(
     21.3,
     21.3,
@@ -161,23 +162,16 @@ dS <- c(
     1.4
 ) * -1
 
-nnLookup <- data.frame(bases, dH, dS)
+nn <- data.frame(bases, dH, dS)
 
-gasConstant <- 1.987
-
-rprimerGlobals <- list(
+lookup <- list(
     "allBases" = allBases,
     "dnaBases" = dnaBases,
-    "complementLookup" = complementLookup,
-    "iupacLookup" = iupacLookup,
-    "degenerateLookup" = degenerateLookup,
-    "degeneracyLookup" = degeneracyLookup,
-    "nnLookup" = nnLookup,
-    "gasConstant" = gasConstant
+    "complement" = complement,
+    "iupac" = iupac,
+    "degenerates" = degenerates,
+    "degeneracy" = degeneracy,
+    "nn" = nn
 )
 
-usethis::use_data(
-    rprimerGlobals,
-    internal = TRUE,
-    overwrite = TRUE
-)
+usethis::use_data(lookup, internal = TRUE, overwrite = TRUE)

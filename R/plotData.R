@@ -40,7 +40,7 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 setMethod("plotData", "RprimerProfile", function(x,
                                                  shadeFrom = NULL,
                                                  shadeTo = NULL) {
-    if (is.null(shadeFrom) && is.null(shadeTo)) {
+    if (is.null(shadeFrom) && is.null(shadeTo)) { ### switch statement here
         shadeFrom <- -Inf
         shadeTo <- -Inf
     }
@@ -498,7 +498,8 @@ setMethod("plotData", "RprimerAssay", function(x) {
 
 .gcPlot <- function(x, shadeFrom = NULL, shadeTo = NULL) {
     position <- average <- NULL
-    averages <- .gcRunningAverage(x$majority)
+    gc <- ifelse(x$majority == "C" | x$majority == "G", 1, 0)
+    averages <- .runningAverage(gc)
     xadj <- unique(x$position - seq_along(x$position))
     averages$position <- averages$position + xadj
     ggplot2::ggplot(data = x, ggplot2::aes(x = position)) +

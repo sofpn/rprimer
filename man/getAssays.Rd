@@ -70,12 +70,6 @@ The object contains the following information:
   \item{iupacRev}{IUPAC sequence (i.e. with degenerate bases)
   of the reverse primer.}
   \item{degeneracyRev}{Number of variants of the reverse primer.}
-}
-
-If the option \code{showAllVariants == TRUE} was used for primer design
-in \code{get_oligos()}, the following columns are also added:
-
-\describe{
   \item{allFwd}{Lists with all sequence variants of the forward primer.}
   \item{gcAllFwd}{Lists with the GC content of all
   sequence variants of the forward primer.}
