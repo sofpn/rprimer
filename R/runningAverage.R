@@ -19,9 +19,7 @@
 .runningAverage <- function(x, size = NULL) {
     if (is.null(size)) {
         size <- round(length(x) / 100)
-        if (size == 0) {
-            size <- 1
-        }
+        if (size == 0) size <- 1
     }
     if (!is.numeric(size)) {
         stop("'size' must in numeric format.", call. = FALSE)

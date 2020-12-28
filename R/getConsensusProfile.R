@@ -193,7 +193,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
         paste(rownames(x)[y > iupacThreshold], collapse = ",")
     })
     basesToInclude <- unname(basesToInclude)
-    consensus <- purrr::map_chr(basesToInclude, ~ .asIUPAC(.x))
+    consensus <- vapply(basesToInclude, .asIUPAC, character(1))
     if (any(is.na(consensus))) {
         warning("The consensus sequence contain NAs. \n
     Try to lower the 'iupacThreshold' value.", call. = FALSE)

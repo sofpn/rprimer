@@ -3,16 +3,14 @@
 #' \code{.nnSplit()} splits a DNA sequence into nearest neighbors
 #' (for calculation of deltaS, deltaH, deltaG and Tm)
 #'
-#' @param x a DNA sequence with at least two bases, e.g. 'CTTA'
-#' (a character vector of length one).
+#' @param x a matrix with DNA sequences.
 #'
-#' @return The nearest neighbors of x (a character vector).
+#' @return The nearest neighbors of x (a matrix).
 #'
 #' @keywords internal
 #'
 #' @noRd
 .nnSplit <- function(x) {
-    x <- .splitSequence(x)
     from <- (seq_along(x) - 1)[-1]
     to <- seq_along(x)[-1]
     purrr::map2_chr(from, to, function(i, j) {
@@ -47,8 +45,8 @@
 
 #' Calculate initiation values for dH or dS of nearest neighbors
 #'
-#' \code{.getInitiationValue()} finds the corresponding dH or dS values
-#' for nearest-neighbor pairs.
+#' \code{.getInitiationValue()} finds the corresponding dH or dS initiation
+#' values.
 #'
 #' @param x A matrix or vector (of type character) with nearest-neighbor pairs
 #' of DNA sequences (e.g. \code{c('CT', 'TT', 'TA')})
@@ -95,18 +93,14 @@
     }
     concOligo <- concOligo * 10^(-9)
     x <- toupper(x)
-    nn <- purrr::map(x, .nnSplit)
-    oligoLength <- purrr::map_int(nn, length)
-    if (length(unique(oligoLength)) != 1) {
-        stop("All oligos must be of equal length.", call. = FALSE)
-    }
-    nn <- do.call("rbind", nn)
+    if (!is.matrix(x)) x <- t(matrix(x)) #### Needed?
+    nn <- t(apply(x, 1, .nnSplit))
     dhStack <- rowSums(.getStackValue(nn, "dH"))
     dsStack <- rowSums(.getStackValue(nn, "dS"))
     dhInit <- .getInitiationValue(nn, "dH")
     dsInit <- .getInitiationValue(nn, "dS")
     sumdH <- dhStack + dhInit
     sumdS <- dsStack + dsInit
-    N <- nchar(x[1]) - 1 # Number of phosphates
+    N <- dim(x)[2] - 1 # Number of phosphates
     sumdH / (sumdS + 0.368 * N * log(concNa) + 1.987 * log(concOligo)) - 273.15
 }
