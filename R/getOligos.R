@@ -335,7 +335,6 @@ getOligos <- function(x,
 #'
 #' @noRd
 .countDegeneracy <- function(x) {
-    x <- toupper(x)
     x <- .splitSequence(x)
     nNucleotides <- lookup$degeneracy[x]
     degeneracy <- prod(nNucleotides)

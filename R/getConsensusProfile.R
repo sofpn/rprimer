@@ -148,8 +148,6 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #'
 #' @noRd
 .asIUPAC <- function(x) {
-    x <- toupper(x)
-    x <- gsub(" ", "", x)
     x <- unlist(strsplit(x, split = ","), use.names = FALSE)
     x <- x[order(x)]
     x <- unique(x)
