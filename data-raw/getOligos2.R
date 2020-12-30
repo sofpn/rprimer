@@ -1,29 +1,86 @@
-# fix na issue
-# exclude
+
+data("exampleRprimerProfile") #
+x <- exampleRprimerProfile
+
+
+# exclude in .filterPrimers and .filterProbes
 # correct tm
 # document (also exdata) and write tests!!!!!!!!
 # then getAssays, then plot, then vignette
 
-data("exampleRprimerProfile")
-x <- .designOligos(exampleRprimerProfile)
-
-
-
 #' Get oligos
 #'
 getOligos <- function(x) {
-  oligos <- .designOligos(x)
-  primers <- .filterPrimers(oligos)
-  if (probe) {
-    probes <- .filterProbes(oligos)
-    do.call("rbind", primers, probes)
+  if (!is.logical(avoidFiveEndG)) {
+    stop("'avoidFiveEndG' must be set to TRUE or FALSE", call. = FALSE)
   }
-
-  # remove unnessesary columns
-  # exclude
+  if (!(min(gcRange) >= 0 && max(gcRange) <= 1)) {
+    stop(
+      "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).",
+      call. = FALSE
+    )
+  }
+  if (!(min(tmRange) >= 20 && max(tmRange) <= 90)) {
+    stop("'tmRange' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE)
+  }
+  if (is.null(minEndIdentity)) minEndIdentity <- 0
+  if (minEndIdentity < 0 || minEndIdentity > 1) {
+    stop(
+      "'minEndIdentity' must be either NULL or from 0 to 1.", call. = FALSE
+    )
+  }
+  if (any(!is.logical(c(gcClamp, avoidThreeEndRuns)))) {
+    stop(
+      "'gcClamp'  and 'avoidThreeEndRuns' must be set to TRUE or FALSE",
+      call. = FALSE
+    )
+  }
+  if (!(min(gcRange) >= 0 && max(gcRange) <= 1)) {
+    stop(
+      "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).",
+      call. = FALSE
+    )
+  }
+  if (!(min(tmRange) >= 20 && max(tmRange) <= 90)) {
+    stop("'tmRange' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE)
+  }
+  oligoLength <- if (probe) c(primerLength, probeLength) else primerLength
+  maxDegeneracy <- if (probe) {
+    max(maxDegeneracyPrimer, maxDegeneracyProbe)
+  } else {
+    maxDegeneracyPrimer
+  }
+  oligos <- .designOligos(x,
+                          maxGapFrequency = maxGapFrequency,
+                          oligoLength = oligoLength,
+                          maxDegeneracy = maxDegeneracy,
+                          concOligo = concPrimer,
+                          concNa = concNa)
+  primers <- .filterPrimers(oligos,
+                            length = primerLength,
+                            maxDegeneracy = maxDegeneracyPrimer,
+                            minEndIdentity = minEndIdentityPrimer,
+                            gcClamp = gcClampPrimer,
+                            avoidThreeEndG = avoidThreeEndGPrimer,
+                            gcRange = gcRangePrimer,
+                            tmRange = tmRangePrimer)
+  if (probe) {
+    probes <- .filterProbes(oligos,
+                            length = probeLength,
+                            maxDegeneracy = maxDegeneracyProbe,
+                            avoidFiveEndG = avoidFiveEndGProbe,
+                            gcRange = gcRangeProbe,
+                            tmRange = tmRangeProbe,
+                            concProbe = concProbe)
+    oligos <- rbind(primers, probes)
+  } else {
+    oligos <- primers
+  }
+  oligos <- .arrangeData(oligos)
+  oligos
 }
 
-# Helpers =====================================================================
+# Helpers ======================================================================
 
 #' Split sequence
 #'
@@ -305,7 +362,7 @@ getOligos <- function(x) {
 #' Identify oligos with runs of the same nucleotide at the 3' end
 #'
 #' \code{.detectThreeEndRuns()} detects if the same nucleotide is repeated at
-#' at least 4 times at the terminal 3'-end of an oligo (e.g. "AAAA")
+#' at least 3 times at the terminal 3'-end of an oligo (e.g. "AAA")
 #' (bad to have on primers and probes).
 #'
 #' Helper function to \code{.getAllVariants()}.
@@ -332,9 +389,9 @@ getOligos <- function(x) {
 .detectThreeEndRuns <- function(x, fwd = TRUE) {
   if (!is.matrix(x)) x <- t(matrix(x))
   end <- if (fwd) {
-    x[, seq(ncol(x) - 3, ncol(x)), drop = FALSE]
+    x[, seq(ncol(x) - 2, ncol(x)), drop = FALSE]
   } else {
-    x[, seq_len(4), drop = FALSE]
+    x[, seq_len(3), drop = FALSE]
   }
   apply(end, 1, function(x) {
     all(x == "A") | all(x == "C") | all(x == "T") | all(x == "G")
@@ -462,25 +519,6 @@ getOligos <- function(x) {
   data.frame(do.call("cbind", x))
 }
 
-#' Exclude
-#'
-#' Helper function to \code{.designOligos()}.
-#'
-#' @param x
-#'
-#' @return
-#'
-#' @keywords internal
-#'
-#' @noRd
-.exclude <- function(x) {
-  dinucleotideRepeats <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(TC){4,}|(CT){4,})" # sry ;)
-  mononucleotideRepeates <- "([A-Z])\\1\\1\\1\\1"
-  x <- x[!grepl(dinucleotideRepeats, x)]
-  x <- x[!grepl(mononucleotideRepeates, x)]
-  x
-}
-
 #' Design oligos
 #'
 #' Helper function to \code{getOligos()}.
@@ -534,14 +572,94 @@ getOligos <- function(x) {
     "threeEndRunsRevMean", "fiveEndGPlusMean", "fiveEndGMinusMean",
     "alignmentStart", "alignmentEnd"
   )]
-  allOligos[sort(allOligos$start), ]
+  allOligos
 }
 
-##############################################3
+#' Get proportion of sequence variants within range
+#'
+#' \code{.getProportionInRange()} is used to find the proportion of sequence
+#' variants of each oligo that falls within a specified range for
+#' e.g. GC-content or tm.
+#'
+#' Helper function to \code{.filterPrimers()} and \code{.filterProbes()}.
+#'
+#' @param x A list.
+#'
+#' @param range The specified range. A numeric vector of length two.
+#'
+#' Helper function to \code{.designOligos()}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.getProportionInRange <- function(x, range) {
+  valid <- lapply(x, function(y) {
+    ifelse(y >= min(range) & y <= max(range), TRUE, FALSE)
+  })
+  valid <- do.call("rbind", valid)
+  rowMeans(valid)
+}
+
+#' Exclude
+#'
+#' Helper function to \code{.filterPrimers()} and \code{.filterProbes()}.
+#'
+#' @param x
+#'
+#' @return
+#'
+#' @keywords internal
+#'
+#' @noRd
+.exclude <- function(x) {
+  dinucleotideRepeats <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(TC){4,}|(CT){4,})" # sry ;)
+  mononucleotideRepeates <- "([A-Z])\\1\\1\\1\\1"
+  x <- x[!grepl(dinucleotideRepeats, x)]
+  x <- x[!grepl(mononucleotideRepeates, x)]
+  x
+}
+
+#' Find oligos that pass the criteria for being a primer
 #'
 #' Helper function to \code{getOligos()}
 #'
 #' @param x An output from \code{.generateOligos()}
+#'
+#' @param length
+#' Primer length. A numeric vector [14, 30].
+#' Defaults to \code{18:22}.
+#'
+#' @param maxDegeneracy
+#' Maximum allowed number of variants of each oligo.
+#' An integer [1, 32], defaults to 4.
+#'
+#' @param minEndIdentity
+#' A number. The minimum allowed identity
+#' at the 3' end of the primer (i.e. the last five bases), defaults to 0.
+#'
+#' @param gcClamp
+#' \code{TRUE} or \code{FALSE}. If primers must have a GC-clamp.
+#' Defaults to \code{TRUE}. A GC-clamp
+#' is identified as two to three G or
+#' C:s within the last five bases (3'-end) of the primer.
+#'
+#' @param avoidThreeEndRuns
+#' \code{TRUE} or \code{FALSE}.
+#' If primers with more than two runs
+#' of the same nucleotide at the terminal 3'-end should be excluded.
+#' Defaults to \code{TRUE}.
+#'
+#' @param gcRange
+#' GC-content range for primers (proportion, not percent).
+#' A numeric vector. Defaults to \code{c(0.45, 0.55)}.
+#'
+#' @param tmRange
+#' Tm range for primers.
+#' A numeric vector. Defaults to \code{c(55, 65)}.
+#'
+#' @param acceptanceThreshold
+#' Propoprtion of the sequence variants of each oligo that must
+#' meet the design constraints. Defaults to 0.9.
 #'
 #' @keywords internal
 #'
@@ -549,40 +667,75 @@ getOligos <- function(x) {
 .filterPrimers <- function(x,
                            length = 18:22,
                            maxDegeneracy = 4,
-                           minEndIdentity = NULL,
+                           minEndIdentity = 0,
                            gcClamp = TRUE,
                            avoidThreeEndRuns = TRUE,
                            gcRange = c(0.45, 0.55),
                            tmRange = c(55, 65),
-                           acceptanceThreshold = 0.8) {
-  if (is.null(minEndIdentity)) minEndIdentity <- 0
-  if (minEndIdentity < 0 || minEndIdentity > 1) {
-    stop(
-      "'minEndIdentity' must be either NULL or from 0 to 1.", call. = FALSE
-    )
+                           acceptanceThreshold = 0.9) {
+  if (!gcClamp) {
+    x$gcClampFwdMean <- 1
+    x$gcClampRevMean <- 1
   }
-  if (any(!is.logical(c(gcClamp, avoidThreeEndRuns)))) {
-    stop(
-      "'gcClamp'  and 'avoidThreeEndRuns' must be set to TRUE or FALSE",
-      call. = FALSE
-    )
+  if (!avoidThreeEndRuns) {
+    x$threeEndRunsFwdMean <- 1
+    x$threeEndRunsRevMean <- 1
   }
-  if (!(min(gcRange) >= 0 && max(gcRange) <= 1)) {
-      stop(
-        "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).",
-        call. = FALSE
-      )
-  }
-  if (!(min(tmRange) >= 20 && max(tmRange) <= 90)) {
-      stop("'tmRange' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE)
-  }
-  # e.g. if 80% of variants are ok
-
-  # add tag
-
-
+  x <- x[x$length >= min(length) & x$length <= max(length), ]
+  x <- x[x$degeneracy <= maxDegeneracy, ]
+  validFwd <- ifelse(
+    x$endIdentityFwd >= minEndIdentity &
+      x$gcClampFwdMean >= acceptanceThreshold &
+      1 - x$threeEndRunsFwdMean >= acceptanceThreshold, TRUE, FALSE
+  )
+  validRev <- ifelse(
+    x$endIdentityRev >= minEndIdentity &
+      x$gcClampRevMean >= acceptanceThreshold &
+      1 - x$threeEndRunsRevMean >= acceptanceThreshold, TRUE, FALSE
+  )
+  x <- cbind(x, validFwd, validRev)
+  x <- x[x$validFwd | x$validRev, ]
+  okForGc <- .getProportionInRange(x$gcContent, gcRange)
+  x <- x[okForGc >= acceptanceThreshold, ]
+  okForTm <- .getProportionInRange(x$tm, tmRange)
+  x <- x[okForTm >= acceptanceThreshold, ]
+  type <- rep("primer", nrow(x))
+  cbind(type, x)
 }
 
+#' Find oligos that pass the criteria for being a probe
+#'
+#' Helper function to \code{getOligos()}
+#'
+#' @param x An output from \code{.generateOligos()}
+#'
+#' @param length
+#' Primer length. A numeric vector.
+#' Defaults to \code{18:22}.
+#'
+#' @param maxDegeneracy
+#' Maximum allowed number of variants of each oligo.
+#' An integer, defaults to 4.
+#'
+#' @param avoidFiveEndG
+#' If probes with a G at the terminal 5'-end should be avoided.
+#' Defaults to TRUE.
+#'
+#' @param gcRange
+#' GC-content range for probes (proportion, not percent).
+#' A numeric vector. Defaults to \code{c(0.45, 0.55)}.
+#'
+#' @param tmRange
+#' Tm range for probes.
+#' A numeric vector. Defaults to \code{c(55, 65)}.
+#'
+#' @param acceptanceThreshold
+#' Proportion of the sequence variants of each oligo that must
+#' meet the design constraints. Defaults to 0.9.
+#'
+#' @keywords internal
+#'
+#' @noRd
 .filterProbes <- function(x,
                           length = 18:22,
                           maxDegeneracy = 4,
@@ -590,21 +743,55 @@ getOligos <- function(x) {
                           gcRange = c(0.45, 0.55),
                           tmRange = c(55, 65),
                           concProbe = 250,
-                          acceptanceThreshold = 0.8) {
-  if (!is.logical(avoidFiveEndG)) {
-    stop("'avoidFiveEndG' must be set to TRUE or FALSE", call. = FALSE)
-  }
-  if (!(min(gcRange) >= 0 && max(gcRange) <= 1)) {
-    stop(
-      "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).",
-      call. = FALSE
-    )
-  }
-  if (!(min(tmRange) >= 20 && max(tmRange) <= 90)) {
-    stop("'tmRange' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE)
-  }
-  # e.g. if 80% of variants are ok
+                          acceptanceThreshold = 0.9) {
 
-
+  if (!avoidFiveEndG) {
+    x$fiveEndGPlusMean <- 1
+    x$fiveEndGMinusMean <- 1
+  }
+  x <- x[x$length >= min(length) & x$length <= max(length), ]
+  x <- x[x$degeneracy <= maxDegeneracy, ]
+  validFwd <- ifelse(
+      1 - x$fiveEndGPlusMean >= acceptanceThreshold, TRUE, FALSE
+  )
+  validRev <- ifelse(
+    1 - x$fiveEndGMinusMean >= acceptanceThreshold, TRUE, FALSE
+  )
+  x <- cbind(x, validFwd, validRev)
+  x <- x[x$validFwd | x$validRev, ]
+  okForGc <- .getProportionInRange(x$gcContent, gcRange)
+  x <- x[okForGc >= acceptanceThreshold, ]
+  # correct tm for probe conc .....######################################################################
+  okForTm <- .getProportionInRange(x$tm, tmRange)
+  x <- x[okForTm >= acceptanceThreshold, ]
+  type <- rep("probe", nrow(x))
+  x <- cbind(type, x)
+  x
 }
 
+#' Arrange oligo data
+#'
+#' \code{.arrangeOligos()} drops unnecessary columns and sorts oligos based
+#' on their start position.
+#'
+#' Helper function to \code{getOligos()}.
+#'
+#' @param x A data frame with oligos.
+#'
+#' @return A data frame with oligos.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.arrangeData <- function(x) {
+  keep <- c(
+    "type", "validFwd", "validRev", "start", "end", "length", "iupacSequence",
+    "iupacSequenceRc",
+    "identity", "degeneracy", "gcContentMean", "tmMean", "alignmentStart",
+    "alignmentEnd"
+  )
+  x <- x[keep]
+  x <- x[order(x$start), ]
+  rownames(x) <- NULL
+  x
+}
