@@ -3,20 +3,19 @@
 #' \code{.tm()} calculates the melting temperature of one or
 #' more perfectly matching DNA duplexes (i.e. oligo-target duplexes),
 #' using the nearest neighbor method.
-#' Helper function to \code{.getAllVariants()}.
 #'
 #' @param x
 #' A character vector or matrix, where each row corresponds to a specific oligo.
 #'
 #' @param concOligo
 #' Oligo concentration in nM. A number
-#' [20, 2000] Defaults to 250 nM.
+#' [20, 2000] Defaults to 250.
 #'
 #' @param concNa
 #' Sodium ion concentration in the PCR reaction in M.
 #' A number [0.01, 1]. Defaults to 0.05 M (50 mM).
 #'
-#' @return The melting temperature(s) of x. A numeric vector.
+#' @return The melting temperature(s) of \code{x}. A numeric vector.
 #'
 #' @section Details:
 #'
@@ -134,3 +133,5 @@
     )
     initiation + penaltyFirst + penaltyLast
 }
+
+# .adjustOligoConc <- function(x, oldOligoConc, newOligoConc)

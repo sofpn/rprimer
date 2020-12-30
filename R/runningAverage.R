@@ -1,6 +1,6 @@
 #' Calculate running average
 #'
-#' \code{.runningAverage} calculates the running average of a
+#' \code{.runningAverage()} calculates the running average of a
 #' numeric vector.
 #'
 #' @param x A numeric vector.
@@ -11,7 +11,7 @@
 #' If not specified, the size will be set to the nearest positive, nonzero
 #' integer to \code{length(x)/100}.
 #'
-#' @return A data frame with position and running average of x.
+#' @return A data frame with position and running average of \code{x}.
 #'
 #' @keywords internal
 #'
