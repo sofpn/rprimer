@@ -1,7 +1,13 @@
+# fix na issue
 # exclude
 # correct tm
 # document (also exdata) and write tests!!!!!!!!
-# then getAssays, then vignette
+# then getAssays, then plot, then vignette
+
+data("exampleRprimerProfile")
+x <- .designOligos(exampleRprimerProfile)
+
+
 
 #' Get oligos
 #'
@@ -426,13 +432,14 @@ getOligos <- function(x) {
 #'
 #' @noRd
 .makeOligoDf <- function(x) {
-  x <- within(x, rm(identity, gapFrequency))
+  x <- within(x, rm(gapFrequency))
   x$iupacSequenceRc <- .reverseComplement(x$iupacSequence)
   x$iupacSequence <- apply(x$iupacSequence, 1, paste, collapse = "")
   x$iupacSequenceRc <- apply(x$iupacSequenceRc, 1, paste, collapse = "")
   x <- do.call("cbind.data.frame", x)
   x[c(
-    "start", "end", "length", "iupacSequence", "iupacSequenceRc", "degeneracy",
+    "start", "end", "length", "iupacSequence", "iupacSequenceRc", "identity",
+    "degeneracy",
     "endIdentityFwd", "endIdentityRev", "alignmentStart", "alignmentEnd"
   )]
 }
@@ -519,7 +526,8 @@ getOligos <- function(x) {
   })
   allOligos <- do.call("rbind", allOligos)
   allOligos <- allOligos[c(
-    "start", "end", "length", "iupacSequence", "iupacSequenceRc", "degeneracy",
+    "start", "end", "length", "iupacSequence", "iupacSequenceRc",
+    "identity", "degeneracy",
     "gcContentMean", "tmMean", "sequence", "sequenceRc", "gcContent", "tm",
     "endIdentityFwd", "endIdentityRev",
     "gcClampFwdMean", "gcClampRevMean", "threeEndRunsFwdMean",
@@ -529,10 +537,7 @@ getOligos <- function(x) {
   allOligos[sort(allOligos$start), ]
 }
 
-data("exampleRprimerProfile")
-x <- .generateOligos(exampleRprimerProfile)
-
-
+##############################################3
 #'
 #' Helper function to \code{getOligos()}
 #'
