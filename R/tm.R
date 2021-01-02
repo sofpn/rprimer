@@ -134,4 +134,9 @@
     initiation + penaltyFirst + penaltyLast
 }
 
-# .adjustOligoConc <- function(x, oldOligoConc, newOligoConc)
+# .adjustOligoConc <- function(x, oldOligoConc, newOligoConc) {
+#}
+#  tm =   sumdH / (sumdS + 0.368 * N * log(concNa) + 1.987 * log(500)) - 273.15
+
+
+

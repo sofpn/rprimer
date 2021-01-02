@@ -1,3 +1,5 @@
+# Exported =====================================================================
+
 #' Get sequence information from an alignment
 #'
 #' \code{getConsensusProfile()} returns sequence information from an alignment
@@ -87,7 +89,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     RprimerProfile(df)
 }
 
-# Helpers =====================================================================
+# Helpers/internal functions ===================================================
 
 #' Get consensus matrix
 #'
@@ -144,6 +146,9 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #'
 #' @return The corresponding IUPAC base.
 #'
+#' @examples
+#' .asIUPAC("A,G,C")
+#'
 #' @keywords internal
 #'
 #' @noRd
@@ -169,7 +174,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #'
 #' @return The consensus sequence (a character vector).
 #'
-#' @seealso \code{.asIUPAC} for further info on how the IUPAC consensus
+#' @seealso \code{.asIUPAC()} for further info on how the IUPAC consensus
 #' sequence is determined.
 #'
 #' @keywords internal
@@ -196,7 +201,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
         warning("The consensus sequence contain NAs. \n
     Try to lower the 'iupacThreshold' value.", call. = FALSE)
     }
-    consensus
+    unname(consensus)
 }
 
 #' Nucleotide identity

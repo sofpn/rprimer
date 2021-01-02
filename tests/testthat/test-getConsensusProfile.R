@@ -29,7 +29,6 @@ test_that(".asIUPAC works", {
     expect_true(is.na(.asIUPAC("GC")))
     expect_equal(.asIUPAC("C,G"), "S")
     expect_equal(.asIUPAC("C,G,G"), "S")
-    expect_equal(.asIUPAC("C , G"), "S")
     expect_equal(.asIUPAC("-"), "-")
     expect_true(is.na(.asIUPAC("X")))
 })

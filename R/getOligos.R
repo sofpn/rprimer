@@ -1,20 +1,18 @@
-# Work in progress! ============================================================
 
-#x <- purrr::map(y, .expandDegenerates)
-.mergeDegenerates <- function(x) {
-    degeneracy <- purrr::map_int(x, length)
-    id <- purrr::map(seq_along(degeneracy), ~rep(.x, degeneracy[.x]))
-    id <- unlist(id)
-    x <- unlist(x)
-    names(x) <- id
-    x
-}
-#z <- .mergeDegenerates(x)
-#tm <- .tm(z)
-#tm <- split(unname(tm), f = as.integer(names(tm)))
-#meanTm <- purrr::map_dbl(tm, mean)
+#data("exampleRprimerProfile")
+x <- exampleRprimerProfile
+ols <- getOligos(x, maxDegeneracyPrimer = 1, maxDegeneracyProbe = 1)
 
-#===============================================================================
+# argument rbind true, false ........ # detect repeats if only one variant...
+# arg 1 is not a vector order????
+# if 1 degenerate only
+# if no primers found?
+
+# correct tm in .filterProbes, # return a function???????????????
+# document getOligos and exdata, and write tests
+# then getAssays, then plot, then vignette
+
+# Exported =====================================================================
 
 #' Get oligos
 #'
@@ -23,13 +21,13 @@
 #'
 #' @param x An \code{RprimerProfile} object.
 #'
+#' @param maxGapFrequency
+#' Maximum allowed gap frequency (for both primers and probes).
+#' A number [0, 1]. Defaults to 0.1.
+#'
 #' @param lengthPrimer
 #' Primer length. A numeric vector [14, 30].
 #' Defaults to \code{18:22}.
-#'
-#' @param maxGapFrequencyPrimer
-#' Maximum allowed gap frequency for primers.
-#' A number [0, 1]. Defaults to 0.1.
 #'
 #' @param maxDegeneracyPrimer
 #' Maximum number of variants of each primer. A number [1, 32]. Defaults to 4.
@@ -40,17 +38,16 @@
 #' should be replaced with \code{NA}.
 #' Defaults to \code{TRUE}. A GC-clamp
 #' is identified as two to three G or
-#' C:s within the last five bases (3' end) of the oligo.
+#' C:s within the last five bases (3'-end) of the oligo.
 #'
-#' @param avoid3EndRunsPrimer
+#' @param avoidTreeEndRunsPrimer
 #' \code{TRUE} or \code{FALSE}.
 #' If primers with more than two runs
-#' of the same nucleotide at the 3' end should be replaced with \code{NA}.
-#' Defaults to \code{TRUE}.
+#' of the same nucleotide at the 3' end should be considered as invalid.
 #'
 #' @param minEndIdentityPrimer
 #' Optional. If specified, a number [0, 1]. The minimum allowed identity
-#' at the 3' end of the primer (i.e. the last five bases).
+#' at the 3'-end of the primer (i.e. the last five bases).
 #'
 #' @param gcRangePrimer
 #' GC-content range for primers (proportion, not percent).
@@ -72,16 +69,12 @@
 #' Probe length. A numeric vector [14, 30].
 #' Defaults to \code{18:22}.
 #'
-#' @param maxGapFrequencyProbe
-#' Maximum allowed gap frequency for probes.
-#' A number [0, 1]. Defaults to 0.1.
-#'
 #' @param maxDegeneracyProbe
 #' Maximum number of variants of each probe. A number [1, 32]. Defaults to 4.
 #'
-#' @param avoid5EndGProbe
+#' @param avoidFiveEndGProbe
 #' \code{TRUE} or \code{FALSE}. If probes with G
-#' at the 5' end should be excluded. Defaults to \code{TRUE}.
+#' at the 5'-end should be excluded. Defaults to \code{TRUE}.
 #'
 #' @param gcRangeProbe
 #' GC-content range for probes (proportion, not %). A numeric vector [0, 1].
@@ -103,13 +96,10 @@
 #' \code{getOligos()} excludes:
 #'
 #' \itemize{
-#' \item Majority oligos with more than than three consecutive runs of
+#' \item Majority oligos with more than than three consecutive runs of ##############################
 #' the same dinucleotide (e.g. "TATATATA")
 #' \item Majority oligos with more than four consecutive runs of
 #' the same nucleotide  (e.g. "AAAAA")
-#' \item Majority oligos that are duplicated
-#' (to prevent binding at several places on the genome)
-#' }
 #'
 #' @section Tm-calculation:
 #'
@@ -123,7 +113,8 @@
 #'   than the target concentration.
 #' }
 #'
-#' See references for table values and equations.  INSERT FORMULA
+#' See references for table values and equations.
+#' Table values can also be found by calling \code{rprimer:::lookup$nn}.
 #'
 #' @return
 #' An \code{RprimerOligo} object.
@@ -136,28 +127,35 @@
 #'   \item{start}{Position where the oligo starts.}
 #'   \item{end}{Position where the oligo ends.}
 #'   \item{length}{Length of the oligo.}
-#'   \item{majority}{Majority sequence.}
-#'   \item{majorityRc}{Majority sequence, reverse complement.}
-#'   \item{gcMajority}{GC content (majority sequence), proportion.}
-#'   \item{tmMajority}{Melting temperature.}
+ ########################################################################################
 #'   \item{identity}{Average identity score of the oligo.}
 #'   \item{iupac}{IUPAC sequence (i.e. with degenerate bases).}
 #'   \item{iupacRc}{IUPAC sequence, reverse complement.}
 #'   \item{degeneracy}{Number of variants of the degenerate oligo.}
-#'   \item{all}{Lists with all sequence variants of the oligos.}
-#'   \item{allRc}{Lists with all sequence variants of the oligos, reverse
+#'   \item{sequence}{Lists with all sequence variants of the oligos.}
+#'   \item{sequenceRc}{Lists with all sequence variants of the oligos, reverse
 #'   complements.}
-#'   \item{gcAll}{Lists with the GC content of all
+#'   \item{gcContent}{Lists with the GC content of all
 #'   sequence variants of the oligos.}
-#'   \item{tmAll}{Lists with the Tm of all sequence variants of the oligos.}
+#'   \item{tm}{Lists with the Tm of all sequence variants of the oligos.}
 #'   \item{alignmentStart}{Start position of the input consensus profile.}
 #'   \item{alingnmentEnd}{End position of the input consensus profile.}
 #' }
 #'
 #' @examples
+#' ## Load example data
 #' data("exampleRprimerProfile")
+#' target <- exampleRprimerProfile
+#'
 #' ## Design primers and probes with default values
-#' getOligos(exampleRprimerProfile)
+#' getOligos(target)
+#'
+#' ## Design primers and probes only within a specific region of interest
+#' roi <- target[target$position >= 5000 & target$position <= 6000, ]
+#' getOligos(roi)
+#'
+#' ## Design primers only
+#' getOligos(roi, probe = FALSE)
 #'
 #' @references
 #' SantaLucia Jr, J., & Hicks, D. (2004).
@@ -166,74 +164,99 @@
 #'
 #' @export
 getOligos <- function(x,
+                      maxGapFrequency = 0.1,
                       lengthPrimer = 18:22,
-                      maxGapFrequencyPrimer = 0.1,
                       maxDegeneracyPrimer = 4,
                       gcClampPrimer = TRUE,
-                      avoid3EndRunsPrimer = TRUE,
+                      avoidThreeEndRunsPrimer = TRUE,
                       minEndIdentityPrimer = 0.98,
                       gcRangePrimer = c(0.45, 0.55),
                       tmRangePrimer = c(55, 65),
                       concPrimer = 500,
                       probe = TRUE,
                       lengthProbe = 18:22,
-                      maxGapFrequencyProbe = 0.1,
                       maxDegeneracyProbe = 4,
-                      avoid5EndGProbe = TRUE,
+                      avoidFiveEndGProbe = TRUE,
                       gcRangeProbe = c(0.45, 0.55),
                       tmRangeProbe = c(55, 70),
                       concProbe = 250,
                       concNa = 0.05) {
-    if (!methods::is(x, "RprimerProfile")) {
-        stop("'x' must be an RprimerProfile object.")
-    }
-    if (nrow(x) < max(c(lengthPrimer, lengthProbe))) {
-        stop(paste(
-            "In order to search for oligos, the number of rows in 'x'
+  if (!methods::is(x, "RprimerProfile")) {
+    stop("'x' must be an RprimerProfile object.")
+  }
+  if (nrow(x) < max(c(lengthPrimer, lengthProbe))) {
+    stop(paste(
+      "In order to search for oligos, the number of rows in 'x'
         must be at least", max(c(lengthPrimer, lengthProbe), ".")
-        ),
-        call. = FALSE
-        )
-    }
-    x <- as.data.frame(x)
-    allOligos <- .getPrimers(x,
-        lengthPrimer = lengthPrimer,
-        maxGapFrequencyPrimer = maxGapFrequencyPrimer,
-        maxDegeneracyPrimer = maxDegeneracyPrimer,
-        gcClampPrimer = gcClampPrimer,
-        avoid3EndRunsPrimer = avoid3EndRunsPrimer,
-        minEndIdentityPrimer = minEndIdentityPrimer,
-        gcRangePrimer = gcRangePrimer,
-        tmRangePrimer = tmRangePrimer,
-        concPrimer = concPrimer,
-        concNa = concNa
+    ),
+    call. = FALSE
     )
-    if (nrow(allOligos) == 0L) {
-        stop("No primers were found.", call. = FALSE)
+  }
+  if (!(min(lengthPrimer) >= 14 && max(lengthPrimer) <= 30)) {
+    stop("'lengthPrimer' must be from 14 to 30.", call. = FALSE)
+  }
+  if (!(min(lengthProbe) >= 14 && max(lengthProbe) <= 30)) {
+    stop("'lengthProbe' must be from 14 to 30.", call. = FALSE)
+  }
+  if (!(maxDegeneracyPrimer >= 1 && maxDegeneracyPrimer <= 32)) {
+    stop("'maxDegeneracyPrimer' must be from 1 to 32.", call. = FALSE)
+  }
+  if (!(maxDegeneracyProbe >= 1 && maxDegeneracyProbe <= 32)) {
+    stop("'maxDegeneracyProbe' must be from 1 to 32.", call. = FALSE)
+  }
+  if (!is.logical(probe)) {
+    stop("'probe' must be set to TRUE or FALSE", call. = FALSE)
+  }
+  if (probe) {
+    lengthOligo <- c(lengthPrimer, lengthProbe)
+    lengthOligo <- unique(lengthOligo)
+    lengthOligo <- lengthOligo[order(lengthOligo)]
+  } else {
+    lengthOligo <- lengthPrimer
+  }
+  maxDegeneracy <- if (probe) {
+    max(c(maxDegeneracyPrimer, maxDegeneracyProbe))
+  } else {
+    maxDegeneracyPrimer
+  }
+  oligos <- .designOligos(x,
+                          maxGapFrequency = maxGapFrequency,
+                          lengthOligo = lengthOligo,
+                          maxDegeneracy = maxDegeneracy,
+                          concOligo = concPrimer,
+                          concNa = concNa)
+  primers <- .filterPrimers(oligos,
+                            lengthPrimer = lengthPrimer,
+                            maxDegeneracyPrimer = maxDegeneracyPrimer,
+                            minEndIdentityPrimer = minEndIdentityPrimer,
+                            gcClampPrimer = gcClampPrimer,
+                            avoidThreeEndRunsPrimer = avoidThreeEndRunsPrimer,
+                            gcRangePrimer = gcRangePrimer,
+                            tmRangePrimer = tmRangePrimer)
+  if (nrow(primers) == 0L) {
+    stop("No primers were found.", call. = FALSE)
+  }
+  if (probe) {
+    probes <- .filterProbes(oligos,
+                            lengthProbe = lengthProbe,
+                            maxDegeneracyProbe = maxDegeneracyProbe,
+                            avoidFiveEndGProbe = avoidFiveEndGProbe,
+                            gcRangeProbe = gcRangeProbe,
+                            tmRangeProbe = tmRangeProbe,
+                            concProbe = concProbe)
+    if (nrow(probes) == 0L) {
+      stop("No probes were found.", call. = FALSE)
     }
-    if (probe) {
-        allProbes <- .getProbes(x,
-            lengthProbe = lengthProbe,
-            maxGapFrequencyProbe = maxGapFrequencyProbe,
-            maxDegeneracyProbe = maxDegeneracyProbe,
-            avoid5EndGProbe = avoid5EndGProbe,
-            gcRangeProbe = gcRangeProbe,
-            tmRangeProbe = tmRangeProbe,
-            concProbe = concProbe,
-            concNa = concNa
-        )
-        if (nrow(allProbes) == 0L) {
-            stop("No probes were found.", call. = FALSE)
-        }
-        allOligos <- dplyr::bind_rows(allOligos, allProbes)
-    }
-    drop <- c("identity3End", "identity3EndRc")########################
-    allOligos <- allOligos[!names(allOligos) %in% drop] ###################
-    allOligos <- allOligos[order(allOligos$start), ]
-    RprimerOligo(allOligos)
+    oligos <- list(primers, probes)
+  } else {
+    oligos <- primers
+  }
+  oligos
+#  oligos <- .arrangeData(oligos)
+#  RprimerOligo(oligos)
 }
 
-# Helpers =====================================================================
+# Helpers/internal functions ===================================================
 
 #' Split sequence
 #'
@@ -245,495 +268,754 @@ getOligos <- function(x,
 #'
 #' @noRd
 .splitSequence <- function(x) {
-    unlist(strsplit(x, split = ""), use.names = FALSE)
+  unlist(strsplit(x, split = ""), use.names = FALSE)
 }
 
-#' Divide a DNA sequence into n-sized chunks
+#' Arrange a vector into a matrix of "n-mers"
 #'
-#' \code{.getNmers} divides a character vector into chunks of size \code{n}.
+#' \code{.getNmers()} divides a vector into a matrix with \code{n} columns.
+#' It is used to generate all possible oligos of a specific length
+#' from a DNA sequence.
 #'
-#' @param x A character vector.
+#' Helper function to \code{.generateOligos()}.
 #'
-#' @param n Chunk-size (a positive integer).
+#' @param x A vector.
 #'
-#' @return A character vector.
+#' @param n Length of each "mer" (a positive integer).
+#'
+#' @return A matrix with \code{n} columns. The first row will contain
+#' \code{x[1:n]}, the second \code{x[2:(n + 1)]}, and so on.
+#' In this way, the matrix will contain all possible consecutive
+#' sequences of \code{x} of length \code{n}.
+#'
+#' @examples
+#' .getNmers(c("A", "G", "T", "T", "C", "G"), n = 4)
 #'
 #' @keywords internal
 #'
 #' @noRd
 .getNmers <- function(x, n) {
-    start <- seq_len(length(x) - n + 1)
-    end <- start + n - 1
-    nmer <- purrr::map_chr(start, function(i) {
-        paste(x[start[i]:end[i]], collapse = "")
-    })
-    nmer
-}
-
-#' Calculate running sums
-#'
-#' \code{.runningSum()} calculates 'running' sums of a numeric vector. Each
-#' sum is calculated in a size of \code{n}, in steps of 1 (i.e., if
-#' \code{n = 20}, the sum will be calculated from element 1 to 20,
-#' then from element 2 to 21, then from element 3 to 22, etc.)
-#'
-#' @param x A numeric vector.
-#'
-#' @param n The size of each sum that is to be calculated,
-#'
-#' @return The running sums of \code{x}
-#' (a numeric vector of length \code{length(x) - n + 1}).
-#'
-#' @keywords internal
-#'
-#' @noRd
-.runningSum <- function(x, n) {
-    cumul <- c(0, cumsum(x))
-    runsum <- cumul[seq(n + 1, length(cumul))] - cumul[seq_len(length(cumul) - n)]
-    runsum
-}
-
-#' Calculate mean identity for 3' ends of oligos.
-#'
-#' @param x A numeric vector of nucleotide identities.
-#'
-#' @param n Oligo length, an integer.
-#'
-#' @return
-#' Min identity score for the last five bases of the oligo(s).
-#' A numeric matrix with two columns, the first represent plus strand oligos
-#' and the second represent minus strand oligos (reverse complements).
-#'
-#' @keywords internal
-#'
-#' @noRd
-.countEndIdentity <- function(x, n) {
-    start <- seq_len(length(x) - n + 1)
-    end <- start + n - 1
-    frame <- purrr::map(start, ~ x[start[.x]:end[.x]])
-    endScore <- purrr::map(frame, function(x) {
-        lastFive <- min(x[(length(x) - 4):length(x)])
-        firstFive <- min(x[seq_len(5)])
-        c(lastFive, firstFive)
-    })
-    endScore <- do.call("rbind", endScore)
-    colnames(endScore) <- c("pos", "neg")
-    endScore
+  start <- seq_len(length(x) - n + 1)
+  end <- start + n - 1
+  nmers <- lapply(start, function(i) x[start[i]:end[i]])
+  do.call("rbind", nmers)
 }
 
 #' Count the degeneracy of a DNA sequence
 #'
-#' \code{.countDegeneracy()} returns the number of unique variants of
-#' a DNA sequence with degenerate bases.
+#' \code{.countDegeneracy()} finds the number of unique variants of
+#' a DNA sequence with (or without) degenerate bases.
 #'
-#' @param x
-#' A DNA sequence (a character vector of length one).
+#' Helper function to \code{.generateOligos()}.
 #'
-#' @return The number of unique sequences of x (an integer).
+#' @param x A DNA sequence (a character vector).
+#'
+#' @return The number of sequence variants of x (an integer).
+#'
+#' @examples
+#' .countDegeneracy(c("A", "R", "T", "T", "N", "G"))
 #'
 #' @keywords internal
 #'
 #' @noRd
 .countDegeneracy <- function(x) {
-    x <- .splitSequence(x)
-    nNucleotides <- lookup$degeneracy[x]
-    degeneracy <- prod(nNucleotides)
-    degeneracy
+  nNucleotides <- lookup$degeneracy[x]
+  prod(nNucleotides)
 }
 
 #' Generate oligos of a specific length
 #'
-#' @inheritParams getOligos
+#' \code{.generateOligos()} is the first step of the oligo-design process.
+#' It finds all possible oligos of a specific length from an
+#' \code{RprimerProfile} object, and returns a list containing
+#' start and end position,
+#' length, IUPAC sequence (the oligo DNA sequence with wobble bases), degeneracy
+#' (number of variants of each oligo), maximum gap frequency,
+#' mean overall identity, and minimum 3'-end identity at
+#' both forward and reverse direction (the 3'-end is here seen as the last five
+#' bases of the oligo).
 #'
-#' @return A data frame.
+#' @param x An \code{RprimerProfile} object.
+#'
+#' @param lengthOligo An integer [14, 30], defaults to 20.
+#'
+#' @return A list with all candidate oligos.
+#'
+#' @examples
+#' data("exampleRprimerProfile")
+#' .generateOligos(exampleRprimerProfile, lengthOligo = 18)
 #'
 #' @keywords internal
 #'
 #' @noRd
-.generateOligos <- function(x,
-                            oligoLength = 20,
-                            maxGapFrequency = 0.1,
-                            maxDegeneracy = 4) {
-    if (!(min(oligoLength) >= 14 && max(oligoLength) <= 30)) {
-        stop("'oligoLength' must be from 14 to 30.", call. = FALSE)
-    }
-    if (!(maxGapFrequency >= 0 && maxGapFrequency <= 1)) {
-        stop("'maxGapFrequency' must be from 0 to 1.", call. = FALSE)
-    }
-    if (!(maxDegeneracy >= 1 && maxDegeneracy <= 32)) {
-        stop("'maxDegeneracy' must be from 1 to 32.", call. = FALSE)
-    }
-    majority <- .getNmers(x$majority, n = oligoLength)
-    iupac <- .getNmers(x$iupac, n = oligoLength)
-    degeneracy <- purrr::map_dbl(iupac, ~ .countDegeneracy(.x))
-    start <- seq_along(majority) + min(x$position) - 1
-    end <- seq_along(majority) + oligoLength - 1 + min(x$position) - 1
-    length <- oligoLength
-    identity <- .runningSum(x$identity, n = oligoLength) / oligoLength
-    endIdentity <- .countEndIdentity(x$identity, n = oligoLength)
-    identity3End <- endIdentity[, "pos"]
-    identity3EndRc <- endIdentity[, "neg"]
-    gapBin <- ifelse(x$gaps > maxGapFrequency, 1L, 0L)
-    gapPenalty <- .runningSum(gapBin, n = oligoLength)
-    alignmentStart <- min(x$position)
-    alignmentEnd <- max(x$position)
-    oligos <- data.frame(
-        start, end, length, majority, identity, identity3End, identity3EndRc,
-        iupac, degeneracy, gapPenalty, alignmentStart, alignmentEnd
-    )
-    uniqueOligos <- match(oligos$majority, unique(oligos$majority))
-    oligos <- oligos[uniqueOligos, ]
-    oligos <- oligos[oligos$gapPenalty == 0, ]
-    oligos <- oligos[oligos$degeneracy <= maxDegeneracy, ]
-    oligos <- dplyr::select(oligos, -gapPenalty)
-    oligos
+.generateOligos <- function(x, lengthOligo = 20) {
+  iupacSequence <- .getNmers(x$iupac, lengthOligo)
+  start <- seq_len(nrow(iupacSequence)) + min(x$position) - 1
+  end <- seq_len(nrow(iupacSequence)) + lengthOligo - 1 + min(x$position) - 1
+  length <- rep(lengthOligo, nrow(iupacSequence))
+  degeneracy <- apply(iupacSequence, 1, .countDegeneracy)
+  gapFrequency <- apply(.getNmers(x$gaps, lengthOligo), 1, max)
+  identity <- .getNmers(x$identity, lengthOligo)
+  endIdentityFwd <- apply(
+    identity[, (ncol(identity) - 4):ncol(identity)], 1, min
+  )
+  endIdentityRev <- apply(identity[, seq_len(5)], 1, min)
+  identity <- rowMeans(identity)
+  alignmentStart <- rep(min(x$position, na.rm = TRUE), nrow(iupacSequence))
+  alignmentEnd <- rep(max(x$position, na.rm = TRUE), nrow(iupacSequence))
+  oligos <- list(
+    "start" = start, "end" = end, "length" = length,
+    "iupacSequence" = iupacSequence, "degeneracy" = degeneracy,
+    "gapFrequency" = gapFrequency, "identity" = identity,
+    "endIdentityFwd" = endIdentityFwd, "endIdentityRev" = endIdentityRev,
+    "alignmentStart" = alignmentStart, "alignmentEnd" = alignmentEnd
+  )
+  oligos
 }
 
-#' Exclude non optimal oligos
+#' Remove oligos with too high gap frequency and degeneracy
 #'
-#' \code{.exclude()} replaces oligos with many consecutive
-#' mono- or dinucleotides with \code{NA}.
+#' \code{.filterOligos()} is the second step of the oligo-design process. It
+#' removes oligos with gap frequency and degeneracy above the user-specified
+#' thresholds.
 #'
-#' @param x A data frame with oligos.
+#' @param x An output from \code{.generateOligos()}.
 #'
-#' @details
-#' An oligo is excluded if:
-#' - It has more than three runs of the same dinucleotide (e.g. "TATATATA")
-#' - It has more than four runs of the same nucleotide (e.g. "AAAAA")
+#' @param maxGapFrequency
+#' Maximum allowed gap frequency. A number [0, 1], defaults to 0.1.
+#'
+#' @param maxDegeneracy
+#' Maximum allowed number of variants of each oligo.
+#' An integer, defaults to 4.
 #'
 #' @return
-#' A data frame where non optimal oligos have been excluded.
+#' A list with the same structure as \code{x}, but where invalid oligos have
+#' been removed.
 #'
 #' @keywords internal
 #'
 #' @noRd
-.exclude <- function(x) {
-    dinucleotideRepeats <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(TC){4,}|(CT){4,})"
-    mononucleotideRepeates <- "([A-Z])\\1\\1\\1\\1"
-    x <- x[!grepl(dinucleotideRepeats, x$majority), ]
-    x <- x[!grepl(mononucleotideRepeates, x$majority), ]
+.filterOligos <- function(x, maxGapFrequency = 0.1, maxDegeneracy = 4) {
+  invalid <- unique(c(
+    which(x$degeneracy > maxDegeneracy),
+    which(x$gapFrequency > maxGapFrequency)
+  ))
+  if (length(invalid > 0L)) {
+    lapply(x, function(x) {
+      if (is.matrix(x)) x[-invalid, , drop = FALSE] else x[-invalid]
+    })
+   } else {
     x
+  }
 }
 
-#' Get the reverse complement of a DNA sequence
+#' Get all variants of a DNA sequence with wobble bases
 #'
-#' \code{.reverseComplement()} finds the reverse complement of a DNA sequence.
+#' Helper function to \code{.getAllVariants()}.
 #'
-#' @param x A DNA sequence (a character vector of length one).
+#' @param x A DNA sequence, i.e. a character vector.
 #'
-#' @return The reverse complement. Non valid bases will return as \code{NA}.
+#' @return All sequence variants of \code{x}. A matrix.
 #'
-#' @keywords internal
-#'
-#' @noRd
-.reverseComplement <- function(x) {
-    x <- toupper(x)
-    x <- strsplit(x, split = "")
-    complement <- lookup$complement[unlist(x)]
-    complement <- unname(complement)
-    rc <- rev(complement)
-    paste(rc, collapse = "")
-}
-
-#' Add reverse complement to generated oligos
-#'
-#' @param x A data frame with oligos.
-#'
-#' @return A data frame.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.addReverseComplement <- function(x) {
-    majorityRc <- purrr::map_chr(x$majority, ~ .reverseComplement(.x))
-    iupacRc <- purrr::map_chr(x$iupac, ~ .reverseComplement(.x))
-    x <- tibble::add_column(x, majorityRc, .after = "majority")
-    x <- tibble::add_column(x, iupacRc, .after = "iupac")
-    x
-}
-
-#' Calculate GC content of a DNA sequence
-#'
-#' \code{.gcContent()} finds the GC content of a DNA sequence.
-#'
-#' @param x
-#' A DNA sequence (a character vector of length one).
-#'
-#' @return The GC content of x.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.gcContent <- function(x) {
-    x <- toupper(x)
-    x <- .splitSequence(x)
-    gcCount <- length(which(x == "C" | x == "G"))
-    totalCount <- length(which(x == "A" | x == "C" | x == "G" | x == "T"))
-    gcCount / totalCount
-}
-
-#' Add GC content to generated oligos
-#'
-#' @param x A data frame with oligos.
-#'
-#' @inheritParams getOligos
-#'
-#' @return A data frame.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.addGcContent <- function(x, gcRange = c(0.45, 0.65)) {
-    if (!(min(gcRange) >= 0 && max(gcRange) <= 1)) {
-        stop(
-            "'gcRange' must be from 0 to 1, e.g. c(0.45, 0.65).",
-            call. = FALSE
-        )
-    }
-    gcMajority <- purrr::map_dbl(x$majority, ~ .gcContent(.x))
-    x <- tibble::add_column(x, gcMajority, .before = "identity")
-    x <- x[x$gcMajority >= min(gcRange) & x$gcMajority <= max(gcRange), ]
-    x
-}
-
-#' Identify GC clamp
-#'
-#' @param x One or more oligo sequences (a character vector).
-#'
-#' @return
-#' A character vector, where oligo sequences without GC clamp have
-#' been replaced with NA.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.getOligosWithGcClamp <- function(x) {
-    ends <- purrr::map(x, ~ .splitSequence(.x))
-    ends <- purrr::map(ends, ~ .x[(length(.x) - 4):length(.x)])
-    gc <- purrr::map_dbl(ends, ~ .gcContent(.x))
-    x[gc > 3 / 5] <- NA
-    x[gc < 2 / 5] <- NA
-    x
-}
-
-#' Replace unwanted oligos with NA
-#'
-#' @param x A data frame with oligos (with reverse complements).
-#'
-#' @inheritParams getOligos
-#'
-#' @return A data frame where unwanted oligos are replaced with NA.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.filterOligos <- function(x,
-                          gcClamp = TRUE,
-                          avoid5EndG = FALSE,
-                          avoid3EndRuns = TRUE,
-                          minEndIdentity = NULL) {
-    if (any(!is.logical(c(gcClamp, avoid5EndG, avoid3EndRuns)))) {
-        stop(
-            "'gcClamp', 'avoid5EndG',  and 'avoid3EndRuns' must be set to
-        TRUE or FALSE",
-            call. = FALSE
-        )
-    }
-    if (is.null(minEndIdentity)) minEndIdentity <- 0
-    if (minEndIdentity < 0 || minEndIdentity > 1) {
-        stop(
-            "'minEndIdentity' must be either NULL or from 0 to 1.",
-            call. = FALSE
-        )
-    }
-    if (gcClamp) {
-        x$majority <- .getOligosWithGcClamp(x$majority)
-        x$majorityRc <- .getOligosWithGcClamp(x$majorityRc)
-    }
-    if (avoid5EndG) {
-        x$majority[grepl("^G", x$majority)] <- NA
-        x$majorityRc[grepl("^G", x$majorityRc)] <- NA
-    }
-    if (avoid3EndRuns) {
-        x$majority[grepl("([A-Z])\\1\\1$", x$majority)] <- NA
-        x$majorityRc[grepl("([A-Z])\\1\\1$", x$majorityRc)] <- NA
-    }
-    x$majority[x$identity3End < minEndIdentity] <- NA
-    x$majorityRc[x$identity3EndRc < minEndIdentity] <- NA
-    x$iupac[is.na(x$majority)] <- NA
-    x$iupacRc[is.na(x$majorityRc)] <- NA
-    invalidOligos <- is.na(x$majority) & is.na(x$majorityRc)
-    x <- x[!invalidOligos, ]
-    x
-}
-
-#' Add Tm to oligos
-#'
-#' @param x A data frame with oligos.
-#'
-#' @inheritParams getOligos
-#'
-#' @keywords internal
-#'
-#' @noRd
-.addTm <- function(x, concOligo = 500, concNa = 0.05, tmRange = c(55, 65)) {
-    if (!(min(tmRange) >= 20 && max(tmRange) <= 90)) {
-        stop("'tmRange' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE)
-    }
-    if (nrow(x) >= 1) {
-        tmMajority <- .tm(x$majority, concOligo = concOligo, concNa = concNa)
-    } else {
-        tmMajority <- numeric(0)
-    }
-    x <- tibble::add_column(x, tmMajority, .before = "identity")
-    x <- x[x$tmMajority >= min(tmRange) & x$tmMajority <= max(tmRange), ]
-    x
-}
-
-#' Find all variants of a DNA sequence
-#'
-#' @param x
-#' A DNA sequence, i.e. a character vector of length one,
-#' e.g. "ACTTTGR".
-#'
-#' @return
-#' All variants of \code{x}. A character vector.
+#' @examples
+#' .expandDegenerates(c("A", "R", "T", "T", "N", "G"))
 #'
 #' @keywords internal
 #'
 #' @noRd
 .expandDegenerates <- function(x) {
-    x <- .splitSequence(x)
-    expanded <- purrr::map(x, function(i) {
-        all <- unname(lookup$degenerates[[i]])
-        unlist(strsplit(all, split = ","))
-    })
-    expanded <- expand.grid(
-        expanded[seq_along(expanded)],
-        stringsAsFactors = FALSE
-    )
-    expanded <- purrr::map(seq_len(nrow(expanded)), function(x) {
-        paste(expanded[x, ], collapse = "")
-    })
-    unlist(expanded, use.names = FALSE)
+  bases <- lapply(x, function(i) {
+    all <- unname(lookup$degenerates[[i]])
+    unlist(strsplit(all, split = ","))
+  })
+  allVariants <- expand.grid(bases[seq_along(bases)], stringsAsFactors = FALSE)
+  allVariants <- as.matrix(allVariants)
+  colnames(allVariants) <- NULL
+  allVariants
 }
 
-#' Add info on sequence, GC-content and Tm of all oligo variants
+#' Turn a list of oligos into a matrix with oligos
 #'
-#' @param x A data frame with oligos.
+#' \code{.makeOligoMatrix()} is part of a "workaround" to avoid loops when
+#' finding e.g. the reverse complement, the presence of GC-clamp etc.
+#' of many DNA sequences (oligos).
+#' It takes a list of DNA sequences as input (where each element contains a
+#' matrix with all variants of a specific degenerate oligo)
+#' and returns a single matrix, where the belonging of each oligo sequence
+#' is identified by a rowname ID.
 #'
-#' @inheritParams getOligos
+#' Helper function to \code{.getAllVariants()}.
 #'
-#' @return A data frame with oligos, including all variants.
+#' @param x A list with oligos.
+#'
+#' @return A matrix with all sequence variants, with oligo IDs as rownames.
 #'
 #' @keywords internal
 #'
 #' @noRd
-.expandOligos <- function(x, concOligo = 5e-7, concNa = 0.05) {
-    all <- purrr::map(x$iupac, function(x) {
-        if (is.na(x)) "" else .expandDegenerates(x)
-    })
-    x <- tibble::add_column(x, all, .before = "alignmentStart")
-    allRc <- purrr::map(x$iupacRc, function(x) {
-        if (is.na(x)) "" else .expandDegenerates(x)
-    })
-    x <- tibble::add_column(x, allRc, .after = "all")
-    gcAll <- purrr::map(seq_len(nrow(x)), function(i) {
-        toCalculate <- ifelse(!is.na(x[i, ]$majority), x[i, ]$all, x[i, ]$allRc)
-        toCalculate <- unlist(toCalculate)
-        purrr::map_dbl(toCalculate, ~ round(.gcContent(.x), 2))
-    })
-    tmAll <- purrr::map(seq_len(nrow(x)), function(i) {
-        toCalculate <- ifelse(!is.na(x[i, ]$majority), x[i, ]$all, x[i, ]$allRc)
-        toCalculate <- unlist(toCalculate)
-        purrr::map_dbl(toCalculate, ~ round(.tm(.x), 2))
-    })
-    x <- tibble::add_column(x, gcAll, tmAll, .before = "alignmentStart")
-    x
+.makeOligoMatrix <- function(x) {
+  degeneracy <- vapply(x, nrow, integer(1))
+  id <- lapply(seq_along(degeneracy), function(x) rep(x, degeneracy[x]))
+  id <- unlist(id)
+  x <- do.call("rbind", x)
+  rownames(x) <- id
+  x
 }
 
-.getPrimers <- function(x,
-                        lengthPrimer = 18:22,
-                        maxGapFrequencyPrimer = 0.1,
-                        maxDegeneracyPrimer = 4,
-                        gcClampPrimer = TRUE,
-                        avoid3EndRunsPrimer = TRUE,
-                        minEndIdentityPrimer = 0.98,
-                        gcRangePrimer = c(0.45, 0.55),
-                        tmRangePrimer = c(55, 65),
-                        concPrimer = 500,
-                        concNa = 0.05) {
-    allPrimers <- purrr::map_dfr(lengthPrimer, function(i) {
-        primers <- .generateOligos(
-            x,
-            oligoLength = i, maxGapFrequency = maxGapFrequencyPrimer,
-            maxDegeneracy = maxDegeneracyPrimer
-        )
-        primers <- .exclude(primers)
-        primers <- .addGcContent(primers, gcRange = gcRangePrimer)
-        primers <- .addTm(
-            primers,
-            concOligo = concPrimer,
-            concNa = concNa, tmRange = tmRangePrimer
-        )
-        primers <- .addReverseComplement(primers)
-        primers <- .filterOligos(
-            primers,
-            gcClamp = gcClampPrimer, avoid5EndG = FALSE,
-            avoid3EndRuns = avoid3EndRunsPrimer,
-            minEndIdentity = minEndIdentityPrimer
-        )
-        primers <- tibble::add_column(
-            primers,
-            type = rep("primer", nrow(primers)), .before = "start"
-        )
-        primers
-    })
-    allPrimers <- .expandOligos(
-        allPrimers,
-        concOligo = concPrimer, concNa = concNa
-    )
-    allPrimers
+#' Find the reverse complement of a DNA sequence
+#'
+#' Helper function to \code{.getAllVariants()}.
+#'
+#' @param x A vector or matrix with DNA sequence(s).
+#'
+#' @return The reverse complement of \code{x}, a matrix with the same
+#' dimension as \code{x}, and with the same rownames.
+#'
+#' @examples
+#' .reverseComplement(c("A", "R", "T", "T", "N", "G"))
+#'
+#' @keywords internal
+#'
+#' @noRd
+.reverseComplement <- function(x) {
+  if (!is.matrix(x)) x <- t(matrix(x))
+  rev <- x[, rev(seq_len(ncol(x)))]
+  rc <- unname(lookup$complement[rev])
+  rc <- matrix(rc, ncol = ncol(x), byrow = FALSE)
+  rownames(rc) <- rownames(rev)
+  rc
 }
 
-.getProbes <- function(x,
-                       lengthProbe = 18:22,
-                       maxGapFrequencyProbe = 0.1,
-                       maxDegeneracyProbe = 4,
-                       avoid5EndGProbe = TRUE,
-                       gcRangeProbe = c(0.45, 0.55),
-                       tmRangeProbe = c(55, 70),
-                       concProbe = 250,
-                       concNa = 0.05) {
-    allProbes <- purrr::map_dfr(lengthProbe, function(i) {
-        probes <- .generateOligos(
-            x,
-            oligoLength = i, maxGapFrequency = maxGapFrequencyProbe,
-            maxDegeneracy = maxDegeneracyProbe
-        )
-        probes <- .exclude(probes)
-        probes <- .addGcContent(probes, gcRange = gcRangeProbe)
-        probes <- .addTm(
-            probes,
-            concOligo = concProbe,
-            concNa = concNa, tmRange = tmRangeProbe
-        )
-        probes <- .addReverseComplement(probes)
-        probes <- .filterOligos(
-            probes,
-            gcClamp = FALSE, avoid5EndG = avoid5EndGProbe,
-            avoid3EndRuns = FALSE,
-            minEndIdentity = NULL
-        )
-        probes <- tibble::add_column(
-            probes,
-            type = rep("probe", nrow(probes)), .before = "start"
-        )
-        probes
-    })
-    allProbes <- .expandOligos(
-        allProbes,
-        concOligo = concProbe, concNa = concNa
-    )
-    allProbes
+#' Identify oligos with a GC-clamp
+#'
+#' \code{.detectGcClamp()} detects the presence of a GC-clamp on oligos
+#' (good to have on primers).
+#' A GC-clamp is identified as two to three G or C:s at
+#' the 3'-end (= the last five bases).
+#'
+#' Helper function to \code{.getAllVariants()}.
+#'
+#' @param x
+#' A numeric vector or matrix, where each row corresponds to a specific oligo.
+#' In this matrix, 1 corresponds to G or C, and 0 corresponds to A or T.
+#'
+#' @param fwd
+#' If the check should be done in forward direction,
+#' defaults to \code{TRUE}. If \code{FALSE}, the check will be performed in
+#' reverse direction.
+#'
+#' @return
+#' A logical vector of length \code{nrow(x)}, where \code{TRUE} indicates the
+#' presence of a GC-clamp.
+#'
+#' @examples
+#' seq <- c("A", "C", "G", "G", "T", "T", "A", "A")
+#' gc <- ifelse(seq == "C" | seq == "G", 1, 0)
+#' .detectGcClamp(gc, fwd = TRUE)
+#' .detectGcClamp(gc, fwd = FALSE)
+#'
+#' @keywords internal
+#'
+#' @noRd
+.detectGcClamp <- function(x, fwd = TRUE) {
+  if (!is.matrix(x)) x <- t(matrix(x))
+  gc <- if (fwd) {
+    end <- x[, seq((ncol(x) - 4), ncol(x)), drop = FALSE]
+    ifelse(rowSums(end) >= 2 & rowSums(end) <= 3, TRUE, FALSE)
+    } else {
+      end <- x[, seq_len(5),  drop = FALSE]
+      ifelse(5 - rowSums(end) >= 2 & 5 - rowSums(end) <= 3, TRUE, FALSE)
+    }
+  gc
+}
+
+#' Identify oligos with runs of the same nucleotide at the 3' end
+#'
+#' \code{.detectThreeEndRuns()} detects if the same nucleotide is repeated at
+#' at least 3 times at the terminal 3'-end of an oligo (e.g. "AAA")
+#' (bad to have on primers).
+#'
+#' Helper function to \code{.getAllVariants()}.
+#'
+#' @param x
+#' A character vector or matrix, where each row corresponds to a specific oligo.
+#'
+#' @param fwd
+#' If the check should be done in forward direction,
+#' defaults to \code{TRUE}. If \code{FALSE}, the check will be performed in
+#' reverse direction.
+#'
+#' @return
+#' A logical vector of length \code{nrow(x)}, where \code{TRUE} indicates the
+#' presence of a 3'-end run.
+#'
+#' @examples
+#' seq <- c("A", "C", "G", "G", "T", "T", "A", "A")
+#' .detectThreeEndRuns(seq, fwd = TRUE)
+#'
+#' @keywords internal
+#'
+#' @noRd
+.detectThreeEndRuns <- function(x, fwd = TRUE) {
+  if (!is.matrix(x)) x <- t(matrix(x))
+  end <- if (fwd) {
+    x[, seq((ncol(x) - 2), ncol(x)), drop = FALSE]
+  } else {
+    x[, seq_len(3), drop = FALSE]
+  }
+  apply(end, 1, function(x) {
+    all(x == "A") | all(x == "C") | all(x == "T") | all(x == "G")
+  })
+}
+
+#' Get all variants of oligos with degenerate bases
+#'
+#' \code{.getAllVariants()} is the third step of the oligo-design process.
+#' It returns all sequence variants of each oligo, both in sense and anti-sense
+#' (reverse complement) direction. For each sequence variant, information is
+#' also provided on GC-content, the presence of a GC-clamp (good for primers),
+#' terminal 3'-end run (bad for primers) and a terminal
+#' five end G (good for probes), and melting temperature.
+#'
+#' Helper function to \code{.designOligos()},
+#'
+#' @param x An output from \code{.filterOligos()}.
+#'
+#' @param concOligo
+#' Oligo concentration in nM (for tm-calculation).
+#'
+#' @param concNa
+#' Sodium ion concentration in the PCR reaction in M (for tm-calculation).
+#'
+#' @return
+#' A nested list with sequence, reverse complement, GC-content,
+#' GC-clamp, 3' end runs, 5' end G and melting temperature of each oligo.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.getAllVariants <- function(x, concOligo = 500, concNa = 0.05) {
+  all <- list()
+  all$sequence <- apply(x$iupacSequence, 1, .expandDegenerates)
+  ## some kind of workaround if there is only one variant of each oligo... #######################
+  if (!is.list(all$sequence)) all$sequence <- list(t(all$sequence))
+  all$sequence <- .makeOligoMatrix(all$sequence)
+  all$sequenceRc <- .reverseComplement(all$sequence)
+  gc <- ifelse(all$sequence == "C" | all$sequence == "G", 1, 0)
+  n <- rowSums(ifelse(
+    all$sequence == "A" | all$sequence == "C" |
+      all$sequence == "G" | all$sequence == "T", 1, 0
+  ))
+  all$gcContent <- rowSums(gc)/n
+  all$gcClampFwd <- .detectGcClamp(gc, TRUE)
+  all$gcClampRev <- .detectGcClamp(gc, FALSE)
+  all$threeEndRunsFwd <- .detectThreeEndRuns(all$sequence, TRUE)
+  all$threeEndRunsRev <- .detectThreeEndRuns(all$sequence, FALSE)
+  all$fiveEndGPlus <- ifelse(all$sequence[, 1] == "G", TRUE, FALSE)
+  all$fiveEndGMinus <- ifelse(
+    all$sequence[, ncol(all$sequence)] == "C", TRUE, FALSE
+  )
+  all$tm <- .tm(all$sequence, concOligo, concNa)
+  all$sequence <- apply(all$sequence, 1, paste, collapse = "")
+  all$sequenceRc <- apply(all$sequenceRc, 1, paste, collapse = "")
+  lapply(all, function(x) unname(split(unname(x), f = as.integer(names(x)))))
+}
+
+#' Calculate mean values
+#'
+#' When all sequence variants of each oligo are generated with
+#' \code{.getAllVariants()}, the next step is to compute mean values on
+#' GC-content and melting temperature, and proportion of the sequence
+#' variants holding a GC-clamp, terminal 3'-end run and terminal 5'-end G.
+#'
+#' Helper function to \code{.designOligos()}.
+#'
+#' @param x An output from \code{.getAllVariants()}.
+#'
+#' @return A data frame with mean values for all numerical and
+#' logical variables. Each row corresponds to an oligo.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.getMeanValues <- function(x) {
+  remove <- c("sequence", "sequenceRc")
+  x <- x[!(names(x) %in% remove)]
+  means <- lapply(x, function(y) vapply(y, mean, double(1)))
+  means <- do.call("cbind.data.frame", means)
+  names(means) <- paste0(names(means), "Mean")
+  means
+}
+
+#' Turn a list with oligos into a data frame
+#'
+#' Helper function to \code{.designOligos()}.
+#'
+#' @param x An output from \code{.generateOligos()} or \code{.filterOligos()}.
+#'
+#' @return A data frame with oligos.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.makeOligoDf <- function(x) {
+  x <- within(x, rm(gapFrequency))
+  x$iupacSequenceRc <- .reverseComplement(x$iupacSequence)
+  x$iupacSequence <- apply(x$iupacSequence, 1, paste, collapse = "")
+  x$iupacSequenceRc <- apply(x$iupacSequenceRc, 1, paste, collapse = "")
+  x <- do.call("cbind.data.frame", x)
+  x[c(
+    "start", "end", "length", "iupacSequence", "iupacSequenceRc", "identity",
+    "degeneracy",
+    "endIdentityFwd", "endIdentityRev", "alignmentStart", "alignmentEnd"
+  )]
+}
+
+#' Turn a list with all oligo sequence variants into a data frame
+#'
+#' Helper function to \code{.designOligos()}.
+#'
+#' @param x An output from \code{.getAllVariants()}.
+#'
+#' @return
+#' A data frame with sequence, reverse complement, GC content and tm for all
+#' sequence variants.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.makeAllVariantDf <- function(x) {
+  x <- x[c("sequence", "sequenceRc", "gcContent", "tm")]
+  data.frame(do.call("cbind", x))
+}
+
+#' Design oligos
+#'
+#' Helper function to \code{getOligos()}.
+#'
+#' @param x An \code{RprimerProfile} object.
+#'
+#' @param maxGapFrequency
+#' Maximum allowed gap frequency. A number [0, 1], defaults to 0.1.
+#'
+#' @param maxDegeneracy
+#' Maximum allowed number of variants of each oligo.
+#' An integer [1, 32], defaults to 4.
+#'
+#' @param concOligo
+#' Oligo concentration in nM. A number
+#' [20, 2000] Defaults to 250.
+#'
+#' @param concNa
+#' Sodium ion concentration in the PCR reaction in M.
+#' A number [0.01, 1]. Defaults to 0.05 M (50 mM).
+#'
+#' @return A data frame with oligos.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.designOligos <- function(x,
+                      lengthOligo = 18:22,
+                      maxGapFrequency = 0.1,
+                      maxDegeneracy = 4,
+                      concOligo = 500,
+                      concNa = 0.05) {
+  allOligos <- lapply(lengthOligo, function(i) {
+    oligos <- .generateOligos(x, lengthOligo = i)
+    oligos <- .filterOligos(oligos,
+                            maxGapFrequency = maxGapFrequency,
+                            maxDegeneracy = maxDegeneracy)
+    all <- .getAllVariants(oligos, concOligo = concOligo, concNa = concNa)
+    means <- .getMeanValues(all)
+    all <- .makeAllVariantDf(all)
+    oligos <- .makeOligoDf(oligos)
+    cbind(oligos, means, all)
+  })
+  allOligos <- do.call("rbind", allOligos)
+  allOligos <- allOligos[c(
+    "start", "end", "length", "iupacSequence", "iupacSequenceRc",
+    "identity", "degeneracy",
+    "gcContentMean", "tmMean", "sequence", "sequenceRc", "gcContent", "tm",
+    "endIdentityFwd", "endIdentityRev",
+    "gcClampFwdMean", "gcClampRevMean", "threeEndRunsFwdMean",
+    "threeEndRunsRevMean", "fiveEndGPlusMean", "fiveEndGMinusMean",
+    "alignmentStart", "alignmentEnd"
+  )]
+  allOligos
+}
+
+#' Get proportion of sequence variants within range
+#'
+#' \code{.getProportionInRange()} is used to find the proportion of sequence
+#' variants of each oligo that falls within a specified range for
+#' e.g. GC-content or tm.
+#'
+#' Helper function to \code{.filterPrimers()} and \code{.filterProbes()}.
+#'
+#' @param x A list.
+#'
+#' @param range The specified range. A numeric vector of length two.
+#'
+#' Helper function to \code{.designOligos()}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.getProportionInRange <- function(x, range) {
+  valid <- lapply(x, function(y) {
+    ifelse(y >= min(range) & y <= max(range), TRUE, FALSE)
+  })
+  valid <- do.call("rbind", valid)
+  rowMeans(valid)
+}
+
+#' Detect mono- and dinucleotide repeats
+#'
+#' Helper function to \code{.filterPrimers()} and \code{.filterProbes()}.
+#'
+#' @param x ###############################################################
+#'
+#' @return A vector
+#'
+#' @keywords internal
+#'
+#' @noRd
+.detectRepeats <- function(x) {
+  dinuclRepeats <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(TC){4,}|(CT){4,})" # sry ;)
+  mononuclRepeates <- "([A-Z])\\1\\1\\1\\1"
+  ok <- lapply(x, function(x) {
+    ifelse(grepl(dinuclRepeats, x) | grepl(mononuclRepeates, x), TRUE, FALSE)
+  })
+  ok <- do.call("rbind", ok)
+  rowMeans(ok) ###########################################################
+}
+
+#' Find oligos that pass the criteria for being a primer
+#'
+#' Helper function to \code{getOligos()}
+#'
+#' @param x An output from \code{.generateOligos()}
+#'
+#' @param lengthPrimer
+#' Primer length. A numeric vector [14, 30].
+#' Defaults to \code{18:22}.
+#'
+#' @param maxDegeneracyPrimer
+#' Maximum allowed number of variants of each oligo.
+#' An integer [1, 32], defaults to 4.
+#'
+#' @param minEndIdentityPrimer
+#' A number. The minimum allowed identity
+#' at the 3' end of the primer (i.e. the last five bases), defaults to 0.
+#'
+#' @param gcClampPrimer
+#' \code{TRUE} or \code{FALSE}. If primers must have a GC-clamp.
+#' Defaults to \code{TRUE}. A GC-clamp
+#' is identified as two to three G or
+#' C:s within the last five bases (3'-end) of the primer.
+#'
+#' @param avoidThreeEndRunsPrimer
+#' \code{TRUE} or \code{FALSE}.
+#' If primers with more than two runs
+#' of the same nucleotide at the terminal 3'-end should be excluded.
+#' Defaults to \code{TRUE}.
+#'
+#' @param gcRangePrimer
+#' GC-content range for primers (proportion, not percent).
+#' A numeric vector. Defaults to \code{c(0.45, 0.55)}.
+#'
+#' @param tmRangePrimer
+#' Tm range for primers.
+#' A numeric vector. Defaults to \code{c(55, 65)}.
+#'
+#' @param acceptanceThreshold
+#' Propoprtion of the sequence variants of each oligo that must
+#' meet the design constraints. Defaults to 0.9.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.filterPrimers <- function(x,
+                           lengthPrimer = 18:22,
+                           maxDegeneracyPrimer = 4,
+                           minEndIdentityPrimer = 0,
+                           gcClampPrimer = TRUE,
+                           avoidThreeEndRunsPrimer = TRUE,
+                           gcRangePrimer = c(0.45, 0.55),
+                           tmRangePrimer = c(55, 65),
+                           acceptanceThreshold = 0.9) {
+
+if (!(min(gcRangePrimer) >= 0 && max(gcRangePrimer) <= 1)) {
+  stop(
+    "'gcRangePrimer' must be from 0 to 1, e.g. c(0.45, 0.65).",
+    call. = FALSE
+  )
+}
+if (!(min(tmRangePrimer) >= 20 && max(tmRangePrimer) <= 90)) {
+  stop("'tmRangePrimer' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE)
+}
+if (is.null(minEndIdentityPrimer)) minEndIdentityPrimer <- 0
+if (minEndIdentityPrimer < 0 || minEndIdentityPrimer > 1) {
+  stop(
+    "'minEndIdentityPrimer' must be either NULL or from 0 to 1.", call. = FALSE
+  )
+}
+if (any(!is.logical(c(gcClampPrimer, avoidThreeEndRunsPrimer)))) {
+  stop(
+    "'gcClampPrimer' and 'avoidThreeEndRunsPrimer'
+    must be set to TRUE or FALSE",
+    call. = FALSE
+  )
+}
+if (!(min(gcRangePrimer) >= 0 && max(gcRangePrimer) <= 1)) {
+  stop(
+    "'gcRangePrimer' must be from 0 to 1, e.g. c(0.45, 0.65).",
+    call. = FALSE
+  )
+}
+if (!(min(tmRangePrimer) >= 20 && max(tmRangePrimer) <= 90)) {
+  stop("'tmRangePrimer' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE)
+}
+  if (!gcClampPrimer) {
+    x$gcClampFwdMean <- 1
+    x$gcClampRevMean <- 1
+  }
+  if (!avoidThreeEndRunsPrimer) {
+    x$threeEndRunsFwdMean <- 1
+    x$threeEndRunsRevMean <- 1
+  }
+  x <- x[x$length >= min(lengthPrimer) & x$length <= max(lengthPrimer), ]
+  x <- x[x$degeneracy <= maxDegeneracyPrimer, ]
+  validFwd <- ifelse(
+    x$endIdentityFwd >= minEndIdentityPrimer &
+      x$gcClampFwdMean >= acceptanceThreshold &
+      1 - x$threeEndRunsFwdMean >= acceptanceThreshold, TRUE, FALSE
+  )
+  validRev <- ifelse(
+    x$endIdentityRev >= minEndIdentityPrimer &
+      x$gcClampRevMean >= acceptanceThreshold &
+      1 - x$threeEndRunsRevMean >= acceptanceThreshold, TRUE, FALSE
+  )
+  x <- cbind(x, validFwd, validRev)
+  x <- x[x$validFwd | x$validRev, ]
+  repeats <- .detectRepeats(x$sequence)
+  valid <- ifelse(1 - repeats >= acceptanceThreshold, TRUE, FALSE)
+  x <- x[valid, ]
+  okForGc <- .getProportionInRange(x$gcContent, gcRangePrimer)
+  x <- x[okForGc >= acceptanceThreshold, ]
+  okForTm <- .getProportionInRange(x$tm, tmRangePrimer)
+  x <- x[okForTm >= acceptanceThreshold, ]
+  type <- rep("primer", nrow(x))
+  cbind(type, x)
+}
+
+#' Find oligos that pass the criteria for being a probe
+#'
+#' Helper function to \code{getOligos()}
+#'
+#' @param x An output from \code{.generateOligos()}
+#'
+#' @param lengthProbe
+#' Probe length. A numeric vector.
+#' Defaults to \code{18:22}.
+#'
+#' @param maxDegeneracyProbe
+#' Maximum allowed number of variants of each oligo.
+#' An integer, defaults to 4.
+#'
+#' @param avoidFiveEndGProbe
+#' If probes with a G at the terminal 5'-end should be avoided.
+#' Defaults to TRUE.
+#'
+#' @param gcRangeProbe
+#' GC-content range for probes (proportion, not percent).
+#' A numeric vector. Defaults to \code{c(0.45, 0.55)}.
+#'
+#' @param tmRangeProbe
+#' Tm range for probes.
+#' A numeric vector. Defaults to \code{c(55, 65)}.
+#'
+#' @param concProbe ######################################################
+#'
+#' @param acceptanceThreshold
+#' Proportion of the sequence variants of each oligo that must
+#' meet the design constraints. Defaults to 0.9.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.filterProbes <- function(x,
+                          lengthProbe = 18:22,
+                          maxDegeneracyProbe = 4,
+                          avoidFiveEndGProbe = TRUE,
+                          gcRangeProbe = c(0.45, 0.55),
+                          tmRangeProbe = c(55, 65),
+                          concProbe = 250,
+                          acceptanceThreshold = 0.9) {
+if (!is.logical(avoidFiveEndGProbe)) {
+  stop("'avoidFiveEndGProbe' must be set to TRUE or FALSE", call. = FALSE)
+}
+if (!(min(gcRangeProbe) >= 0 && max(gcRangeProbe) <= 1)) {
+  stop(
+    "'gcRangeProbe' must be from 0 to 1, e.g. c(0.45, 0.65).",
+    call. = FALSE
+  )
+}
+if (!(min(tmRangeProbe) >= 20 && max(tmRangeProbe) <= 90)) {
+  stop("'tmRangeProbe' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE)
+}
+  if (!avoidFiveEndGProbe) {
+    x$fiveEndGPlusMean <- 1
+    x$fiveEndGMinusMean <- 1
+  }
+  x <- x[x$length >= min(lengthProbe) & x$length <= max(lengthProbe), ]
+  x <- x[x$degeneracy <= maxDegeneracyProbe, ]
+  validFwd <- ifelse(
+      1 - x$fiveEndGPlusMean >= acceptanceThreshold, TRUE, FALSE
+  )
+  validRev <- ifelse(
+    1 - x$fiveEndGMinusMean >= acceptanceThreshold, TRUE, FALSE
+  )
+  x <- cbind(x, validFwd, validRev)
+  x <- x[x$validFwd | x$validRev, ]
+  repeats <- .detectRepeats(x$sequence)
+  valid <- ifelse(1 - repeats >= acceptanceThreshold, TRUE, FALSE)
+  x <- x[valid, ]
+  okForGc <- .getProportionInRange(x$gcContent, gcRangeProbe)
+  x <- x[okForGc >= acceptanceThreshold, ]
+  # correct tm for probe conc .....######################################################################
+  okForTm <- .getProportionInRange(x$tm, tmRangeProbe)
+  x <- x[okForTm >= acceptanceThreshold, ]
+  type <- rep("probe", nrow(x))
+  x <- cbind(type, x)
+  x
+}
+
+#' Arrange oligo data
+#'
+#' \code{.arrangeOligos()} drops unnecessary columns and sorts oligos based
+#' on their start position.
+#'
+#' Helper function to \code{getOligos()}.
+#'
+#' @param x A data frame with oligos.
+#'
+#' @return A data frame with oligos.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.arrangeData <- function(x) {
+  keep <- c(
+    "type", "validFwd", "validRev", "start", "end", "length", "iupacSequence",
+    "iupacSequenceRc",
+    "identity", "degeneracy", "gcContentMean", "tmMean", "sequence",
+    "sequenceRc", "gcContent", "tm", "alignmentStart",
+    "alignmentEnd"
+  )
+  x <- x[keep]
+  x <- x[order(x$start), ]
+  rownames(x) <- NULL
+  x
 }

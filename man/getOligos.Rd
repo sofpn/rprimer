@@ -6,20 +6,19 @@
 \usage{
 getOligos(
   x,
+  maxGapFrequency = 0.1,
   lengthPrimer = 18:22,
-  maxGapFrequencyPrimer = 0.1,
   maxDegeneracyPrimer = 4,
   gcClampPrimer = TRUE,
-  avoid3EndRunsPrimer = TRUE,
+  avoidThreeEndRunsPrimer = TRUE,
   minEndIdentityPrimer = 0.98,
   gcRangePrimer = c(0.45, 0.55),
   tmRangePrimer = c(55, 65),
   concPrimer = 500,
   probe = TRUE,
   lengthProbe = 18:22,
-  maxGapFrequencyProbe = 0.1,
   maxDegeneracyProbe = 4,
-  avoid5EndGProbe = TRUE,
+  avoidFiveEndGProbe = TRUE,
   gcRangeProbe = c(0.45, 0.55),
   tmRangeProbe = c(55, 70),
   concProbe = 250,
@@ -29,11 +28,11 @@ getOligos(
 \arguments{
 \item{x}{An \code{RprimerProfile} object.}
 
+\item{maxGapFrequency}{Maximum allowed gap frequency (for both primers and probes).
+A number [0, 1]. Defaults to 0.1.}
+
 \item{lengthPrimer}{Primer length. A numeric vector [14, 30].
 Defaults to \code{18:22}.}
-
-\item{maxGapFrequencyPrimer}{Maximum allowed gap frequency for primers.
-A number [0, 1]. Defaults to 0.1.}
 
 \item{maxDegeneracyPrimer}{Maximum number of variants of each primer. A number [1, 32]. Defaults to 4.}
 
@@ -42,15 +41,10 @@ If primers with no GC-clamp
 should be replaced with \code{NA}.
 Defaults to \code{TRUE}. A GC-clamp
 is identified as two to three G or
-C:s within the last five bases (3' end) of the oligo.}
-
-\item{avoid3EndRunsPrimer}{\code{TRUE} or \code{FALSE}.
-If primers with more than two runs
-of the same nucleotide at the 3' end should be replaced with \code{NA}.
-Defaults to \code{TRUE}.}
+C:s within the last five bases (3'-end) of the oligo.}
 
 \item{minEndIdentityPrimer}{Optional. If specified, a number [0, 1]. The minimum allowed identity
-at the 3' end of the primer (i.e. the last five bases).}
+at the 3'-end of the primer (i.e. the last five bases).}
 
 \item{gcRangePrimer}{GC-content range for primers (proportion, not percent).
 A numeric vector [0, 1]. Defaults to \code{c(0.45, 0.55)}.}
@@ -67,13 +61,10 @@ defaults to \code{TRUE}.}
 \item{lengthProbe}{Probe length. A numeric vector [14, 30].
 Defaults to \code{18:22}.}
 
-\item{maxGapFrequencyProbe}{Maximum allowed gap frequency for probes.
-A number [0, 1]. Defaults to 0.1.}
-
 \item{maxDegeneracyProbe}{Maximum number of variants of each probe. A number [1, 32]. Defaults to 4.}
 
-\item{avoid5EndGProbe}{\code{TRUE} or \code{FALSE}. If probes with G
-at the 5' end should be excluded. Defaults to \code{TRUE}.}
+\item{avoidFiveEndGProbe}{\code{TRUE} or \code{FALSE}. If probes with G
+at the 5'-end should be excluded. Defaults to \code{TRUE}.}
 
 \item{gcRangeProbe}{GC-content range for probes (proportion, not %). A numeric vector [0, 1].
 Defaults to \code{c(0.45, 0.55)}.}
@@ -86,6 +77,10 @@ A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.}
 
 \item{concNa}{The sodium ion concentration in the PCR reaction in M, for Tm calculation.
 A numeric vector [0.01, 1]. Defaults to 0.05 M (50 mM).}
+
+\item{avoidTreeEndRunsPrimer}{\code{TRUE} or \code{FALSE}.
+If primers with more than two runs
+of the same nucleotide at the 3' end should be considered as invalid.}
 }
 \value{
 An \code{RprimerOligo} object.
@@ -98,20 +93,16 @@ The object contains the following columns:
   \item{start}{Position where the oligo starts.}
   \item{end}{Position where the oligo ends.}
   \item{length}{Length of the oligo.}
-  \item{majority}{Majority sequence.}
-  \item{majorityRc}{Majority sequence, reverse complement.}
-  \item{gcMajority}{GC content (majority sequence), proportion.}
-  \item{tmMajority}{Melting temperature.}
   \item{identity}{Average identity score of the oligo.}
   \item{iupac}{IUPAC sequence (i.e. with degenerate bases).}
   \item{iupacRc}{IUPAC sequence, reverse complement.}
   \item{degeneracy}{Number of variants of the degenerate oligo.}
-  \item{all}{Lists with all sequence variants of the oligos.}
-  \item{allRc}{Lists with all sequence variants of the oligos, reverse
+  \item{sequence}{Lists with all sequence variants of the oligos.}
+  \item{sequenceRc}{Lists with all sequence variants of the oligos, reverse
   complements.}
-  \item{gcAll}{Lists with the GC content of all
+  \item{gcContent}{Lists with the GC content of all
   sequence variants of the oligos.}
-  \item{tmAll}{Lists with the Tm of all sequence variants of the oligos.}
+  \item{tm}{Lists with the Tm of all sequence variants of the oligos.}
   \item{alignmentStart}{Start position of the input consensus profile.}
   \item{alingnmentEnd}{End position of the input consensus profile.}
 }
@@ -120,18 +111,21 @@ The object contains the following columns:
 \code{getOligos()} identifies oligos (primers and probes)
 from an \code{RprimerProfile} object.
 }
-\section{Excluded oligos}{
+\section{NA}{
 
-\code{getOligos()} excludes:
+
+Melting temperatures are calculated using SantaLucia's nearest-neighbor
+method, with the following assumptions:
 
 \itemize{
-\item Majority oligos with more than than three consecutive runs of
-the same dinucleotide (e.g. "TATATATA")
-\item Majority oligos with more than four consecutive runs of
-the same nucleotide  (e.g. "AAAAA")
-\item Majority oligos that are duplicated
-(to prevent binding at several places on the genome)
+  \item Oligos are not expected to be self-complementary (i.e. no symmetry
+  correction is done).
+  \item The oligo concentration is assumed to be much higher
+  than the target concentration.
 }
+
+See references for table values and equations.
+Table values can also be found by calling \code{rprimer:::lookup$nn}.
 }
 
 \section{Tm-calculation}{
@@ -147,13 +141,24 @@ method, with the following assumptions:
   than the target concentration.
 }
 
-See references for table values and equations.  INSERT FORMULA
+See references for table values and equations.
+Table values can also be found by calling \code{rprimer:::lookup$nn}.
 }
 
 \examples{
+## Load example data
 data("exampleRprimerProfile")
+target <- exampleRprimerProfile
+
 ## Design primers and probes with default values
-getOligos(exampleRprimerProfile)
+getOligos(target)
+
+## Design primers and probes only within a specific region of interest
+roi <- target[target$position >= 5000 & target$position <= 6000, ]
+getOligos(roi)
+
+## Design primers only
+getOligos(roi, probe = FALSE)
 
 }
 \references{
