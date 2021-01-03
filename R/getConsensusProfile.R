@@ -57,7 +57,6 @@
 #' @examples
 #' data("exampleRprimerAlignment")
 #' getConsensusProfile(exampleRprimerAlignment)
-#'
 #' @references
 #' This function is a wrapper around \code{Biostrings::consensusMatrix()}:
 #'
@@ -70,23 +69,30 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     if (!methods::is(x, "DNAMultipleAlignment")) {
         stop("'x' must be a DNAMultipleAlignment object.")
     }
+    if (
+        !is.numeric(iupacThreshold) ||
+            iupacThreshold < 0 || iupacThreshold > 0.2
+    ) {
+        stop(
+            paste0("'iupacThreshold' must be a number from 0 to 0.2."),
+            call. = FALSE
+        )
+    }
     x <- .getConsensusMatrix(x)
-    position <- seq_len(ncol(x))
-    a <- unname(x["A", ])
-    c <- unname(x["C", ])
-    g <- unname(x["G", ])
-    t <- unname(x["T", ])
-    other <- unname(x["other", ])
-    gaps <- unname(x["-", ])
-    majority <- .majorityConsensus(x)
-    identity <- .nucleotideIdentity(x)
-    iupac <- .iupacConsensus(x, iupacThreshold = iupacThreshold)
-    iupac[majority == "-"] <- "-"
-    entropy <- .shannonEntropy(x)
-    df <- data.frame(
-        position, a, c, g, t, other, gaps, majority, identity, iupac, entropy
-    )
-    RprimerProfile(df)
+    profile <- list()
+    profile$position <- seq_len(ncol(x))
+    profile$a <- unname(x["A", ])
+    profile$c <- unname(x["C", ])
+    profile$g <- unname(x["G", ])
+    profile$t <- unname(x["T", ])
+    profile$other <- unname(x["other", ])
+    profile$gaps <- unname(x["-", ])
+    profile$majority <- .majorityConsensus(x)
+    profile$identity <- .nucleotideIdentity(x)
+    profile$iupac <- .iupacConsensus(x, iupacThreshold = iupacThreshold)
+    profile$iupac[profile$majority == "-"] <- "-"
+    profile$entropy <- .shannonEntropy(x)
+    RprimerProfile(profile)
 }
 
 # Helpers/internal functions ===================================================
@@ -148,7 +154,6 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #'
 #' @examples
 #' .asIUPAC("A,G,C")
-#'
 #' @keywords internal
 #'
 #' @noRd
@@ -167,10 +172,9 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' @param x A consensus matrix.
 #'
 #' @param iupacThreshold
-#' Optional. A number [0, 0.2]
 #' At each position, all nucleotides with a proportion
 #' higher than the threshold will be included in
-#' the IUPAC consensus sequence. The default is 0.
+#' the IUPAC consensus sequence.
 #'
 #' @return The consensus sequence (a character vector).
 #'
@@ -181,15 +185,6 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #'
 #' @noRd
 .iupacConsensus <- function(x, iupacThreshold = 0) {
-    if (
-        !is.numeric(iupacThreshold) ||
-            iupacThreshold < 0 || iupacThreshold > 0.2
-    ) {
-        stop(
-            paste0("'iupacThreshold' must be a number from 0 to 0.2."),
-            call. = FALSE
-        )
-    }
     bases <- c("A", "C", "G", "T", "-")
     x <- x[rownames(x) %in% bases, ]
     basesToInclude <- apply(x, 2, function(y) {
@@ -197,7 +192,8 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
     })
     basesToInclude <- unname(basesToInclude)
     consensus <- vapply(
-        basesToInclude, .asIUPAC, character(1), USE.NAMES = FALSE
+        basesToInclude, .asIUPAC, character(1),
+        USE.NAMES = FALSE
     )
     if (any(is.na(consensus))) {
         warning("The consensus sequence contain NAs. \n

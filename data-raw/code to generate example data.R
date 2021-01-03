@@ -6,10 +6,12 @@ exampleRprimerAlignment <- system.file(
 )
 
 exampleRprimerAlignment <- Biostrings::readDNAMultipleAlignment(
-    exampleRprimerAlignment, format = "fasta"
+    exampleRprimerAlignment,
+    format = "fasta"
 )
 exampleRprimerAlignment <- Biostrings::maskGaps(
-    exampleRprimerAlignment, min.fraction = 0.5, min.block.width = 1
+    exampleRprimerAlignment,
+    min.fraction = 0.5, min.block.width = 1
 )
 
 exampleRprimerProfile <- getConsensusProfile(
