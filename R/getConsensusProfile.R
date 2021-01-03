@@ -196,12 +196,14 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
         paste(rownames(x)[y > iupacThreshold], collapse = ",")
     })
     basesToInclude <- unname(basesToInclude)
-    consensus <- vapply(basesToInclude, .asIUPAC, character(1))
+    consensus <- vapply(
+        basesToInclude, .asIUPAC, character(1), USE.NAMES = FALSE
+    )
     if (any(is.na(consensus))) {
         warning("The consensus sequence contain NAs. \n
     Try to lower the 'iupacThreshold' value.", call. = FALSE)
     }
-    unname(consensus)
+    consensus
 }
 
 #' Nucleotide identity

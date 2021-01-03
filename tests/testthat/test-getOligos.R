@@ -3,6 +3,11 @@ data("exampleRprimerProfile")
 x <- exampleRprimerProfile
 oligos <- .generateOligos(x[5000:6000, ])
 
+test_that(".getOligos works", {
+
+})
+
+
 test_that(".getNmers works", {
   seq <- sample(c("A", "C", "G", "T"), 100, replace = TRUE)
   nmer <- .getNmers(seq, n = 4)
@@ -47,8 +52,8 @@ test_that(".generateOligos works", {
     oligos$endIdentityRev[4],
     min(x$identity[oligos$start[4]:(oligos$start[4] + 4)])
   )
-  expect_equal(oligos$alignmentStart[4], 400)
-  expect_equal(oligos$alignmentEnd[4], 600)
+  expect_equal(oligos$roiStart[4], 5000)
+  expect_equal(oligos$roiEnd[4], 6000)
   expect_equal(unique(oligos$length), ncol(oligos$iupacSequence))
   expect_true(is.list(oligos))
 })
@@ -57,7 +62,7 @@ test_that(".filterOligos works", {
   oligos <- .filterOligos(oligos, maxDegeneracy = 32)
   expect_true(all(oligos$degeneracy <= 32))
   oligos <- .filterOligos(oligos, maxGapFrequency = 0)
-  expect_true(all(oligos$degeneracy == 0))
+  expect_true(all(oligos$gapFrequency == 0))
   expect_true(is.list(oligos))
 })
 
@@ -87,7 +92,12 @@ test_that(".makeOligoMatrix works", {
   oligos <- .generateOligos(x[5000:6000, ])
   oligos <- .filterOligos(oligos, maxDegeneracy = 1)
   oligoList <- apply(oligos$iupacSequence, 1, .expandDegenerates)
-  if (!is.list(oligoList)) oligoList <- list(t(oligoList))
+  if (!is.list(oligoList)) {
+   oligoList <- t(oligoList)
+    oligoList <- lapply(seq_len(nrow(oligoList)), function(i) {
+      oligoList[i, , drop = FALSE]
+    })
+  }
   expect_equal(
     ncol(oligos$iupacSequence), unique(vapply(oligoList, ncol, integer(1)))
   )
@@ -136,11 +146,11 @@ test_that(".detectGcClamp works", {
   seq <- c("A", "C", "G", "T", "C", "C", "G", "C")
   rc <- as.vector(.reverseComplement(seq))
   gcRc <- ifelse(rc == "C" | rc == "G", 1, 0)
-  expect_true(.detectGcClamp(gc, fwd = FALSE))
+  expect_true(.detectGcClamp(gc, rev = TRUE))
   expect_true(.detectGcClamp(gcRc))
   gc <- matrix(rep(c(1, 0, 1, 1, 0, 0, 0, 0, 0), 8), ncol = 9, byrow = TRUE)
   expect_equal(sum(.detectGcClamp(gc)), 0)
-  expect_equal(sum(.detectGcClamp(gc, fwd = FALSE)), nrow(gc))
+  expect_equal(sum(.detectGcClamp(gc, rev = TRUE)), nrow(gc))
 })
 
 test_that(".detectThreeEndRuns works", {
@@ -148,19 +158,86 @@ test_that(".detectThreeEndRuns works", {
   expect_true(.detectThreeEndRuns(seq))
   seq <- c("A", "T", "T", "C", "C")
   expect_false(.detectThreeEndRuns(seq))
-  expect_false(.detectThreeEndRuns(seq, fwd = FALSE))
+  expect_false(.detectThreeEndRuns(seq, rev = TRUE))
   seq <- c("G", "G", "G", "T", "A")
-  expect_true(.detectThreeEndRuns(seq, fwd = FALSE))
+  expect_true(.detectThreeEndRuns(seq, rev = TRUE))
   seq <- matrix(rep(c("G", "G", "G", "T", "A"), 10), ncol = 5, byrow = TRUE)
   expect_equal(sum(.detectThreeEndRuns(seq)), 0)
-  expect_equal(sum(.detectThreeEndRuns(seq, fwd = FALSE)), 10)
+  expect_equal(sum(.detectThreeEndRuns(seq, rev = TRUE)), 10)
+})
+
+test_that(".detectRepeats works", {
+  mono <- "CTTTTTA"
+  di <- "CTCTCTCTCTA"
+  expect_true(.detectRepeats(mono))
+  expect_true(.detectRepeats(di))
+  expect_equal(sum(.detectRepeats(c(di, mono))), 2)
 })
 
 test_that(".getAllVariants works", {
-
   ## Make sure it works if max degeneracy is one
-  x <- .filterOligos(oligos, maxDegeneracy = 1, maxGapFrequency = 0.1)
-  all <- .getAllVariants(x)
+  oligos <- .filterOligos(oligos, maxDegeneracy = 1)
+  all <- .getAllVariants(oligos)
+  expect_true(is.list(all))
+  expect_equal(
+    all$sequence[[1]], paste(oligos$iupacSequence[1, ], collapse = "")
+  )
+  expect_equal(
+    all$sequence[[length(all$sequence)]],
+    paste(oligos$iupacSequence[nrow(oligos$iupacSequence), ], collapse = "")
+  )
+  expect_equal(unique(vapply(all$sequence, length, integer(1))), 1)
+
+  ## If degeneracy is high
+  oligos <- .generateOligos(x[100:150, ])
+  oligos <- .filterOligos(oligos, maxDegeneracy = 16)
+  all <- .getAllVariants(oligos)
+  nVariants <- lapply(all, function(x) vapply(x, length, integer(1)))
+  nVariants <- do.call("rbind", nVariants)
+  expect_true(all(apply(nVariants, 2, function(x) length(unique(x))) == 1))
+  expect_true(all(nVariants <= 16))
+})
+
+test_that(".getMeanAndRange, and .makeOligoDf work", {
+  oligos <- .generateOligos(x[100:150, ])
+  oligos <- .filterOligos(oligos, maxDegeneracy = 16)
+  all <- .getAllVariants(oligos)
+  meanAndRange <- .getMeanAndRange(all)
+  expect_true(is.data.frame(meanAndRange))
+  expect_equal(meanAndRange$tmMean[1], mean(all$tm[[1]]))
+  expect_equal(meanAndRange$tmRange[1], max(all$tm[[1]]) - min(all$tm[[1]]))
+  oligoDf <- .makeOligoDf(oligos)
+  expect_true(is.data.frame(oligoDf))
+  nrows <- c(nrow(meanAndRange), nrow(oligoDf))
+  expect_equal(length(unique(nrows)), 1)
+
+  ## Test with only one entry in each list
+  oligos <- lapply(oligos, function(x) {
+    if (is.matrix(x)) x[1,, drop = FALSE] else x[1]
+  })
+  oligoDf <- .makeOligoDf(oligos)
+  expect_equal(nrow(oligoDf), 1)
+})
+
+test_that(".designOligos and .getProportionInRange work", {
+  oligos <- .designOligos(x)
+  expect_true(is.data.frame(oligos))
+  expect_true(all(oligos$degeneracy <= 4))
+  expect_error(.designOligos(x[1:50, ], maxDegeneracy = 1))
+  gcProportion <- .getProportionInRange(oligos$gcContent, c(0.5, 0.55))
+  expect_true(is.double(gcProportion))
+  gcProportion <- .getProportionInRange(oligos$gcContent[[1]][1], c(0.5, 0.55))
+  expect_true(is.double(gcProportion))
+})
+
+test_that(".filterPrimers works", {
 
 })
 
+test_that(".filterProbes works", {
+
+})
+
+test_that(".arrangeData works", {
+
+})

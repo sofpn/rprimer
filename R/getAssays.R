@@ -1,3 +1,5 @@
+# no tidyverse
+
 #' Get (RT)-PCR assays from oligos
 #'
 #' \code{getAssays()} combines forward and reverse primers
