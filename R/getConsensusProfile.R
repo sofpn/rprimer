@@ -54,9 +54,6 @@
 #'   A, C, G and T are excluded from the calculation.}
 #' }
 #'
-#' @examples
-#' data("exampleRprimerAlignment")
-#' getConsensusProfile(exampleRprimerAlignment)
 #' @references
 #' This function is a wrapper around \code{Biostrings::consensusMatrix()}:
 #'
@@ -65,6 +62,10 @@
 #' 2.57.2.
 #'
 #' @export
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' getConsensusProfile(exampleRprimerAlignment)
 getConsensusProfile <- function(x, iupacThreshold = 0) {
     if (!methods::is(x, "DNAMultipleAlignment")) {
         stop("'x' must be a DNAMultipleAlignment object.")
@@ -152,11 +153,12 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #'
 #' @return The corresponding IUPAC base.
 #'
-#' @examples
-#' .asIUPAC("A,G,C")
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' .asIUPAC("A,G,C")
 .asIUPAC <- function(x) {
     x <- unlist(strsplit(x, split = ","), use.names = FALSE)
     x <- x[order(x)]
