@@ -11,7 +11,7 @@ getOligos(
   maxDegeneracyPrimer = 4,
   gcClampPrimer = TRUE,
   avoidThreeEndRunsPrimer = TRUE,
-  minEndIdentityPrimer = 0.98,
+  minEndIdentityPrimer = 0,
   gcRangePrimer = c(0.45, 0.55),
   tmRangePrimer = c(55, 65),
   concPrimer = 500,
@@ -38,13 +38,17 @@ Defaults to \code{18:22}.}
 
 \item{gcClampPrimer}{\code{TRUE} or \code{FALSE}.
 If primers with no GC-clamp
-should be replaced with \code{NA}.
+should be avoided.
 Defaults to \code{TRUE}. A GC-clamp
 is identified as two to three G or
 C:s within the last five bases (3'-end) of the oligo.}
 
+\item{avoidThreeEndRunsPrimer}{\code{TRUE} or \code{FALSE}.
+If primers with more than two runs
+of the same nucleotide at the 3' end should be avoided.}
+
 \item{minEndIdentityPrimer}{Optional. If specified, a number [0, 1]. The minimum allowed identity
-at the 3'-end of the primer (i.e. the last five bases).}
+at the 3'-end of the primer (the last five bases).}
 
 \item{gcRangePrimer}{GC-content range for primers (proportion, not percent).
 A numeric vector [0, 1]. Defaults to \code{c(0.45, 0.55)}.}
@@ -53,9 +57,9 @@ A numeric vector [0, 1]. Defaults to \code{c(0.45, 0.55)}.}
 A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.}
 
 \item{concPrimer}{Primer concentration in nM, for Tm calculation. A number
-[20, 2000] Defaults to 500 nM.}
+[20, 2000] Defaults to 500.}
 
-\item{probe}{If probes should be designed as  well. \code{TRUE} or \code{FALSE},
+\item{probe}{If probes should be designed as well. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
 
 \item{lengthProbe}{Probe length. A numeric vector [14, 30].
@@ -63,8 +67,9 @@ Defaults to \code{18:22}.}
 
 \item{maxDegeneracyProbe}{Maximum number of variants of each probe. A number [1, 32]. Defaults to 4.}
 
-\item{avoidFiveEndGProbe}{\code{TRUE} or \code{FALSE}. If probes with G
-at the 5'-end should be excluded. Defaults to \code{TRUE}.}
+\item{avoidFiveEndGProbe}{If probes with G
+at the 5'-end should be avoided. \code{TRUE} or \code{FALSE},
+defaults to \code{TRUE}.}
 
 \item{gcRangeProbe}{GC-content range for probes (proportion, not %). A numeric vector [0, 1].
 Defaults to \code{c(0.45, 0.55)}.}
@@ -73,59 +78,71 @@ Defaults to \code{c(0.45, 0.55)}.}
 A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.}
 
 \item{concProbe}{Primer concentration in nM, for Tm calculation. A numeric vector
-[20, 2000] Defaults to 250 nM.}
+[20, 2000] Defaults to 250.}
 
 \item{concNa}{The sodium ion concentration in the PCR reaction in M, for Tm calculation.
-A numeric vector [0.01, 1]. Defaults to 0.05 M (50 mM).}
-
-\item{avoidTreeEndRunsPrimer}{\code{TRUE} or \code{FALSE}.
-If primers with more than two runs
-of the same nucleotide at the 3' end should be considered as invalid.}
+A numeric vector [0.01, 1]. Defaults to 0.05 (50 mM).}
 }
 \value{
-An \code{RprimerOligo} object.
-An error message will return if no oligos are found.
-
-The object contains the following columns:
-
-\describe{
-  \item{type}{Type of oligo, primer or probe.}
-  \item{start}{Position where the oligo starts.}
-  \item{end}{Position where the oligo ends.}
-  \item{length}{Length of the oligo.}
-  \item{identity}{Average identity score of the oligo.}
-  \item{iupac}{IUPAC sequence (i.e. with degenerate bases).}
-  \item{iupacRc}{IUPAC sequence, reverse complement.}
-  \item{degeneracy}{Number of variants of the degenerate oligo.}
-  \item{sequence}{Lists with all sequence variants of the oligos.}
-  \item{sequenceRc}{Lists with all sequence variants of the oligos, reverse
-  complements.}
-  \item{gcContent}{Lists with the GC content of all
-  sequence variants of the oligos.}
-  \item{tm}{Lists with the Tm of all sequence variants of the oligos.}
-  \item{alignmentStart}{Start position of the input consensus profile.}
-  \item{alingnmentEnd}{End position of the input consensus profile.}
-}
+An \code{RprimerOligo} object. An error message will return
+if no oligos are found.
 }
 \description{
 \code{getOligos()} identifies oligos (primers and probes)
 from an \code{RprimerProfile} object.
 }
-\section{NA}{
+\section{Output}{
 
 
-Melting temperatures are calculated using SantaLucia's nearest-neighbor
-method, with the following assumptions:
+The output contains the following information:
 
 \itemize{
-  \item Oligos are not expected to be self-complementary (i.e. no symmetry
-  correction is done).
-  \item The oligo concentration is assumed to be much higher
-  than the target concentration.
+  \item{type: whether the oligo is a primer or probe.}
+  \item{fwd: \code{TRUE} if the oligo is valid in forward direction,
+    \code{FALSE} otherwise.}
+  \item{rev: \code{TRUE} if the oligo is valid in reverse direction,
+    \code{FALSE} otherwise.}
+  \item{start: start position of the oligo.}
+  \item{end: end positon of the oligo.}
+  \item{length: oligo length.}
+  \item{iupacSequence: oligo sequence, with wobble bases (if any).}
+  \item{iupaSequenceRc: the reverse complement of the iupacSequence.}
+  \item{identity: average identity score of the oligo, can range from 0 to 1.
+    The identity is the proportion of the most common base at each position
+    in the input alignment.}
+  \item{degeneracy: number of sequence variants of the oligo.}
+  \item{gcContentMean: mean GC-content of all sequence variants of the oligo.
+  }
+  \item{gcContentRange: range in GC-content of all sequence variants of
+    the oligo.}
+  \item{tmMean: mean tm of all sequence variants of the oligo.}
+  \item{tmRange: range in tm of all sequence variants of the oligo.}
+  \item{sequence: all sequence variants of the oligo.}
+  \item{sequenceRc: reverse complements of all sequence variants.}
+  \item{gcContent: GC-content of all sequence variants.}
+  \item{tm: tm of all sequence variants.}
+  \item{roiStart: first position of the input \code{RprimerProfile} object
+    (roi = region of interest).}
+  \item{roiEnd: last position of the input \code{RprimerProfile} object}
+}
 }
 
-See references for table values and equations.
-Table values can also be found by calling \code{rprimer:::lookup$nn}.
+\section{Description of the design process}{
+ ####################################
+
+Acceptance level:
+}
+
+\section{Excluded oligos}{
+
+\code{getOligos()} excludes:
+
+\itemize{
+\item With more than than three consecutive runs of
+the same di-nucleotide (e.g. "TATATATA")
+\item With more than four consecutive runs of
+the same nucleotide  (e.g. "AAAAA")
+}
 }
 
 \section{Tm-calculation}{
@@ -141,8 +158,8 @@ method, with the following assumptions:
   than the target concentration.
 }
 
-See references for table values and equations.
-Table values can also be found by calling \code{rprimer:::lookup$nn}.
+See references for table values and equations. Table values can also be
+found by calling \code{rprimer:::lookup$nn}.
 }
 
 \examples{
@@ -160,9 +177,17 @@ getOligos(roi)
 ## Design primers only
 getOligos(roi, probe = FALSE)
 
+## Design primers with high degeneracy, but with conserved 3'-ends
+getOligos(roi,
+          maxDegeneracyPrimer = 8,
+          minEndIdentityPrimer = 0.98,
+          probe = FALSE)
 }
 \references{
 SantaLucia Jr, J., & Hicks, D. (2004).
 The thermodynamics of DNA structural motifs.
 Annu. Rev. Biophys. Biomol. Struct., 33, 415-440.
+}
+\seealso{
+RprimerOligo
 }

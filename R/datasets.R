@@ -68,28 +68,33 @@
 #' The object contains the following information:
 #'
 #' \describe{
-#'   \item{type}{Type of oligo, primer or probe.}
-#'   \item{start}{Position where the oligo starts.}
-#'   \item{end}{Position where the oligo ends.}
-#'   \item{length}{Length of the oligo.}
-#'   \item{majority}{Majority sequence.}
-#'   \item{majorityRc}{Majority sequence, reverse complement.}
-#'   \item{gcMajority}{GC content (majority sequence), proportion.}
-#'   \item{tmMajority}{Melting temperature.}
-#'   \item{identity}{Average identity score of the oligo.}
-#'   \item{iupac}{IUPAC sequence (i.e. with degenerate bases).}
-#'   \item{iupacRc}{IUPAC sequence, reverse complement.}
-#'   \item{degeneracy}{Number of variants of the degenerate oligo.}
-#'   \item{all}{Lists with all sequence variants of the oligos.}
-#'   \item{allRc}{Lists with all sequence variants of the oligos, reverse
-#'   complements.}
-#'   \item{gcAll}{Lists with the GC content of all
-#'   sequence variants of the oligos.}
-#'   \item{tmAll}{Lists with the Tm of all sequence variants of the oligos.}
-#'   \item{alignmentStart}{Start position of the input consensus profile
-#'   used for oligo design.}
-#'   \item{alingnmentEnd}{End position of the input consensus profile used
-#'   for oligo design.}
+#'   \item{type: whether the oligo is a primer or probe.}
+#'   \item{fwd: \code{TRUE} if the oligo is valid in forward direction,
+#'     \code{FALSE} otherwise.}
+#'   \item{rev: \code{TRUE} if the oligo is valid in reverse direction,
+#'     \code{FALSE} otherwise.}
+#'   \item{start: start position of the oligo.}
+#'   \item{end: end positon of the oligo.}
+#'   \item{length: oligo length.}
+#'   \item{iupacSequence: oligo sequence, with wobble bases (if any).}
+#'   \item{iupaSequenceRc: the reverse complement of the iupacSequence.}
+#'   \item{identity: average identity score of the oligo, can range from 0 to 1.
+#'     The identity is the proportion of the most common base at each position
+#'     in the input alignment.}
+#'   \item{degeneracy: number of sequence variants of the oligo.}
+#'   \item{gcContentMean: mean GC-content of all sequence variants of the oligo.
+#'   }
+#'   \item{gcContentRange: range in GC-content of all sequence variants of
+#'     the oligo.}
+#'   \item{tmMean: mean tm of all sequence variants of the oligo.}
+#'   \item{tmRange: range in tm of all sequence variants of the oligo.}
+#'   \item{sequence: all sequence variants of the oligo.}
+#'   \item{sequenceRc: reverse complements of all sequence variants.}
+#'   \item{gcContent: GC-content of all sequence variants.}
+#'   \item{tm: tm of all sequence variants.}
+#'   \item{roiStart: first position of the input \code{RprimerProfile} object
+#'     (roi = region of interest).}
+#'   \item{roiEnd: last position of the input \code{RprimerProfile} object}
 #' }
 #'
 #' @usage data("exampleRprimerOligo")

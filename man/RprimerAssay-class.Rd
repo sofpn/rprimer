@@ -36,3 +36,6 @@ data("exampleRprimerAssay")
 x <- as.data.frame(exampleRprimerAssay)
 RprimerAssay(x)
 }
+\references{
+ADD HERE ################################
+}

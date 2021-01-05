@@ -30,16 +30,19 @@
 #' A data frame or list to be converted into an \code{RprimerProfile} object.
 #'
 #' @return
-#' An \code{RprimerAssay} object if validation succeeds, an error
+#' An \code{RprimerProfile} object if validation succeeds, an error
 #' message otherwise.
 #'
 #' @export
+#'
+#' @importFrom S4Vectors DataFrame
+#'
+#' @references ADD HERE ################################
 #'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- as.data.frame(exampleRprimerProfile)
 #' RprimerProfile(x)
-#' @importFrom S4Vectors DataFrame
 RprimerProfile <- function(...) {
     df <- DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerProfile(df)
@@ -100,11 +103,14 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 #'
 #' @export
 #'
+#' @importFrom S4Vectors DataFrame
+#'
+#' @references ADD HERE ################################
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- as.data.frame(exampleRprimerOligo)
 #' RprimerOligo(x)
-#' @importFrom S4Vectors DataFrame
 RprimerOligo <- function(...) {
     df <- DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerOligo(df)
@@ -157,6 +163,8 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 #' message otherwise.
 #'
 #' @export
+#'
+#' @references ADD HERE ################################
 #'
 #' @examples
 #' data("exampleRprimerAssay")

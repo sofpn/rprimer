@@ -9,10 +9,10 @@ getConsensusProfile(x, iupacThreshold = 0)
 \arguments{
 \item{x}{A \code{Biostrings::DNAMultipleAlignment} object.}
 
-\item{iupacThreshold}{A number [0, 0.2].
+\item{iupacThreshold}{A number [0, 0.2], defaults to 0.
 At each position, all nucleotides with a proportion
 higher than the \code{iupacThreshold} will be included in
-the IUPAC consensus sequence. Defaults to 0.}
+the IUPAC consensus sequence.}
 }
 \value{
 An \code{RprimerProfile} object, which contains the following information:
@@ -55,13 +55,12 @@ An \code{RprimerProfile} object, which contains the following information:
 }
 }
 \description{
-\code{getConsensusProfile()} returns sequence information from an alignment
-of DNA sequences.
+\code{getConsensusProfile()} takes a DNA multiple alignment as input and
+returns all the information needed for designing primers and probes.
 }
 \examples{
 data("exampleRprimerAlignment")
 getConsensusProfile(exampleRprimerAlignment)
-
 }
 \references{
 This function is a wrapper around \code{Biostrings::consensusMatrix()}:

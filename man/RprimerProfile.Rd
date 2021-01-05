@@ -10,7 +10,7 @@ RprimerProfile(...)
 \item{...}{A data frame or list to be converted into an \code{RprimerProfile} object.}
 }
 \value{
-An \code{RprimerAssay} object if validation succeeds, an error
+An \code{RprimerProfile} object if validation succeeds, an error
 message otherwise.
 }
 \description{
@@ -21,4 +21,7 @@ Constructs an \code{RprimerProfile} object in a similar fashion as the
 data("exampleRprimerProfile")
 x <- as.data.frame(exampleRprimerProfile)
 RprimerProfile(x)
+}
+\references{
+ADD HERE ################################
 }

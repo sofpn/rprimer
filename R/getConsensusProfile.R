@@ -2,17 +2,17 @@
 
 #' Get sequence information from an alignment
 #'
-#' \code{getConsensusProfile()} returns sequence information from an alignment
-#' of DNA sequences.
+#' \code{getConsensusProfile()} takes a DNA multiple alignment as input and
+#' returns all the information needed for designing primers and probes.
 #'
 #' @param x
 #' A \code{Biostrings::DNAMultipleAlignment} object.
 #'
 #' @param iupacThreshold
-#' A number [0, 0.2].
+#' A number [0, 0.2], defaults to 0.
 #' At each position, all nucleotides with a proportion
 #' higher than the \code{iupacThreshold} will be included in
-#' the IUPAC consensus sequence. Defaults to 0.
+#' the IUPAC consensus sequence.
 #'
 #' @return
 #' An \code{RprimerProfile} object, which contains the following information:
@@ -109,12 +109,12 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' @noRd
 .getConsensusMatrix <- function(x) {
     x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
-    x <- x[, colSums(!is.na(x)) > 0] # Removes the masked columns
+    x <- x[, colSums(!is.na(x)) > 0, drop = FALSE] # Removes the masked columns
     colnames(x) <- seq_len(ncol(x))
-    x <- x[(rownames(x) != "+" & rownames(x) != "."), ]
+    x <- x[(rownames(x) != "+" & rownames(x) != "."), , drop = FALSE]
     bases <- c("A", "C", "G", "T", "-")
-    other <- colSums(x[!rownames(x) %in% bases, ])
-    x <- x[rownames(x) %in% bases, ]
+    other <- colSums(x[!rownames(x) %in% bases, , drop = FALSE])
+    x <- x[rownames(x) %in% bases, , drop = FALSE]
     rbind(x, other)
 }
 
@@ -188,7 +188,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' @noRd
 .iupacConsensus <- function(x, iupacThreshold = 0) {
     bases <- c("A", "C", "G", "T", "-")
-    x <- x[rownames(x) %in% bases, ]
+    x <- x[rownames(x) %in% bases, , drop = FALSE]
     basesToInclude <- apply(x, 2, function(y) {
         paste(rownames(x)[y > iupacThreshold], collapse = ",")
     })
@@ -215,7 +215,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' @noRd
 .nucleotideIdentity <- function(x) {
     bases <- c("A", "C", "G", "T")
-    s <- x[rownames(x) %in% bases, ]
+    s <- x[rownames(x) %in% bases, , drop = FALSE]
     s <- apply(s, 2, function(x) x / sum(x))
     identity <- apply(s, 2, max)
     identity <- unname(identity)
@@ -234,7 +234,7 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' @noRd
 .shannonEntropy <- function(x) {
     bases <- c("A", "C", "G", "T")
-    s <- x[rownames(x) %in% bases, ]
+    s <- x[rownames(x) %in% bases, , drop = FALSE]
     s <- apply(s, 2, function(x) x / sum(x))
     entropy <- apply(s, 2, function(x) ifelse(x == 0, 0, x * log2(x)))
     entropy <- -colSums(entropy)

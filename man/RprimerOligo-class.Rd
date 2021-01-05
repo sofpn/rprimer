@@ -35,3 +35,6 @@ data("exampleRprimerOligo")
 x <- as.data.frame(exampleRprimerOligo)
 RprimerOligo(x)
 }
+\references{
+ADD HERE ################################
+}
