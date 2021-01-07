@@ -24,3 +24,12 @@ test_that("plotData returns an error when it should", {
     expect_error(plotNucleotides(exampleRprimerProfile, rc = "FALSE"))
     expect_error(plotNucleotides(exampleRprimerOligo))
 })
+
+test_that(".runningAverage works", {
+    toTest <- runif(100)
+    expect_identical(nrow(.runningAverage(toTest)), length(toTest))
+    toTest <- runif(10)
+    expect_identical(nrow(.runningAverage(toTest)), length(toTest))
+    toTest <- runif(1000)
+    expect_equal(.runningAverage(toTest, size = 100)$position[1], 50)
+})

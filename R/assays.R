@@ -149,6 +149,19 @@ getAssays <- function(x,
 
 # Helpers =====================================================================
 
+#' Split sequence
+#'
+#' @param x A character vector of length one.
+#'
+#' @return A character vector of length \code{nchar(x)}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.splitSequence <- function(x) {
+    unlist(strsplit(x, split = ""), use.names = FALSE)
+}
+
 #' Calculate G content of a DNA sequence
 #'
 #' \code{.gContent()} finds the G content of a DNA sequence.

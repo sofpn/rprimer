@@ -1,80 +1,16 @@
-#' Calculate melting temperature
-#'
-#' \code{.tm()} calculates the melting temperature of one or
-#' more perfectly matching DNA duplexes (i.e. oligo-target duplexes),
-#' using the nearest neighbor method.
-#'
-#' @param x
-#' A character vector or matrix, where each row corresponds to a specific oligo.
-#'
-#' @param concOligo
-#' Oligo concentration in nM. A number
-#' [20, 2000] Defaults to 250.
-#'
-#' @param concNa
-#' Sodium ion concentration in the PCR reaction in M.
-#' A number [0.01, 1]. Defaults to 0.05 M (50 mM).
-#'
-#' @return The melting temperature(s) of \code{x}. A numeric vector.
-#'
-#' @section Details:
-#'
-#' Melting temperatures are calculated using SantaLucia's nearest-neighbor
-#' method, with the following assumptions:
-#'
-#' \itemize{
-#'   \item Oligos are not expected to be self-complementary, and hence no
-#'   symmetry correction is done.
-#'   \item The oligo concentration is assumed to be much higher
-#'   than the target concentration.
-#' }
-#'
-#' @examples
-#' .tm(c("A", "G", "T", "T", "C", "G", "G", "T", "C", "G"))
-#' @references
-#' SantaLucia Jr, J., & Hicks, D. (2004).
-#' The thermodynamics of DNA structural motifs.
-#' Annu. Rev. Biophys. Biomol. Struct., 33, 415-440.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.tm <- function(x, concOligo = 500, concNa = 0.05) {
-    if (concOligo < 20 || concOligo > 2000) {
-        stop("'concOligo' must be from 20 nM to 2000 nM.", call. = FALSE)
-    }
-    if (concNa < 0.01 || concNa > 1) {
-        stop("'concNa' must be from 0.01 to 1 M.", call. = FALSE)
-    }
-    concOligo <- concOligo * 10^(-9)
-    if (!is.matrix(x)) x <- t(matrix(x))
-    nn <- t(apply(x, 1, .nnSplit))
-    dhStack <- rowSums(.getStackValue(nn, "dH"))
-    dsStack <- rowSums(.getStackValue(nn, "dS"))
-    dhInit <- .getInitiationValue(nn, "dH")
-    dsInit <- .getInitiationValue(nn, "dS")
-    sumdH <- dhStack + dhInit
-    sumdS <- dsStack + dsInit
-    N <- dim(x)[2] - 1 # Number of phosphates
-    sumdH / (sumdS + 0.368 * N * log(concNa) + 1.987 * log(concOligo)) - 273.15
-}
-
-# Helpers ======================================================================
-
 #' Split a DNA sequence into nearest neighbors
 #'
-#' \code{.nnSplit()} splits a DNA sequence into nearest neighbors
-#' (for calculation of deltaS, deltaH, deltaG and Tm).
-#' Helper function to \code{.tm()}.
+#' @param x A vector with a DNA sequence.
 #'
-#' @param x a matrix with DNA sequences.
-#'
-#' @return The nearest neighbors of x (a matrix).
+#' @return A vector with the nearest neighbors of \code{x}.
 #'
 #' @keywords internal
 #'
 #' @noRd
-.nnSplit <- function(x) {
+#'
+#' @examples
+#' .nn(c("A", "C", "C", "T", "G))
+.nn <- function(x) {
     from <- (seq_along(x) - 1)[-1]
     to <- seq_along(x)[-1]
     vapply(seq_along(from), function(i) {
@@ -84,46 +20,38 @@
 
 #' Calculate stack values for dH or dS of nearest neighbors
 #'
-#' \code{.getStackValue()} finds the corresponding dH or dS values
-#' for nearest-neighbor pairs. Helper function to \code{.tm()}.
-#'
-#' @param x A matrix or vector (of type character) with nearest-neighbor pairs
-#' of DNA sequences (e.g. \code{c('CT', 'TT', 'TA')})
+#' @param x A matrix with nearest-neighbor pairs
+#' of DNA sequences.
 #'
 #' @param table The lookup table that should be used.
 #' Either 'dH' (entropy) or 'dS' (enthalpy).
 #'
-#' @return The corresponding values for dH or dS (in cal/M).
+#' @return The corresponding values for dH or dS (in cal/M). A numeric matrix.
 #'
 #' @keywords internal
 #'
 #' @noRd
-.getStackValue <- function(x, table = "dH") {
-    tableValues <- lookup$nn[[table]]
-    stack <- tableValues[match(x, lookup$nn$bases)]
-    if (!is.null(ncol(x))) {
-        stack <- matrix(stack, ncol = ncol(x), byrow = FALSE)
-    }
+.stack <- function(x, table = "dH") {
+    selected <- lookup$nn[[table]]
+    stack <- matrix(nrow = nrow(x), ncol = ncol(x), dimnames = dimnames(x))
+    stack[] <- selected[match(x, lookup$nn$bases)]
     stack
 }
 
 #' Calculate initiation values for dH or dS of nearest neighbors
 #'
-#' \code{.getInitiationValue()} finds the corresponding dH or dS initiation
-#' values. Helper function to \code{.tm()}.
-#'
-#' @param x A matrix or vector (of type character) with nearest-neighbor pairs
-#' of DNA sequences (e.g. \code{c('CT', 'TT', 'TA')})
+#' @param x A matrix with nearest-neighbor pairs
+#' of DNA sequences.
 #'
 #' @param table The lookup table that should be used.
 #' Either 'dH' (entropy) or 'dS' (enthalpy).
 #'
-#' @return The corresponding values for dH or dS (in cal/M).
+#' @return The corresponding values for dH or dS (in cal/M). A numeric vector.
 #'
 #' @keywords internal
 #'
 #' @noRd
-.getInitiationValue <- function(x, table = "dH") {
+.initiate <- function(x, table = "dH") {
     initiation <- lookup$nn[lookup$nn$bases == "Initiation", ][[table]]
     penalty <- lookup$nn[lookup$nn$bases == "AT_penalty", ][[table]]
     penaltyFirst <- ifelse(x[, 1] == "AT" | x[, 1] == "TA", penalty, 0)
@@ -133,6 +61,54 @@
     initiation + penaltyFirst + penaltyLast
 }
 
-# .adjustOligoConc <- function(x, oldOligoConc, newOligoConc) {
-# }
-#  tm =   sumdH / (sumdS + 0.368 * N * log(concNa) + 1.987 * log(500)) - 273.15
+#' Get delta H and delta S values for Tm calculation
+#'
+#' \code{.tmParameters()} calculates and sums delta H and delta S for one or
+#' more perfectly matching DNA duplexes (oligo-target duplexes),
+#' using the nearest neighbor method. It also returns the number
+#' of phosphates and the sodium ion concentration. For Tm calculation.
+#'
+#' @param x A character vector or matrix with DNA sequences.
+#'
+#' @param concNa Sodium ion concentration in M.
+#'
+#' @return A numeric matrix.
+#'
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' .tmParameters(c("A", "G", "T", "T", "C", "G", "G", "T", "C", "G"))
+.tmParameters <- function(x, concNa = 0.05) {
+    if (!is.matrix(x)) x <- t(matrix(x))
+    nn <- t(apply(x, 1, .nn))
+    dhStack <- rowSums(.stack(nn, "dH"))
+    dsStack <- rowSums(.stack(nn, "dS"))
+    dhInit <- .initiate(nn, "dH")
+    dsInit <- .initiate(nn, "dS")
+    sumdH <- dhStack + dhInit
+    sumdS <- dsStack + dsInit
+    n <- dim(x)[2] - 1 ## Number of phosphates
+    m <- matrix(
+        c(sumdH, sumdS, rep(n, nrow(nn)), rep(concNa, nrow(nn))), ncol = 4
+    )
+    rownames(m) <- rownames(nn)
+    colnames(m) <- c("sumdH", "sumdS", "n", "concNa")
+    m
+}
+
+#' Calculate melting temperature
+#'
+#' @param x An output from \code{.tmParameters()}
+#'
+#' @param concOligo Oligo concentration in nM.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.tm <- function(x, concOligo = 250) {
+    concOligo <- concOligo * 10^(-9)
+    tm <- x["sumdH"] / (x["sumdS"] + 0.368 * x["n"] * log(x["concNa"]) + 1.987 * log(concOligo)) - 273.15
+    unname(tm)
+}

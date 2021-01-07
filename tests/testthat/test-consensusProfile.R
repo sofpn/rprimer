@@ -1,20 +1,19 @@
 infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 testdata <- Biostrings::readDNAMultipleAlignment(infile)
 
-test_that("getConsensusProfile returns an error when it should", {
-    expect_error(getConsensusProfile(unclass(testdata)))
-    expect_error(getConsensusProfile(testdata, iupacThreshold = FALSE))
-    expect_error(getConsensusProfile(testdata, iupacThreshold = -0.1))
-    expect_error(getConsensusProfile(testdata, iuacThreshold = 0.21))
+test_that("consensusProfile returns an error when it should", {
+    expect_error(consensusProfile(unclass(testdata)))
+    expect_error(consensusProfile(testdata, iupacThreshold = -0.1))
+    expect_error(consensusProfile(testdata, iuacThreshold = 0.21))
 })
 
-test_that("getConsensusProfile works", {
-    expect_s4_class(getConsensusProfile(testdata), "RprimerProfile")
+test_that("consensusProfile works", {
+    expect_s4_class(consensusProfile(testdata), "RprimerProfile")
 })
 
-testmatr <- .getConsensusMatrix(testdata)
+testmatr <- .consensusMatrix(testdata)
 
-test_that(".getConsensusMatrix works", {
+test_that(".consensusMatrix works", {
     expect_equal(rownames(testmatr), c("A", "C", "G", "T", "-", "other"))
     expect_equal(min(colSums(testmatr)), 1)
     expect_equal(max(colSums(testmatr)), 1)

@@ -40,7 +40,7 @@ The object contains the following information:
   \item{tm: tm of all sequence variants.}
   \item{roiStart: first position of the input \code{RprimerProfile} object
     (roi = region of interest).}
-  \item{roiEnd: last position of the input \code{RprimerProfile} object}
+  \item{roiEnd: last position of the input \code{RprimerProfile} object.}
 }
 }
 \keyword{datasets}

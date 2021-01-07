@@ -109,6 +109,34 @@ setMethod("plotData", "RprimerAssay", function(x) {
 
 # Helpers ======================================================================
 
+#' Calculate running average
+#'
+#' \code{.runningAverage()} calculates the running average of a
+#' numeric vector.
+#'
+#' @param x A numeric vector.
+#'
+#' @param size
+#' The number of observations in each average.
+#'
+#' @return A data frame with position and running average of \code{x}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.runningAverage <- function(x, size = 1) {
+    sums <- c(0, cumsum(x))
+    from <- seq_len(length(sums) - size)
+    to <- seq(size + 1, length(sums))
+    average <- (sums[to] - sums[from]) / size
+    position <- seq(size, length(x))
+    if (size > 1) {
+        midpoint <- size / 2
+        position <- position - midpoint
+    }
+    data.frame(position, average)
+}
+
 .addRowToEmptyDf <- function(x) {
     x[1, ] <- NA
     x$start <- 0

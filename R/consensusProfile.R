@@ -2,7 +2,7 @@
 
 #' Get sequence information from an alignment
 #'
-#' \code{getConsensusProfile()} takes a DNA multiple alignment as input and
+#' \code{consensusProfile()} takes a DNA multiple alignment as input and
 #' returns all the information needed for designing primers and probes.
 #'
 #' @param x
@@ -65,21 +65,18 @@
 #'
 #' @examples
 #' data("exampleRprimerAlignment")
-#' getConsensusProfile(exampleRprimerAlignment)
-getConsensusProfile <- function(x, iupacThreshold = 0) {
+#' consensusProfile(exampleRprimerAlignment)
+consensusProfile <- function(x, iupacThreshold = 0) {
     if (!methods::is(x, "DNAMultipleAlignment")) {
         stop("'x' must be a DNAMultipleAlignment object.")
     }
-    if (
-        !is.numeric(iupacThreshold) ||
-            iupacThreshold < 0 || iupacThreshold > 0.2
-    ) {
+    if (iupacThreshold < 0 || iupacThreshold > 0.2) {
         stop(
             paste0("'iupacThreshold' must be a number from 0 to 0.2."),
             call. = FALSE
         )
     }
-    x <- .getConsensusMatrix(x)
+    x <- .consensusMatrix(x)
     profile <- list()
     profile$position <- seq_len(ncol(x))
     profile$a <- unname(x["A", ])
@@ -107,9 +104,9 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' @keywords internal
 #'
 #' @noRd
-.getConsensusMatrix <- function(x) {
+.consensusMatrix <- function(x) {
     x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
-    x <- x[, colSums(!is.na(x)) > 0, drop = FALSE] # Removes the masked columns
+    x <- x[, colSums(!is.na(x)) > 0, drop = FALSE] ## Removes the masked columns
     colnames(x) <- seq_len(ncol(x))
     x <- x[(rownames(x) != "+" & rownames(x) != "."), , drop = FALSE]
     bases <- c("A", "C", "G", "T", "-")
@@ -179,9 +176,6 @@ getConsensusProfile <- function(x, iupacThreshold = 0) {
 #' the IUPAC consensus sequence.
 #'
 #' @return The consensus sequence (a character vector).
-#'
-#' @seealso \code{.asIUPAC()} for further info on how the IUPAC consensus
-#' sequence is determined.
 #'
 #' @keywords internal
 #'
