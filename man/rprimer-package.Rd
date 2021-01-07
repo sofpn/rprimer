@@ -22,8 +22,8 @@ Functions and workflow to design
     pair and probe. Please see the package vignette for more information.
 }
 \details{
-The three most important functions are \code{getConsensusProfile()},
-\code{getOligos()} and \code{getAssays()}
+The three most important functions are \code{consensusProfile()},
+\code{oligos()} and \code{assays()}
 
 For more information about rprimer and its
 functionality, please see the package vignette.

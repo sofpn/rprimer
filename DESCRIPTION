@@ -29,10 +29,7 @@ Depends:
     R (>= 4.0)
 Imports:
     Biostrings,
-    dplyr,
     ggplot2,
-    purrr,
-    tibble,
     methods,
     patchwork,
     reshape2,

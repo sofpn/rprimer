@@ -1,6 +1,4 @@
-# Profile - needs to be at least 10 bases or somethng
-# positions must be consecutive
-# oligo - type can only be primer or probe
+# TODO: set validity constraints...
 
 # RprimerProfile ==============================================================
 
@@ -164,13 +162,14 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 #'
 #' @export
 #'
+#' @importFrom S4Vectors DataFrame
+#'
 #' @references ADD HERE ################################
 #'
 #' @examples
 #' data("exampleRprimerAssay")
 #' x <- as.data.frame(exampleRprimerAssay)
 #' RprimerAssay(x)
-#' @importFrom S4Vectors DataFrame
 RprimerAssay <- function(...) {
     df <- DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerAssay(df)

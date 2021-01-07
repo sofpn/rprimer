@@ -3,17 +3,23 @@
 #' @param x An \code{RprimerProfile} object.
 #'
 #' @param rc
-#' \code{TRUE} or {FALSE}. If the plotted sequence should be displayed
-#' as reverse complement or not. Defaults to \code{FALSE}.
+#' If the plotted sequence should be displayed
+#' as reverse complement or not.
+#' \code{TRUE} or {FALSE}, defaults to \code{FALSE}.
 #'
 #' @return A barplot with nucleotide distribution.
 #'
 #' @examples
+#' ## Load example data
 #' data("exampleRprimerProfile")
-#' plotNucleotides(exampleRprimerProfile[1:10, ])
+#' x <- exampleRprimerProfile
+#'
 #' ## Plot the first 10 bases
-#' plotNucleotides(exampleRprimerProfile[1:10, ], rc = TRUE)
+#' roi <- x[x$position >= 1 & x$position <= 10, ]
+#' plotNucleotides(roi)
+#'
 #' ## As reverse complement
+#' plotNucleotides(roi, rc = TRUE)
 #' @export
 plotNucleotides <- function(x, rc = FALSE) {
     if (!methods::is(x, "RprimerProfile")) {
@@ -24,7 +30,8 @@ plotNucleotides <- function(x, rc = FALSE) {
     }
     position <- x$position
     x <- as.data.frame(x)
-    x <- dplyr::select(x, c("a", "c", "g", "t", "other"))
+    select <- c("a", "c", "g", "t", "other")
+    x <- x[names(x) %in% select]
     x <- t(as.matrix(x))
     colnames(x) <- position
     rownames(x)[-5] <- toupper(rownames(x))[-5]
@@ -54,5 +61,5 @@ plotNucleotides <- function(x, rc = FALSE) {
     ) +
         ggplot2::geom_bar(stat = "identity") +
         ggplot2::scale_fill_manual(values = basePalette) +
-        .themeRprimer(showLegend = TRUE, rotateX = TRUE)
+        .themeRprimer(showLegend = TRUE)
 }

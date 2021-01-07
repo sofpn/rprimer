@@ -1,3 +1,6 @@
+# else if
+# restore runavg size...
+
 #' Plot an Rprimer-object (generic)
 #'
 #' @param x
@@ -13,8 +16,8 @@
 #' plotData(exampleRprimerProfile, shadeFrom = 500, shadeTo = 1000)
 #' data("exampleRprimerOligo")
 #' plotData(exampleRprimerOligo)
-#' data("exampleRprimerAssay")
-#' plotData(exampleRprimerAssay)
+#' ## data("exampleRprimerAssay") ################ ADD LATER
+#' ## plotData(exampleRprimerAssay)
 #' @export
 setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 
@@ -40,7 +43,7 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 setMethod("plotData", "RprimerProfile", function(x,
                                                  shadeFrom = NULL,
                                                  shadeTo = NULL) {
-    if (is.null(shadeFrom) && is.null(shadeTo)) { ### switch statement here
+    if (is.null(shadeFrom) && is.null(shadeTo)) {
         shadeFrom <- -Inf
         shadeTo <- -Inf
     }
@@ -109,35 +112,8 @@ setMethod("plotData", "RprimerAssay", function(x) {
 
 # Helpers ======================================================================
 
-#' Calculate running average
-#'
-#' \code{.runningAverage()} calculates the running average of a
-#' numeric vector.
-#'
-#' @param x A numeric vector.
-#'
-#' @param size
-#' The number of observations in each average.
-#'
-#' @return A data frame with position and running average of \code{x}.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.runningAverage <- function(x, size = 1) {
-    sums <- c(0, cumsum(x))
-    from <- seq_len(length(sums) - size)
-    to <- seq(size + 1, length(sums))
-    average <- (sums[to] - sums[from]) / size
-    position <- seq(size, length(x))
-    if (size > 1) {
-        midpoint <- size / 2
-        position <- position - midpoint
-    }
-    data.frame(position, average)
-}
 
-.addRowToEmptyDf <- function(x) {
+.addEmptyRow <- function(x) {
     x[1, ] <- NA
     x$start <- 0
     x$end <- 0
@@ -145,21 +121,15 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .splitOligoDf <- function(x) {
-    fwd <- x[x$type == "primer" & !is.na(x$majority), ]
-    rev <- x[x$type == "primer" & !is.na(x$majorityRc), ]
     all <- list()
-    all$fwd <- fwd
-    all$rev <- rev
+    all$fwd <- x[x$type == "primer" & x$fwd, , drop = FALSE]
+    all$rev <- x[x$type == "primer" & x$rev, , drop = FALSE]
     if (any(x$type == "probe")) {
-        prPos <- x[x$type == "probe" & !is.na(x$majority), ]
-        prNeg <- x[x$type == "probe" & !is.na(x$majorityRc), ]
-        all$prPos <- prPos
-        all$prNeg <- prNeg
+        all$prPos <- x[x$type == "probe" & x$fwd, , drop = FALSE]
+        all$prNeg <- x[x$type == "probe" & x$rev, , drop = FALSE]
     }
-    numberOfRows <- purrr::map_int(all, nrow)
-    all[numberOfRows == 0] <- purrr::map(all[numberOfRows == 0], function(x) {
-        .addRowToEmptyDf(x)
-    })
+    nRows <- vapply(all, nrow, integer(1), USE.NAMES = FALSE)
+    all[nRows == 0] <- lapply(all[nRows == 0], .addEmptyRow)
     all
 }
 
@@ -175,17 +145,17 @@ setMethod("plotData", "RprimerAssay", function(x) {
 
 .primerPlot <- function(x) {
     start <- end <- NULL
-    alignmentStart <- x$alignmentStart[[1]]
-    alignmentEnd <- x$alignmentEnd[[1]]
+    roiStart <- x$roiStart[[1]]
+    roiEnd <- x$roiEnd[[1]]
     colors <- c(fwd = "#A4A7B6", rev = "#82879B")
     oligos <- .splitOligoDf(x)
     ggplot2::ggplot() +
-        ggplot2::xlim(alignmentStart, alignmentEnd) +
+        ggplot2::xlim(roiStart, roiEnd) +
         ggplot2::ylim(0, 1) +
         ggplot2::labs(x = "Position", y = "") +
         ggplot2::geom_segment(
             color = "grey", lwd = 2, ggplot2::aes(
-                x = alignmentStart, xend = alignmentEnd, y = 0, yend = 0
+                x = roiStart, xend = roiEnd, y = 0, yend = 0
             )
         ) +
         ggplot2::geom_rect(data = oligos$fwd, ggplot2::aes(
@@ -196,7 +166,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         ), fill = colors["rev"]) +
         ggplot2::annotate(
             "label",
-            x = alignmentStart,
+            x = roiStart,
             y = seq(0.89, length.out = 2, by = 0.07), label = c(
                 paste(
                     "Reverse primer n =",
@@ -214,17 +184,17 @@ setMethod("plotData", "RprimerAssay", function(x) {
 
 .probePlot <- function(x) {
     start <- end <- NULL
-    alignmentStart <- x$alignmentStart[[1]]
-    alignmentEnd <- x$alignmentEnd[[1]]
+    roiStart <- x$roiStart[[1]]
+    roiEnd <- x$roiEnd[[1]]
     colors <- c(prPos = "#64697D", prNeg = "#525666")
     oligos <- .splitOligoDf(x)
     ggplot2::ggplot() +
-        ggplot2::xlim(alignmentStart, alignmentEnd) +
+        ggplot2::xlim(roiStart, roiEnd) +
         ggplot2::ylim(0, 1) +
         ggplot2::labs(x = "Position", y = "") +
         ggplot2::geom_segment(
             color = "grey", lwd = 2, ggplot2::aes(
-                x = alignmentStart, xend = alignmentEnd, y = 0, yend = 0
+                x = roiStart, xend = roiEnd, y = 0, yend = 0
             )
         ) +
         ggplot2::geom_rect(data = oligos$prPos, ggplot2::aes(
@@ -235,7 +205,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         ), fill = colors["prNeg"]) +
         ggplot2::annotate(
             "label",
-            x = alignmentStart,
+            x = roiStart,
             y = seq(0.89, length.out = 2, by = 0.07), label = c(
                 paste(
                     "Probe (-) n =",
@@ -253,19 +223,19 @@ setMethod("plotData", "RprimerAssay", function(x) {
 
 .primerProbePlot <- function(x) {
     start <- end <- NULL
-    alignmentStart <- x$alignmentStart[[1]]
-    alignmentEnd <- x$alignmentEnd[[1]]
+    roiStart <- x$roiStart[[1]]
+    roiEnd <- x$roiEnd[[1]]
     oligos <- .splitOligoDf(x)
     colors <- c(
         fwd = "#A4A7B6", rev = "#82879B", prPos = "#64697D", prNeg = "#525666"
     )
     ggplot2::ggplot() +
-        ggplot2::xlim(alignmentStart, alignmentEnd) +
+        ggplot2::xlim(roiStart, roiEnd) +
         ggplot2::ylim(0, 1) +
         ggplot2::labs(x = "Position", y = "") +
         ggplot2::geom_segment(
             color = "grey", lwd = 2, ggplot2::aes(
-                x = alignmentStart, xend = alignmentEnd, y = 0, yend = 0
+                x = roiStart, xend = roiEnd, y = 0, yend = 0
             )
         ) +
         ggplot2::geom_rect(data = oligos$fwd, ggplot2::aes(
@@ -282,7 +252,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         ), fill = colors["prNeg"]) +
         ggplot2::annotate(
             "label",
-            x = alignmentStart, y = seq(0.75, length.out = 4, by = 0.07),
+            x = roiStart, y = seq(0.75, length.out = 4, by = 0.07),
             label = c(
                 paste(
                     "Probe (-) n =",
@@ -356,7 +326,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         ggplot2::xlab("") +
         ggplot2::ylab("") +
         ggplot2::labs(title = title) +
-        .themeRprimer(showXAxis = TRUE, rotateX = TRUE)
+        .themeRprimer(showXAxis = TRUE)
 }
 
 .gcTmIdentityPlot <- function(x, color = "grey30", type = "Primers") {
@@ -364,11 +334,11 @@ setMethod("plotData", "RprimerAssay", function(x) {
         patchwork::wrap_plots(
             list(
                 .violinPlot(
-                    x, x$gcMajority,
+                    x, x$gcContentMean,
                     paste0("\n", type, "\n\nGC-content"),
                     color = color
                 ),
-                .violinPlot(x, x$tmMajority, "\n\n\nTm", color = color),
+                .violinPlot(x, x$tmMean, "\n\n\nTm", color = color),
                 .violinPlot(x, x$identity, "\n\n\nIdentity", color = color),
                 .barPlot(x, x$length, "\n\n\nLength", color = color),
                 .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
@@ -379,11 +349,11 @@ setMethod("plotData", "RprimerAssay", function(x) {
         patchwork::wrap_plots(
             list(
                 .dotPlot(
-                    x, x$gcMajority,
+                    x, x$gcContentMean,
                     paste0("\n", type, "\n\nGC-content"),
                     color = color
                 ),
-                .dotPlot(x, x$tmMajority, "\n\n\nTm", color = color),
+                .dotPlot(x, x$tmMean, "\n\n\nTm", color = color),
                 .dotPlot(x, x$identity, "\n\n\nIdentity", color = color),
                 .barPlot(x, x$length, "\n\n\nLength", color = color),
                 .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
@@ -417,8 +387,8 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .assayPlot <- function(x) {
-    start <- x$alignmentStart[[1]]
-    end <- x$alignmentEnd[[1]]
+    start <- x$roiStart[[1]]
+    end <- x$roiEnd[[1]]
     ggplot2::ggplot() +
         ggplot2::xlim(start, end) +
         ggplot2::ylim(0, 1) +
@@ -481,6 +451,41 @@ setMethod("plotData", "RprimerAssay", function(x) {
             ncol = 3
         )
     }
+}
+
+# Helpers for plotting an RprimerProfile =======================================
+
+#' Calculate running average
+#'
+#' @param x A numeric vector.
+#'
+#' @param size
+#' The number of observations in each average.
+#' If \code{NULL}, the size will be set to the nearest positive, nonzero
+#' integer to \code{length(x)/100}.
+#'
+#' @return A data frame with position and running average of \code{x}.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.runningAverage <- function(x, size = NULL) {
+    if (is.null(size)) {
+        size <- round(length(x) / 100)
+        if (size == 0) {
+            size <- 1
+        }
+    }
+    sums <- c(0, cumsum(x))
+    from <- seq_len(length(sums) - size)
+    to <- seq(size + 1, length(sums))
+    average <- (sums[to] - sums[from]) / size
+    position <- seq(size, length(x))
+    if (size > 1) {
+        midpoint <- size / 2
+        position <- position - midpoint
+    }
+    data.frame(position, average)
 }
 
 .identityPlot <- function(x, shadeFrom = NULL, shadeTo = NULL) {
@@ -570,10 +575,11 @@ setMethod("plotData", "RprimerAssay", function(x) {
     )
 }
 
+# Theme ========================================================================
+
 .themeRprimer <- function(showXAxis = TRUE,
                           showYAxis = TRUE,
-                          showLegend = FALSE,
-                          rotateX = FALSE) {
+                          showLegend = FALSE) {
     if (showXAxis && showYAxis) {
         .showXYAxes(showLegend = showLegend)
     } else if (showXAxis && !showYAxis) {
@@ -585,7 +591,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
     }
 }
 
-.showXYAxes <- function(showLegend = TRUE, rotateX = FALSE) {
+.showXYAxes <- function(showLegend = TRUE) {
     ggplot2::theme_light() +
         ggplot2::theme(
             legend.title = ggplot2::element_blank(),
@@ -604,7 +610,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         )
 }
 
-.showXAxisHideYAxis <- function(showLegend = TRUE, rotateX = FALSE) {
+.showXAxisHideYAxis <- function(showLegend = TRUE) {
     ggplot2::theme_light() +
         ggplot2::theme(
             legend.title = ggplot2::element_blank(),

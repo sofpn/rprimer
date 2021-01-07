@@ -9,28 +9,28 @@ exampleRprimerAlignment <- Biostrings::readDNAMultipleAlignment(
     exampleRprimerAlignment,
     format = "fasta"
 )
+
 exampleRprimerAlignment <- Biostrings::maskGaps(
     exampleRprimerAlignment,
     min.fraction = 0.5, min.block.width = 1
 )
 
-exampleRprimerProfile <- getConsensusProfile(
+exampleRprimerProfile <- consensusProfile(
     exampleRprimerAlignment,
     iupacThreshold = 0.05
 )
 
-exampleRprimerOligo <- getOligos(exampleRprimerProfile,
+exampleRprimerOligo <- oligos(exampleRprimerProfile,
     lengthPrimer = 18:22,
-    maxGapFrequencyPrimer = 0.05,
+    maxGapFrequency = 0.05,
     maxDegeneracyPrimer = 2,
-    minEndIdentityPrimer = 1,
+    minEndIdentityPrimer = 0.9,
     gcRangePrimer = c(0.45, 0.65),
     tmRangePrimer = c(55, 65),
     concPrimer = 500,
     lengthProbe = 16:24,
-    maxGapFrequencyProbe = 0.05,
     maxDegeneracyProbe = 4,
-    avoid5EndGProbe = TRUE,
+    avoidFiveEndGProbe = TRUE,
     gcRangeProbe = c(0.45, 0.65),
     tmRangeProbe = c(55, 70)
 )

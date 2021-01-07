@@ -3,8 +3,6 @@
 
 <!-- badges: start --> <!-- badges: end -->
 
-  - validate objs, testa s4 klasserna
-
 ## Installation
 
 You can install rprimer from [GitHub](https://github.com/) with:
@@ -26,12 +24,16 @@ rprimer provides tools for designing broadly reactive (RT)-(q/dd)PCR
 assays from a multiple DNA sequence alignment. The design process is
 built on three functions:
 
-  - `getConsensusProfile()`: returns an `RprimerProfile` object, which
-    is used as input for;
-  - `getOligos()`: returns an `RprimerOligo` object (all the oligo
-    candidates), which is used as input for;
-  - `getAssays()`: returns an `RprimerAssay` object (all the assay
-    candidates).
+  - `consensusProfile()`: takes a multiple DNA sequence alignment and
+    returns all the information needed for the subsequent design
+    process, arranged in an `RprimerProfile` object
+  - `oligos()`: takes an `RprimerProfile` as input and designs primers
+    and probes (if selected) based on user specified constraints on
+    e.g. length, GC-content, melting temperature, maximum degeneracy
+    and minimum end-conservation. Returns an `RprimerOligo` object
+  - `assays()`: takes an `RprimerOligo` as input and designs assays with
+    desired length and difference in melting temperature. Returns an
+    `RprimerAssay` object
 
 The `Rprimer`-classes are extensions of the `DataFrame` class from
 S4Vectors, and behave in a similar manner as traditional data frames.
@@ -54,14 +56,14 @@ myAlignment <- Biostrings::maskGaps(myAlignment,
                                     min.block.width = 1) 
 ```
 
-### Step 1: `getConsensusProfile`
+### Step 1: `consensusProfile`
 
-`getConsensusProfile()` takes a `Biostrings::DNAMultipleAlignment`
-object as input and returns all the information needed for the
-subsequent design process.
+`consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object
+as input and returns all the information needed for the subsequent
+design process.
 
 ``` r
-myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
+myConsensusProfile <- consensusProfile(myAlignment, iupacThreshold = 0.05)
 ```
 
 Output:
@@ -75,41 +77,20 @@ Output:
 |        5 | 0.00 | 0.00 | 0.70 | 0.01 |     0 | 0.29 | G        |     0.99 | G     |    0.11 |
 |        6 | 0.71 | 0.00 | 0.00 | 0.00 |     0 | 0.29 | A        |     1.00 | A     |    0.00 |
 
-The output can be visualized with `plotData()`, and specific regions can
-be highlighted using the optional arguments `shadeFrom` and `shadeTo`.
+The output can be visualized with `plotData()`:
 
 ``` r
-plotData(myConsensusProfile, shadeFrom = 5000, shadeTo = 5500)
+plotData(myConsensusProfile)
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
-### Step 2: `getOligos`
+### Step 2: `oligos`
 
-`getOligos()` searches for oligos from an `RprimerProfile`-object. All
-oligos are shown in both majority (without degenerate bases) and IUPAC
-format (with degenerate bases).
+`oligos()` searches for oligos from an `RprimerProfile`-object.
 
 ``` r
-myOligos <- getOligos(myConsensusProfile,
-                      lengthPrimer = 18:22,
-                      maxGapFrequencyPrimer = 0.05,
-                      maxDegeneracyPrimer = 2,
-                      gcClampPrimer = TRUE,
-                      avoid3EndRunsPrimer = TRUE,
-                      minEndIdentityPrimer = 1,
-                      gcRangePrimer = c(0.45, 0.65),
-                      tmRangePrimer = c(55, 65),
-                      concPrimer = 500,
-                      probe = TRUE,
-                      lengthProbe = 16:24,
-                      maxGapFrequencyProbe = 0.05,
-                      maxDegeneracyProbe = 4,
-                      avoid5EndGProbe = TRUE, 
-                      gcRangeProbe = c(0.45, 0.65),
-                      tmRangeProbe = c(55, 70),
-                      concProbe = 250,
-                      concNa = 0.05)
+myOligos <- oligos(myConsensusProfile)
 ```
 
 The oligo candidates can be visualized using `plotData()`:
@@ -120,25 +101,20 @@ plotData(myOligos)
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
-### Step 3: `getAssays`
+### Step 3: `assays`
 
-`getAssays()` finds pairs of forward and reverse primers and, if
-selected, combines them with probes.
+`assays()` finds pairs of forward and reverse primers and, if selected,
+combines them with probes.
 
 ``` r
-myAssays <- getAssays(myOligos, 
-                      length = 65:120,
-                      maxTmDifferencePrimers = 2,
-                      tmDifferencePrimersProbe = c(-2, 10))
+#myAssays <- assays(myOligos)
 ```
 
 The assay candidates can be visualized using `plotData()`:
 
 ``` r
-plotData(myAssays)
+#plotData(myAssays)
 ```
-
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
 ## More information
 

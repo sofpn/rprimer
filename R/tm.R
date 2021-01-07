@@ -7,9 +7,6 @@
 #' @keywords internal
 #'
 #' @noRd
-#'
-#' @examples
-#' .nn(c("A", "C", "C", "T", "G))
 .nn <- function(x) {
     from <- (seq_along(x) - 1)[-1]
     to <- seq_along(x)[-1]
@@ -68,7 +65,7 @@
 #' using the nearest neighbor method. It also returns the number
 #' of phosphates and the sodium ion concentration. For Tm calculation.
 #'
-#' @param x A character vector or matrix with DNA sequences.
+#' @param x A matrix with DNA sequences.
 #'
 #' @param concNa Sodium ion concentration in M.
 #'
@@ -79,9 +76,8 @@
 #' @noRd
 #'
 #' @examples
-#' .tmParameters(c("A", "G", "T", "T", "C", "G", "G", "T", "C", "G"))
+#' .tmParameters(matrix(c("A", "G", "T", "T", "C", "G", "G", "T", "C", "G")))
 .tmParameters <- function(x, concNa = 0.05) {
-    if (!is.matrix(x)) x <- t(matrix(x))
     nn <- t(apply(x, 1, .nn))
     dhStack <- rowSums(.stack(nn, "dH"))
     dsStack <- rowSums(.stack(nn, "dS"))

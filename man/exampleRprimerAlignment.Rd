@@ -18,7 +18,7 @@ data("exampleRprimerAlignment")
 An alignment with 100 hepatitis E virus sequences.
 }
 \references{
-H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
+H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
 Efficient manipulation of biological strings. R package version
 2.57.2.
 }

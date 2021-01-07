@@ -63,7 +63,7 @@ data("exampleRprimerAlignment")
 consensusProfile(exampleRprimerAlignment)
 }
 \references{
-This function is a wrapper around \code{Biostrings::consensusMatrix()}:
+This function is a wrapper to \code{Biostrings::consensusMatrix()}:
 
 H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
 Efficient manipulation of biological strings. R package version

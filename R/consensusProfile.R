@@ -55,7 +55,7 @@
 #' }
 #'
 #' @references
-#' This function is a wrapper around \code{Biostrings::consensusMatrix()}:
+#' This function is a wrapper to \code{Biostrings::consensusMatrix()}:
 #'
 #' H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
 #' Efficient manipulation of biological strings. R package version
@@ -68,9 +68,9 @@
 #' consensusProfile(exampleRprimerAlignment)
 consensusProfile <- function(x, iupacThreshold = 0) {
     if (!methods::is(x, "DNAMultipleAlignment")) {
-        stop("'x' must be a DNAMultipleAlignment object.")
+        stop("'x' must be a DNAMultipleAlignment object.", call. = FALSE)
     }
-    if (iupacThreshold < 0 || iupacThreshold > 0.2) {
+    if (!(iupacThreshold >= 0 && iupacThreshold <= 0.2)) {
         stop(
             paste0("'iupacThreshold' must be a number from 0 to 0.2."),
             call. = FALSE

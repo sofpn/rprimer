@@ -1,4 +1,4 @@
-# tests, tests for tm
+# tests
 # word doc to describe design process and make flowchart
 # then assays, then plot, then vignette and readme
 
@@ -13,54 +13,55 @@
 #'
 #' @param maxGapFrequency
 #' Maximum allowed gap frequency (for both primers and probes).
-#' A number [0, 1]. Defaults to 0.1.
+#' A number [0, 1], defaults to 0.1.
 #'
 #' @param lengthPrimer
-#' Primer length. A numeric vector [14, 30].
-#' Defaults to \code{18:22}.
+#' Primer length. A numeric vector [14, 30],
+#' defaults to \code{18:22}.
 #'
 #' @param maxDegeneracyPrimer
-#' Maximum number of variants of each primer. A number [1, 32]. Defaults to 4.
+#' Maximum number of variants of each primer. A number [1, 32], defaults to 4.
 #'
 #' @param gcClampPrimer
-#' \code{TRUE} or \code{FALSE}.
 #' If primers with no GC-clamp
 #' should be avoided.
-#' Defaults to \code{TRUE}. A GC-clamp
+#' A GC-clamp
 #' is identified as two to three G or
 #' C:s within the last five bases (3'-end) of the oligo.
+#' \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.
 #'
 #' @param avoidThreeEndRunsPrimer
-#' \code{TRUE} or \code{FALSE}.
 #' If primers with more than two runs
-#' of the same nucleotide at the 3' end should be avoided.
+#' of the same nucleotide at the terminal 3'-end should be avoided.
+#' \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.
 #'
 #' @param minEndIdentityPrimer
-#' Optional. If specified, a number [0, 1]. The minimum allowed identity
+#' The minimum allowed identity
 #' at the 3'-end of the primer (the last five bases).
+#' A number [0, 1], defaults to 0.
 #'
 #' @param gcRangePrimer
 #' GC-content range for primers (proportion, not percent).
-#' A numeric vector [0, 1]. Defaults to \code{c(0.45, 0.55)}.
+#' A numeric vector [0, 1], defaults to \code{c(0.45, 0.55)}.
 #'
 #' @param tmRangePrimer
 #' Tm range for primers.
-#' A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
+#' A numeric vector [30, 90], defaults to \code{c(55, 65)}.
 #'
 #' @param concPrimer
 #' Primer concentration in nM, for Tm calculation. A number
-#' [20, 2000] Defaults to 500.
+#' [20, 2000], defaults to 500.
 #'
 #' @param probe
-#' If probes should be designed as well. \code{TRUE} or \code{FALSE},
+#' If probes should be designed. \code{TRUE} or \code{FALSE},
 #' defaults to \code{TRUE}.
 #'
 #' @param lengthProbe
-#' Probe length. A numeric vector [14, 30].
-#' Defaults to \code{18:22}.
+#' Probe length. A numeric vector [14, 30],
+#' defaults to \code{18:22}.
 #'
 #' @param maxDegeneracyProbe
-#' Maximum number of variants of each probe. A number [1, 32]. Defaults to 4.
+#' Maximum number of variants of each probe. A number [1, 32], defaults to 4.
 #'
 #' @param avoidFiveEndGProbe
 #' If probes with G
@@ -68,26 +69,26 @@
 #' defaults to \code{TRUE}.
 #'
 #' @param gcRangeProbe
-#' GC-content range for probes (proportion, not %). A numeric vector [0, 1].
-#' Defaults to \code{c(0.45, 0.55)}.
+#' GC-content range for probes (proportion, not %). A numeric vector [0, 1],
+#' defaults to \code{c(0.45, 0.55)}.
 #'
 #' @param tmRangeProbe
 #' Tm range for probes.
-#' A numeric vector [30, 90]. Defaults to \code{c(55, 65)}.
+#' A numeric vector [30, 90], defaults to \code{c(55, 65)}.
 #'
 #' @param concProbe
 #' Primer concentration in nM, for Tm calculation. A numeric vector
-#' [20, 2000] Defaults to 250.
+#' [20, 2000], defaults to 250.
 #'
 #' @param concNa
 #' The sodium ion concentration in the PCR reaction in M, for Tm calculation.
-#' A numeric vector [0.01, 1]. Defaults to 0.05 (50 mM).
+#' A numeric vector [0.01, 1], defaults to 0.05 (50 mM).
 #'
 #' @section Output:
 #'
 #' The output contains the following information:
 #'
-#' \itemize{
+#' \describe{
 #'   \item{type}{Whether the oligo is a primer or probe.}
 #'   \item{fwd}{\code{TRUE} if the oligo is valid in forward direction,
 #'     \code{FALSE} otherwise.}
@@ -117,13 +118,17 @@
 #'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
 #' }
 #'
+#' @section Description of the design process:
+#'
+#' to be added.
+#'
 #' @section Tm-calculation:
 #'
 #' Melting temperatures are calculated using SantaLucia's nearest-neighbor
 #' method, with the following assumptions:
 #'
 #' \itemize{
-#'   \item Oligos are not expected to be self-complementary (i.e. no symmetry
+#'   \item Oligos are not expected to be self-complementary (no symmetry
 #'   correction is done).
 #'   \item The oligo concentration is assumed to be much higher
 #'   than the target concentration.
@@ -186,20 +191,29 @@ oligos <- function(x,
     if (!methods::is(x, "RprimerProfile")) {
       stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
+    if (!(maxGapFrequency >= 0 && maxGapFrequency <= 1)) {
+      stop("'lengthPrimer' must be from 0 to 1.", call. = FALSE)
+    }
     if (!(min(lengthPrimer) >= 14 && max(lengthPrimer) <= 30)) {
       stop("'lengthPrimer' must be from 14 to 30.", call. = FALSE)
-    }
-    if (!(min(lengthProbe) >= 14 && max(lengthProbe) <= 30)) {
-      stop("'lengthProbe' must be from 14 to 30.", call. = FALSE)
     }
     if (!(maxDegeneracyPrimer >= 1 && maxDegeneracyPrimer <= 32)) {
       stop("'maxDegeneracyPrimer' must be from 1 to 32.", call. = FALSE)
     }
-    if (!(maxDegeneracyProbe >= 1 && maxDegeneracyProbe <= 32)) {
-      stop("'maxDegeneracyProbe' must be from 1 to 32.", call. = FALSE)
+    if (any(!is.logical(c(gcClampPrimer, avoidThreeEndRunsPrimer)))) {
+      stop(
+        "'gcClampPrimer' and 'avoidThreeEndRunsPrimer'
+           must be TRUE or FALSE",
+        call. = FALSE
+      )
     }
-    if (!is.logical(probe)) {
-      stop("'probe' must be set to TRUE or FALSE", call. = FALSE)
+
+
+    if (!(minEndIdentityPrimer >= 0 && minEndIdentityPrimer <= 1)) {
+      stop(
+        "'minEndIdentityPrimer' must be from 0 to 1.",
+        call. = FALSE
+      )
     }
     if (!(min(gcRangePrimer) >= 0 && max(gcRangePrimer) <= 1)) {
       stop(
@@ -210,7 +224,22 @@ oligos <- function(x,
     if (!(min(tmRangePrimer) >= 20 && max(tmRangePrimer) <= 90)) {
       stop(
         "'tmRangePrimer' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE
-      )
+     )
+    }
+    if (!(concPrimer >= 20 && concPrimer <= 2000)) {
+      stop("'concPrimer' must be from 20 nM to 2000 nM.", call. = FALSE)
+    }
+    if (!is.logical(probe)) {
+      stop("'probe' must be set to TRUE or FALSE", call. = FALSE)
+    }
+    if (!(min(lengthProbe) >= 14 && max(lengthProbe) <= 30)) {
+      stop("'lengthProbe' must be from 14 to 30.", call. = FALSE)
+    }
+    if (!(maxDegeneracyProbe >= 1 && maxDegeneracyProbe <= 32)) {
+      stop("'maxDegeneracyProbe' must be from 1 to 32.", call. = FALSE)
+    }
+    if (!is.logical(avoidFiveEndGProbe)) {
+      stop("'avoidFiveEndGProbe' must be TRUE or FALSE", call. = FALSE)
     }
     if (!(min(gcRangeProbe) >= 0 && max(gcRangeProbe) <= 1)) {
       stop(
@@ -222,25 +251,6 @@ oligos <- function(x,
       stop(
         "'tmRangeProbe' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE
       )
-    }
-    if (!(minEndIdentityPrimer >= 0 && minEndIdentityPrimer <= 1)) {
-      stop(
-        "'minEndIdentityPrimer' must be from 0 to 1.",
-        call. = FALSE
-      )
-    }
-    if (any(!is.logical(c(gcClampPrimer, avoidThreeEndRunsPrimer)))) {
-      stop(
-        "'gcClampPrimer' and 'avoidThreeEndRunsPrimer'
-         must be TRUE or FALSE",
-        call. = FALSE
-      )
-    }
-    if (!is.logical(avoidFiveEndGProbe)) {
-      stop("'avoidFiveEndGProbe' must be TRUE or FALSE", call. = FALSE)
-    }
-    if (!(concPrimer >= 20 && concPrimer <= 2000)) {
-      stop("'concPrimer' must be from 20 nM to 2000 nM.", call. = FALSE)
     }
     if (!(concProbe >= 20 && concProbe <= 2000)) {
       stop("'concProbe' must be from 20 nM to 2000 nM.", call. = FALSE)
@@ -408,11 +418,7 @@ oligos <- function(x,
 #'
 #' @param x An output from \code{.generateOligos()}.
 #'
-#' @param maxGapFrequency
-#' Maximum allowed gap frequency.
-#'
-#' @param maxDegeneracy
-#' Maximum allowed number of variants of each oligo.
+#' @inheritParams oligos
 #'
 #' @return
 #' A list with the same structure as \code{x}, but where invalid oligos have
@@ -492,7 +498,7 @@ oligos <- function(x,
 #'
 #' Helper function to \code{.getAllVariants()}.
 #'
-#' @param x A vector or matrix with DNA sequence(s).
+#' @param x A matrix with DNA sequence(s).
 #'
 #' @return The reverse complement of \code{x}, a matrix with the same
 #' dimension as \code{x}, and with the same rownames.
@@ -502,9 +508,8 @@ oligos <- function(x,
 #' @noRd
 #'
 #' @examples
-#' .reverseComplement(c("A", "R", "T", "T", "N", "G"))
+#' .reverseComplement(matrix(c("A", "R", "T", "T", "N", "G")))
 .reverseComplement <- function(x) {
-    if (!is.matrix(x)) x <- t(matrix(x))
     rc <- x[, rev(seq_len(ncol(x))), drop = FALSE]
     rc[] <- lookup$complement[rc]
     rc
@@ -521,7 +526,7 @@ oligos <- function(x,
 #' Helper function to \code{.getAllVariants()}.
 #'
 #' @param x
-#' A numeric vector or matrix, where each row corresponds to a specific oligo.
+#' A numeric matrix, where each row corresponds to a specific oligo.
 #' In this matrix, 1 corresponds to G or C, and 0 corresponds to A or T.
 #'
 #' @param rev
@@ -536,12 +541,10 @@ oligos <- function(x,
 #' @noRd
 #'
 #' @examples
-#' seq <- c("A", "C", "G", "G", "T", "T", "A", "A")
-#' gc <- ifelse(seq == "C" | seq == "G", 1, 0)
+#' seq <- matrix(c(1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0))
 #' .detectGcClamp(gc, rev = FALSE)
 #' .detectGcClamp(gc, rev = TRUE)
 .detectGcClamp <- function(x, rev = FALSE) {
-    if (!is.matrix(x)) x <- t(matrix(x))
     if (rev) {
         end <- x[, seq_len(5), drop = FALSE]
         ifelse(5 - rowSums(end) >= 2 & 5 - rowSums(end) <= 3, TRUE, FALSE)
@@ -560,7 +563,7 @@ oligos <- function(x,
 #' Helper function to \code{.getAllVariants()}.
 #'
 #' @param x
-#' A character vector or matrix, where each row corresponds to a specific oligo.
+#' A matrix with DNA sequences.
 #'
 #' @param rev
 #' If the check should be done in reverse direction.
@@ -574,10 +577,9 @@ oligos <- function(x,
 #' @noRd
 #'
 #' @examples
-#' seq <- c("A", "C", "G", "G", "T", "T", "A", "A")
+#' seq <- matrix(c("A", "C", "G", "G", "T", "T", "A", "A"))
 #' .detectThreeEndRuns(seq, rev = FALSE)
 .detectThreeEndRuns <- function(x, rev = FALSE) {
-    if (!is.matrix(x)) x <- t(matrix(x))
     if (rev) {
         end <- x[, seq_len(3), drop = FALSE]
     } else {
@@ -630,14 +632,7 @@ oligos <- function(x,
 #'
 #' @param x An output from \code{.filterOligos()}.
 #'
-#' @param concPrimer
-#' Primer concentration in nM (for tm-calculation).
-#'
-#' @param concProbe
-#' Probe concentration in nM (for tm-calculation).
-#'
-#' @param concNa
-#' Sodium ion concentration in the PCR reaction in M (for tm-calculation).
+#' @inheritParams oligos
 #'
 #' @return
 #' A list.
@@ -727,6 +722,7 @@ oligos <- function(x,
 #'
 #' @noRd
 .makeOligoDf <- function(x) {
+    gapFrequency <- NULL ## Just to avoid cmd check note
     x <- within(x, rm(gapFrequency))
     x$iupacSequenceRc <- .reverseComplement(x$iupacSequence)
     x$iupacSequence <- apply(x$iupacSequence, 1, paste, collapse = "")
@@ -738,20 +734,7 @@ oligos <- function(x,
 #'
 #' Helper function to \code{oligos()}.
 #'
-#' @param x An \code{RprimerProfile} object.
-#'
-#' @param maxGapFrequency
-#' Maximum allowed gap frequency, defaults to 0.1.
-#'
-#' @param maxDegeneracy
-#' Maximum allowed number of variants of each oligo, defaults to 4.
-#'
-#' @param concOligo
-#' Oligo concentration in nM. Defaults to 250.
-#'
-#' @param concNa
-#' Sodium ion concentration in the PCR reaction in M.
-#' Defaults to 0.05 M (50 mM).
+#' @inheritParams oligos
 #'
 #' @return A data frame with oligos.
 #'
@@ -870,15 +853,7 @@ oligos <- function(x,
 #'
 #' @param x
 #'
-#' @param gcClampPrimer
-#' If primers must have a GC-clamp.
-#' A GC-clamp
-#' is identified as two to three G or
-#' C:s within the last five bases (3'-end) of the primer.
-#'
-#' @param avoidThreeEndRunsPrimer
-#' If primers with more than two runs
-#' of the same nucleotide at the terminal 3'-end should be avoided.
+#' @inheritParams oligos
 #'
 #' @param rowThreshold
 #' Minimum proportion of the specified design constraints that must be
@@ -922,28 +897,7 @@ oligos <- function(x,
 #'
 #' @param x An output from \code{.designOligos()}
 #'
-#' @param lengthPrimer
-#'
-#' @param maxDegeneracyPrimer
-#'
-#' @param minEndIdentityPrimer
-#' The minimum allowed identity
-#' at the 3'-end of the primer (the last five bases).
-#'
-#' @param gcClampPrimer
-#' If primers must have a GC-clamp.
-#' A GC-clamp
-#' is identified as two to three G or
-#' C:s within the last five bases (3'-end) of the primer.
-#'
-#' @param avoidThreeEndRunsPrimer
-#' If primers with more than two runs
-#' of the same nucleotide at the terminal 3'-end should be avoided.
-#'
-#' @param gcRangePrimer
-#' GC-content range for primers (proportion, not percent).
-#'
-#' @param tmRangePrimer
+#' @inheritParams oligos
 #'
 #' @param rowThreshold
 #' Minimum proportion of the specified design constraints that must be
@@ -1005,8 +959,7 @@ oligos <- function(x,
 #'
 #' @param x
 #'
-#' @param avoidFiveEndGProbe
-#' If probes with a G at the terminal 5'-end should be avoided.
+#' @inheritParams oligos
 #'
 #' @param rowThreshold
 #' Minimum proportion of the specified design constraints that must be
@@ -1045,18 +998,7 @@ oligos <- function(x,
 #'
 #' @param x An output from \code{.generateOligos()}
 #'
-#' @param lengthProbe
-#'
-#' @param maxDegeneracyProbe
-#'
-#' @param avoidFiveEndGProbe
-#' If probes with a G at the terminal 5'-end should be avoided.
-#'
-#' @param gcRangeProbe
-#' GC-content range for probes (proportion, not percent).
-#'
-#' @param tmRangeProbe
-#' Tm range for probes.
+#' @inheritParams oligos
 #'
 #' @param rowThreshold
 #' Minimum proportion of the specified design constraints that must be

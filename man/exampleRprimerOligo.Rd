@@ -14,33 +14,33 @@ data("exampleRprimerOligo")
 The object contains the following information:
 
 \describe{
-  \item{type: whether the oligo is a primer or probe.}
-  \item{fwd: \code{TRUE} if the oligo is valid in forward direction,
+  \item{type}{Whether the oligo is a primer or probe.}
+  \item{fwd}{\code{TRUE} if the oligo is valid in forward direction,
     \code{FALSE} otherwise.}
-  \item{rev: \code{TRUE} if the oligo is valid in reverse direction,
+  \item{rev}{\code{TRUE} if the oligo is valid in reverse direction,
     \code{FALSE} otherwise.}
-  \item{start: start position of the oligo.}
-  \item{end: end positon of the oligo.}
-  \item{length: oligo length.}
-  \item{iupacSequence: oligo sequence, with wobble bases (if any).}
-  \item{iupaSequenceRc: the reverse complement of the iupacSequence.}
-  \item{identity: average identity score of the oligo, can range from 0 to 1.
+  \item{start}{Start position of the oligo.}
+  \item{end}{End positon of the oligo.}
+  \item{length}{Oligo length.}
+  \item{iupacSequence}{Oligo sequence, with wobble bases (if any).}
+  \item{iupaSequenceRc}{The reverse complement of the iupacSequence.}
+  \item{identity}{Average identity score of the oligo, can range from 0 to 1.
     The identity is the proportion of the most common base at each position
     in the input alignment.}
-  \item{degeneracy: number of sequence variants of the oligo.}
-  \item{gcContentMean: mean GC-content of all sequence variants of the oligo.
+  \item{degeneracy}{Number of sequence variants of the oligo.}
+  \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.
   }
-  \item{gcContentRange: range in GC-content of all sequence variants of
+  \item{gcContentRange}{Range in GC-content of all sequence variants of
     the oligo.}
-  \item{tmMean: mean tm of all sequence variants of the oligo.}
-  \item{tmRange: range in tm of all sequence variants of the oligo.}
-  \item{sequence: all sequence variants of the oligo.}
-  \item{sequenceRc: reverse complements of all sequence variants.}
-  \item{gcContent: GC-content of all sequence variants.}
-  \item{tm: tm of all sequence variants.}
-  \item{roiStart: first position of the input \code{RprimerProfile} object
+  \item{tmMean}{Mean tm of all sequence variants of the oligo.}
+  \item{tmRange}{Range in tm of all sequence variants of the oligo.}
+  \item{sequence}{All sequence variants of the oligo.}
+  \item{sequenceRc}{Reverse complements of all sequence variants.}
+  \item{gcContent}{GC-content of all sequence variants.}
+  \item{tm}{tm of all sequence variants.}
+  \item{roiStart}{First position of the input \code{RprimerProfile} object
     (roi = region of interest).}
-  \item{roiEnd: last position of the input \code{RprimerProfile} object.}
+  \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
 }
 }
 \keyword{datasets}

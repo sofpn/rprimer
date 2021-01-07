@@ -59,6 +59,6 @@ plotData(exampleRprimerProfile)
 plotData(exampleRprimerProfile, shadeFrom = 500, shadeTo = 1000)
 data("exampleRprimerOligo")
 plotData(exampleRprimerOligo)
-data("exampleRprimerAssay")
-plotData(exampleRprimerAssay)
+## data("exampleRprimerAssay") ################ ADD LATER
+## plotData(exampleRprimerAssay)
 }

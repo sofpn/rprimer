@@ -9,8 +9,9 @@ plotNucleotides(x, rc = FALSE)
 \arguments{
 \item{x}{An \code{RprimerProfile} object.}
 
-\item{rc}{\code{TRUE} or {FALSE}. If the plotted sequence should be displayed
-as reverse complement or not. Defaults to \code{FALSE}.}
+\item{rc}{If the plotted sequence should be displayed
+as reverse complement or not.
+\code{TRUE} or {FALSE}, defaults to \code{FALSE}.}
 }
 \value{
 A barplot with nucleotide distribution.
@@ -19,9 +20,14 @@ A barplot with nucleotide distribution.
 Plot nucleotide distribution
 }
 \examples{
+## Load example data
 data("exampleRprimerProfile")
-plotNucleotides(exampleRprimerProfile[1:10, ])
+x <- exampleRprimerProfile
+
 ## Plot the first 10 bases
-plotNucleotides(exampleRprimerProfile[1:10, ], rc = TRUE)
+roi <- x[x$position >= 1 & x$position <= 10, ]
+plotNucleotides(roi)
+
 ## As reverse complement
+plotNucleotides(roi, rc = TRUE)
 }
