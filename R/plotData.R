@@ -1,5 +1,3 @@
-# todo:  shadeFrom => highlight
-
 #' Plot an Rprimer-object (generic)
 #'
 #' @param x
@@ -23,6 +21,8 @@
 #' \code{TRUE} or {FALSE}, defaults to \code{FALSE}.
 #'
 #' @return A plot.
+#'
+#' @export
 #'
 #' @examples
 #' ## Plot an RprimerProfile object
@@ -63,7 +63,6 @@
 #' ## Plot an RrimerAssay object
 #' ## data("exampleRprimerAssay")
 #' ## plotData(exampleRprimerAssay)
-#' @export
 setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 
 #' Plot an RprimerProfile-object (method)
@@ -406,7 +405,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         ggplot2::geom_rect(
             data = x, ggplot2::aes(
                 xmin = start, xmax = end, ymin = 0.05, ymax = 0.65
-            ), fill = "#64697D"
+            ), fill = "#424B54"
         ) +
         ggplot2::annotate(
             "label",
@@ -414,7 +413,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
             label = paste(
                 "Assays n =", nrow(x)
             ), size = 3, hjust = 0, fontface = 2,
-            color = "#64697D", fill = "white", label.size = NA
+            color = "#424B54", fill = "white", label.size = NA
         ) +
         .themeRprimer(showYAxis = FALSE)
 }

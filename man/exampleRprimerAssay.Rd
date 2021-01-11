@@ -19,68 +19,52 @@ The object contains the following information:
   \item{ampliconLength}{Length of the amplicon.}
   \item{tmDifferencePrimer}{Difference in Tm between
   the forward and reverse primer, absolute value.}
-  \item{meanIdentity}{Average identity score of the primers
-  (and probe if selected)}.
   \item{totalDegeneracy}{Total number of oligos in the assay.}
   \item{startFwd}{Position where the forward primer starts.}
-  \item{endFwd}{Position where the reverse primer ends.}
+  \item{endFwd}{Position where the forward primer ends.}
   \item{lengthFwd}{Length of the forward primer.}
-  \item{majorityFwd}{Majority sequence of the forward primer.}
-  \item{gcMajorityFwd}{GC-content of the forward primer
-  (majority sequence), proportion.}
+  \item{iupacSequenceFwd}{IUPAC sequence of the forward primer.}
   \item{identityFwd}{Average identity of the forward primer.}
-  \item{tmMajorityFwd}{Tm of the forward primer
-  (majority sequence).}
-  \item{iupacFwd}{IUPAC sequence (i.e. with degenerate bases)
-  of the forward primer.}
-  \item{degeneracyFwd}{Number of variants of the forward primer}.
+  \item{degeneracyFwd}{Number of variants of the forward primer.}
+  \item{gcContentMeanFwd}{Mean GC-content of the forward primer.}
+  \item{gcContentRangeFwd}{Range in GC-content of the forward primer.}
+  \item{tmMeanFwd}{Mean tm of the forward primer.}
+  \item{tmRangeFwd}{Range in tm of the forward primer.}
+  \item{sequenceFwd}{Sequence of the forward primer, all variants.}
+  \item{gcContentFwd}{GC-content of the forward primer, all variants.}
+  \item{tmFwd}{Tm of the forward primer, all variants.}
   \item{startRev}{Position where the reverse primer starts.}
   \item{endRev}{Position where the reverse primer ends.}
   \item{lengthRev}{Length of the reverse primer.}
-  \item{majorityRev}{Majority sequence of the reverse primer.}
-  \item{gcMajorityRev}{GC-content of the reverse primer
-  (majority sequence), proportion.}
-  \item{tmMajorityRev}{Tm of the reverse primer
-  (majority sequence).}
+  \item{iupacSequenceRev}{IUPAC sequence of the reverse primer.}
   \item{identityRev}{Average identity of the reverse primer.}
-  \item{iupacRev}{IUPAC sequence (i.e. with degenerate bases)
-  of the reverse primer.}
   \item{degeneracyRev}{Number of variants of the reverse primer.}
-  \item{allFwd}{Lists with all sequence variants of the forward primer.}
-  \item{gcAllFwd}{Lists with the GC content of all
-  sequence variants of the forward primer.}
-  \item{tmAllFwd}{Lists with the Tm of all sequence variants of
-  the reverse primer.}
-  \item{allRev}{Lists with all sequence variants of the reverse primer.}
-  \item{gcAllRev}{Lists with the GC content of all
-  sequence variants of the forward primer.}
-  \item{tmAllRev}{Lists with the Tm of all sequence variants of
-  the reverse primer.}
-  \item{tmDifferencePrimerProbe}{Difference in Tm between the average
-  Tm of the primer pair and the probe, majority sequences.}
+  \item{gcContentMeanRev}{Mean GC-content of the reverse primer.}
+  \item{gcContentRangeRev}{Range in GC-content of the reverse primer.}
+  \item{tmMeanRev}{Mean tm of the reverse primer.}
+  \item{tmRangeRev}{Range in tm of the reverse primer.}
+  \item{sequenceRev}{Sequence of the reverse primer, all variants.}
+  \item{gcContentRev}{GC-content of the reverse primer, all variants.}
+  \item{tmRev}{Tm of the reverse primer, all variants.}
+  \item{plusPr}{If the probe is valid in positive sense.}
+  \item{minusPr}{If the probe is valid in negative sense.}
   \item{startPr}{Position where the probe starts.}
   \item{endPr}{Position where the probe ends.}
   \item{lengthPr}{Length of the probe.}
-  \item{majorityPr}{Majority sequence of the probe.}
-  \item{gcMajorityPr}{GC-content of the probe
-  (majority sequence), proportion.}
-  \item{tmMajorityPr}{Tm of the probe
-  (majority sequence).}
+  \item{iupacSequencePr}{IUPAC sequence of the probe.}
   \item{identityPr}{Average identity of the probe.}
-  \item{iupacPr}{IUPAC sequence (i.e. with degenerate bases)
-  of the probe.}
   \item{degeneracyPr}{Number of variants of the probe.}
-  \item{sensePr}{Sense of the probe (pos or neg). If both probes are valid,
-  the probe with the least G:s is selected.}
-  \item{allPr}{Lists with all sequence variants of the probe.}
-  \item{gcAllPr}{Lists with the GC content of all
-  sequence variants of the probe.}
-  \item{tmAllPr}{Lists with the Tm of all sequence variants of
-  the probe.}
-  \item{alignmentStart}{Start position of the input consensus profile
+  \item{gcContentMeanPr}{Mean GC-content of the probe.}
+  \item{gcContentRangePr}{Range in GC-content of the probe.}
+  \item{tmMeanPr}{Mean tm of the probe.}
+  \item{tmRangePr}{Range in tm of the probe.}
+  \item{sequencePr}{Sequence of the probe, all variants.}
+  \item{gcContentPr}{GC-content of the probe, all variants.}
+  \item{tmPr}{Tm of the probe, all variants.}
+  \item{roiStart}{Start position of the input consensus profile
   used for oligo design.}
-  \item{alingnmentEnd}{End position of the input consensus profile used
+  \item{roiEnd}{End position of the input consensus profile used
   for oligo design.}
-}
+ }
 }
 \keyword{datasets}

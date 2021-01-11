@@ -21,7 +21,7 @@ data("exampleRprimerProfile")
   \item{g}{Proportion of G.}
   \item{t}{Proportion of T.}
   \item{other}{Proportion of bases other than A, C, G, T.}
-  \item{gaps}{proportion of gaps (recognized as "-" in the alignment).}
+  \item{gaps}{Proportion of gaps (recognized as "-" in the alignment).}
   \item{majority}{Majority consensus sequence.
   The most frequently occurring nucleotide.}
   \item{identity}{Proportion of the most common nucleotide.

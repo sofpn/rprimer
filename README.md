@@ -5,9 +5,7 @@
 
 ## TODO
 
-  - Assays=beautify, document, generate extdata
-  - Oligos=describe design process
-  - Plots=fix assay method
+  - Oligos=describe design process - new defaults? new defaults assays?
   - Classes=document, set validity
   - All=test
   - Vignette
@@ -30,7 +28,8 @@ devtools::load_all(".")
 ## Overview
 
 rprimer provides tools for designing broadly reactive primers, probes
-and (RT)-(q/dd)PCR assays from a multiple DNA sequence alignment.
+and (RT)-(q/dd)PCR assays from a multiple DNA sequence alignment. It is
+especially developed for sequence variable targets, such as RNA-viruses.
 
 The design process is built on three functions:
 
@@ -149,7 +148,10 @@ plotData(myOligos)
 ### Step 3: `assays`
 
 `assays()` finds pairs of forward and reverse primers and combines them
-with probes, if `probe = TRUE` was used in the oligo design step.
+with probes, if `probe = TRUE` was used in the oligo design step. You
+can design assays with default settings, or by specifying the amplicon
+length and maximum allowed difference between the primers, and the
+primer pair and probe.
 
 ``` r
 myAssays <- assays(myOligos)
@@ -157,11 +159,22 @@ myAssays <- assays(myOligos)
 
 Results (first six rows):
 
+| start | end | ampliconLength | tmDifferencePrimer | tmDifferencePrimerProbe | totalDegeneracy | startFwd | endFwd | lengthFwd | iupacSequenceFwd       | identityFwd | degeneracyFwd | gcContentMeanFwd | gcContentRangeFwd | tmMeanFwd | tmRangeFwd | sequenceFwd | gcContentFwd | tmFwd      | startRev | endRev | lengthRev | iupacSequenceRev     | identityRev | degeneracyRev | gcContentMeanRev | gcContentRangeRev | tmMeanRev | tmRangeRev | sequenceRev | gcContentRev | tmRev      | plusPr | minusPr | startPr | endPr | lengthPr | iupacSequencePr        | iupacSequenceRcPr      | identityPr | degeneracyPr | gcContentMeanPr | gcContentRangePr | tmMeanPr | tmRangePr | sequencePr | sequenceRcPr | gcContentPr | tmPr       | roiStart | roiEnd |
+| ----: | --: | -------------: | -----------------: | ----------------------: | --------------: | -------: | -----: | --------: | :--------------------- | ----------: | ------------: | ---------------: | ----------------: | --------: | ---------: | :---------- | :----------- | :--------- | -------: | -----: | --------: | :------------------- | ----------: | ------------: | ---------------: | ----------------: | --------: | ---------: | :---------- | :----------- | :--------- | :----- | :------ | ------: | ----: | -------: | :--------------------- | :--------------------- | ---------: | -----------: | --------------: | ---------------: | -------: | --------: | :--------- | :----------- | :---------- | :--------- | -------: | -----: |
+|    39 | 130 |             92 |               0.31 |                    0.19 |              10 |       39 |     60 |        22 | CAGTTYATYAAGGCTCCTGGCA |        0.98 |             4 |              0.5 |              0.09 |     59.15 |       4.42 | CAGTTCAT….  | 0.545454….   | 61.35995…. |      111 |    130 |        20 | CKAACYACCACAGCATTCGC |        0.98 |             4 |             0.55 |               0.1 |     58.84 |       5.91 | CTAACTAC….  | 0.5, 0.5….   | 55.87255…. | TRUE   | TRUE    |      63 |    84 |       22 | ACTACTGCYATTGAGCAGGCTG | CAGCCTGCTCAATRGCAGTAGT |       0.99 |            2 |            0.52 |             0.05 |    59.19 |      2.69 | ACTACTGC…. | CAGCCTGC….   | 0.545454….  | 60.53103…. |        1 |   7208 |
+|    39 | 130 |             92 |               0.31 |                    1.80 |              10 |       39 |     60 |        22 | CAGTTYATYAAGGCTCCTGGCA |        0.98 |             4 |              0.5 |              0.09 |     59.15 |       4.42 | CAGTTCAT….  | 0.545454….   | 61.35995…. |      111 |    130 |        20 | CKAACYACCACAGCATTCGC |        0.98 |             4 |             0.55 |               0.1 |     58.84 |       5.91 | CTAACTAC….  | 0.5, 0.5….   | 55.87255…. | TRUE   | TRUE    |      65 |    86 |       22 | TACTGCYATTGAGCAGGCTGCT | AGCAGCCTGCTCAATRGCAGTA |       0.99 |            2 |            0.52 |             0.05 |    60.79 |      2.72 | TACTGCCA…. | AGCAGCCT….   | 0.545454….  | 62.15039…. |        1 |   7208 |
+|    39 | 130 |             92 |               0.31 |                    2.24 |              12 |       39 |     60 |        22 | CAGTTYATYAAGGCTCCTGGCA |        0.98 |             4 |              0.5 |              0.09 |     59.15 |       4.42 | CAGTTCAT….  | 0.545454….   | 61.35995…. |      111 |    130 |        20 | CKAACYACCACAGCATTCGC |        0.98 |             4 |             0.55 |               0.1 |     58.84 |       5.91 | CTAACTAC….  | 0.5, 0.5….   | 55.87255…. | TRUE   | TRUE    |      68 |    89 |       22 | TGCYATTGAGCAGGCTGCTCTR | YAGAGCAGCCTGCTCAATRGCA |       0.98 |            4 |            0.55 |             0.09 |    61.23 |      4.09 | TGCCATTG…. | TAGAGCAG….   | 0.545454….  | 61.89249…. |        1 |   7208 |
+|    39 | 131 |             93 |               0.96 |                    0.51 |              10 |       39 |     60 |        22 | CAGTTYATYAAGGCTCCTGGCA |        0.98 |             4 |              0.5 |              0.09 |     59.15 |       4.42 | CAGTTCAT….  | 0.545454….   | 61.35995…. |      112 |    131 |        20 | CCKAACYACCACAGCATTCG |        0.98 |             4 |             0.55 |               0.1 |     58.20 |       5.97 | CCTAACTA….  | 0.5, 0.5….   | 55.19725…. | TRUE   | TRUE    |      63 |    84 |       22 | ACTACTGCYATTGAGCAGGCTG | CAGCCTGCTCAATRGCAGTAGT |       0.99 |            2 |            0.52 |             0.05 |    59.19 |      2.69 | ACTACTGC…. | CAGCCTGC….   | 0.545454….  | 60.53103…. |        1 |   7208 |
+|    39 | 131 |             93 |               0.96 |                    2.12 |              10 |       39 |     60 |        22 | CAGTTYATYAAGGCTCCTGGCA |        0.98 |             4 |              0.5 |              0.09 |     59.15 |       4.42 | CAGTTCAT….  | 0.545454….   | 61.35995…. |      112 |    131 |        20 | CCKAACYACCACAGCATTCG |        0.98 |             4 |             0.55 |               0.1 |     58.20 |       5.97 | CCTAACTA….  | 0.5, 0.5….   | 55.19725…. | TRUE   | TRUE    |      65 |    86 |       22 | TACTGCYATTGAGCAGGCTGCT | AGCAGCCTGCTCAATRGCAGTA |       0.99 |            2 |            0.52 |             0.05 |    60.79 |      2.72 | TACTGCCA…. | AGCAGCCT….   | 0.545454….  | 62.15039…. |        1 |   7208 |
+|    39 | 131 |             93 |               0.96 |                    2.56 |              12 |       39 |     60 |        22 | CAGTTYATYAAGGCTCCTGGCA |        0.98 |             4 |              0.5 |              0.09 |     59.15 |       4.42 | CAGTTCAT….  | 0.545454….   | 61.35995…. |      112 |    131 |        20 | CCKAACYACCACAGCATTCG |        0.98 |             4 |             0.55 |               0.1 |     58.20 |       5.97 | CCTAACTA….  | 0.5, 0.5….   | 55.19725…. | TRUE   | TRUE    |      68 |    89 |       22 | TGCYATTGAGCAGGCTGCTCTR | YAGAGCAGCCTGCTCAATRGCA |       0.98 |            4 |            0.55 |             0.09 |    61.23 |      4.09 | TGCCATTG…. | TAGAGCAG….   | 0.545454….  | 61.89249…. |        1 |   7208 |
+
 The assays can be visualized using `plotData()`:
 
 ``` r
-#plotData(myAssays)
+plotData(myAssays)
 ```
+
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
 ## More information
 

@@ -26,7 +26,7 @@ An \code{RprimerProfile} object, which contains the following information:
   \item{g}{Proportion of G.}
   \item{t}{Proportion of T.}
   \item{other}{Proportion of bases other than A, C, G, T.}
-  \item{gaps}{proportion of gaps (recognized as "-" in the alignment).}
+  \item{gaps}{Proportion of gaps (recognized as "-" in the alignment).}
   \item{majority}{Majority consensus sequence.
   The most frequently occurring nucleotide.
   If two or more bases occur with the same frequency,
@@ -56,7 +56,7 @@ An \code{RprimerProfile} object, which contains the following information:
 }
 \description{
 \code{consensusProfile()} takes a DNA multiple alignment as input and
-returns all the information needed for designing primers and probes.
+returns all the data needed for primer and probe design.
 }
 \examples{
 data("exampleRprimerAlignment")

@@ -89,7 +89,7 @@ An \code{RprimerOligo} object. An error message will return
 if no oligos are found.
 }
 \description{
-\code{oligos()} identifies oligos (primers and probes)
+\code{oligos()} designs oligos (primers and probes)
 from an \code{RprimerProfile} object.
 }
 \section{Output}{
@@ -169,13 +169,11 @@ oligos(roi, probe = FALSE)
 oligos(roi,
        maxDegeneracyPrimer = 8,
        minEndIdentityPrimer = 0.98,
-       probe = FALSE)
+       probe = FALSE
+)
 }
 \references{
 SantaLucia Jr, J., & Hicks, D. (2004).
 The thermodynamics of DNA structural motifs.
 Annu. Rev. Biophys. Biomol. Struct., 33, 415-440.
-}
-\seealso{
-RprimerOligo
 }

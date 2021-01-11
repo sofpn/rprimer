@@ -1,6 +1,6 @@
 #' Design oligos
 #'
-#' \code{oligos()} identifies oligos (primers and probes)
+#' \code{oligos()} designs oligos (primers and probes)
 #' from an \code{RprimerProfile} object.
 #'
 #' @param x An \code{RprimerProfile} object.
@@ -135,8 +135,6 @@
 #' An \code{RprimerOligo} object. An error message will return
 #' if no oligos are found.
 #'
-#' @seealso RprimerOligo
-#'
 #' @references
 #' SantaLucia Jr, J., & Hicks, D. (2004).
 #' The thermodynamics of DNA structural motifs.
@@ -160,9 +158,9 @@
 #'
 #' ## Allow high degeneracy, but enforce conserved 3'-ends (>= 98 % identity)
 #' oligos(roi,
-#'     maxDegeneracyPrimer = 8,
-#'     minEndIdentityPrimer = 0.98,
-#'     probe = FALSE
+#'        maxDegeneracyPrimer = 8,
+#'        minEndIdentityPrimer = 0.98,
+#'        probe = FALSE
 #' )
 oligos <- function(x,
                    maxGapFrequency = 0.1,
@@ -1054,7 +1052,7 @@ oligos <- function(x,
 
 #' Beautify oligo data
 #'
-#' \code{.beautify()} drops unnecessary columns and sorts oligos based
+#' \code{.beautifyOligos()} drops unnecessary columns and sorts oligos based
 #' on their start position.
 #'
 #' Helper function to \code{oligos()}.

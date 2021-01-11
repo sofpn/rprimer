@@ -35,10 +35,10 @@ exampleRprimerOligo <- oligos(exampleRprimerProfile,
     tmRangeProbe = c(55, 70)
 )
 
-exampleRprimerAssay <- getAssays(
+exampleRprimerAssay <- assays(
     exampleRprimerOligo,
-    maxTmDifferencePrimers = 2,
-    tmDifferencePrimersProbe = c(0, 10)
+    tmDiffPrimers = 2,
+    tmDiffPrimersProbe = c(0, 10)
 )
 
 save(exampleRprimerAlignment, file = "exampleRprimerAlignment.RData")
