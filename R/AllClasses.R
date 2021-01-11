@@ -116,9 +116,7 @@ RprimerOligo <- function(...) {
 
 S4Vectors::setValidity2("RprimerOligo", function(object) {
     msg <- NULL
-    #  if (assayNames(object)[1] != "counts") {
-    #    msg <- c(msg, "'counts' must be first assay")
-    #  }
+    # if (!) msg <- c(msg, "")
     if (is.null(msg)) {
         TRUE
     } else {
@@ -177,9 +175,7 @@ RprimerAssay <- function(...) {
 
 S4Vectors::setValidity2("RprimerAssay", function(object) {
     msg <- NULL
-    #  if (assayNames(object)[1] != "counts") {
-    #    msg <- c(msg, "'counts' must be first assay")
-    #  }
+    # if (!) msg <- c(msg, "")
     if (is.null(msg)) {
         TRUE
     } else {

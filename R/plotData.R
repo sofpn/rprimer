@@ -1,39 +1,72 @@
-# else if
-# restore runavg size...
+# todo:  shadeFrom => highlight
 
 #' Plot an Rprimer-object (generic)
 #'
 #' @param x
 #' An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.
 #'
-#' @param ... Additional arguments that should be passed to the plot.
+#' @param type For code{RprimerProfile}-objects.
+#' Which type of plot that should be generated: "overview", or "nucleotide",
+#' defaults to "overview".
+#'
+#' @param ... Optional arguments when plotting \code{RprimerProfile} objects:
+#'
+#' For \code{type = "overview"}:
+#'
+#' \code{highligt}: If a specific genomic region should be highlighted.
+#' A numeric vector, e.g. \code{c(100, 1000)}, defaults to \code{NULL}.
+#'
+#' For \code{type = "nucleotide"}:
+#'
+#' \code{rc}: If the plotted sequence should be displayed
+#' as reverse complement or not.
+#' \code{TRUE} or {FALSE}, defaults to \code{FALSE}.
 #'
 #' @return A plot.
 #'
 #' @examples
+#' ## Plot an RprimerProfile object
+#'
 #' data("exampleRprimerProfile")
-#' plotData(exampleRprimerProfile)
-#' plotData(exampleRprimerProfile, shadeFrom = 500, shadeTo = 1000)
+#' prof <- exampleRprimerProfile
+#'
+#' ## Plot an overwiev
+#' plotData(prof)
+#'
+#' ## Highlight a specific area
+#' plotData(prof, highlight = c(500, 1000))
+#'
+#' ## Select a region of interest
+#' roi <- prof[prof$position >= 500 & prof$position <= 550, ]
+#'
+#' ## Plot an overview of the roi
+#' plotData(roi)
+#'
+#' ## Plot the nucleotide distribution of the roi
+#' plotData(roi, type = "nucleotide")
+#'
+#' ## Plot the nucleotide distribution of the roi, as reverse complement
+#' plotData(roi, type = "nucleotide", rc = TRUE)
+#'
+#' ## Plot an RprimerOligo object
+#'
 #' data("exampleRprimerOligo")
-#' plotData(exampleRprimerOligo)
-#' ## data("exampleRprimerAssay") ################ ADD LATER
+#' oligos <- exampleRprimerOligo
+#'
+#' ## Plot all oligos
+#' plotData(oligos)
+#'
+#' ## Select a subset of the oligos, and plot
+#' selected <- oligos[oligos$start >= 5000 & oligos$end <= 5500, ]
+#' plotData(selected)
+#'
+#' ## Plot an RrimerAssay object
+#' ## data("exampleRprimerAssay")
 #' ## plotData(exampleRprimerAssay)
 #' @export
 setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 
 #' Plot an RprimerProfile-object (method)
-#'
-#' @param x An \code{RprimerProfile} object.
-#'
-#' @param shadeFrom
-#' Optional. If a particular area should be shaded, where the shade
-#' should begin (an integer).
-#'
-#' @param shadeTo
-#' Optional. If a particular area should be shaded, where the shade
-#' should end (an integer).
-#'
-#' @return A plot.
 #'
 #' @describeIn plotData
 #'
@@ -41,41 +74,20 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 #'
 #' @export
 setMethod("plotData", "RprimerProfile", function(x,
-                                                 shadeFrom = NULL,
-                                                 shadeTo = NULL) {
-    if (is.null(shadeFrom) && is.null(shadeTo)) {
-        shadeFrom <- -Inf
-        shadeTo <- -Inf
+                                                 type = "overview",
+                                                 ...) {
+    if (type == "overview") {
+        .plotOverview(x, ...)
     }
-    if (is.null(shadeFrom) && !is.null(shadeTo)) {
-        shadeFrom <- 0
+    else if (type == "nucleotide") {
+        .plotNucleotides(x, ...)
     }
-    if (!is.null(shadeFrom) && is.null(shadeTo)) {
-        shadeTo <- nrow(x)
+    else {
+        stop("'type' must be either 'overview' or 'nucleotide'", call. = FALSE)
     }
-    if (!is.null(shadeFrom) && !is.numeric(shadeFrom)) {
-        stop("'shadeFrom' must be a number.", call. = FALSE)
-    }
-    if (!is.null(shadeTo) && !is.numeric(shadeTo)) {
-        stop("'shadeTo' must be a number.", call. = FALSE)
-    }
-    x <- as.data.frame(x)
-    patchwork::wrap_plots(
-        list(
-            .identityPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
-            .entropyPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
-            .gcPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo),
-            .gapPlot(x, shadeFrom = shadeFrom, shadeTo = shadeTo)
-        ),
-        ncol = 1
-    )
 })
 
 #' Plot an RprimerOligo-object (method)
-#'
-#' @param x An \code{RprimerOligo} object.
-#'
-#' @return A plot.
 #'
 #' @describeIn plotData
 #'
@@ -92,10 +104,6 @@ setMethod("plotData", "RprimerOligo", function(x) {
 
 #' Plot an RprimerAssay-object (method)
 #'
-#' @param x An \code{RprimerAssay} object.
-#'
-#' @return A plot.
-#'
 #' @describeIn plotData
 #'
 #' @importFrom patchwork wrap_plots
@@ -109,9 +117,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
     )
 })
 
-
-# Helpers ======================================================================
-
+# Helpers for plotting an RprimerOligo/Assay ===================================
 
 .addEmptyRow <- function(x) {
     x[1, ] <- NA
@@ -147,14 +153,14 @@ setMethod("plotData", "RprimerAssay", function(x) {
     start <- end <- NULL
     roiStart <- x$roiStart[[1]]
     roiEnd <- x$roiEnd[[1]]
-    colors <- c(fwd = "#A4A7B6", rev = "#82879B")
+    colors <- c(fwd = "#424B54", rev = "#93A8AC")
     oligos <- .splitOligoDf(x)
     ggplot2::ggplot() +
         ggplot2::xlim(roiStart, roiEnd) +
         ggplot2::ylim(0, 1) +
         ggplot2::labs(x = "Position", y = "") +
         ggplot2::geom_segment(
-            color = "grey", lwd = 2, ggplot2::aes(
+            color = "grey60", lwd = 2, ggplot2::aes(
                 x = roiStart, xend = roiEnd, y = 0, yend = 0
             )
         ) +
@@ -186,14 +192,14 @@ setMethod("plotData", "RprimerAssay", function(x) {
     start <- end <- NULL
     roiStart <- x$roiStart[[1]]
     roiEnd <- x$roiEnd[[1]]
-    colors <- c(prPos = "#64697D", prNeg = "#525666")
+    colors <- c(prPos = "#9B6A6C", prNeg = "#E2B4BD")
     oligos <- .splitOligoDf(x)
     ggplot2::ggplot() +
         ggplot2::xlim(roiStart, roiEnd) +
         ggplot2::ylim(0, 1) +
         ggplot2::labs(x = "Position", y = "") +
         ggplot2::geom_segment(
-            color = "grey", lwd = 2, ggplot2::aes(
+            color = "grey60", lwd = 2, ggplot2::aes(
                 x = roiStart, xend = roiEnd, y = 0, yend = 0
             )
         ) +
@@ -227,14 +233,14 @@ setMethod("plotData", "RprimerAssay", function(x) {
     roiEnd <- x$roiEnd[[1]]
     oligos <- .splitOligoDf(x)
     colors <- c(
-        fwd = "#A4A7B6", rev = "#82879B", prPos = "#64697D", prNeg = "#525666"
+        fwd = "#424B54", rev = "#93A8AC", prPos = "#9B6A6C", prNeg = "#E2B4BD"
     )
     ggplot2::ggplot() +
         ggplot2::xlim(roiStart, roiEnd) +
         ggplot2::ylim(0, 1) +
         ggplot2::labs(x = "Position", y = "") +
         ggplot2::geom_segment(
-            color = "grey", lwd = 2, ggplot2::aes(
+            color = "grey60", lwd = 2, ggplot2::aes(
                 x = roiStart, xend = roiEnd, y = 0, yend = 0
             )
         ) +
@@ -276,11 +282,11 @@ setMethod("plotData", "RprimerAssay", function(x) {
         .themeRprimer(showYAxis = FALSE)
 }
 
-.violinPlot <- function(data, y, title = "", color = "grey30") {
+.violinPlot <- function(data, y, title = "", color = "grey20") {
     ggplot2::ggplot() +
         ggplot2::geom_violin(
             data = data, ggplot2::aes(x = 1, y = y),
-            fill = color, color = NA, alpha = 0.4
+            fill = color, alpha = 0.4
         ) +
         ggplot2::geom_point(
             data = data, ggplot2::aes(x = 1, y = y), alpha = 0.05, color = color
@@ -294,7 +300,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         .themeRprimer(showXAxis = FALSE)
 }
 
-.boxPlot <- function(data, y, title = "", color = "grey30") {
+.boxPlot <- function(data, y, title = "", color = "grey20") {
     ggplot2::ggplot() +
         ggplot2::geom_point(
             data = data, ggplot2::aes(x = 1, y = y), alpha = 0.05, color = color
@@ -308,7 +314,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         .themeRprimer(showXAxis = FALSE)
 }
 
-.dotPlot <- function(data, y, title = "", color = "grey30") {
+.dotPlot <- function(data, y, title = "", color = "grey20") {
     ggplot2::ggplot() +
         ggplot2::geom_point(
             data = data, ggplot2::aes(x = 1, y = y), alpha = 0.5, color = color
@@ -318,7 +324,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         .themeRprimer(showXAxis = FALSE)
 }
 
-.barPlot <- function(data, y, title = "", color = "grey30") {
+.barPlot <- function(data, y, title = "", color = "grey20") {
     ggplot2::ggplot(data, ggplot2::aes(factor(y))) +
         ggplot2::geom_bar(
             fill = color, color = color, alpha = 0.4
@@ -329,7 +335,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         .themeRprimer(showXAxis = TRUE)
 }
 
-.gcTmIdentityPlot <- function(x, color = "grey30", type = "Primers") {
+.gcTmIdentityPlot <- function(x, color = "grey20", type = "Primers") {
     if (nrow(x) >= 10) {
         patchwork::wrap_plots(
             list(
@@ -368,18 +374,18 @@ setMethod("plotData", "RprimerAssay", function(x) {
         patchwork::wrap_plots(list(
             .gcTmIdentityPlot(
                 x[x$type == "primer", ],
-                color = "grey30", type = "Primers"
+                color = "grey20", type = "Primers"
             ),
             .gcTmIdentityPlot(
                 x[x$type == "probe", ],
-                color = "grey30", type = "Probes"
+                color = "grey20", type = "Probes"
             )
         ), ncol = 1)
     } else {
         patchwork::wrap_plots(list(
             .gcTmIdentityPlot(
                 x[x$type == "primer", ],
-                color = "grey30",
+                color = "grey20",
                 type = "Primers"
             )
         ), ncol = 1)
@@ -413,7 +419,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         .themeRprimer(showYAxis = FALSE)
 }
 
-.assayFeaturePlot <- function(x, color = "grey30") {
+.assayFeaturePlot <- function(x, color = "grey20") {
     if (nrow(x) >= 10) {
         patchwork::wrap_plots(
             list(
@@ -488,7 +494,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
     data.frame(position, average)
 }
 
-.identityPlot <- function(x, shadeFrom = NULL, shadeTo = NULL) {
+.identityPlot <- function(x, highlight = NULL) {
     position <- identity <- average <- NULL
     averages <- .runningAverage(x$identity)
     xadj <- unique(x$position - seq_along(x$position))
@@ -496,20 +502,19 @@ setMethod("plotData", "RprimerAssay", function(x) {
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = position, y = identity)
     ) +
-        .shadeArea(shadeFrom = shadeFrom, shadeTo = shadeTo) +
-        ggplot2::geom_point(size = 0.3, ggplot2::aes(colour = identity)) +
+        .highlightRegion(highlight) +
+        ggplot2::geom_point(alpha = 1 / 3, shape = 1, color = "#93A8AC") +
         ggplot2::geom_line(
-            data = averages,  color = "#1B1C22",
+            data = averages, color = "#1B1C22",
             ggplot2::aes(x = position, y = average)
         ) +
         ggplot2::ylim(0, 1) +
         ggplot2::ylab("Identity") +
         ggplot2::xlab("") +
-        ggplot2::scale_color_gradient(low = "#BABFD1", high = "#BABFD1") +
         .themeRprimer(showXAxis = FALSE)
 }
 
-.entropyPlot <- function(x, shadeFrom = NULL, shadeTo = NULL) {
+.entropyPlot <- function(x, highlight = NULL) {
     position <- entropy <- average <- NULL
     averages <- .runningAverage(x$entropy)
     xadj <- unique(x$position - seq_along(x$position))
@@ -517,19 +522,18 @@ setMethod("plotData", "RprimerAssay", function(x) {
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = position, y = entropy)
     ) +
-        .shadeArea(shadeFrom = shadeFrom, shadeTo = shadeTo) +
-        ggplot2::geom_point(size = 0.3, ggplot2::aes(colour = entropy)) +
+        .highlightRegion(highlight) +
+        ggplot2::geom_point(alpha = 1 / 3, shape = 1, color = "#93A8AC") +
         ggplot2::geom_line(
             data = averages,  color = "#1B1C22",
             ggplot2::aes(x = position, y = average)
         ) +
         ggplot2::ylab("Entropy") +
         ggplot2::xlab("") +
-        ggplot2::scale_color_gradient(low = "#BABFD1", high = "#BABFD1") +
         .themeRprimer(showXAxis = FALSE)
 }
 
-.gcPlot <- function(x, shadeFrom = NULL, shadeTo = NULL) {
+.gcPlot <- function(x, highlight = NULL) {
     position <- average <- NULL
     gc <- ifelse(x$majority == "C" | x$majority == "G", 1, 0)
     averages <- .runningAverage(gc)
@@ -537,12 +541,12 @@ setMethod("plotData", "RprimerAssay", function(x) {
     averages$position <- averages$position + xadj
     ggplot2::ggplot(data = x, ggplot2::aes(x = position)) +
         ggplot2::geom_segment(
-            color = "#BABFD1",
+            color = "#93A8AC",
             ggplot2::aes(
                 x = min(position), xend = max(position), y = 0.5, yend = 0.5
             )
         ) +
-        .shadeArea(shadeFrom = shadeFrom, shadeTo = shadeTo) +
+        .highlightRegion(highlight) +
         ggplot2::geom_line(
             data = averages, color = "#1B1C22",
             ggplot2::aes(x = position, y = average)
@@ -553,29 +557,87 @@ setMethod("plotData", "RprimerAssay", function(x) {
         .themeRprimer(showXAxis = FALSE)
 }
 
-.gapPlot <- function(x, shadeFrom = NULL, shadeTo = NULL) {
+.gapPlot <- function(x, highlight = NULL) {
     position <- gaps <- NULL
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = position, y = gaps)
     ) +
-        .shadeArea(shadeFrom = shadeFrom, shadeTo = shadeTo) +
-        ggplot2::geom_point(size = 0.3, ggplot2::aes(color = gaps)) +
+        .highlightRegion(highlight) +
+        ggplot2::geom_point(alpha = 1 / 3, shape = 1, color = "#93A8AC") +
         ggplot2::ylim(0, 1) +
         ggplot2::xlab("Position") +
         ggplot2::ylab("Gaps") +
-        ggplot2::scale_color_gradient(low = "#BABFD1", high = "#BABFD1") +
         .themeRprimer()
 }
 
-.shadeArea <- function(shadeFrom = NULL, shadeTo = NULL) {
+.highlightRegion <- function(highlight = NULL) {
     ggplot2::annotate(
         "rect",
-        xmin = shadeFrom, xmax = shadeTo, ymin = -Inf, ymax = Inf,
-        color = "white", alpha = 0.2, fill = "grey30"
+        xmin = min(highlight), xmax = max(highlight), ymin = -Inf, ymax = Inf,
+        color = "white", alpha = 0.2, fill = "grey20"
     )
 }
 
-# Theme ========================================================================
+.plotOverview <- function(x, highlight = NULL) {
+    if (is.null(highlight)) {
+        highlight <- -Inf
+    }
+    if (!is.numeric(highlight)) {
+        stop("'highlight' must be numeric, e.g. c(1, 10).", call. = FALSE)
+    }
+    x <- as.data.frame(x)
+    patchwork::wrap_plots(
+        list(
+            .identityPlot(x, highlight),
+            .entropyPlot(x, highlight),
+            .gcPlot(x, highlight),
+            .gapPlot(x, highlight)
+        ),
+        ncol = 1
+    )
+}
+
+.plotNucleotides <- function(x, rc = FALSE) {
+    if (!(is.logical(rc))) {
+        stop("'rc' must be set to TRUE or FALSE.", call. = FALSE)
+    }
+    position <- x$position
+    x <- as.data.frame(x)
+    select <- c("a", "c", "g", "t", "other")
+    x <- x[names(x) %in% select]
+    x <- t(as.matrix(x))
+    colnames(x) <- position
+    rownames(x)[-5] <- toupper(rownames(x))[-5]
+    if (rc) {
+        rownames(x) <- unname(lookup$complement[rownames(x)])
+        x <- x[order(rownames(x)), ]
+        if ("other" %in% rownames(x)) {
+            swap <- c(which(rownames(x) == "other"), nrow(x))
+            x[swap, ] <- x[rev(swap), ]
+            rownames(x)[swap] <- rownames(x)[rev(swap)]
+        }
+    }
+    Base <- Position <- Frequency <- NULL
+    x <- reshape2::melt(x)
+    names(x) <- c("Base", "Position", "Frequency")
+    x$Base <- factor(x$Base)
+    x$Position <- factor(x$Position)
+    if (rc) {
+        x$Position <- factor(x$Position, levels = rev(levels(x$Position)))
+    }
+    basePalette <- c(
+        "other" = "#D1D6DB",
+        "A" = "#424B54", "C" = "#93A8AC", "G" = "#E2B4BD", "T" = "#9B6A6C"
+    )
+    ggplot2::ggplot(
+        data = x, ggplot2::aes(x = Position, y = Frequency, fill = Base)
+    ) +
+        ggplot2::geom_bar(stat = "identity") +
+        ggplot2::scale_fill_manual(values = basePalette) +
+        .themeRprimer(showLegend = TRUE)
+}
+
+# Plot theme ===================================================================
 
 .themeRprimer <- function(showXAxis = TRUE,
                           showYAxis = TRUE,
@@ -592,65 +654,67 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .showXYAxes <- function(showLegend = TRUE) {
-    ggplot2::theme_light() +
+    ggplot2::theme_bw() +
         ggplot2::theme(
             legend.title = ggplot2::element_blank(),
-            legend.text = ggplot2::element_text(color = "grey30", size = 9),
+            legend.text = ggplot2::element_text(size = 9),
             legend.position = ifelse(showLegend, "right", "none"),
             axis.title.y = ggplot2::element_text(
-                size = 9, color = "grey30",
+                size = 9,
                 margin = ggplot2::margin(r = 10)
             ),
             axis.title.x = ggplot2::element_text(
-                size = 9, color = "grey30",
+                size = 9,
                 margin = ggplot2::margin(t = 10)
             ),
-            plot.title = ggplot2::element_text(size = 9, color = "grey30"),
+            plot.title = ggplot2::element_text(size = 9),
             plot.margin = ggplot2::unit(rep(0.1, 4), "cm")
         )
 }
 
 .showXAxisHideYAxis <- function(showLegend = TRUE) {
-    ggplot2::theme_light() +
+    ggplot2::theme_bw() +
         ggplot2::theme(
             legend.title = ggplot2::element_blank(),
-            legend.text = ggplot2::element_text(color = "grey30", size = 9),
+            legend.text = ggplot2::element_text(size = 9),
             legend.position = ifelse(showLegend, "right", "none"),
             axis.title.x = ggplot2::element_text(
-                size = 9, color = "grey30",
+                size = 9,
                 margin = ggplot2::margin(t = 10)
             ),
+            panel.grid.major.y = ggplot2::element_blank(),
+            panel.grid.minor.y = ggplot2::element_blank(),
             axis.title.y = ggplot2::element_blank(),
             axis.text.y = ggplot2::element_blank(),
             axis.ticks.y = ggplot2::element_blank(),
-            plot.title = ggplot2::element_text(size = 9, color = "grey30"),
+            plot.title = ggplot2::element_text(size = 9),
             plot.margin = ggplot2::unit(rep(0.1, 4), "cm")
         )
 }
 
 .showYAxisHideXAxis <- function(showLegend = TRUE) {
-    ggplot2::theme_light() +
+    ggplot2::theme_bw() +
         ggplot2::theme(
             legend.title = ggplot2::element_blank(),
-            legend.text = ggplot2::element_text(color = "grey30", size = 9),
+            legend.text = ggplot2::element_text(size = 9),
             legend.position = ifelse(showLegend, "right", "none"),
             axis.title.y = ggplot2::element_text(
-                size = 9, color = "grey30",
+                size = 9,
                 margin = ggplot2::margin(r = 10)
             ),
             axis.title.x = ggplot2::element_blank(),
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank(),
-            plot.title = ggplot2::element_text(size = 9, color = "grey30"),
+            plot.title = ggplot2::element_text(size = 9),
             plot.margin = ggplot2::unit(rep(0.1, 4), "cm")
         )
 }
 
 .hideXYAxes <- function(showLegend = TRUE) {
-    ggplot2::theme_light() +
+    ggplot2::theme_bw() +
         ggplot2::theme(
             legend.title = ggplot2::element_blank(),
-            legend.text = ggplot2::element_text(color = "grey30", size = 9),
+            legend.text = ggplot2::element_text(size = 9),
             legend.position = ifelse(showLegend, "right", "none"),
             axis.title.y = ggplot2::element_blank(),
             axis.text.y = ggplot2::element_blank(),
@@ -658,7 +722,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
             axis.title.x = ggplot2::element_blank(),
             axis.text.x = ggplot2::element_blank(),
             axis.ticks.x = ggplot2::element_blank(),
-            plot.title = ggplot2::element_text(size = 9, color = "grey30"),
+            plot.title = ggplot2::element_text(size = 9),
             plot.margin = ggplot2::unit(rep(0.1, 4), "cm")
         )
 }

@@ -8,9 +8,10 @@
 \description{
 Functions and workflow to design
     primers, probes and (RT)-(q/d)PCR assays from a multiple DNA sequence 
-    alignment. The functions are especially developed
-    for sequence variable targets, such as RNA viruses. 
-    Primers, probes and assays can be designed from
+    alignment. The design process is especially developed
+    for sequence variable targets, such as RNA viruses, since the sequence 
+    heterogenecity is taken into account in the design process.     
+    Primers, probes and assays are designed from
     user specified constraints on e.g. oligo and amplicon length, 
     GC-content, melting temperature and maximum allowed number degenerate 
     variants. Target regions with low sequence complexity are

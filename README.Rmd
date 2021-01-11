@@ -16,6 +16,15 @@ knitr::opts_chunk$set(
 )
 ```
 
+## TODO
+
+* Assays=beautify, document, generate extdata
+* Oligos=describe design process
+* Plots=fix assay method
+* Classes=document, set validity
+* All=test
+* Vignette
+
 ## Installation
 
 You can install rprimer from [GitHub](https://github.com/) with:
@@ -32,22 +41,22 @@ devtools::load_all(".")
 
 ## Overview 
 
-rprimer provides tools for designing broadly reactive (RT)-(q/dd)PCR assays from a multiple DNA sequence alignment. The design process is built on three functions: 
+rprimer provides tools for designing broadly reactive primers, probes and (RT)-(q/dd)PCR assays from a multiple DNA sequence alignment. 
 
-* `consensusProfile()`: takes a multiple DNA sequence alignment and returns all the information needed for the subsequent design process, arranged in an `RprimerProfile` object
-* `oligos()`: takes an `RprimerProfile` as input and designs primers and probes (if selected) based on user specified constraints on e.g. length, GC-content, melting temperature, maximum degeneracy and minimum end-conservation. Returns an `RprimerOligo` object
-* `assays()`: takes an `RprimerOligo` as input and designs assays with desired length and difference in melting temperature. Returns an `RprimerAssay` object
+The design process is built on three functions:
 
-The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors, and behave in a similar manner as traditional data frames. 
+* `consensusProfile()`
+* `oligos()` 
+* `assays()`
 
 ## Workflow 
 
-### Import data 
+### Import alignment
 
-The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with e.g. high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the work for this part. 
+The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with e.g. high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the work for this part. The file "example_alignment.txt" contains an alignment of 100 hepatitis E virus sequences. 
 
 ```{r}
-infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
+infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 
 myAlignment <- Biostrings::readDNAMultipleAlignment(infile, format = "fasta")
 myAlignment <- Biostrings::maskGaps(myAlignment, 
@@ -57,33 +66,64 @@ myAlignment <- Biostrings::maskGaps(myAlignment,
 
 ### Step 1: `consensusProfile` 
 
-`consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns all the information needed for the subsequent design process. 
+`consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` as input and returns all the information needed for the subsequent design process.
 
 ```{r}
 myConsensusProfile <- consensusProfile(myAlignment, iupacThreshold = 0.05)
 ```
 
-Output: 
+Results (first six rows):
 
 ```{r, echo=FALSE}
 knitr::kable(head(myConsensusProfile), digits = 2)
 ```
 
-The output can be visualized with `plotData()`: 
+The results can be visualized with `plotData()`. You can either plot the entire genome:
 
 ```{r, fig.width=12, fig.height=6}
 plotData(myConsensusProfile)
 ```
 
+Or zoom into a specific region of interest: 
+
+```{r, fig.width=12, fig.height=6}
+roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5050, ]
+plotData(roi)
+```
+
+The nucleotide distribution can be shown by specifying `type = "nucleotide`:
+
+```{r, fig.width=12, fig.height=6}
+plotData(roi, type = "nucleotide")
+```
+
 ### Step 2: `oligos`
 
-`oligos()` searches for oligos from an `RprimerProfile`-object. 
+The next step is to design oligos. You can either use the default settings: 
 
 ``` {r}
 myOligos <- oligos(myConsensusProfile)
 ```
 
-The oligo candidates can be visualized using `plotData()`:
+Or adjust the constraints (see the package vignette or `?rprimer::oligos` for more information), for example: 
+
+``` {r}
+# myOligos2 <- oligos(myConsensusProfile, 
+#                     maxDegeneracyPrimer = 16,
+#                     tmRangePrimer = c(58, 60),
+#                     minEndIdentityPrimer =  0.99,
+#                     gcClampPrimer = FALSE,
+#                     avoidThreeEndRunsPrimer = FALSE,
+#                     probe = FALSE)
+```
+
+Results (first six rows): 
+
+```{r, echo=FALSE}
+knitr::kable(head(myOligos), digits = 2)
+```
+
+The results can be visualized using `plotData()`. 
 
 ```{r, fig.width=12, fig.height=8}
 plotData(myOligos)
@@ -91,13 +131,15 @@ plotData(myOligos)
 
 ### Step 3: `assays`
 
-`assays()` finds pairs of forward and reverse primers and, if selected, combines them with probes.
+`assays()` finds pairs of forward and reverse primers and combines them with probes, if `probe = TRUE` was used in the oligo design step. 
 
 ```{r}
-#myAssays <- assays(myOligos)
+myAssays <- assays(myOligos)
 ```
 
-The assay candidates can be visualized using `plotData()`: 
+Results (first six rows):
+
+The assays can be visualized using `plotData()`: 
 
 ```{r, fig.width=12, fig.height=6}
 #plotData(myAssays)

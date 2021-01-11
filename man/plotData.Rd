@@ -9,30 +9,33 @@
 \usage{
 plotData(x, ...)
 
-\S4method{plotData}{RprimerProfile}(x, shadeFrom = NULL, shadeTo = NULL)
+\S4method{plotData}{RprimerProfile}(x, type = "overview", ...)
 
 \S4method{plotData}{RprimerOligo}(x)
 
 \S4method{plotData}{RprimerAssay}(x)
 }
 \arguments{
-\item{x}{An \code{RprimerAssay} object.}
+\item{x}{An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.}
 
-\item{...}{Additional arguments that should be passed to the plot.}
+\item{...}{Optional arguments when plotting \code{RprimerProfile} objects:
 
-\item{shadeFrom}{Optional. If a particular area should be shaded, where the shade
-should begin (an integer).}
+For \code{type = "overview"}:
 
-\item{shadeTo}{Optional. If a particular area should be shaded, where the shade
-should end (an integer).}
+\code{highligt}: If a specific genomic region should be highlighted.
+A numeric vector, e.g. \code{c(100, 1000)}, defaults to \code{NULL}.
+
+For \code{type = "nucleotide"}:
+
+\code{rc}: If the plotted sequence should be displayed
+as reverse complement or not.
+\code{TRUE} or {FALSE}, defaults to \code{FALSE}.}
+
+\item{type}{For code{RprimerProfile}-objects.
+Which type of plot that should be generated: "overview", or "nucleotide",
+defaults to "overview".}
 }
 \value{
-A plot.
-
-A plot.
-
-A plot.
-
 A plot.
 }
 \description{
@@ -54,11 +57,42 @@ Plot an RprimerAssay-object (method)
 }}
 
 \examples{
+## Plot an RprimerProfile object
+
 data("exampleRprimerProfile")
-plotData(exampleRprimerProfile)
-plotData(exampleRprimerProfile, shadeFrom = 500, shadeTo = 1000)
+prof <- exampleRprimerProfile
+
+## Plot an overwiev
+plotData(prof)
+
+## Highlight a specific area
+plotData(prof, highlight = c(500, 1000))
+
+## Select a region of interest
+roi <- prof[prof$position >= 500 & prof$position <= 550, ]
+
+## Plot an overview of the roi
+plotData(roi)
+
+## Plot the nucleotide distribution of the roi
+plotData(roi, type = "nucleotide")
+
+## Plot the nucleotide distribution of the roi, as reverse complement
+plotData(roi, type = "nucleotide", rc = TRUE)
+
+## Plot an RprimerOligo object
+
 data("exampleRprimerOligo")
-plotData(exampleRprimerOligo)
-## data("exampleRprimerAssay") ################ ADD LATER
+oligos <- exampleRprimerOligo
+
+## Plot all oligos
+plotData(oligos)
+
+## Select a subset of the oligos, and plot
+selected <- oligos[oligos$start >= 5000 & oligos$end <= 5500, ]
+plotData(selected)
+
+## Plot an RrimerAssay object
+## data("exampleRprimerAssay")
 ## plotData(exampleRprimerAssay)
 }

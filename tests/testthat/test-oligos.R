@@ -2,9 +2,9 @@ data("exampleRprimerProfile")
 x <- exampleRprimerProfile
 oligos <- .generateOligos(x[5000:6000, ])
 
-#test_that(".oligos works", {
+# test_that(".oligos works", {
 
-#})
+# })
 
 
 test_that(".nmers works", {
@@ -207,8 +207,8 @@ test_that(".getMeanAndRange, and .makeOligoDf work", {
     all <- .getAllVariants(oligos)
     meanAndRange <- .getMeanAndRange(all)
     expect_true(is.data.frame(meanAndRange))
- #   expect_equal(meanAndRange$tmMean[1], mean(all$tm[[1]]))
- #   expect_equal(meanAndRange$tmRange[1], max(all$tm[[1]]) - min(all$tm[[1]]))
+    #   expect_equal(meanAndRange$tmMean[1], mean(all$tm[[1]]))
+    #   expect_equal(meanAndRange$tmRange[1], max(all$tm[[1]]) - min(all$tm[[1]]))
     oligoDf <- .makeOligoDf(oligos)
     expect_true(is.data.frame(oligoDf))
     nrows <- c(nrow(meanAndRange), nrow(oligoDf))
@@ -233,19 +233,19 @@ test_that(".designOligos and .isWithinRange work", {
     expect_true(is.logical(gcLogical[[1]]))
 })
 
-#test_that(".convertToMatrices and .isValid work", {
+# test_that(".convertToMatrices and .isValid work", {
 
 
-#})
+# })
 
-#test_that(".filterPrimers works", {
+# test_that(".filterPrimers works", {
 
-#})
+# })
 
-#test_that(".filterProbes works", {
+# test_that(".filterProbes works", {
 
-#})
+# })
 
-#test_that(".beautify works", {
+# test_that(".beautify works", {
 
-#})
+# })

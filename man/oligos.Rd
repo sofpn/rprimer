@@ -152,7 +152,6 @@ found by calling \code{rprimer:::lookup$nn}.
 }
 
 \examples{
-## Load example data
 data("exampleRprimerProfile")
 target <- exampleRprimerProfile
 
@@ -166,7 +165,7 @@ oligos(roi)
 ## Design primers only
 oligos(roi, probe = FALSE)
 
-## Design primers with high degeneracy, but with conserved 3'-ends
+## Allow high degeneracy, but enforce conserved 3'-ends (>= 98 \% identity)
 oligos(roi,
        maxDegeneracyPrimer = 8,
        minEndIdentityPrimer = 0.98,

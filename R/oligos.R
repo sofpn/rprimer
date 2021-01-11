@@ -1,9 +1,3 @@
-# tests
-# word doc to describe design process and make flowchart
-# then assays, then plot, then vignette and readme
-
-# Exported =====================================================================
-
 #' Design oligos
 #'
 #' \code{oligos()} identifies oligos (primers and probes)
@@ -151,7 +145,6 @@
 #' @export
 #'
 #' @examples
-#' ## Load example data
 #' data("exampleRprimerProfile")
 #' target <- exampleRprimerProfile
 #'
@@ -165,11 +158,12 @@
 #' ## Design primers only
 #' oligos(roi, probe = FALSE)
 #'
-#' ## Design primers with high degeneracy, but with conserved 3'-ends
+#' ## Allow high degeneracy, but enforce conserved 3'-ends (>= 98 % identity)
 #' oligos(roi,
-#'        maxDegeneracyPrimer = 8,
-#'        minEndIdentityPrimer = 0.98,
-#'        probe = FALSE)
+#'     maxDegeneracyPrimer = 8,
+#'     minEndIdentityPrimer = 0.98,
+#'     probe = FALSE
+#' )
 oligos <- function(x,
                    maxGapFrequency = 0.1,
                    lengthPrimer = 18:22,
@@ -189,113 +183,117 @@ oligos <- function(x,
                    concProbe = 250,
                    concNa = 0.05) {
     if (!methods::is(x, "RprimerProfile")) {
-      stop("'x' must be an RprimerProfile object.", call. = FALSE)
+        stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
     if (!(maxGapFrequency >= 0 && maxGapFrequency <= 1)) {
-      stop("'lengthPrimer' must be from 0 to 1.", call. = FALSE)
+        stop("'lengthPrimer' must be from 0 to 1.", call. = FALSE)
     }
     if (!(min(lengthPrimer) >= 14 && max(lengthPrimer) <= 30)) {
-      stop("'lengthPrimer' must be from 14 to 30.", call. = FALSE)
+        stop("'lengthPrimer' must be from 14 to 30.", call. = FALSE)
     }
     if (!(maxDegeneracyPrimer >= 1 && maxDegeneracyPrimer <= 32)) {
-      stop("'maxDegeneracyPrimer' must be from 1 to 32.", call. = FALSE)
+        stop("'maxDegeneracyPrimer' must be from 1 to 32.", call. = FALSE)
     }
     if (any(!is.logical(c(gcClampPrimer, avoidThreeEndRunsPrimer)))) {
-      stop(
-        "'gcClampPrimer' and 'avoidThreeEndRunsPrimer'
+        stop(
+            "'gcClampPrimer' and 'avoidThreeEndRunsPrimer'
            must be TRUE or FALSE",
-        call. = FALSE
-      )
+            call. = FALSE
+        )
     }
-
-
     if (!(minEndIdentityPrimer >= 0 && minEndIdentityPrimer <= 1)) {
-      stop(
-        "'minEndIdentityPrimer' must be from 0 to 1.",
-        call. = FALSE
-      )
+        stop(
+            "'minEndIdentityPrimer' must be from 0 to 1.",
+            call. = FALSE
+        )
     }
     if (!(min(gcRangePrimer) >= 0 && max(gcRangePrimer) <= 1)) {
-      stop(
-        "'gcRangePrimer' must be from 0 to 1, e.g. c(0.45, 0.65).",
-        call. = FALSE
-      )
+        stop(
+            "'gcRangePrimer' must be from 0 to 1, e.g. c(0.45, 0.65).",
+            call. = FALSE
+        )
     }
     if (!(min(tmRangePrimer) >= 20 && max(tmRangePrimer) <= 90)) {
-      stop(
-        "'tmRangePrimer' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE
-     )
+        stop(
+            "'tmRangePrimer' must be from 20 to 90, e.g. c(55, 60).",
+            call. = FALSE
+        )
     }
     if (!(concPrimer >= 20 && concPrimer <= 2000)) {
-      stop("'concPrimer' must be from 20 nM to 2000 nM.", call. = FALSE)
+        stop("'concPrimer' must be from 20 nM to 2000 nM.", call. = FALSE)
     }
     if (!is.logical(probe)) {
-      stop("'probe' must be set to TRUE or FALSE", call. = FALSE)
+        stop("'probe' must be set to TRUE or FALSE", call. = FALSE)
     }
     if (!(min(lengthProbe) >= 14 && max(lengthProbe) <= 30)) {
-      stop("'lengthProbe' must be from 14 to 30.", call. = FALSE)
+        stop("'lengthProbe' must be from 14 to 30.", call. = FALSE)
     }
     if (!(maxDegeneracyProbe >= 1 && maxDegeneracyProbe <= 32)) {
-      stop("'maxDegeneracyProbe' must be from 1 to 32.", call. = FALSE)
+        stop("'maxDegeneracyProbe' must be from 1 to 32.", call. = FALSE)
     }
     if (!is.logical(avoidFiveEndGProbe)) {
-      stop("'avoidFiveEndGProbe' must be TRUE or FALSE", call. = FALSE)
+        stop("'avoidFiveEndGProbe' must be TRUE or FALSE", call. = FALSE)
     }
     if (!(min(gcRangeProbe) >= 0 && max(gcRangeProbe) <= 1)) {
-      stop(
-        "'gcRangeProbe' must be from 0 to 1, e.g. c(0.45, 0.65).",
-        call. = FALSE
-      )
+        stop(
+            "'gcRangeProbe' must be from 0 to 1, e.g. c(0.45, 0.65).",
+            call. = FALSE
+        )
     }
     if (!(min(tmRangeProbe) >= 20 && max(tmRangeProbe) <= 90)) {
-      stop(
-        "'tmRangeProbe' must be from 20 to 90, e.g. c(55, 60).", call. = FALSE
-      )
+        stop(
+            "'tmRangeProbe' must be from 20 to 90, e.g. c(55, 60).",
+            call. = FALSE
+        )
     }
     if (!(concProbe >= 20 && concProbe <= 2000)) {
-      stop("'concProbe' must be from 20 nM to 2000 nM.", call. = FALSE)
+        stop("'concProbe' must be from 20 nM to 2000 nM.", call. = FALSE)
     }
     if (!(concNa >= 0.01 && concNa <= 1)) {
-      stop("'concNa' must be from 0.01 to 1 M.", call. = FALSE)
+        stop("'concNa' must be from 0.01 to 1 M.", call. = FALSE)
     }
     lengthOligo <- lengthPrimer
     if (probe) {
-      lengthOligo <- unique(c(lengthOligo, lengthProbe))
+        lengthOligo <- unique(c(lengthOligo, lengthProbe))
     }
     lengthOligo <- lengthOligo[order(lengthOligo)]
     maxDegeneracy <- maxDegeneracyPrimer
     if (probe) {
-      maxDegeneracy <- max(c(maxDegeneracyPrimer, maxDegeneracyProbe))
+        maxDegeneracy <- max(c(maxDegeneracyPrimer, maxDegeneracyProbe))
     }
-    oligos <- .designOligos(x,
-                            lengthOligo,
-                            maxGapFrequency,
-                            maxDegeneracy,
-                            concPrimer,
-                            concProbe,
-                            concNa)
+    oligos <- .designOligos(
+        x,
+        lengthOligo,
+        maxGapFrequency,
+        maxDegeneracy,
+        concPrimer,
+        concProbe,
+        concNa
+    )
     primers <- .filterPrimers(oligos,
-                              lengthPrimer,
-                              maxDegeneracyPrimer,
-                              minEndIdentityPrimer,
-                              gcClampPrimer,
-                              avoidThreeEndRunsPrimer,
-                              gcRangePrimer,
-                              tmRangePrimer,
-                              rowThreshold = 0.75,
-                              colThreshold = 0.75)
+        lengthPrimer,
+        maxDegeneracyPrimer,
+        minEndIdentityPrimer,
+        gcClampPrimer,
+        avoidThreeEndRunsPrimer,
+        gcRangePrimer,
+        tmRangePrimer,
+        rowThreshold = 0.75,
+        colThreshold = 0.75
+    )
     if (nrow(primers) == 0) {
         stop("No primers were found.", call. = FALSE)
     }
     if (probe) {
         probes <- .filterProbes(oligos,
-                                lengthProbe,
-                                maxDegeneracyProbe,
-                                avoidFiveEndGProbe,
-                                gcRangeProbe,
-                                tmRangeProbe,
-                                rowThreshold = 0.75,
-                                colThreshold = 0.75)
+            lengthProbe,
+            maxDegeneracyProbe,
+            avoidFiveEndGProbe,
+            gcRangeProbe,
+            tmRangeProbe,
+            rowThreshold = 0.75,
+            colThreshold = 0.75
+        )
         if (nrow(probes) == 0) {
             stop("No probes were found.", call. = FALSE)
         }
@@ -303,7 +301,7 @@ oligos <- function(x,
     } else {
         oligos <- primers
     }
-    oligos <- .beautify(oligos)
+    oligos <- .beautifyOligos(oligos)
     RprimerOligo(oligos)
 }
 
@@ -391,7 +389,7 @@ oligos <- function(x,
     oligos$start <- seq_len(nrow(oligos$iupacSequence)) + min(x$position) - 1
     oligos$end <- seq_len(
         nrow(oligos$iupacSequence)
-        ) + lengthOligo - 1 + min(x$position) - 1
+    ) + lengthOligo - 1 + min(x$position) - 1
     oligos$length <- rep(lengthOligo, nrow(oligos$iupacSequence))
     oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
     oligos$gapFrequency <- apply(.nmers(x$gaps, lengthOligo), 1, max)
@@ -403,7 +401,8 @@ oligos <- function(x,
     oligos$endIdentityRev <- apply(oligos$identity[, seq_len(5)], 1, min)
     oligos$identity <- rowMeans(oligos$identity)
     oligos$roiStart <- rep(
-        min(x$position, na.rm = TRUE), nrow(oligos$iupacSequence))
+        min(x$position, na.rm = TRUE), nrow(oligos$iupacSequence)
+    )
     oligos$roiEnd <- rep(
         max(x$position, na.rm = TRUE), nrow(oligos$iupacSequence)
     )
@@ -435,7 +434,8 @@ oligos <- function(x,
     if (length(invalid > 0)) {
         lapply(x, function(x) {
             if (is.matrix(x)) x[-invalid, , drop = FALSE] else x[-invalid]
-        })} else {
+        })
+    } else {
         x
     }
 }
@@ -659,7 +659,7 @@ oligos <- function(x,
     gc <- ifelse(all$sequence == "C" | all$sequence == "G", 1, 0)
     n <- rowSums(ifelse(
         all$sequence == "A" | all$sequence == "C" |
-        all$sequence == "G" | all$sequence == "T", 1, 0
+            all$sequence == "G" | all$sequence == "T", 1, 0
     ))
     all$gcContent <- rowSums(gc) / n
     all$gcClampFwd <- .detectGcClamp(gc)
@@ -672,7 +672,7 @@ oligos <- function(x,
     )
     tmParam <- .tmParameters(all$sequence, concNa)
     all$tmPrimer <- apply(tmParam, 1, function(x) .tm(x, concPrimer))
-    all$tmProbe <-  apply(tmParam, 1, function(x) .tm(x, concProbe))
+    all$tmProbe <- apply(tmParam, 1, function(x) .tm(x, concProbe))
     all$sequence <- apply(all$sequence, 1, paste, collapse = "")
     all$repeats <- .detectRepeats(all$sequence)
     all$sequenceRc <- apply(all$sequenceRc, 1, paste, collapse = "")
@@ -696,8 +696,11 @@ oligos <- function(x,
 #' @noRd
 .getMeanAndRange <- function(x) {
     x <- x[c("gcContent", "tmPrimer", "tmProbe")]
-    means <- lapply(x, function(y) vapply(y, function(z) {
-        sum(z)/length(z)}, double(1)))
+    means <- lapply(x, function(y) {
+        vapply(y, function(z) {
+            sum(z) / length(z)
+        }, double(1))
+    })
     means <- do.call("cbind.data.frame", means)
     names(means) <- paste0(names(means), "Mean")
     ranges <- lapply(x, function(y) {
@@ -754,13 +757,16 @@ oligos <- function(x,
             maxGapFrequency = maxGapFrequency,
             maxDegeneracy = maxDegeneracy
         )
-        if (all(vapply(iupacOligos, length, integer(1)) == 0)) {
+        nOligos <- vapply(iupacOligos, length, integer(1))
+        if (all(nOligos == 0)) {
             stop("No primers were found.", call. = FALSE)
         }
-        allVariants <- .getAllVariants(iupacOligos,
-                                       concPrimer,
-                                       concProbe,
-                                       concNa)
+        allVariants <- .getAllVariants(
+            iupacOligos,
+            concPrimer,
+            concProbe,
+            concNa
+        )
         meansAndRanges <- .getMeanAndRange(allVariants)
         allVariants <- data.frame(do.call("cbind", allVariants))
         iupacOligos <- .makeOligoDf(iupacOligos)
@@ -833,18 +839,18 @@ oligos <- function(x,
 #'
 #' @noRd
 .isValid <- function(x, rowThreshold, colThreshold) {
-  valid <- vapply(x, function(y) {
-    toInvert <- c(
-      "repeats", "threeEndRunsFwd", "threeEndRunsRev",
-      "fiveEndGPlus", "fiveEndGMinus"
-    )
-    select <- colnames(y) %in% toInvert
-    y[, select] <- as.logical(1 - y[, select])
-    col <- colMeans(y)
-    row <- rowMeans(y)
-    if (all(col >= colThreshold) & all(row >= rowThreshold)) TRUE else FALSE
-  }, logical(1))
-  valid
+    valid <- vapply(x, function(y) {
+        toInvert <- c(
+            "repeats", "threeEndRunsFwd", "threeEndRunsRev",
+            "fiveEndGPlus", "fiveEndGMinus"
+        )
+        select <- colnames(y) %in% toInvert
+        y[, select] <- as.logical(1 - y[, select])
+        col <- colMeans(y)
+        row <- rowMeans(y)
+        if (all(col >= colThreshold) & all(row >= rowThreshold)) TRUE else FALSE
+    }, logical(1))
+    valid
 }
 
 #' Check all primer variants
@@ -871,24 +877,24 @@ oligos <- function(x,
                                     avoidThreeEndRunsPrimer,
                                     rowThreshold,
                                     colThreshold) {
-  selectFwd <- c("repeats", "tmInRange", "gcInRange")
-  selectRev <- c("repeats", "tmInRange", "gcInRange")
-  if (gcClampPrimer) {
-    selectFwd <- c(selectFwd, "gcClampFwd")
-    selectRev <- c(selectRev, "gcClampRev")
-  }
-  if (avoidThreeEndRunsPrimer) {
-    selectFwd <- c(selectFwd, "threeEndRunsFwd")
-    selectRev <- c(selectRev, "threeEndRunsRev")
-  }
-  xFwd <- x[selectFwd]
-  xFwd <- .convertToMatrices(xFwd)
-  okFwd <- .isValid(xFwd, rowThreshold, colThreshold)
-  xRev <- x[selectRev]
-  xRev <- .convertToMatrices(xRev)
-  okRev <- .isValid(xRev, rowThreshold, colThreshold)
-  x <- cbind(x, okFwd, okRev)
-  x[x$okFwd | x$okRev, , drop = FALSE]
+    selectFwd <- c("repeats", "tmInRange", "gcInRange")
+    selectRev <- c("repeats", "tmInRange", "gcInRange")
+    if (gcClampPrimer) {
+        selectFwd <- c(selectFwd, "gcClampFwd")
+        selectRev <- c(selectRev, "gcClampRev")
+    }
+    if (avoidThreeEndRunsPrimer) {
+        selectFwd <- c(selectFwd, "threeEndRunsFwd")
+        selectRev <- c(selectRev, "threeEndRunsRev")
+    }
+    xFwd <- x[selectFwd]
+    xFwd <- .convertToMatrices(xFwd)
+    okFwd <- .isValid(xFwd, rowThreshold, colThreshold)
+    xRev <- x[selectRev]
+    xRev <- .convertToMatrices(xRev)
+    okRev <- .isValid(xRev, rowThreshold, colThreshold)
+    x <- cbind(x, okFwd, okRev)
+    x[x$okFwd | x$okRev, , drop = FALSE]
 }
 
 #' Find oligos that pass the criteria for being a primer
@@ -921,8 +927,8 @@ oligos <- function(x,
                            colThreshold = 0.75,
                            rowThreshold = 0.75) {
     x <- x[
-      x$length >= min(lengthPrimer) & x$length <= max(lengthPrimer), , ##
-      drop = FALSE
+        x$length >= min(lengthPrimer) & x$length <= max(lengthPrimer), , ##
+        drop = FALSE
     ]
     x <- x[x$degeneracy <= maxDegeneracyPrimer, , drop = FALSE]
     okEndIdFwd <- ifelse(x$endIdentityFwd >= minEndIdentityPrimer, TRUE, FALSE)
@@ -932,18 +938,20 @@ oligos <- function(x,
     gcInRange <- .isWithinRange(x$gcContent, gcRangePrimer)
     tmInRange <- .isWithinRange(x$tmPrimer, tmRangePrimer)
     x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
-    x <- .checkAllPrimerVariants(x,
-                                 gcClampPrimer,
-                                 avoidThreeEndRunsPrimer,
-                                 rowThreshold,
-                                 colThreshold)
+    x <- .checkAllPrimerVariants(
+        x,
+        gcClampPrimer,
+        avoidThreeEndRunsPrimer,
+        rowThreshold,
+        colThreshold
+    )
     fwd <- ifelse(x$okEndIdFwd & x$okFwd, TRUE, FALSE)
     rev <- ifelse(x$okEndIdRev & x$okRev, TRUE, FALSE)
     x <- cbind(x, fwd, rev)
     x <- x[x$fwd | x$rev, , drop = FALSE]
     remove <- c(
-      "gcInRange", "tmInRange", "okEndIdFwd", "okEndIdRev",
-      "okFwd", "okRev", "tmProbeMean", "tmProbeRange", "tmProbe"
+        "gcInRange", "tmInRange", "okEndIdFwd", "okEndIdRev",
+        "okFwd", "okRev", "tmProbeMean", "tmProbeRange", "tmProbe"
     )
     x <- x[!names(x) %in% remove]
     oldnames <- c("tmPrimerMean", "tmPrimerRange", "tmPrimer")
@@ -976,20 +984,20 @@ oligos <- function(x,
                                    avoidFiveEndGProbe,
                                    rowThreshold,
                                    colThreshold) {
-  selectFwd <- c("repeats", "tmInRange", "gcInRange")
-  selectRev <- c("repeats", "tmInRange", "gcInRange")
-  if (avoidFiveEndGProbe) {
-    selectFwd <- c(selectFwd, "fiveEndGPlus")
-    selectRev <- c(selectRev, "fiveEndGMinus")
-  }
-  xFwd <- x[selectFwd]
-  xFwd <- .convertToMatrices(xFwd)
-  fwd <- .isValid(xFwd, rowThreshold, colThreshold)
-  xRev <- x[selectRev]
-  xRev <- .convertToMatrices(xRev)
-  rev <- .isValid(xRev, rowThreshold, colThreshold)
-  x <- cbind(x, fwd, rev)
-  x[x$fwd | x$rev, , drop = FALSE]
+    selectFwd <- c("repeats", "tmInRange", "gcInRange")
+    selectRev <- c("repeats", "tmInRange", "gcInRange")
+    if (avoidFiveEndGProbe) {
+        selectFwd <- c(selectFwd, "fiveEndGPlus")
+        selectRev <- c(selectRev, "fiveEndGMinus")
+    }
+    xFwd <- x[selectFwd]
+    xFwd <- .convertToMatrices(xFwd)
+    fwd <- .isValid(xFwd, rowThreshold, colThreshold)
+    xRev <- x[selectRev]
+    xRev <- .convertToMatrices(xRev)
+    rev <- .isValid(xRev, rowThreshold, colThreshold)
+    x <- cbind(x, fwd, rev)
+    x[x$fwd | x$rev, , drop = FALSE]
 }
 
 #' Find oligos that pass the criteria for being a probe
@@ -1019,26 +1027,29 @@ oligos <- function(x,
                           tmRangeProbe = c(55, 65),
                           rowThreshold = 0.75,
                           colThreshold = 0.75) {
-  x <- x[
-    x$length >= min(lengthProbe) & x$length <= max(lengthProbe), , drop = FALSE
+    x <- x[
+        x$length >= min(lengthProbe) & x$length <= max(lengthProbe), ,
+        drop = FALSE
     ]
-  x <- x[x$degeneracy <= maxDegeneracyProbe, , drop = FALSE]
-  gcInRange <- .isWithinRange(x$gcContent, gcRangeProbe)
-  tmInRange <- .isWithinRange(x$tmProbe, tmRangeProbe)
-  x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
-  x <- .checkAllProbeVariants(x,
-                              avoidFiveEndGProbe,
-                              rowThreshold,
-                              colThreshold)
-  remove <- c(
-    "gcInRange", "tmInRange", "tmPrimerMean", "tmPrimerRange", "tmPrimer"
-  )
-  x <- x[!names(x) %in% remove]
-  oldnames <- c("tmProbeMean", "tmProbeRange", "tmProbe")
-  newnames <- c("tmMean", "tmRange", "tm")
-  names(x)[names(x) %in% oldnames] <- newnames
-  type <- rep("probe", nrow(x))
-  cbind(type, x)
+    x <- x[x$degeneracy <= maxDegeneracyProbe, , drop = FALSE]
+    gcInRange <- .isWithinRange(x$gcContent, gcRangeProbe)
+    tmInRange <- .isWithinRange(x$tmProbe, tmRangeProbe)
+    x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
+    x <- .checkAllProbeVariants(
+        x,
+        avoidFiveEndGProbe,
+        rowThreshold,
+        colThreshold
+    )
+    remove <- c(
+        "gcInRange", "tmInRange", "tmPrimerMean", "tmPrimerRange", "tmPrimer"
+    )
+    x <- x[!names(x) %in% remove]
+    oldnames <- c("tmProbeMean", "tmProbeRange", "tmProbe")
+    newnames <- c("tmMean", "tmRange", "tm")
+    names(x)[names(x) %in% oldnames] <- newnames
+    type <- rep("probe", nrow(x))
+    cbind(type, x)
 }
 
 #' Beautify oligo data
@@ -1055,7 +1066,7 @@ oligos <- function(x,
 #' @keywords internal
 #'
 #' @noRd
-.beautify <- function(x) {
+.beautifyOligos <- function(x) {
     keep <- c(
         "type", "fwd", "rev", "start", "end", "length",
         "iupacSequence", "iupacSequenceRc",

@@ -1,5 +1,3 @@
-# Exported =====================================================================
-
 #' Get sequence information from an alignment
 #'
 #' \code{consensusProfile()} takes a DNA multiple alignment as input and
@@ -124,6 +122,11 @@ consensusProfile <- function(x, iupacThreshold = 0) {
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' x <- .consensusMatrix(exampleRprimerAlignment)
+#' .majorityConsensus(x)
 .majorityConsensus <- function(x) {
     .findMostCommonBase <- function(x, y) {
         mostCommon <- rownames(x)[y == max(y)]
@@ -180,6 +183,11 @@ consensusProfile <- function(x, iupacThreshold = 0) {
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' x <- .consensusMatrix(exampleRprimerAlignment)
+#' .iupacConsensus(x)
 .iupacConsensus <- function(x, iupacThreshold = 0) {
     bases <- c("A", "C", "G", "T", "-")
     x <- x[rownames(x) %in% bases, , drop = FALSE]
@@ -207,6 +215,11 @@ consensusProfile <- function(x, iupacThreshold = 0) {
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' x <- .consensusMatrix(exampleRprimerAlignment)
+#' .nucleotideIdentity(x)
 .nucleotideIdentity <- function(x) {
     bases <- c("A", "C", "G", "T")
     s <- x[rownames(x) %in% bases, , drop = FALSE]
@@ -226,14 +239,18 @@ consensusProfile <- function(x, iupacThreshold = 0) {
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' x <- .consensusMatrix(exampleRprimerAlignment)
+#' .shannonEntropy(x)
 .shannonEntropy <- function(x) {
     bases <- c("A", "C", "G", "T")
     s <- x[rownames(x) %in% bases, , drop = FALSE]
     s <- apply(s, 2, function(x) x / sum(x))
     entropy <- apply(s, 2, function(x) ifelse(x == 0, 0, x * log2(x)))
-    entropy <- -colSums(entropy)
+    entropy <- abs(colSums(entropy))
     entropy <- unname(entropy)
-    entropy <- abs(entropy)
     entropy[is.na(entropy)] <- 0
     entropy
 }
