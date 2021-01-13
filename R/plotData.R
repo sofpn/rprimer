@@ -61,8 +61,8 @@
 #' plotData(selected)
 #'
 #' ## Plot an RrimerAssay object
-#' ## data("exampleRprimerAssay")
-#' ## plotData(exampleRprimerAssay)
+#' data("exampleRprimerAssay")
+#' plotData(exampleRprimerAssay)
 setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 
 #' Plot an RprimerProfile-object (method)
@@ -340,11 +340,11 @@ setMethod("plotData", "RprimerAssay", function(x) {
             list(
                 .violinPlot(
                     x, x$gcContentMean,
-                    paste0("\n", type, "\n\nGC-content"),
+                    paste0("\n", type, "\n\nGC-content (mean)"),
                     color = color
                 ),
-                .violinPlot(x, x$tmMean, "\n\n\nTm", color = color),
-                .violinPlot(x, x$identity, "\n\n\nIdentity", color = color),
+                .violinPlot(x, x$tmMean, "\n\n\nTm (mean)", color = color),
+                .violinPlot(x, x$identity, "\n\n\nIdentity (mean)", color = color),
                 .barPlot(x, x$length, "\n\n\nLength", color = color),
                 .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
             ),
@@ -355,11 +355,11 @@ setMethod("plotData", "RprimerAssay", function(x) {
             list(
                 .dotPlot(
                     x, x$gcContentMean,
-                    paste0("\n", type, "\n\nGC-content"),
+                    paste0("\n", type, "\n\nGC-content (mean)"),
                     color = color
                 ),
-                .dotPlot(x, x$tmMean, "\n\n\nTm", color = color),
-                .dotPlot(x, x$identity, "\n\n\nIdentity", color = color),
+                .dotPlot(x, x$tmMean, "\n\n\nTm (mean)", color = color),
+                .dotPlot(x, x$identity, "\n\n\nIdentity (mean)", color = color),
                 .barPlot(x, x$length, "\n\n\nLength", color = color),
                 .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
             ),
@@ -369,7 +369,24 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .oligoFeaturePlot <- function(x) {
-    if (any(x$type == "probe")) {
+    if (all(x$type == "probe")) {
+        patchwork::wrap_plots(list(
+            .gcTmIdentityPlot(
+                x[x$type == "probe", ],
+                color = "grey20",
+                type = "Probes"
+            )
+        ), ncol = 1)
+    }
+    else if (all(x$type == "primer")) {
+        patchwork::wrap_plots(list(
+            .gcTmIdentityPlot(
+                x[x$type == "primer", ],
+                color = "grey20",
+                type = "Primers"
+            )
+        ), ncol = 1)
+    } else {
         patchwork::wrap_plots(list(
             .gcTmIdentityPlot(
                 x[x$type == "primer", ],
@@ -378,14 +395,6 @@ setMethod("plotData", "RprimerAssay", function(x) {
             .gcTmIdentityPlot(
                 x[x$type == "probe", ],
                 color = "grey20", type = "Probes"
-            )
-        ), ncol = 1)
-    } else {
-        patchwork::wrap_plots(list(
-            .gcTmIdentityPlot(
-                x[x$type == "primer", ],
-                color = "grey20",
-                type = "Primers"
             )
         ), ncol = 1)
     }
@@ -423,7 +432,8 @@ setMethod("plotData", "RprimerAssay", function(x) {
         patchwork::wrap_plots(
             list(
                 .violinPlot(
-                    x, x$tmDifferencePrimer, "\n\nTm differende, primers",
+                    x, x$tmDifferencePrimer,
+                    "\n\nTm (mean) difference, primers",
                     color = color
                 ),
                 .boxPlot(
@@ -441,7 +451,8 @@ setMethod("plotData", "RprimerAssay", function(x) {
         patchwork::wrap_plots(
             list(
                 .dotPlot(
-                    x, x$tmDifferencePrimer, "\n\nTm difference, primers",
+                    x, x$tmDifferencePrimer,
+                    "\n\nTm difference (mean), primers",
                     color = color
                 ),
                 .barPlot(

@@ -7,8 +7,8 @@
 assays(
   x,
   lengthRange = c(65, 120),
-  tmDiffPrimers = 2,
-  tmDiffPrimersProbe = c(0, 20)
+  tmDiffPrimers = 5,
+  tmDiffPrimersProbe = c(0, 10)
 )
 }
 \arguments{
@@ -18,11 +18,11 @@ assays(
 \code{c(65, 120)}.}
 
 \item{tmDiffPrimers}{Maximum tm difference between the two primers
-(absolute value). A number [0, 30], defaults to 2.}
+(absolute value). A number [0, 30], defaults to 5.}
 
 \item{tmDiffPrimersProbe}{Acceptable tm difference between the primers (average Tm of the
 primer pair) and probe. A numeric vector [-20, 20],
-defaults to \code{c(0, 20)}.
+defaults to \code{c(0, 10)}.
 The Tm-difference is calculated by subtracting the
 Tm of the probe with the average Tm of the majority
 primer pair. A negative Tm-difference

@@ -16,12 +16,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-## TODO
+## To do
 
-* Oligos=describe design process - new defaults? new defaults assays? 
-* Classes=document, set validity
+* Oligos=describe design process 
+* Classes=set validity
 * All=test
 * Vignette
+* col/rowThreshold...
+* randomly select input seq
 
 ## Installation
 
@@ -39,7 +41,7 @@ devtools::load_all(".")
 
 ## Overview 
 
-rprimer provides tools for designing broadly reactive primers, probes and (RT)-(q/dd)PCR assays from a multiple DNA sequence alignment. It is especially developed for sequence variable targets, such as RNA-viruses. 
+rprimer provides tools for designing broadly reactive primers, probes and (RT)-(q/dd)PCR assays from a multiple DNA sequence alignment. 
 
 The design process is built on three functions:
 
@@ -129,7 +131,7 @@ plotData(myOligos)
 
 ### Step 3: `assays`
 
-`assays()` finds pairs of forward and reverse primers and combines them with probes, if `probe = TRUE` was used in the oligo design step. You can design assays with default settings, or by specifying the amplicon length and maximum allowed difference between the primers, and the primer pair and probe. 
+`assays()` finds pairs of forward and reverse primers and combines them with probes, if `probe = TRUE` was used in the oligo design step. You can either use default settings (as below), or customize the amplicon length and maximum allowed difference between the primers, and between the primer pair and probe. 
 
 ```{r}
 myAssays <- assays(myOligos)

@@ -93,6 +93,6 @@ selected <- oligos[oligos$start >= 5000 & oligos$end <= 5500, ]
 plotData(selected)
 
 ## Plot an RrimerAssay object
-## data("exampleRprimerAssay")
-## plotData(exampleRprimerAssay)
+data("exampleRprimerAssay")
+plotData(exampleRprimerAssay)
 }

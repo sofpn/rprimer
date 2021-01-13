@@ -7,7 +7,7 @@
 #'
 #' @param maxGapFrequency
 #' Maximum allowed gap frequency (for both primers and probes).
-#' A number [0, 1], defaults to 0.1.
+#' A number [0, 1], defaults to 0.05.
 #'
 #' @param lengthPrimer
 #' Primer length. A numeric vector [14, 30],
@@ -36,7 +36,7 @@
 #'
 #' @param gcRangePrimer
 #' GC-content range for primers (proportion, not percent).
-#' A numeric vector [0, 1], defaults to \code{c(0.45, 0.55)}.
+#' A numeric vector [0, 1], defaults to \code{c(0.40, 0.60)}.
 #'
 #' @param tmRangePrimer
 #' Tm range for primers.
@@ -64,7 +64,7 @@
 #'
 #' @param gcRangeProbe
 #' GC-content range for probes (proportion, not %). A numeric vector [0, 1],
-#' defaults to \code{c(0.45, 0.55)}.
+#' defaults to \code{c(0.40, 0.60)}.
 #'
 #' @param tmRangeProbe
 #' Tm range for probes.
@@ -112,9 +112,19 @@
 #'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
 #' }
 #'
-#' @section Description of the design process:
+#' @section Oligos with low sequence complexity:
 #'
-#' to be added.
+#' Oligos with more than four consecutive runs of the same
+#' nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
+#' of the same di-nucleotide (e.g. "TATATATA") are considered invalid.
+#' This check is done on all sequence variants of each oligo. ################################
+#'
+#' @section Oligos with high degeneracy:
+#'
+#' Each sequence variant of a degenerate oligo must fulfill at least
+#' 83 % of the specified design criteria,
+#' and each design criteria must be fulfilled by at least 5/6 of
+#' the sequence variants. Otherwise the oligo will be considered as invalid. ###############
 #'
 #' @section Tm-calculation:
 #'
@@ -163,20 +173,20 @@
 #'        probe = FALSE
 #' )
 oligos <- function(x,
-                   maxGapFrequency = 0.1,
+                   maxGapFrequency = 0.05,
                    lengthPrimer = 18:22,
                    maxDegeneracyPrimer = 4,
                    gcClampPrimer = TRUE,
                    avoidThreeEndRunsPrimer = TRUE,
                    minEndIdentityPrimer = 0,
-                   gcRangePrimer = c(0.45, 0.55),
+                   gcRangePrimer = c(0.40, 0.60),
                    tmRangePrimer = c(55, 65),
                    concPrimer = 500,
                    probe = TRUE,
                    lengthProbe = 18:22,
                    maxDegeneracyProbe = 4,
                    avoidFiveEndGProbe = TRUE,
-                   gcRangeProbe = c(0.45, 0.55),
+                   gcRangeProbe = c(0.40, 0.60),
                    tmRangeProbe = c(55, 70),
                    concProbe = 250,
                    concNa = 0.05) {
@@ -276,8 +286,8 @@ oligos <- function(x,
         avoidThreeEndRunsPrimer,
         gcRangePrimer,
         tmRangePrimer,
-        rowThreshold = 0.75,
-        colThreshold = 0.75
+        rowThreshold = 5/6,
+        colThreshold = 5/6
     )
     if (nrow(primers) == 0) {
         stop("No primers were found.", call. = FALSE)

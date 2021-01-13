@@ -30,7 +30,6 @@ Suggests:
     covr,
     kableExtra,
     knitr,
-    magrittr,
     rmarkdown,
     testthat
 VignetteBuilder: 

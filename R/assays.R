@@ -13,12 +13,12 @@
 #'
 #' @param tmDiffPrimers
 #' Maximum tm difference between the two primers
-#' (absolute value). A number [0, 30], defaults to 2.
+#' (absolute value). A number [0, 30], defaults to 5.
 #'
 #' @param tmDiffPrimersProbe
 #' Acceptable tm difference between the primers (average Tm of the
 #' primer pair) and probe. A numeric vector [-20, 20],
-#' defaults to \code{c(0, 20)}.
+#' defaults to \code{c(0, 10)}.
 #' The Tm-difference is calculated by subtracting the
 #' Tm of the probe with the average Tm of the majority
 #' primer pair. A negative Tm-difference
@@ -101,8 +101,8 @@
 #' assays(exampleRprimerOligo)
 assays <- function(x,
                    lengthRange = c(65, 120),
-                   tmDiffPrimers = 2,
-                   tmDiffPrimersProbe = c(0, 20)) {
+                   tmDiffPrimers = 5,
+                   tmDiffPrimersProbe = c(0, 10)) {
     if (!methods::is(x, "RprimerOligo")) {
         stop("'x' must be an RprimerOligo object.")
     }
@@ -183,9 +183,9 @@ assays <- function(x,
         tmDifferencePrimer, totalDegeneracy,
         assays
     )
-    assays <- assays[assays$ampliconLength >= min(lengthRange), ]
-    assays <- assays[assays$ampliconLength <= max(lengthRange), ]
-    assays <- assays[assays$tmDifferencePrimer <= tmDiffPrimers, ]
+    assays <- assays[assays$ampliconLength >= min(lengthRange), , drop = FALSE]
+    assays <- assays[assays$ampliconLength <= max(lengthRange), , drop = FALSE]
+    assays <- assays[assays$tmDifferencePrimer <= tmDiffPrimers, , drop = FALSE]
     if (nrow(assays) == 0) {
         stop("No assays were found.", call. = FALSE)
     }

@@ -18,29 +18,9 @@ knitr::opts_chunk$set(
 
 # Introduction
 
+Primer and probe design are the most central parts of PCR assay development. Successful amplification and detection depend on several factors, such as optimal primer and probe length, GC-content, melting temperature and sequence complexity. Primer and probes must be designed so that formation of dimers and hairpin loops are avoided, and the intended target region must be sufficiently conserved to avoid severe mismatches between the primers/probe and the template. This together makes PCR assay design a particularly challenging task. 
 
-## Overview 
-
-MAKE FLOWCHART
-
-## Functions
-
-
-## Data structures 
-
-The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors (Pagès et al., 2020), and behave in a similar manner as traditional data frames (with methods for `[`, `$`, `nrow`, `ncol`, `head`, `tail`, etc.). They can be coerced to traditional data frames by using `as.data.frame()`. 
-
-Example data sets of each class are provided with the package, and are loaded by: 
-
-```{r, warning=FALSE}
-data("exampleRprimerProfile")
-data("exampleRprimerOligo")
-data("exampleRprimerAssay")
-```
-
-These objects can be visualized using the generic function `plotData()`, e.g. `plotData(exampleRprimerProfile)`. 
-
-To provide reproducible examples, I've also included an alignment of class `Biostrings::MultipleDNAAlignment` (Pagès et al., 2020). It is loaded by `data("exampleRprimerAlignment")`.
+In this document, I demonstrate how to use rprimer by searching for RT-q/dPCR assay candidates for detection of hepatitis E virus.
 
 # Installation
 
@@ -53,21 +33,31 @@ devtools::install_github("sofpn/rprimer")
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+devtools::load_all(".")
 ```
 ```{r setup, message = FALSE, warning = FALSE}
-library(rprimer)
+#library(rprimer)
 ```
+
+# Overview 
+
+The design workflow is built on three functions: 
+
+* `consensusProfile()`
+* `oligos()`  
+* `assays()` 
+
+And a plotting function, `plotData()`, for visualization.
 
 # Workflow
 
-## To start: import data
+## Import alignment 
 
-The first step is to import the alignment with the target sequences of interest. `readDNAMultipleAlignment()` from Biostrings (Pagès et al., 2020) do the work for this part. The input file can contain up to several thousands of sequences. 
-
-MASK GAPS . It is generally not recommended to mask gaps, may lead to placement of oligos in regions where some sequences have inserts, but I use it in this example to , to get positions more accurate..... A good idea could be to verify the design without gap mask as well. .....
+The first step is to import an alignment with the target sequences of interest. `readDNAMultipleAlignment()` from Biostrings (Pagès et al., 2020) do the work for this part. The input file can contain up to several thousands of sequences. 
 
 The file "example_alignment.txt" is provided with the package and contains 100 hepatitis E virus sequences.  
+
+It is possible to mask positions with high gap frequency by using `Biostrings::maskGaps()`, but this should be done with caution, since it may lead to placement of oligos and amplicons in insert-rich regions. However, In my example, I've applied a gap mask to get the alignment to agree more with the average hepatitis E virus genome length. In case a gap mask is used, a good idea could be to verify the design process without gap mask as well.
 
 ```{r}
 infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
@@ -80,13 +70,13 @@ myAlignment <- Biostrings::maskGaps(myAlignment,
 
 ## Step 1: `consensusProfile` 
 
-`consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns all the information needed for the subsequent design process. Note that positions that are masked in the previous step are excluded. 
+`consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns an `RprimerProfile`-object, which contains all the information needed for the subsequent design process. Masked positions are excluded.
 
 ```{r}
 myConsensusProfile <- consensusProfile(myAlignment, iupacThreshold = 0.05)
 ```
 
-Output (first ten rows):
+Results (first ten rows):
 
 ```{r, echo=FALSE}
 myConsensusProfile[1:10, ] %>%
@@ -97,73 +87,103 @@ myConsensusProfile[1:10, ] %>%
 
 Some comments on the data: 
 
-* Majority refers to the majority consensus sequence, which is the most frequently occurring base. Identity is the proportion of that base when gaps and other bases than A, C, G and T are not taken into account
+* Majority refers to the majority consensus sequence, which is the most frequently occurring base
+* Identity is the proportion of the most frequently occurring base when gaps and other bases than A, C, G and T are not taken into account
+* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`. In my example, I've set the threshold to `0.05`, which means that all bases that occur in more than 5 % of the sequences will be accounted for when the IUPAC base is determined
+* Entropy refers to Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. Gaps and other bases than A, C, G and T are not included in this calculation 
 
-* The IUPAC consensus sequence includes wobble bases according to the IUPAC-nomenclature. It includes all DNA bases (A, C, G, T) that occurs with a frequency higher than the stated `iupacThreshold`. In my example, I set the threshold to `0.05`, which means that all bases that occur in more than 5 % of the sequences will be accounted for when the IUPAC base is determined
+The results can be visualized with `plotData()`. You can either plot the entire genome to get an overview:
 
-* Entropy refers to Shannon entropy, which is a measurement of variability. A value of zero indicate no variability and a high value indicate high variability. Gaps and other bases than A, C, G and T are not included in the calculation 
-
-The data can be visualized with `plotData()`, and a specific region can be highlighted using the optional argument `highlight`. The most conserved region of the hepatitis E virus genome seems to be between position 5000-5500:
-
-```{r, fig.width=12, fig.height=6, fig.cap="Fig 1. XXXXXX. The black lines represent centered running averages and the blue dots represent the value at each position."}
-plotData(myConsensusProfile, highlight = c(5000, 5500))
+```{r, fig.width=12, fig.height=6}
+plotData(myConsensusProfile)
 ```
+(The dots represent the value at each position and the black lines represent centered running averages)
 
-It is also possible to select a specific region of interest, and design. 
+Or zoom into a specific region of interest for a more detailed picture:
 
-For instance, I select the shaded region:  
-
-```{r, fig.width=12, fig.height=6, fig.cap="Fig 2. ROI. XXXXXXX."}
+```{r, fig.width=12, fig.height=6}
 myRoi <- myConsensusProfile[
-  myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5500, 
+  myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5050, 
   ]
 
 plotData(myRoi)
 ```
 
+It is also possible to plot the nucleotide distribution, by specifying `type = nucleotide`: 
+
+```{r, fig.width=6, fig.height=6}
+plotData(myRoi, type = "nucleotide")
+```
+
 ## Step 2: `oligos`
 
-`oligos()` searches for oligos (primers and probes) from an `RprimerProfile`-object. The following settings can be used for primer and probe design:
+`oligos()` searches for primers and probes (if selected) from an `RprimerProfile`-object, and returns an `RprimerOligo` object. 
 
+The following settings can be used: 
+
+* `maxGapFrequency` Maximum gap frequency in the target alignment for primer and probe binding regions, defaults to `0.05`
 * `lengthPrimer` Primer length, defaults to `18:22`
-* `maxGapFrequency` Maximum gap frequency for primers and probes, defaults to `0.1`
-* `maxDegeneracyPrimer` Maximum number of variants of each primer, defaults to `4`
-* `gcClampPrimer` If primers must have a GC-clamp, defaults to `TRUE`. A GC-clamp is identified as two to three G or C:s within the last five bases (3' end) of the primer
-* `avoidThreeendRunsPrimer` If primers with more than two runs of the same nucleotide at the terminal 3' end should be avoided, defaults to `TRUE`
-* `minEndIdentityPrimer` Optional. Minimum allowed identity at the 3' end (i.e. the last five bases). E.g., if set to `1`, only primers with complete target conservation at the 3' end will be considered
-* `gcRangePrimer` GC-content-range for primers, defaults to `c(0.45, 0.55)`
+* `maxDegeneracyPrimer` Maximum number of sequence variants of each primer, defaults to `4`. Note that this does not refer to the *number* of ambigous bases, it is the number of unique sequence variants represented by them ################
+* `gcClampPrimer` If primers must have a GC-clamp, defaults to `TRUE`. A GC-clamp is identified as two to three G or C:s within the last five bases (3'-end) of the primer. The presence of a GC-clamp ##################
+* `avoidThreeendRunsPrimer` If primers with more than two runs of the same nucleotide at the terminal 3'-end should be avoided, defaults to `TRUE`. ###########################3
+* `minEndIdentityPrimer` Minimum allowed identity at the 3'-end (the last five bases). E.g., if set to `1`, only primers with complete target conservation at the 3' end will be considered. Defaults to `0` ###############
+* `gcRangePrimer` GC-content-range for primers, defaults to `c(0.40, 0.60)`
 * `tmRangePrimer` Melting temperature range of primers, defaults to `c(55, 65)` 
 * `concPrimer` Primer concentration in nM (for Tm calculation), defaults to `500`
 * `probe` If probes should be designed as well, defaults to `TRUE`
 * `lengthProbe` Probe length, defaults to `18:22`
-* `maxGapFrequencyProbe` Maximum gap frequency for probes, defaults to `0.1` 
 * `maxDegeneracyProbe` Maximum number of variants of each probe, defaults to `4`
-* `avoid5endGProbe` If probes with a G at the terminal 5' end should be avoided, defaults to `TRUE`
-* `gcRangeProbe` GC-content-range for probes, defaults to `c(0.45, 0.55)`
-* `tmRangeProbe` Melting temperature range of probes, defaults to `c(55, 70)`
+* `avoidFiveEndGProbe` If probes with a G at the terminal 5' end should be avoided, defaults to `TRUE` ##################
+* `gcRangeProbe` GC-content-range for probes, defaults to `c(0.40, 0.50)`
+* `tmRangeProbe` Melting temperature range of probes, defaults to `c(55, 65)`
 * `concProbe` Probe concentration in nM (for Tm calculation), defaults to `250`
 * `concNa` Sodium ion concentration in the PCR reaction (for Tm calculation), defaults to `0.05` M (50 mM)
 
-In addition, `oligos()` avoids:
+The oligo design process can be divided in four steps. The first step is to ...
 
-*  oligos with more than than three consecutive runs of the same dinucleotide (e.g. "TATATATA")
-*  oligos with more than four consecutive runs of the same nucleotide  (e.g. "AAAAA")
+The second step is to remove all oligos with a degeneracy higher than the user specified threshold (the maximum degeneracy of primers and probes), and 
 
-An error message will return if no oligos are found. If so, a good idea could be to re-run the process from Step 1 and increase the `iupacThreshold` in `consensusProfile()` and/or to relax the design constraints in `oligos()`.
+The third step is to generate all sequence variants of each oligo, and to collect information... 
 
-Below, I design both primers and probes. For primers, I use very strict criteria on degeneracy (not more than 2) and minimum end identity (1). This means that only the most conserved regions will be considered as primer binding sites. #################
+The fourth step is to 
+
+Sequences with low complexity will not be considered as primers and probes. This includes sequences with more than than three consecutive runs of
+the same di-nucleotide (e.g. "TATATATA") and/or With more than four consecutive runs of the same nucleotide  (e.g. "AAAAA").
+
+Step 1: Generate all possible oligos 
+For a specific primer length i: 
+The first step is to generate a matrix with all possible oligos of length i from the vector that holds the IUPAC consensus sequence in the `RprimerProfile` object. Hence, the matrix will have i columns and length(x) - 1 rows. The second step, is to calculate the degeneracy (number of unique sequence variants) of all oligo candidates, and to exclude all oligos with a degeeracy higher than the maximum stated degeneracy of primers and probes, which, for a sequence variable target, will be quite a lot of exclusions.. 
+
+It finds all possible oligos of a specific length from an
+\code{RprimerProfile} object, and returns a list containing
+start and end position,
+length, IUPAC sequence (the oligo DNA sequence with wobble bases), degeneracy
+(number of variants of each oligo), maximum gap frequency,
+mean overall identity, and minimum 3'-end identity at
+both forward and reverse direction (the 3'-end is here seen as the last five
+bases of the oligo).
+
+Step 2: Filter oligos 
+is the second step of the oligo-design process. It
+removes oligos with gap frequency and degeneracy above the specified
+thresholds.
+
+Step 3: Calculate info on all variants
+is the third step of the oligo-design process.
+It returns all sequence variants of each oligo, both in sense and anti-sense
+(reverse complement) direction. For each sequence variant, information is
+provided on GC-content, melting temperature,
+and the presence of a GC-clamp (good for primers),
+terminal 3'-end runs (bad for primers), mono- and di-nucleotide repeats
+(bad for primers and probes) and terminal five end G:s (bad for probes).
+
+Below, I design both primers and probes using default settings. 
 
 ``` {r}
 myOligos <- oligos(myConsensusProfile)
 ```
 
-Of course, it is possible to design primers and probes with default settings, or by changing just a few settings. For instance:  
-
-```r
-# getOligos(myConsensusProfile)
-# getOligos(myConsensusProfile, maxDegeneracyPrimer = 8, probe = FALSE)
-```
-Output (first ten rows): 
+Results (first ten rows):
 
 ```{r, echo=FALSE}
 myOligos[1:10, ] %>%
@@ -174,17 +194,20 @@ myOligos[1:10, ] %>%
 
 Some comments on the data: 
 
-* Type indicates whether the oligo is a primer or probe candidate #########
-* Degeneracy tells how many variants there are of that particular oligo. An oligo without wobble bases will have a value of 1
-* Melting temperature is calculated using the nearest-neighbor method, with table values from SantaLucia, 1998, initiation parameters as described by Allawi & SantaLucia 1997 and salt correction formula from SantaLucia et al., 1996
-* Identity shows the average identity score of the oligo. A high identity score indicates a conserved target region. The maximum value is 1
+* type indicates whether the oligo is a primer or probe candidate 
+* fwd indicates whether the oligo is valid in forward direction 
+* rev indicates whether the oligo is valid in reverse direction 
+* degeneracy tells how many variants there are of that particular oligo. An oligo without any wobble bases will have a value of 1
+* identity shows the average identity within the oligo binding region. An identity score of 1 indicates a conserved binding region  
 
+
+* the oligo is shown in both IUPAC format (with wobble bases) and as all sequence variants 
 ```{r}
-#myOligos$iupac[1] # The IUPAC variant of the first oligo 
-#myOligos$all[[1]] # All variants of that oligo 
+myOligos$iupacSequence[1] # The IUPAC sequence of the first oligo 
+myOligos$sequence[[1]] # All sequence variants of the first oligo 
 ```
 
-* The columns `gcContent` and `tm` give the GC-content and melting temperature of each variant:  
+* gc give the GC-content and melting temperature of all sequence variants: 
 ```{r}
 myOligos$gcContent[[1]] # GC content of all variants of the first oligo 
 myOligos$tm[[1]] # Tm of all variants of the first oligo 
@@ -192,15 +215,50 @@ myOligos$tm[[1]] # Tm of all variants of the first oligo
 
 All primer and probe candidates can be visualized using `plotData()`:
 
-```{r, fig.align="center", fig.width=12, fig.height=8, fig.cap="Fig. 3. The upper plot shows the location of the primer and probe candidates, and the lower plots show the characteristics of all oligo candidates (majority sequence)."}
+```{r, fig.align="center", fig.width=12, fig.height=8}
 plotData(myOligos)
 ```
 
-I allowed probes to contain more degenerate sites than primers, which is why the number of probe candidates is much higher than the number of primer candidates. 
+The upper plot shows the binding sites of the primers and probes (some are overlapped), and the lower plots show how the features of the primer and probe candidates are distributed. 
+
+If I want to filter within my results, I can subset using R's standard functionality: #############
+
+```{r}
+## Select 
+myOligoSubset <- myOligos[]
+```
+
+It is, of course, also possible to customize the design process. Below, I design primers with low degeneracy and completely conserved 3'-end binding sites. 
+
+``` {r}
+myOligos2 <- oligos(myConsensusProfile, 
+                    maxDegeneracyPrimer = 2, 
+                    minEndIdentityPrimer = 1, 
+                    probe = FALSE)
+```
+
+Now, only the most conserved regions will come up as primer binding sites: 
+
+```{r, fig.align="center", fig.width=12, fig.height=8}
+plotData(myOligos2)
+```
+
+It is also possible to design oligos within a specific region of interest, by subsetting the `RprimerProfile` object:  
+
+``` {r}
+myRoi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 6000, ]
+myOligos3 <- oligos(myRoi)
+```
+
+```{r, fig.align="center", fig.width=12, fig.height=8}
+plotData(myOligos3)
+```
+
+An error message will return if no oligos are found. If so, a good idea could be to re-run the process from Step 1 and increase the `iupacThreshold` in `consensusProfile()` and/or relax the design constraints in `oligos()`.
 
 ## Step 3: `assays`
 
-`assays()` finds pairs of forward and reverse primers, and combines them with probes if `probe = TRUE` was used in the previous step. 
+`assays()` finds pairs of forward and reverse primers within an `RprimerOligo`-object, and combines them with probes, if available. It returns an `RprimerAssay`-object.   
 
 The design process is based on the following criteria:
 
@@ -208,33 +266,29 @@ The design process is based on the following criteria:
 * `maxTmDiffPrimers` Maximum Tm difference between the two primers (absolute value, calculated for majority primers), defaults to `2`
 * `tmDiffPrimersProbe` Acceptable Tm difference between the primers (average Tm of the primer pair) and probe, defaults to `c(0, 20)`. The Tm-difference is calculated by subtracting the Tm of the (majority) probe with the average Tm of the (majority) primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair
 
-An error message will return if no assays are found.
-
 ```{r}
-#myAssays <- getAssays(myOligos)
+myAssays <- assays(myOligos)
 ```
 
 Output (first ten rows): 
 
 ```{r, echo=FALSE}
-#myAssays[1:10, ] %>%
-#  kbl(., digits = 2) %>%
-#  kable_material(c("striped", "hover"), position = "right") %>%
-#  scroll_box(width = "650px", height = "300px")
+myAssays[1:10, ] %>%
+  kbl(., digits = 2) %>%
+  kable_material(c("striped", "hover"), position = "right") %>%
+  scroll_box(width = "650px", height = "300px")
 ```
 
 The output contains many columns, so the most sensible way of inspecting it is probably to use `View(as.data.frame(myAssays))`, if you are using RStudio. 
 
 Some comments on the output: 
 
-* Mean identity specifies the average identity score of primers and probe (if present). A high value indicates that the oligos bind to conserved regions in the genome 
 * Total degeneracy denotes the total number of oligos in the assay. If no wobble bases are present in primers or probes, the total degeneracy would be 3 
-* Probes can be either positive or negative sense. If both the positive and negative sense probe are valid for a specific assay, the probe with the least number of Gs will be selected 
 
 Again, the output can be visualized using `plotData()`: 
 
-```{r, fig.width=12, fig.height=6, fig.cap="Fig. 4. XXXX."}
-#plotData(myAssays)
+```{r, fig.width=12, fig.height=6}
+plotData(myAssays)
 ```
 
 I notice that all assays are located in the conserved region between position 5000-5500. 
@@ -242,43 +296,51 @@ I notice that all assays are located in the conserved region between position 50
 The assay candidates can be sorted based on e.g. total degeneracy score: 
 
 ```{r}
-#myAssays <- myAssays[order(myAssays$totalDegeneracy), ]
+myAssays <- myAssays[order(myAssays$totalDegeneracy), ]
 ```
 
 It is also possible to extract assays that fulfill specific criteria, for instance, assays with a total degeneracy below 6:
 
 ```{r}
-#mySelectedAssays <- myAssays[myAssays$totalDegeneracy < 6, ]
+mySelectedAssays <- myAssays[myAssays$totalDegeneracy < 6, ]
 ```
+
+It is also possible to create a subset of the OLIGO data before the assay design process, if ############################
+
+An error message will return if no assays are found.
 
 ## Further handling of the data 
 
-Oligo and assay region(s) can be inspected further by using the `RprimerProfile` object. As an example, I select to look at the first assay in my assay dataset (`myAssays`): 
+The oligo and assay region(s) can be inspected further by using the `RprimerProfile` object. As an example, I select to take a closer look at the first assay in `myAssays`: 
 
 ```{r}
 
 ## Find start and end positions for the first assay 
-#assayStart <- myAssays[1, ]$start
-#assayEnd <- myAssays[1, ]$end
+from <- myAssays[1, ]$start
+to <- myAssays[1, ]$end
 
-## Subset the RprimerProfile object (myConsensusProfile) based on these positions
-#myAssayRegion <- myConsensusProfile[myConsensusProfile$position >= assayStart & #myConsensusProfile$position <= assayEnd, ] 
+## Subset the RprimerProfile object based on these positions
+selection <- myConsensusProfile[myConsensusProfile$position >= from & myConsensusProfile$position <= to, ] 
 ```
-
-
-Of course, it is also possible to use `plotData()` for the assay region:
 
 ```{r, fig.width=12, fig.height=6}
-#plotData(myAssayRegion)
+plotData(selection)
+plotData(selection, type = "nucleotide")
 ```
 
-The majority amplicon sequence can be obtained by: 
+The consensus amplicon sequence can be obtained by: 
 
 ```{r}
-#paste(myAssayRegion$majority, collapse = "")
+paste(selection$iupac, collapse = "")
 ```
 
-## Save to file  
+It is also possible to highlight a specific region, using the optional argument `highlight`.
+
+```{r fig 3, fig.width=12, fig.height=6}
+plotData(myConsensusProfile, highlight = c(from, to))
+```
+
+## Save results to file  
 
 The results can be saved to .txt or .csv-files, for instance: 
 
@@ -289,22 +351,44 @@ write.table(myAssays, file = "myAssays.txt", quote = FALSE, row.names = FALSE)
 
 ## Summary 
 
-The design process can be summarized in the following code. In this case, I use default settings for oligo and assay design. 
+The design process is summarized below. In this case, I use default settings for oligo and assay design. 
 
 ```r
-## Enter the filepath to the alignment here 
+## Enter the filepath to the alignment 
 filepath <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
 
+## Import alignment 
 myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta") 
 myAlignment <- Biostrings::maskGaps(myAlignment, min.fraction = 0.5, min.block.width = 1)
-myConsensusProfile <- getConsensusProfile(myAlignment, iupacThreshold = 0.05)
-myOligos <- getOligos(myConsensusProfile)
-myAssays <- getAssays(myOligos)
+
+## Design primers, probes and assays
+myConsensusProfile <- consensusProfile(myAlignment, iupacThreshold = 0.05)
+myOligos <- oligos(myConsensusProfile)
+myAssays <- assays(myOligos)
 
 ```
 
+# Data structures 
+
+The `Rprimer`-classes are extensions of the `DataFrame` class from S4Vectors (Pagès et al., 2020), and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow`, `ncol`, `head`, `tail`, etc., and can be coerced to traditional data frames by using `as.data.frame()`. 
+
+Example data sets of each class are provided with the package, and are loaded by: 
+
+```{r, warning=FALSE}
+data("exampleRprimerProfile")
+data("exampleRprimerOligo")
+data("exampleRprimerAssay")
+```
+
+To provide reproducible examples, I've also included an alignment of class `Biostrings::MultipleDNAAlignment` (Pagès et al., 2020). It is loaded by `data("exampleRprimerAlignment")`.
+
 # Limitations  
-- does not determine deltaG for homo and heterodimer, or hairpin formation etc.
+
+rprimer covers a lot of important steps in the oligo and assay design processes, but not all. Two very important, additional steps are 1) checks for the potential of primer-dimer and hairpin formation and 2) in silico checks for exclusivity, by matching the primer and probe set to off-targets.
+
+A suggested workflow for primer, probe and assay design is presented below. 
+
+[flowchart]
 
 # Session info 
 
