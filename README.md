@@ -10,6 +10,7 @@
   - All=test
   - Vignette
   - col/rowThreshold…
+  - randomly select input seq
 
 ## Installation
 
