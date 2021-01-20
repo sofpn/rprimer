@@ -1,1 +1,0 @@
-The sequences within "example_alignment.txt" were collected from NCBI GenBank and aligned with mafft (https://mafft.cbrc.jp/alignment/software/).

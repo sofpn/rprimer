@@ -334,7 +334,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         .themeRprimer(showXAxis = TRUE)
 }
 
-.gcTmIdentityPlot <- function(x, color = "grey20", type = "Primers") {
+.gcTmEntropyPlot <- function(x, color = "grey20", type = "Primers") {
     if (nrow(x) >= 10) {
         patchwork::wrap_plots(
             list(
@@ -344,7 +344,10 @@ setMethod("plotData", "RprimerAssay", function(x) {
                     color = color
                 ),
                 .violinPlot(x, x$tmMean, "\n\n\nTm (mean)", color = color),
-                .violinPlot(x, x$identity, "\n\n\nIdentity (mean)", color = color),
+                .violinPlot(
+                    x, x$residualEntropy, "\n\n\nResidual entropy (mean)",
+                    color = color
+                ),
                 .barPlot(x, x$length, "\n\n\nLength", color = color),
                 .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
             ),
@@ -359,7 +362,10 @@ setMethod("plotData", "RprimerAssay", function(x) {
                     color = color
                 ),
                 .dotPlot(x, x$tmMean, "\n\n\nTm (mean)", color = color),
-                .dotPlot(x, x$identity, "\n\n\nIdentity (mean)", color = color),
+                .dotPlot(
+                    x, x$residualEntropy, "\n\n\nResidual entropy (mean)",
+                    color = color
+                ),
                 .barPlot(x, x$length, "\n\n\nLength", color = color),
                 .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
             ),
@@ -371,7 +377,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
 .oligoFeaturePlot <- function(x) {
     if (all(x$type == "probe")) {
         patchwork::wrap_plots(list(
-            .gcTmIdentityPlot(
+            .gcTmEntropyPlot(
                 x[x$type == "probe", ],
                 color = "grey20",
                 type = "Probes"
@@ -380,7 +386,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
     }
     else if (all(x$type == "primer")) {
         patchwork::wrap_plots(list(
-            .gcTmIdentityPlot(
+            .gcTmEntropyPlot(
                 x[x$type == "primer", ],
                 color = "grey20",
                 type = "Primers"
@@ -388,11 +394,11 @@ setMethod("plotData", "RprimerAssay", function(x) {
         ), ncol = 1)
     } else {
         patchwork::wrap_plots(list(
-            .gcTmIdentityPlot(
+            .gcTmEntropyPlot(
                 x[x$type == "primer", ],
                 color = "grey20", type = "Primers"
             ),
-            .gcTmIdentityPlot(
+            .gcTmEntropyPlot(
                 x[x$type == "probe", ],
                 color = "grey20", type = "Probes"
             )
@@ -653,13 +659,13 @@ setMethod("plotData", "RprimerAssay", function(x) {
                           showYAxis = TRUE,
                           showLegend = FALSE) {
     if (showXAxis && showYAxis) {
-        .showXYAxes(showLegend = showLegend)
+        .showXYAxes(showLegend)
     } else if (showXAxis && !showYAxis) {
-        .showXAxisHideYAxis(showLegend = showLegend)
+        .showXAxisHideYAxis(showLegend)
     } else if (!showXAxis && showYAxis) {
-        .showYAxisHideXAxis(showLegend = showLegend)
+        .showYAxisHideXAxis(showLegend)
     } else {
-        .hideXYAxes(showLegend = showLegend)
+        .hideXYAxes(showLegend)
     }
 }
 

@@ -11,7 +11,7 @@
     from <- (seq_along(x) - 1)[-1]
     to <- seq_along(x)[-1]
     vapply(seq_along(from), function(i) {
-        paste(x[from[i]:to[i]], collapse = "")
+        paste(x[from[[i]]:to[[i]]], collapse = "")
     }, character(1))
 }
 
@@ -106,6 +106,5 @@
 #' @noRd
 .tm <- function(x, concOligo = 250) {
     concOligo <- concOligo * 10^(-9)
-    tm <- x["sumdH"] / (x["sumdS"] + 0.368 * x["n"] * log(x["concNa"]) + 1.987 * log(concOligo)) - 273.15
-    unname(tm)
+    x[["sumdH"]] / (x[["sumdS"]] + 0.368 * x[["n"]] * log(x[["concNa"]]) + 1.987 * log(concOligo)) - 273.15
 }

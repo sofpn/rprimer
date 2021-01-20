@@ -12,14 +12,14 @@ oligos(
   gcClampPrimer = TRUE,
   avoidThreeEndRunsPrimer = TRUE,
   minEndIdentityPrimer = 0,
-  gcRangePrimer = c(0.45, 0.6),
+  gcRangePrimer = c(0.4, 0.6),
   tmRangePrimer = c(55, 65),
   concPrimer = 500,
   probe = TRUE,
   lengthProbe = 18:22,
   maxDegeneracyProbe = 4,
   avoidFiveEndGProbe = TRUE,
-  gcRangeProbe = c(0.45, 0.6),
+  gcRangeProbe = c(0.4, 0.6),
   tmRangeProbe = c(55, 70),
   concProbe = 250,
   concNa = 0.05
@@ -52,7 +52,7 @@ at the 3'-end of the primer (the last five bases).
 A number [0, 1], defaults to 0.}
 
 \item{gcRangePrimer}{GC-content range for primers (proportion, not percent).
-A numeric vector [0, 1], defaults to \code{c(0.45, 0.60)}.}
+A numeric vector [0, 1], defaults to \code{c(0.40, 0.60)}.}
 
 \item{tmRangePrimer}{Tm range for primers.
 A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
@@ -73,7 +73,7 @@ at the 5'-end should be avoided. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
 
 \item{gcRangeProbe}{GC-content range for probes (proportion, not %). A numeric vector [0, 1],
-defaults to \code{c(0.45, 0.60)}.}
+defaults to \code{c(0.40, 0.60)}.}
 
 \item{tmRangeProbe}{Tm range for probes.
 A numeric vector [30, 90], defaults to \code{c(55, 65)}.}

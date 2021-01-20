@@ -29,10 +29,7 @@
 #' of the same nucleotide at the terminal 3'-end should be avoided.
 #' \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.
 #'
-#' @param minEndIdentityPrimer
-#' The minimum allowed identity
-#' at the 3'-end of the primer (the last five bases).
-#' A number [0, 1], defaults to 0.
+#' @param conservedThreeEndPrimer ######################################################################
 #'
 #' @param gcRangePrimer
 #' GC-content range for primers (proportion, not percent).
@@ -166,10 +163,9 @@
 #' ## Design primers only
 #' oligos(roi, probe = FALSE)
 #'
-#' ## Allow high degeneracy, but enforce conserved 3'-ends (>= 98 % identity)
+#' ## Allow higher degeneracy
 #' oligos(roi,
-#'        maxDegeneracyPrimer = 8,
-#'        minEndIdentityPrimer = 0.98,
+#'        maxDegeneracyPrimer = 32,
 #'        probe = FALSE
 #' )
 oligos <- function(x,
@@ -178,7 +174,7 @@ oligos <- function(x,
                    maxDegeneracyPrimer = 4,
                    gcClampPrimer = TRUE,
                    avoidThreeEndRunsPrimer = TRUE,
-                   minEndIdentityPrimer = 0,
+                   conservedThreeEndPrimer = TRUE,
                    gcRangePrimer = c(0.40, 0.60),
                    tmRangePrimer = c(55, 65),
                    concPrimer = 500,
@@ -202,18 +198,14 @@ oligos <- function(x,
     if (!(maxDegeneracyPrimer >= 1 && maxDegeneracyPrimer <= 32)) {
         stop("'maxDegeneracyPrimer' must be from 1 to 32.", call. = FALSE)
     }
-    if (any(!is.logical(c(gcClampPrimer, avoidThreeEndRunsPrimer)))) {
-        stop(
-            "'gcClampPrimer' and 'avoidThreeEndRunsPrimer'
-           must be TRUE or FALSE",
-            call. = FALSE
-        )
+    if (!is.logical(gcClampPrimer)) {
+        stop("'gcClampPrimer' must be TRUE or FALSE", call. = FALSE)
     }
-    if (!(minEndIdentityPrimer >= 0 && minEndIdentityPrimer <= 1)) {
-        stop(
-            "'minEndIdentityPrimer' must be from 0 to 1.",
-            call. = FALSE
-        )
+    if (!is.logical(avoidThreeEndRunsPrimer)) {
+        stop("'avoidThreeEndRunsPrimer' must be TRUE or FALSE", call. = FALSE)
+    }
+    if (!is.logical(conservedThreeEndPrimer)) {
+        stop("'conservedThreeEndPrimer' must be TRUE or FALSE", call. = FALSE)
     }
     if (!(min(gcRangePrimer) >= 0 && max(gcRangePrimer) <= 1)) {
         stop(
@@ -281,9 +273,9 @@ oligos <- function(x,
     primers <- .filterPrimers(oligos,
         lengthPrimer,
         maxDegeneracyPrimer,
-        minEndIdentityPrimer,
         gcClampPrimer,
         avoidThreeEndRunsPrimer,
+        conservedThreeEndPrimer,
         gcRangePrimer,
         tmRangePrimer,
         rowThreshold = 5/6,
@@ -401,13 +393,14 @@ oligos <- function(x,
     oligos$length <- rep(lengthOligo, nrow(oligos$iupacSequence))
     oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
     oligos$gapFrequency <- apply(.nmers(x$gaps, lengthOligo), 1, max)
-    oligos$identity <- .nmers(x$identity, lengthOligo)
-    oligos$endIdentityFwd <- apply(
-        oligos$identity[, (ncol(oligos$identity) - 4):ncol(oligos$identity)],
-        1, min
+    oligos$residualEntropy <- .nmers(x$residualEntropy, lengthOligo)
+    oligos$endEntropyFwd <- apply(
+        oligos$residualEntropy[
+            , (ncol(oligos$residualEntropy) - 9):ncol(oligos$residualEntropy)],
+        1, max
     )
-    oligos$endIdentityRev <- apply(oligos$identity[, seq_len(5)], 1, min)
-    oligos$identity <- rowMeans(oligos$identity)
+    oligos$endEntropyRev <- apply(oligos$residualEntropy[, seq_len(10)], 1, max)
+    oligos$residualEntropy <- rowMeans(oligos$residualEntropy)
     oligos$roiStart <- rep(
         min(x$position, na.rm = TRUE), nrow(oligos$iupacSequence)
     )
@@ -927,9 +920,9 @@ oligos <- function(x,
 .filterPrimers <- function(x,
                            lengthPrimer = 18:22,
                            maxDegeneracyPrimer = 4,
-                           minEndIdentityPrimer = 0,
                            gcClampPrimer = TRUE,
                            avoidThreeEndRunsPrimer = TRUE,
+                           conservedThreeEndPrimer = TRUE,
                            gcRangePrimer = c(0.45, 0.55),
                            tmRangePrimer = c(55, 65),
                            colThreshold = 0.75,
@@ -939,10 +932,9 @@ oligos <- function(x,
         drop = FALSE
     ]
     x <- x[x$degeneracy <= maxDegeneracyPrimer, , drop = FALSE]
-    okEndIdFwd <- ifelse(x$endIdentityFwd >= minEndIdentityPrimer, TRUE, FALSE)
-    okEndIdRev <- ifelse(x$endIdentityRev >= minEndIdentityPrimer, TRUE, FALSE)
-    x <- cbind(x, okEndIdFwd, okEndIdRev)
-    x <- x[x$okEndIdFwd | x$okEndIdRev, , drop = FALSE]
+    if (conservedThreeEndPrimer) {
+        x <- x[x$endEntropyFwd == 0 | x$endEntropyFwd == 0, , drop = FALSE]
+    }
     gcInRange <- .isWithinRange(x$gcContent, gcRangePrimer)
     tmInRange <- .isWithinRange(x$tmPrimer, tmRangePrimer)
     x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
@@ -953,12 +945,17 @@ oligos <- function(x,
         rowThreshold,
         colThreshold
     )
-    fwd <- ifelse(x$okEndIdFwd & x$okFwd, TRUE, FALSE)
-    rev <- ifelse(x$okEndIdRev & x$okRev, TRUE, FALSE)
+    if (conservedThreeEndPrimer) {
+        fwd <- ifelse(x$endEntropyFwd == 0 & x$okFwd, TRUE, FALSE)
+        rev <- ifelse(x$endEntropyRev == 0 & x$okRev, TRUE, FALSE)
+    } else {
+        fwd <- x$okFwd
+        rev <- x$okRev
+    }
     x <- cbind(x, fwd, rev)
     x <- x[x$fwd | x$rev, , drop = FALSE]
     remove <- c(
-        "gcInRange", "tmInRange", "okEndIdFwd", "okEndIdRev",
+        "gcInRange", "tmInRange", "endEntropyFwd", "endEntropyRev",
         "okFwd", "okRev", "tmProbeMean", "tmProbeRange", "tmProbe"
     )
     x <- x[!names(x) %in% remove]
@@ -1050,7 +1047,8 @@ oligos <- function(x,
         colThreshold
     )
     remove <- c(
-        "gcInRange", "tmInRange", "tmPrimerMean", "tmPrimerRange", "tmPrimer"
+        "gcInRange", "tmInRange", "tmPrimerMean",
+        "endEntropyFwd", "endEntropyRev", "tmPrimerRange", "tmPrimer"
     )
     x <- x[!names(x) %in% remove]
     oldnames <- c("tmProbeMean", "tmProbeRange", "tmProbe")
@@ -1078,7 +1076,7 @@ oligos <- function(x,
     keep <- c(
         "type", "fwd", "rev", "start", "end", "length",
         "iupacSequence", "iupacSequenceRc",
-        "identity", "degeneracy", "gcContentMean", "gcContentRange",
+        "residualEntropy", "degeneracy", "gcContentMean", "gcContentRange",
         "tmMean", "tmRange", "sequence",
         "sequenceRc", "gcContent", "tm", "roiStart",
         "roiEnd"

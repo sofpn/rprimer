@@ -1,6 +1,6 @@
 #' @details
-#' The three most important functions are \code{consensusProfile()},
-#' \code{oligos()} and \code{assays()}
+#' The package contains the following functions: \code{consensusProfile()},
+#' \code{oligos()}, \code{assays()} and \code{plotData()}.
 #'
 #' For more information about rprimer and its
 #' functionality, please see the package vignette.

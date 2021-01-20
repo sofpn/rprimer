@@ -6,10 +6,10 @@
 #' @param x
 #' A \code{Biostrings::DNAMultipleAlignment} object.
 #'
-#' @param iupacThreshold
+#' @param ambiguityThreshold
 #' A number [0, 0.2], defaults to 0.
 #' At each position, all nucleotides with a proportion
-#' higher than the \code{iupacThreshold} will be included in
+#' higher than the \code{ambiguityThreshold} will be included in
 #' the IUPAC consensus sequence.
 #'
 #' @return
@@ -33,7 +33,7 @@
 #'   Gaps (-), as well as bases other than A, C, G and T are excluded from the
 #'   calculation.}
 #'   \item{iupac}{
-#'   The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
+#'   The consensus sequence expressed in IUPAC format.
 #'   Note that the IUPAC consensus sequence only
 #'   takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
 #'   present in the alignment will be skipped. If a position only contains
@@ -50,6 +50,10 @@
 #'   indicate high variability.
 #'   Gaps (-), as well as bases other than
 #'   A, C, G and T are excluded from the calculation.}
+#'   \item{resiudalEntropy}{The Shannon entropy of the "remaining" bases
+#'   in the alignment, which are not included in the ambiguous (IUPAC) base.
+#'   Will be zero if there are no "remaining" bases (and if
+#'   \code{ambiguityThreshold = 0}).}
 #' }
 #'
 #' @references
@@ -64,13 +68,13 @@
 #' @examples
 #' data("exampleRprimerAlignment")
 #' consensusProfile(exampleRprimerAlignment)
-consensusProfile <- function(x, iupacThreshold = 0) {
+consensusProfile <- function(x, ambiguityThreshold = 0) {
     if (!methods::is(x, "DNAMultipleAlignment")) {
         stop("'x' must be a DNAMultipleAlignment object.", call. = FALSE)
     }
-    if (!(iupacThreshold >= 0 && iupacThreshold <= 0.2)) {
+    if (!(ambiguityThreshold >= 0 && ambiguityThreshold <= 0.2)) {
         stop(
-            paste0("'iupacThreshold' must be a number from 0 to 0.2."),
+            paste0("'ambiguityThreshold' must be a number from 0 to 0.2."),
             call. = FALSE
         )
     }
@@ -85,9 +89,10 @@ consensusProfile <- function(x, iupacThreshold = 0) {
     profile$gaps <- unname(x["-", ])
     profile$majority <- .majorityConsensus(x)
     profile$identity <- .nucleotideIdentity(x)
-    profile$iupac <- .iupacConsensus(x, iupacThreshold = iupacThreshold)
+    profile$iupac <- .iupacConsensus(x, ambiguityThreshold)
     profile$iupac[profile$majority == "-"] <- "-"
     profile$entropy <- .shannonEntropy(x)
+    profile$residualEntropy <- .residualShannonEntropy(x, ambiguityThreshold)
     RprimerProfile(profile)
 }
 
@@ -149,7 +154,7 @@ consensusProfile <- function(x, iupacThreshold = 0) {
 #' Characters other than A, C, G, T, and - will be ignored. However, when
 #' the input only consist of invalid bases,
 #' or if the bases are not separated by ',',
-#' \code{.asIUPAC} will return NA.
+#' \code{.asIUPAC()} will return NA.
 #'
 #' @return The corresponding IUPAC base.
 #'
@@ -173,7 +178,7 @@ consensusProfile <- function(x, iupacThreshold = 0) {
 #'
 #' @param x A consensus matrix.
 #'
-#' @param iupacThreshold
+#' @param ambiguityThreshold
 #' At each position, all nucleotides with a proportion
 #' higher than the threshold will be included in
 #' the IUPAC consensus sequence.
@@ -188,11 +193,11 @@ consensusProfile <- function(x, iupacThreshold = 0) {
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
 #' .iupacConsensus(x)
-.iupacConsensus <- function(x, iupacThreshold = 0) {
+.iupacConsensus <- function(x, ambiguityThreshold = 0) {
     bases <- c("A", "C", "G", "T", "-")
     x <- x[rownames(x) %in% bases, , drop = FALSE]
     basesToInclude <- apply(x, 2, function(y) {
-        paste(rownames(x)[y > iupacThreshold], collapse = ",")
+        paste(rownames(x)[y > ambiguityThreshold], collapse = ",")
     })
     basesToInclude <- unname(basesToInclude)
     consensus <- vapply(
@@ -201,7 +206,7 @@ consensusProfile <- function(x, iupacThreshold = 0) {
     )
     if (any(is.na(consensus))) {
         warning("The consensus sequence contain NAs. \n
-    Try to lower the 'iupacThreshold' value.", call. = FALSE)
+    Try to lower the 'ambiguityThreshold' value.", call. = FALSE)
     }
     consensus
 }
@@ -253,4 +258,27 @@ consensusProfile <- function(x, iupacThreshold = 0) {
     entropy <- unname(entropy)
     entropy[is.na(entropy)] <- 0
     entropy
+}
+
+#' "Residual" Shannon entropy
+#'
+#' \code{.residualShannonEntropy()} calculates the entropy of the
+#' "remaining" bases in the alignment, which
+#' are not included as ambiguous (IUPAC) bases.
+#'
+#' @param x A consensus matrix.
+#'
+#' @return The "residual" Shannon entropy (a numeric vector).
+#'
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' x <- .consensusMatrix(exampleRprimerAlignment)
+#' .residualShannonEntropy(x, ambiguityThreshold = 0.05)
+.residualShannonEntropy <- function(x, ambiguityThreshold = 0) {
+    x[x > ambiguityThreshold] <- 0
+    .shannonEntropy(x)
 }

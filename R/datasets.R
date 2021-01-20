@@ -53,6 +53,10 @@
 #'   indicate high variability.
 #'   Gaps (-), as well as bases other than
 #'   A, C, G and T are excluded from the calculation.}
+#'   \item{resiudalEntropy}{The Shannon entropy of the "remaining" bases
+#'   in the alignment, which are not included in the ambiguous (IUPAC) base.
+#'   Will be zero if there are no "remaining" bases (and if
+#'   \code{iupacThreshold = 0}).}
 #' }
 #'
 #' @usage data("exampleRprimerProfile")

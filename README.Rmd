@@ -69,7 +69,7 @@ myAlignment <- Biostrings::maskGaps(myAlignment,
 `consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` as input and returns all the information needed for the subsequent design process.
 
 ```{r}
-myConsensusProfile <- consensusProfile(myAlignment, iupacThreshold = 0.05)
+myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
 ```
 
 Results (first six rows):
@@ -111,7 +111,7 @@ Or adjust the constraints (see the package vignette or `?rprimer::oligos` for mo
 # myOligos2 <- oligos(myConsensusProfile, 
 #                     maxDegeneracyPrimer = 16,
 #                     tmRangePrimer = c(58, 60),
-#                     minEndIdentityPrimer =  0.99,
+#                     conservedThreeEndPrimer =  FALSE,
 #                     gcClampPrimer = FALSE,
 #                     avoidThreeEndRunsPrimer = FALSE,
 #                     probe = FALSE)
@@ -131,7 +131,7 @@ plotData(myOligos)
 
 ### Step 3: `assays`
 
-`assays()` finds pairs of forward and reverse primers and combines them with probes, if `probe = TRUE` was used in the oligo design step. You can either use default settings (as below), or customize the amplicon length and maximum allowed difference between the primers, and between the primer pair and probe. 
+`assays()` finds pairs of forward and reverse primers and combines them with probes, if probes are present in the dataset. You can either use default settings (as below), or customize the amplicon length and maximum allowed difference between the primers, and between the primer pair and probe. 
 
 ```{r}
 myAssays <- assays(myOligos)

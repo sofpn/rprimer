@@ -3,8 +3,8 @@ testdata <- Biostrings::readDNAMultipleAlignment(infile)
 
 test_that("consensusProfile returns an error when it should", {
     expect_error(consensusProfile(unclass(testdata)))
-    expect_error(consensusProfile(testdata, iupacThreshold = -0.1))
-    expect_error(consensusProfile(testdata, iuacThreshold = 0.21))
+    expect_error(consensusProfile(testdata, -0.1))
+    expect_error(consensusProfile(testdata, 0.21))
 })
 
 test_that("consensusProfile works", {
@@ -39,7 +39,7 @@ test_that(".iupacConsensus returns a warning when it should", {
 test_that(".iupacConsensus works", {
     x <- testmatr[, 104:105]
     expect_equal(.iupacConsensus(x), c("H", "C"))
-    expect_equal(.iupacConsensus(x, iupacThreshold = 0.03), c("Y", "C"))
+    expect_equal(.iupacConsensus(x, 0.03), c("Y", "C"))
 })
 
 test_that(".nucleotideIdentity works", {
