@@ -1,6 +1,7 @@
 #' An alignment of hepatitis E virus sequences
 #'
-#' An alignment with 100 hepatitis E virus sequences.
+#' An alignment with 200 hepatitis E virus sequences (see inst/script
+#' for more details).
 #'
 #' @format A \code{Biostrings::DNAMultipleAlignment} object.
 #'
@@ -23,7 +24,9 @@
 #' @description
 #'
 #' \describe{
-#'   \item{position}{Position in the alignment.}
+#'   \item{position}{Position in the alignment. Note that masked columns
+#'   from the original alignment are removed, and
+#'   hence not taken into account when position is determined.}
 #'   \item{a}{Proportion of A.}
 #'   \item{c}{Proportion of C.}
 #'   \item{g}{Proportion of G.}
@@ -31,12 +34,14 @@
 #'   \item{other}{Proportion of bases other than A, C, G, T.}
 #'   \item{gaps}{Proportion of gaps (recognized as "-" in the alignment).}
 #'   \item{majority}{Majority consensus sequence.
-#'   The most frequently occurring nucleotide.}
+#'   The most frequently occurring nucleotide.
+#'   If two or more bases occur with the same frequency,
+#'   the consensus nucleotide will be randomly selected among these bases.}
 #'   \item{identity}{Proportion of the most common nucleotide.
-#'   Gaps (-), as well as bases other than A, C, G and T are excluded from this
+#'   Gaps (-), as well as bases other than A, C, G and T are excluded from the
 #'   calculation.}
 #'   \item{iupac}{
-#'   The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
+#'   The consensus sequence expressed in IUPAC format.
 #'   Note that the IUPAC consensus sequence only
 #'   takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
 #'   present in the alignment will be skipped. If a position only contains
@@ -53,10 +58,12 @@
 #'   indicate high variability.
 #'   Gaps (-), as well as bases other than
 #'   A, C, G and T are excluded from the calculation.}
-#'   \item{resiudalEntropy}{The Shannon entropy of the "remaining" bases
-#'   in the alignment, which are not included in the ambiguous (IUPAC) base.
-#'   Will be zero if there are no "remaining" bases (and if
-#'   \code{iupacThreshold = 0}).}
+#'   \item{coverage}{The proportion of bases which are included the
+#'   consensus/ambiguous (IUPAC) base.
+#'   Will be one if there are no "remaining" bases (and if
+#'   \code{ambiguityThreshold = 0}).
+#'   Gaps (-), as well as bases other than A, C, G and T are excluded from the
+#'   calculation.}
 #' }
 #'
 #' @usage data("exampleRprimerProfile")

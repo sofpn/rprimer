@@ -22,13 +22,11 @@ Primer and probe design are central parts of PCR assay development. Successful a
 
 A common approach for amplifying sequence diverse targets is to use degenerate primers and probes. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are named according to a coding system determined by IUPAC. For instance, the ambiguous base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the likelihood of interaction with non-targets or other primer variants also rises, which risks to reduce both the sensitivity and specificity of the assay. An optimal design strategy would therefore be to find primer and probe binding regions with as low degeneracy as possible, without compromising with the inclusivity. 
 
-If the degeneracy is to be kept low and the target sequence heterogenous, it is next to impossible to fully avoid mismatches between the template and primers/probe. The effect of a mismatch depends to a great extent on its location. For primers, mismatches at the 3’-end can greatly reduce amplification efficiency and should best be avoided, while mismatches at the 5’-end are less detrimental, and can therefore be tolerated to some extent. However, mismatches within the binding region of a hydrolysis probe should preferably be avoided. Especially 5’-end mismatches can be particularly severe, since the 5’-3’ exonuclease activity of the DNA polymerase relies on completely hybridized nucleotides to hydrolyze DNA duplexes. [LÄS MER]. 
+If the degeneracy is to be kept low and the target sequence heterogeneous, it is next to impossible to fully avoid mismatches between the template and primers/probe. The effect of a mismatch depends to a great extent on its location. For primers, mismatches at the 3’-end can greatly reduce amplification efficiency and should best be avoided, while mismatches at the 5’-end are less detrimental, and can therefore be tolerated to some extent. However, mismatches within the binding region of a hydrolysis probe should preferably be avoided. Especially 5’-end mismatches can be particularly severe, since the 5’-3’ exonuclease activity of the DNA polymerase relies on completely hybridized nucleotides to hydrolyze DNA duplexes. 
 
-PCR based methods are indispensable for clinical diagnosis of viral diseases and for monitoring viruses in food and the environment. These applications put high demands on the PCR assay. Many viral species have short genomes and exhibit great sequence diversity, which makes it difficult to find one single PCR assay to cover all variants of interest. Mismatches are often unavoidable, and can be especially detrimental in cases where the target concentration is low (due to the risk of false negative results) or when accurate quantification is important (due to the risk of quantification bias). One solution could be to use several separate PCR assays instead, such as genotype specific assays, but this is often not economically justified or practically doable because of limited sample volumes.
+rprimer was developed to implement previously developed primer and probe design guidelines for sequence variable targets. It takes a multiple sequence alignment with target sequences of interest as input and designs primers, probes and PCR assays from user specified design criteria. 
 
-This R package ("rprimer") was developed to implement previously established primer and probe design strategies for sequence variable targets. It takes a multiple sequence alignment with target sequences of interest as input and designs primers, probes and PCR assays from user specified design criteria. [MER OM ANDRA PAKET/VAD DETTA BYGGER PÅ]
-
-In this document, I demonstrate how to use rprimer by designing a broadly-reactive RT-q/dPCR for detection of hepatitis E virus (HEV). 
+In this document, I demonstrate how to use rprimer by designing a broadly-reactive RT-q/dPCR for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
 # Installation
 
@@ -60,25 +58,27 @@ The package contains four functions:
 
 ## Collection of target sequences and multiple alignment 
 
-The first step is for the user to identify and align target sequences of interest. The file “example_alignment.txt” is provided with the package. It contains an alignment of 200 HEV sequences, and can be loaded by:  
+The first step is for the user to identify and align target sequences of interest. The file “example_alignment.txt” is provided with the package and contains an alignment of 200 HEV sequences. 
+
+The filepath is retrieved by:  
 
 ```r
-system.file('extdata', 'example_alignment.txt', package = 'rprimer')
+system.file("extdata", "example_alignment.txt", package = "rprimer")
 ```
 
-These data were generated by searching for “[a-z]”[porgn:__txid1678143] (the taxid of Ortohepevirus A, i.e., HEV) on the nucleotide database of NCBI GenBank, and filtering for sequence lengths > 6000 (to get nearly complete and complete genomes). The search had 674 hits (as of January 19, 2020). The sequences were downloaded (as complete record, fasta file) and run through Hepatitis E virus genotyping tool version 0.1 (https://www.rivm.nl/mpf/typingtool/hev/, accessed January 19, 2020) to verify that they were in fact classified as Ortohepevirus A. All sequences that were not classified as Ortohepevirus A were removed, and the remaining sequences (n = 642) were reduced to 200 by random selection (to not provide a too large example dataset within the package). The sequences were then aligned using the online version of mafft (https://mafft.cbrc.jp/alignment/server/, accessed January 19, 2020), using Auto settings. 
+The target sequences were collected by searching for “[a-z]”[porgn:__txid1678143] (the taxid of Ortohepevirus A, i.e., HEV) on the nucleotide database of NCBI GenBank, and filtering for sequence lengths > 6000, to only get complete and nearly complete genomes. The search had 674 hits (as of January 19, 2020). The sequences were downloaded (as complete record, fasta-file) and run through Hepatitis E virus genotyping tool version 0.1 (https://www.rivm.nl/mpf/typingtool/hev/, accessed January 19, 2020) to verify that they were classified as Ortohepevirus A. All sequences that were not classified as Ortohepevirus A were removed, and the remaining sequences (n = 642) were reduced to 200 by random selection, to not provide a too large example dataset for this package. The sequences were then aligned using the online version of mafft version 7 (https://mafft.cbrc.jp/alignment/server/, accessed January 19, 2020), using Auto settings. 
 
 ## Data import 
 
 Before the design process can begin, the user must import the alignment to R using the `readDNAMultipleAlignment()` function from the Biostrings-package. The input file can contain up to several thousands of sequences.
 
 ```{r}
-infile <- system.file('extdata', 'example_alignment.txt', package = 'rprimer')
+infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 
 myAlignment <- Biostrings::readDNAMultipleAlignment(infile, format = "fasta")
 ```
 
-For the brevity of this example, and to get the alignment to agree more with the average HEV genome length, all positions with a gap frequency of more than 50 % were masked:   
+For brevity, and to get the alignment to agree more with the average HEV genome length, I decided to mask all positions with a gap frequency of more than 50 %:   
 
 ```{r}
 myAlignment <- Biostrings::maskGaps(myAlignment, 
@@ -86,13 +86,13 @@ myAlignment <- Biostrings::maskGaps(myAlignment,
                                     min.block.width = 1) 
 ```
 
-However, this should be done with caution, since it may lead to placement of primers and probes in insert-rich regions. In such cases, a good idea could be to also verify the design process without gap mask. 
+However, this should be done with caution, since it may lead to placement of primers and probes in insert-rich regions. In such cases, a good idea could be to verify the design process without gap mask. 
 
 ## Design process
 
 ### Step 1: `consensusProfile` 
 
-Once the alignment is imported, the first step is to generate a consensus profile. At each position in the alignment, the following information is calculated: 
+Once the alignment is imported, the first step is to generate a consensus profile. The following information is retrieved at each position in the alignment:
 
 * The proportion of the bases A, C, G, T, and “other”, i.e., ambiguous bases
 * The proportion of gaps (-)
@@ -100,9 +100,9 @@ Once the alignment is imported, the first step is to generate a consensus profil
 * Identity, which is the proportion of the majority consensus base when gaps and ambiguous bases are excluded 
 * IUPAC consensus character, i.e., the ambiguous base. Here, the user can specify an “ambiguity threshold” between 0 and 0.2. All bases that occur with a proportion higher than that will be included in the ambiguous base. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating primers and probes with high degeneracy. A higher threshold will catch most of the variability, but with the potential cost of missing minor sequence variants 
 * Shannon entropy, which is a measurement of variability. A value of zero indicate complete conservation, and a high value indicate high variability. Gaps and ambiguous bases in the alignment are not included in this calculation 
-* “Residual” Shannon entropy, which describes the variability of the bases that occurs at a proportion up to the specified ambiguity threshold. This can be seen as the variation that remains after the ambiguous base has been determined: a value of 0 indicates that all variability is covered by the ambiguous base 
+* Coverage, which describes the total proportion of bases that are "covered" by the IUPAC consensus character. Gaps and ambiguous bases in the alignment are not included in this calculation 
 
-`consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns an `RprimerProfile`-object, which contains all the information for the subsequent design process. Note that masked positions are excluded.
+`consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns an `RprimerProfile`-object, which contains all the information needed to design primers and probes. Masked positions are excluded.
 
 ```{r}
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
@@ -123,7 +123,7 @@ The results can be visualized with `plotData()`.
 plotData(myConsensusProfile)
 ```
 
-The dots represent the value at each position and the black lines represent centered running averages. High identity values and low entropy values indicate high sequence conservation.
+The dots represent the value at each position and the black lines represent centered running averages. High identity values and low entropy values indicate high sequence conservation. The HEV genome contains very few conserved regions. 
 
 It is also possible to zoom into a specific region of interest for a more detailed picture:
 
@@ -135,7 +135,7 @@ selection <- myConsensusProfile[
 plotData(selection)
 ```
 
-It is also possible to plot the nucleotide distribution (preferably on a short range), by specifying `type = nucleotide`: 
+The nucleotide distribution can be plotted (preferably on a short range), by specifying `type = nucleotide`: 
 
 ```{r, fig.width=12, fig.height=6}
 selection2 <- myConsensusProfile[
@@ -146,6 +146,16 @@ plotData(selection2, type = "nucleotide")
 ```
 
 ### Step 2: `oligos`
+
+The next step is to design oligos (primers and probes). 
+
+coverage, 
+end coverage: philosophy is similar to CODEHOP (REF), which allows ... relax degeneracy? diff settings on 3 and 5' ? use majority instead? /include majority as well?????
+tm
+
+complexity 
+row/col 
+max degen
 
 `oligos()` searches for primers and probes (if selected) from an `RprimerProfile`-object, and returns an `RprimerOligo` object. 
 
@@ -225,7 +235,6 @@ It is, of course, also possible to customize the design process. Below, I design
 ``` {r}
 myOligos2 <- oligos(myConsensusProfile, 
                     maxDegeneracyPrimer = 2, 
-                    minEndIdentityPrimer = 1, 
                     probe = FALSE)
 ```
 
@@ -297,7 +306,9 @@ It is also possible to extract assays that fulfill specific criteria, for instan
 mySelectedAssays <- myAssays[myAssays$totalDegeneracy < 6, ]
 ```
 
-It is also possible to create a subset of the OLIGO data before the assay design process, if ############################
+It is also possible to create a subset of the OLIGO data before the assay design process, if ############################ option undegenerate 5 ends? half half?
+* include majority as well
+* change to majority if option undeg 5' end 
 
 An error message will return if no assays are found.
 
@@ -354,7 +365,7 @@ myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta")
 myAlignment <- Biostrings::maskGaps(myAlignment, min.fraction = 0.5, min.block.width = 1)
 
 ## Design primers, probes and assays
-myConsensusProfile <- consensusProfile(myAlignment, iupacThreshold = 0.05)
+myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
 myOligos <- oligos(myConsensusProfile)
 myAssays <- assays(myOligos)
 
@@ -372,7 +383,7 @@ data("exampleRprimerOligo")
 data("exampleRprimerAssay")
 ```
 
-To provide reproducible examples, I've also included an alignment of class `Biostrings::MultipleDNAAlignment` (Pagès et al., 2020). It is loaded by `data("exampleRprimerAlignment")`.
+To provide reproducible examples, I've also included an alignment of class `Biostrings::MultipleDNAAlignment`. It is loaded by `data("exampleRprimerAlignment")`.
 
 # Session info 
 

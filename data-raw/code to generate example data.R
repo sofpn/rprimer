@@ -16,8 +16,7 @@ exampleRprimerAlignment <- Biostrings::maskGaps(
 )
 
 exampleRprimerProfile <- consensusProfile(
-    exampleRprimerAlignment,
-    iupacThreshold = 0.05
+    exampleRprimerAlignment, 0.05
 )
 
 exampleRprimerOligo <- oligos(exampleRprimerProfile,

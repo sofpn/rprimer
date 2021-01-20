@@ -1,7 +1,7 @@
 #' Get sequence information from an alignment
 #'
 #' \code{consensusProfile()} takes a DNA multiple alignment as input and
-#' returns all the data needed for primer and probe design.
+#' returns all the data needed for subsequent primer and probe design.
 #'
 #' @param x
 #' A \code{Biostrings::DNAMultipleAlignment} object.
@@ -10,7 +10,7 @@
 #' A number [0, 0.2], defaults to 0.
 #' At each position, all nucleotides with a proportion
 #' higher than the \code{ambiguityThreshold} will be included in
-#' the IUPAC consensus sequence.
+#' the IUPAC consensus character.
 #'
 #' @return
 #' An \code{RprimerProfile} object, which contains the following information:
@@ -50,16 +50,18 @@
 #'   indicate high variability.
 #'   Gaps (-), as well as bases other than
 #'   A, C, G and T are excluded from the calculation.}
-#'   \item{resiudalEntropy}{The Shannon entropy of the "remaining" bases
-#'   in the alignment, which are not included in the ambiguous (IUPAC) base.
-#'   Will be zero if there are no "remaining" bases (and if
-#'   \code{ambiguityThreshold = 0}).}
+#'   \item{coverage}{The proportion of bases that are included the
+#'   consensus/ambiguous (IUPAC) base.
+#'   Will be one if there are no "remaining" bases (and if
+#'   \code{ambiguityThreshold = 0}).
+#'   Gaps (-), as well as bases other than A, C, G and T are excluded from the
+#'   calculation.}
 #' }
 #'
 #' @references
 #' This function is a wrapper to \code{Biostrings::consensusMatrix()}:
 #'
-#' H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
+#' H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
 #' Efficient manipulation of biological strings. R package version
 #' 2.57.2.
 #'
@@ -92,7 +94,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     profile$iupac <- .iupacConsensus(x, ambiguityThreshold)
     profile$iupac[profile$majority == "-"] <- "-"
     profile$entropy <- .shannonEntropy(x)
-    profile$residualEntropy <- .residualShannonEntropy(x, ambiguityThreshold)
+    profile$coverage <- .coverage(x, ambiguityThreshold)
     RprimerProfile(profile)
 }
 
@@ -109,7 +111,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' @noRd
 .consensusMatrix <- function(x) {
     x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
-    x <- x[, colSums(!is.na(x)) > 0, drop = FALSE] ## Removes the masked columns
+    x <- x[, colSums(!is.na(x)) > 0, drop = FALSE] ## Removes masked columns
     colnames(x) <- seq_len(ncol(x))
     x <- x[(rownames(x) != "+" & rownames(x) != "."), , drop = FALSE]
     bases <- c("A", "C", "G", "T", "-")
@@ -195,9 +197,10 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' .iupacConsensus(x)
 .iupacConsensus <- function(x, ambiguityThreshold = 0) {
     bases <- c("A", "C", "G", "T", "-")
-    x <- x[rownames(x) %in% bases, , drop = FALSE]
-    basesToInclude <- apply(x, 2, function(y) {
-        paste(rownames(x)[y > ambiguityThreshold], collapse = ",")
+    s <- x[rownames(x) %in% bases, , drop = FALSE]
+    s <- apply(s, 2, function(x) x / sum(x))
+    basesToInclude <- apply(s, 2, function(x) {
+        paste(rownames(s)[x > ambiguityThreshold], collapse = ",")
     })
     basesToInclude <- unname(basesToInclude)
     consensus <- vapply(
@@ -260,15 +263,16 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     entropy
 }
 
-#' "Residual" Shannon entropy
+#' Coverage
 #'
-#' \code{.residualShannonEntropy()} calculates the entropy of the
-#' "remaining" bases in the alignment, which
-#' are not included as ambiguous (IUPAC) bases.
+#' \code{.coverage()} calculates the proportion of bases
+#' that are covered within the ambiguous (IUPAC) bases. Gaps as well as bases
+#' other than A, C, G and T are not included in the calculation.
 #'
 #' @param x A consensus matrix.
 #'
-#' @return The "residual" Shannon entropy (a numeric vector).
+#' @return The coverage (a numeric vector). A value of 1 means that
+#' all bases are covered within the ambiguous base.
 #'
 #' @keywords internal
 #'
@@ -277,8 +281,11 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
-#' .residualShannonEntropy(x, ambiguityThreshold = 0.05)
-.residualShannonEntropy <- function(x, ambiguityThreshold = 0) {
-    x[x > ambiguityThreshold] <- 0
-    .shannonEntropy(x)
+#' .coverage(x, ambiguityThreshold = 0.05)
+.coverage <- function(x, ambiguityThreshold = 0) {
+    bases <- c("A", "C", "G", "T")
+    s <- x[rownames(x) %in% bases, , drop = FALSE]
+    s <- apply(s, 2, function(x) x / sum(x))
+    s[s > ambiguityThreshold] <- 0
+    1 - colSums(s)
 }

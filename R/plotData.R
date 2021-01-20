@@ -334,7 +334,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
         .themeRprimer(showXAxis = TRUE)
 }
 
-.gcTmEntropyPlot <- function(x, color = "grey20", type = "Primers") {
+.gcTmCoveragePlot <- function(x, color = "grey20", type = "Primers") {
     if (nrow(x) >= 10) {
         patchwork::wrap_plots(
             list(
@@ -345,7 +345,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
                 ),
                 .violinPlot(x, x$tmMean, "\n\n\nTm (mean)", color = color),
                 .violinPlot(
-                    x, x$residualEntropy, "\n\n\nResidual entropy (mean)",
+                    x, x$coverage, "\n\n\nCoverage (mean)",
                     color = color
                 ),
                 .barPlot(x, x$length, "\n\n\nLength", color = color),
@@ -363,7 +363,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
                 ),
                 .dotPlot(x, x$tmMean, "\n\n\nTm (mean)", color = color),
                 .dotPlot(
-                    x, x$residualEntropy, "\n\n\nResidual entropy (mean)",
+                    x, x$coverage, "\n\n\nCoverage (mean)",
                     color = color
                 ),
                 .barPlot(x, x$length, "\n\n\nLength", color = color),
@@ -377,7 +377,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
 .oligoFeaturePlot <- function(x) {
     if (all(x$type == "probe")) {
         patchwork::wrap_plots(list(
-            .gcTmEntropyPlot(
+            .gcTmCoveragePlot(
                 x[x$type == "probe", ],
                 color = "grey20",
                 type = "Probes"
@@ -386,7 +386,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
     }
     else if (all(x$type == "primer")) {
         patchwork::wrap_plots(list(
-            .gcTmEntropyPlot(
+            .gcTmCoveragePlot(
                 x[x$type == "primer", ],
                 color = "grey20",
                 type = "Primers"
@@ -394,11 +394,11 @@ setMethod("plotData", "RprimerAssay", function(x) {
         ), ncol = 1)
     } else {
         patchwork::wrap_plots(list(
-            .gcTmEntropyPlot(
+            .gcTmCoveragePlot(
                 x[x$type == "primer", ],
                 color = "grey20", type = "Primers"
             ),
-            .gcTmEntropyPlot(
+            .gcTmCoveragePlot(
                 x[x$type == "probe", ],
                 color = "grey20", type = "Probes"
             )
