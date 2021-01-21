@@ -386,6 +386,7 @@ oligos <- function(x,
 #' .generateOligos(exampleRprimerProfile, lengthOligo = 18)
 .generateOligos <- function(x, lengthOligo = 20) {
     oligos <- list()
+    oligos$majoritySequence <- .nmers(x$majority, lengthOligo)
     oligos$iupacSequence <- .nmers(x$iupac, lengthOligo)
     oligos$start <- seq_len(nrow(oligos$iupacSequence)) + min(x$position) - 1
     oligos$end <- seq_len(
@@ -395,6 +396,7 @@ oligos <- function(x,
     oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
     oligos$gapFrequency <- apply(.nmers(x$gaps, lengthOligo), 1, max)
     oligos$coverage <- .nmers(x$coverage, lengthOligo)
+   # oligos$identity <- .nmers(x$identity, lengthOligo) ###########################
     oligos$endCoverageFwd <- apply(
         oligos$coverage[
             , (ncol(oligos$coverage) - 6):ncol(oligos$coverage)],
@@ -549,10 +551,10 @@ oligos <- function(x,
 .detectGcClamp <- function(x, rev = FALSE) {
     if (rev) {
         end <- x[, seq_len(5), drop = FALSE]
-        ifelse(5 - rowSums(end) >= 2 & 5 - rowSums(end) <= 3, TRUE, FALSE)
+        5 - rowSums(end) >= 2 & 5 - rowSums(end) <= 3
     } else {
         end <- x[, seq((ncol(x) - 4), ncol(x)), drop = FALSE]
-        ifelse(rowSums(end) >= 2 & rowSums(end) <= 3, TRUE, FALSE)
+        rowSums(end) >= 2 & rowSums(end) <= 3
     }
 }
 
@@ -650,7 +652,7 @@ oligos <- function(x,
     all$sequence <- apply(x$iupacSequence, 1, .expandDegenerates)
     ## some kind of workaround if there is only one variant of each oligo,
     ## and apply returns a matrix instead of a list...
-    if (!is.list(all$sequence)) {
+    if (is.matrix(all$sequence)) {
         all$sequence <- t(all$sequence)
         all$sequence <- lapply(seq_len(nrow(all$sequence)), function(i) {
             all$sequence[i, , drop = FALSE]
@@ -658,20 +660,18 @@ oligos <- function(x,
     }
     all$sequence <- .makeOligoMatrix(all$sequence)
     all$sequenceRc <- .reverseComplement(all$sequence)
-    gc <- ifelse(all$sequence == "C" | all$sequence == "G", 1, 0)
-    n <- rowSums(ifelse(
+    gc <- all$sequence == "C" | all$sequence == "G"
+    n <- rowSums(
         all$sequence == "A" | all$sequence == "C" |
-            all$sequence == "G" | all$sequence == "T", 1, 0
-    ))
+            all$sequence == "G" | all$sequence == "T"
+    )
     all$gcContent <- rowSums(gc) / n
     all$gcClampFwd <- .detectGcClamp(gc)
     all$gcClampRev <- .detectGcClamp(gc, rev = TRUE)
     all$threeEndRunsFwd <- .detectThreeEndRuns(all$sequence)
     all$threeEndRunsRev <- .detectThreeEndRuns(all$sequence, rev = TRUE)
-    all$fiveEndGPlus <- ifelse(all$sequence[, 1] == "G", TRUE, FALSE)
-    all$fiveEndGMinus <- ifelse(
-        all$sequence[, ncol(all$sequence)] == "C", TRUE, FALSE
-    )
+    all$fiveEndGPlus <- all$sequence[, 1] == "G"
+    all$fiveEndGMinus <- all$sequence[, ncol(all$sequence)] == "C"
     tmParam <- .tmParameters(all$sequence, concNa)
     all$tmPrimer <- apply(tmParam, 1, function(x) .tm(x, concPrimer))
     all$tmProbe <- apply(tmParam, 1, function(x) .tm(x, concProbe))
@@ -727,8 +727,11 @@ oligos <- function(x,
 #'
 #' @noRd
 .makeOligoDf <- function(x) {
-    gapFrequency <- NULL ## Just to avoid cmd check note
+    gapFrequency <- NULL ## To avoid cmd check note
     x <- within(x, rm(gapFrequency))
+    x$majoritySequenceRc <- .reverseComplement(x$majoritySequence)
+    x$majoritySequence <- apply(x$majoritySequence, 1, paste, collapse = "")
+    x$majoritySequenceRc <- apply(x$majoritySequenceRc, 1, paste, collapse = "")
     x$iupacSequenceRc <- .reverseComplement(x$iupacSequence)
     x$iupacSequence <- apply(x$iupacSequence, 1, paste, collapse = "")
     x$iupacSequenceRc <- apply(x$iupacSequenceRc, 1, paste, collapse = "")
@@ -760,7 +763,7 @@ oligos <- function(x,
             maxDegeneracy = maxDegeneracy
         )
         nOligos <- vapply(iupacOligos, length, integer(1))
-        if (all(nOligos == 0)) {
+        if (all(nOligos == 0L)) {
             stop("No primers were found.", call. = FALSE)
         }
         allVariants <- .getAllVariants(
@@ -789,9 +792,7 @@ oligos <- function(x,
 #'
 #' @noRd
 .isWithinRange <- function(x, range) {
-    lapply(x, function(y) {
-        ifelse(y >= min(range) & y <= max(range), TRUE, FALSE)
-    })
+    lapply(x, function(y) y >= min(range) & y <= max(range))
 }
 
 #' Convert a data frame with lists to a list of matrices
@@ -803,9 +804,9 @@ oligos <- function(x,
 #' @noRd
 .convertToMatrices <- function(x) {
     lapply(seq_len(nrow(x)), function(i) {
-        y <- lapply(x[i, ], unlist)
-        y <- do.call("cbind", y)
-        if (!is.matrix(y)) t(matrix(y)) else y # if one row, test this  ...
+        y <- lapply(x[i, , drop = FALSE], unlist)
+        do.call("cbind", y)
+     #   if (!is.matrix(y)) t(matrix(y)) else y # if one row, test this  ...
     })
 }
 
@@ -850,7 +851,7 @@ oligos <- function(x,
         y[, select] <- as.logical(1 - y[, select])
         col <- colMeans(y)
         row <- rowMeans(y)
-        if (all(col >= colThreshold) & all(row >= rowThreshold)) TRUE else FALSE
+        all(col >= colThreshold) & all(row >= rowThreshold)
     }, logical(1))
     valid
 }

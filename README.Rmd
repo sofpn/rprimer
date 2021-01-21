@@ -22,7 +22,6 @@ knitr::opts_chunk$set(
 * Classes=set validity
 * All=test
 
-
 ## Installation
 
 You can install rprimer from [GitHub](https://github.com/) with:

@@ -4,15 +4,15 @@
 \alias{consensusProfile}
 \title{Get sequence information from an alignment}
 \usage{
-consensusProfile(x, iupacThreshold = 0)
+consensusProfile(x, ambiguityThreshold = 0)
 }
 \arguments{
 \item{x}{A \code{Biostrings::DNAMultipleAlignment} object.}
 
-\item{iupacThreshold}{A number [0, 0.2], defaults to 0.
+\item{ambiguityThreshold}{A number [0, 0.2], defaults to 0.
 At each position, all nucleotides with a proportion
-higher than the \code{iupacThreshold} will be included in
-the IUPAC consensus sequence.}
+higher than the \code{ambiguityThreshold} will be included in
+the IUPAC consensus character.}
 }
 \value{
 An \code{RprimerProfile} object, which contains the following information:
@@ -35,7 +35,7 @@ An \code{RprimerProfile} object, which contains the following information:
   Gaps (-), as well as bases other than A, C, G and T are excluded from the
   calculation.}
   \item{iupac}{
-  The consensus sequence expressed in IUPAC format (i.e. with wobble bases)
+  The consensus sequence expressed in IUPAC format.
   Note that the IUPAC consensus sequence only
   takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
   present in the alignment will be skipped. If a position only contains
@@ -52,11 +52,17 @@ An \code{RprimerProfile} object, which contains the following information:
   indicate high variability.
   Gaps (-), as well as bases other than
   A, C, G and T are excluded from the calculation.}
+  \item{coverage}{The proportion of bases that are included the
+  consensus/ambiguous (IUPAC) base.
+  Will be one if there are no "remaining" bases (and if
+  \code{ambiguityThreshold = 0}).
+  Gaps (-), as well as bases other than A, C, G and T are excluded from the
+  calculation.}
 }
 }
 \description{
 \code{consensusProfile()} takes a DNA multiple alignment as input and
-returns all the data needed for primer and probe design.
+returns all the data needed for subsequent primer and probe design.
 }
 \examples{
 data("exampleRprimerAlignment")
@@ -65,7 +71,7 @@ consensusProfile(exampleRprimerAlignment)
 \references{
 This function is a wrapper to \code{Biostrings::consensusMatrix()}:
 
-H. Pagès, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
+H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
 Efficient manipulation of biological strings. R package version
 2.57.2.
 }

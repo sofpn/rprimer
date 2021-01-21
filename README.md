@@ -8,9 +8,6 @@
   - Oligos=describe design process
   - Classes=set validity
   - All=test
-  - Vignette
-  - col/rowThreshold…
-  - randomly select input seq
 
 ## Installation
 

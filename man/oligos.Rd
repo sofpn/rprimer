@@ -11,7 +11,7 @@ oligos(
   maxDegeneracyPrimer = 4,
   gcClampPrimer = TRUE,
   avoidThreeEndRunsPrimer = TRUE,
-  minEndIdentityPrimer = 0,
+  minThreeEndCoveragePrimer = 0.98,
   gcRangePrimer = c(0.4, 0.6),
   tmRangePrimer = c(55, 65),
   concPrimer = 500,
@@ -47,9 +47,7 @@ C:s within the last five bases (3'-end) of the oligo.
 of the same nucleotide at the terminal 3'-end should be avoided.
 \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.}
 
-\item{minEndIdentityPrimer}{The minimum allowed identity
-at the 3'-end of the primer (the last five bases).
-A number [0, 1], defaults to 0.}
+\item{minThreeEndCoveragePrimer}{Seven bases ######################################################################}
 
 \item{gcRangePrimer}{GC-content range for primers (proportion, not percent).
 A numeric vector [0, 1], defaults to \code{c(0.40, 0.60)}.}
@@ -177,10 +175,9 @@ oligos(roi)
 ## Design primers only
 oligos(roi, probe = FALSE)
 
-## Allow high degeneracy, but enforce conserved 3'-ends (>= 98 \% identity)
+## Allow higher degeneracy
 oligos(roi,
-       maxDegeneracyPrimer = 8,
-       minEndIdentityPrimer = 0.98,
+       maxDegeneracyPrimer = 32,
        probe = FALSE
 )
 }

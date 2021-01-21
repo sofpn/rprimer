@@ -39,10 +39,10 @@ devtools::install_github("sofpn/rprimer")
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-devtools::load_all(".")
+#devtools::load_all(".")
 ```
 ```{r setup, message = FALSE, warning = FALSE}
-#library(rprimer)
+library(rprimer)
 ```
 
 # Functions 
@@ -66,7 +66,7 @@ The filepath is retrieved by:
 system.file("extdata", "example_alignment.txt", package = "rprimer")
 ```
 
-The target sequences were collected by searching for “[a-z]”[porgn:__txid1678143] (the taxid of Ortohepevirus A, i.e., HEV) on the nucleotide database of NCBI GenBank, and filtering for sequence lengths > 6000, to only get complete and nearly complete genomes. The search had 674 hits (as of January 19, 2020). The sequences were downloaded (as complete record, fasta-file) and run through Hepatitis E virus genotyping tool version 0.1 (https://www.rivm.nl/mpf/typingtool/hev/, accessed January 19, 2020) to verify that they were classified as Ortohepevirus A. All sequences that were not classified as Ortohepevirus A were removed, and the remaining sequences (n = 642) were reduced to 200 by random selection, to not provide a too large example dataset for this package. The sequences were then aligned using the online version of mafft version 7 (https://mafft.cbrc.jp/alignment/server/, accessed January 19, 2020), using Auto settings. 
+The target sequences were collected by searching for “[a-z]”[porgn:__txid1678143] (the taxid of Ortohepevirus A, i.e., HEV) on the nucleotide database of NCBI GenBank, and filtering for sequence lengths > 6000, to get complete and nearly complete genomes. The search had 674 hits (as of January 19, 2020). The sequences were downloaded (as complete record, fasta-file) and run through Hepatitis E virus genotyping tool version 0.1 (https://www.rivm.nl/mpf/typingtool/hev/, accessed January 19, 2020) to verify that they were classified as Ortohepevirus A. All sequences that were not classified as Ortohepevirus A were removed, and the remaining sequences (n = 642) were reduced to 200 by random selection, to not provide a too large example dataset for this package. The sequences were then aligned using the online version of mafft version 7 (https://mafft.cbrc.jp/alignment/server/, accessed January 19, 2020), using Auto settings. 
 
 ## Data import 
 
@@ -97,12 +97,12 @@ Once the alignment is imported, the first step is to generate a consensus profil
 * The proportion of the bases A, C, G, T, and “other”, i.e., ambiguous bases
 * The proportion of gaps (-)
 * Majority consensus base, i.e., the most frequently occurring base 
-* Identity, which is the proportion of the majority consensus base when gaps and ambiguous bases are excluded 
+* Identity, which is the proportion of the majority consensus base when gaps and ambiguous bases are excluded
 * IUPAC consensus character, i.e., the ambiguous base. Here, the user can specify an “ambiguity threshold” between 0 and 0.2. All bases that occur with a proportion higher than that will be included in the ambiguous base. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating primers and probes with high degeneracy. A higher threshold will catch most of the variability, but with the potential cost of missing minor sequence variants 
 * Shannon entropy, which is a measurement of variability. A value of zero indicate complete conservation, and a high value indicate high variability. Gaps and ambiguous bases in the alignment are not included in this calculation 
 * Coverage, which describes the total proportion of bases that are "covered" by the IUPAC consensus character. Gaps and ambiguous bases in the alignment are not included in this calculation 
 
-`consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns an `RprimerProfile`-object, which contains all the information needed to design primers and probes. Masked positions are excluded.
+`consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` object as input and returns an `RprimerProfile` object, which contains all the information needed to design primers and probes. Positions and sequences that are masked in the `DNAMultipleAlignment` will be removed.
 
 ```{r}
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
@@ -147,7 +147,17 @@ plotData(selection2, type = "nucleotide")
 
 ### Step 2: `oligos`
 
-The next step is to design oligos (primers and probes). 
+The next step is to design oligos. Primers are mandatory to design and probes are optional. 
+
+The design process starts by generating all possible oligos of the user specified primer and probe lengths from the IUPAC consensus sequence. For each oligo, information is also collected on start and end position, degeneracy, gap frequency, majority consensus sequence and coverage. All oligos with degeneracies and gap frequencies higher than the user specified criteria are removed.  
+
+For primers, there are two different strategies that can be used at this point. Type = mixed ..................
+
+Then, the next step is to generate all possible sequence variants of each oligo, and calculate GC-content and melting temperature, and to collect information on the presence of GC-clamp, three-end runs, and mono- and dinucleotide repeats for each variant. Mean values and ranges on GC-content and melting temperature are also calculated.    
+
+Then, all possible sequence variants of each oligo are generated, and 
+
+* Coverage 
 
 coverage, 
 end coverage: philosophy is similar to CODEHOP (REF), which allows ... relax degeneracy? diff settings on 3 and 5' ? use majority instead? /include majority as well?????
@@ -160,6 +170,7 @@ max degen
 `oligos()` searches for primers and probes (if selected) from an `RprimerProfile`-object, and returns an `RprimerOligo` object. 
 
 The following settings can be used: 
+The user can specify the design process as follows: 
 
 * `maxGapFrequency` Maximum gap frequency in the target alignment for primer and probe binding regions, defaults to `0.05`
 * `lengthPrimer` Primer length, defaults to `18:22`
@@ -176,7 +187,7 @@ The following settings can be used:
 * `avoidFiveEndGProbe` If probes with a G at the terminal 5' end should be avoided, defaults to `TRUE` 
 * `gcRangeProbe` GC-content-range for probes, defaults to `c(0.40, 0.50)`
 * `tmRangeProbe` Melting temperature range of probes, defaults to `c(55, 65)`
-* `concProbe` Probe concentration in nM (for Tm calculation), defaults to `250`
+* `concProbe` Probe concentration in nM (for tm calculation), defaults to `250`
 * `concNa` Sodium ion concentration in the PCR reaction (for Tm calculation), defaults to `0.05` M (50 mM)
 
 Below, I design both primers and probes using default settings. 
@@ -257,7 +268,7 @@ plotData(myOligos3)
 
 An error message will return if no oligos are found. If so, a good idea could be to re-run the process from Step 1 and increase the `iupacThreshold` in `consensusProfile()` and/or relax the design constraints in `oligos()`.
 
-## Step 3: `assays`
+### Step 3: `assays`
 
 `assays()` finds pairs of forward and reverse primers within an `RprimerOligo`-object, and combines them with probes, if available. It returns an `RprimerAssay`-object.   
 
