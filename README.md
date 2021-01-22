@@ -69,7 +69,7 @@ Results (first six rows):
 | position |    a |    c |    g |    t | other | gaps | majority | identity | iupac | entropy | coverage |
 | -------: | ---: | ---: | ---: | ---: | ----: | ---: | :------- | -------: | :---- | ------: | -------: |
 |        1 | 0.00 | 0.00 | 0.56 | 0.02 |     0 | 0.41 | G        |     0.95 | G     |    0.35 |     0.95 |
-|        2 | 0.01 | 0.54 | 0.01 | 0.04 |     0 | 0.41 | C        |     0.90 | C     |    0.60 |     0.97 |
+|        2 | 0.01 | 0.54 | 0.01 | 0.04 |     0 | 0.41 | C        |     0.90 | Y     |    0.60 |     0.97 |
 |        3 | 0.54 | 0.02 | 0.01 | 0.02 |     0 | 0.41 | A        |     0.92 | A     |    0.54 |     0.92 |
 |        4 | 0.02 | 0.01 | 0.56 | 0.01 |     0 | 0.40 | G        |     0.93 | G     |    0.50 |     0.93 |
 |        5 | 0.56 | 0.00 | 0.02 | 0.03 |     0 | 0.40 | A        |     0.93 | A     |    0.46 |     0.93 |
@@ -87,17 +87,18 @@ plotData(myConsensusProfile)
 Or zoom into a specific region of interest:
 
 ``` r
-roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5050, ]
+roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5500, ]
 plotData(roi)
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
-The nucleotide distribution can be shown by specifying `type =
-"nucleotide`:
+The nucleotide distribution can be shown, preferably on a short range,
+by specifying `type = "nucleotide`:
 
 ``` r
-plotData(roi, type = "nucleotide")
+roi2 <- myConsensusProfile[myConsensusProfile$position >= 150 & myConsensusProfile$position <= 170, ]
+plotData(roi2, type = "nucleotide")
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />

@@ -176,6 +176,26 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     unname(lookup$iupac[x])
 }
 
+#' Subset a consensus matrix
+#'
+#' @param x A consensus matrix.
+#'
+#' @return A consensus bases with DNA bases (A, C, G, T) only.
+#'
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' x <- .consensusMatrix(exampleRprimerAlignment)
+#' .dnaBasesOnly(x)
+.dnaBasesOnly <- function(x) {
+    bases <- c("A", "C", "G", "T")
+    s <- x[rownames(x) %in% bases, , drop = FALSE]
+    apply(s, 2, function(x) x / sum(x))
+}
+
 #' IUPAC consensus sequence
 #'
 #' @param x A consensus matrix.
@@ -196,9 +216,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' x <- .consensusMatrix(exampleRprimerAlignment)
 #' .iupacConsensus(x)
 .iupacConsensus <- function(x, ambiguityThreshold = 0) {
-    bases <- c("A", "C", "G", "T", "-")
-    s <- x[rownames(x) %in% bases, , drop = FALSE]
-    s <- apply(s, 2, function(x) x / sum(x))
+    s <- .dnaBasesOnly(x)
     basesToInclude <- apply(s, 2, function(x) {
         paste(rownames(s)[x > ambiguityThreshold], collapse = ",")
     })
@@ -229,9 +247,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' x <- .consensusMatrix(exampleRprimerAlignment)
 #' .nucleotideIdentity(x)
 .nucleotideIdentity <- function(x) {
-    bases <- c("A", "C", "G", "T")
-    s <- x[rownames(x) %in% bases, , drop = FALSE]
-    s <- apply(s, 2, function(x) x / sum(x))
+    s <- .dnaBasesOnly(x)
     identity <- apply(s, 2, max)
     identity <- unname(identity)
     identity[is.na(identity)] <- 1
@@ -253,9 +269,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' x <- .consensusMatrix(exampleRprimerAlignment)
 #' .shannonEntropy(x)
 .shannonEntropy <- function(x) {
-    bases <- c("A", "C", "G", "T")
-    s <- x[rownames(x) %in% bases, , drop = FALSE]
-    s <- apply(s, 2, function(x) x / sum(x))
+    s <- .dnaBasesOnly(x)
     entropy <- apply(s, 2, function(x) ifelse(x == 0, 0, x * log2(x)))
     entropy <- abs(colSums(entropy))
     entropy <- unname(entropy)
@@ -283,9 +297,9 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' x <- .consensusMatrix(exampleRprimerAlignment)
 #' .coverage(x, ambiguityThreshold = 0.05)
 .coverage <- function(x, ambiguityThreshold = 0) {
-    bases <- c("A", "C", "G", "T")
-    s <- x[rownames(x) %in% bases, , drop = FALSE]
-    s <- apply(s, 2, function(x) x / sum(x))
+    s <- .dnaBasesOnly(x)
     s[s > ambiguityThreshold] <- 0
-    1 - colSums(s)
+    coverage <- 1 - colSums(s)
+    coverage[is.na(coverage)] <- 1
+    coverage
 }

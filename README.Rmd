@@ -84,14 +84,15 @@ plotData(myConsensusProfile)
 Or zoom into a specific region of interest: 
 
 ```{r, fig.width=12, fig.height=6}
-roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5050, ]
+roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5500, ]
 plotData(roi)
 ```
 
-The nucleotide distribution can be shown by specifying `type = "nucleotide`:
+The nucleotide distribution can be shown, preferably on a short range, by specifying `type = "nucleotide`:
 
 ```{r, fig.width=12, fig.height=6}
-plotData(roi, type = "nucleotide")
+roi2 <- myConsensusProfile[myConsensusProfile$position >= 150 & myConsensusProfile$position <= 170, ]
+plotData(roi2, type = "nucleotide")
 ```
 
 ### Step 2: `oligos`

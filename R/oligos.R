@@ -1,3 +1,5 @@
+# amb, mixed, both - option in design oligos
+
 #' Design oligos
 #'
 #' \code{oligos()} designs oligos (primers and probes)
@@ -30,7 +32,10 @@
 #' \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.
 #'
 #' @param minThreeEndCoveragePrimer
-#' Seven bases ######################################################################
+#' Minimum allowed coverage value at the 3' end of primers
+#' (last five bases). A number [0, 1], where 1 indicate that all bases at the
+#' 3' end in the alignment must be covered by all ambiguous bases. Defaults to
+#' 0.98. ######################################################################
 #'
 #' @param gcRangePrimer
 #' GC-content range for primers (proportion, not percent).
@@ -107,7 +112,7 @@
 #'   \item{tm}{tm of all sequence variants.}
 #'   \item{roiStart}{First position of the input \code{RprimerProfile} object
 #'     (roi = region of interest).}
-#'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
+#'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.} #####################
 #' }
 #'
 #' @section Oligos with low sequence complexity:
@@ -282,7 +287,7 @@ oligos <- function(x,
         rowThreshold = 1,
         colThreshold = 1
     )
-    if (nrow(primers) == 0) {
+    if (nrow(primers) == 0L) {
         stop("No primers were found.", call. = FALSE)
     }
     if (probe) {
@@ -295,7 +300,7 @@ oligos <- function(x,
             rowThreshold = 0.75,
             colThreshold = 0.75
         )
-        if (nrow(probes) == 0) {
+        if (nrow(probes) == 0L) {
             stop("No probes were found.", call. = FALSE)
         }
         oligos <- rbind(primers, probes)
@@ -364,12 +369,8 @@ oligos <- function(x,
 #'
 #' \code{.generateOligos()} is the first step of the oligo-design process.
 #' It finds all possible oligos of a specific length from an
-#' \code{RprimerProfile} object, and returns a list containing
-#' start and end position,
-#' length, IUPAC sequence (the oligo DNA sequence with wobble bases), degeneracy
-#' (number of variants of each oligo), maximum gap frequency,
-#' mean overall identity, and minimum 3'-end identity at
-#' both forward and reverse direction.
+#' \code{RprimerProfile} object, and returns a list containing sequences
+#' and additional information.
 #'
 #' @param x An \code{RprimerProfile} object.
 #'
@@ -396,14 +397,27 @@ oligos <- function(x,
     oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
     oligos$gapFrequency <- apply(.nmers(x$gaps, lengthOligo), 1, max)
     oligos$coverage <- .nmers(x$coverage, lengthOligo)
-   # oligos$identity <- .nmers(x$identity, lengthOligo) ###########################
+    oligos$identity <- .nmers(x$identity, lengthOligo)
+    oligos$identityFirstHalf <- rowMeans(
+        oligos$identity[, 1:(ncol(oligos$identity) / 2)])
+    oligos$identitySecondHalf <- rowMeans(
+        oligos$identity[
+            , (ncol(oligos$identity) / 2 + 1):ncol(oligos$identity)])
     oligos$endCoverageFwd <- apply(
         oligos$coverage[
-            , (ncol(oligos$coverage) - 6):ncol(oligos$coverage)],
+            , (ncol(oligos$coverage) - 5):ncol(oligos$coverage)],
         1, min
     )
-    oligos$endCoverageRev <- apply(oligos$coverage[, seq_len(6)], 1, min)
+    oligos$endCoverageRev <- apply(oligos$coverage[, seq_len(5)], 1, min)
+    oligos$coverageFirstHalf <- rowMeans(
+        oligos$coverage[, 1:(ncol(oligos$coverage) / 2)])
+    oligos$coverageSecondHalf <- rowMeans(
+        oligos$coverage[
+            , (ncol(oligos$coverage) / 2 + 1):ncol(oligos$coverage)
+        ]
+    )
     oligos$coverage <- rowMeans(oligos$coverage)
+    oligos$method <- rep("ambiguous",  nrow(oligos$iupacSequence))
     oligos$roiStart <- rep(
         min(x$position, na.rm = TRUE), nrow(oligos$iupacSequence)
     )
@@ -412,6 +426,50 @@ oligos <- function(x,
     )
     oligos
 }
+
+#' Split two matrices in half, and paste them together
+#'
+#' Helper function to \code{.getMixedPrimers()}
+#'
+#' @param first
+#'
+#' @param last
+#'
+#' @return
+#'
+#' @keywords internal
+#'
+#' @noRd
+.splitAndPaste <- function(first, second) {
+    ###################
+    first <- first[, 1:(ncol(first) / 2), drop = FALSE]
+    second <- second[, (ncol(second) / 2 + 1):ncol(second), drop = FALSE]
+    cbind(first, second)
+}
+
+#' @keywords internal
+#'
+#' @noRd
+.getMixedPrimers <- function(x) {
+    x$mixedFwd <- .splitAndPaste(x$majoritySequence, x$iupacSequence) ########################
+    x$mixedRev <- .splitAndPaste(x$iupacSequence, x$majoritySequence)
+    x$degeneracyMixedFwd <- apply(x$mixedFwd, 1, .countDegeneracy)
+    x$degeneracyMixedRev <- apply(x$mixedRev, 1, .countDegeneracy)
+    x$coverageMixedFwd <- cbind(x$identityFirstHalf, x$coverageSecondHalf)
+    x$coverageMixedRev <- cbind(x$coverageFirstHalf, x$identitySecondHalf)
+    x$coverageMixedFwd <- rowMeans(x$coverageMixedFwd)
+    x$coverageMixedRev <- rowMeans(x$coverageMixedRev)
+    x
+}
+
+.arrangeMixedPrimers <- function(x) {
+    # arrange as output to generate oligos ###########################
+    # then rbind if probes...
+}
+# Here select/rename ################### majority should be removed
+# don't forget probes
+# method mixedFwd, mixedRev
+# FWD false, for .... must add functions later as well..............
 
 #' Remove oligos with too high gap frequency and degeneracy
 #'
@@ -551,7 +609,7 @@ oligos <- function(x,
 .detectGcClamp <- function(x, rev = FALSE) {
     if (rev) {
         end <- x[, seq_len(5), drop = FALSE]
-        5 - rowSums(end) >= 2 & 5 - rowSums(end) <= 3
+        5 - rowSums(end) >= 2 & 5 - rowSums(end) <= 3 ## Because of complement..
     } else {
         end <- x[, seq((ncol(x) - 4), ncol(x)), drop = FALSE]
         rowSums(end) >= 2 & rowSums(end) <= 3
@@ -617,8 +675,8 @@ oligos <- function(x,
 .detectRepeats <- function(x) {
     di <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(CT){4,}|(TC){4,}|)"
     mono <- "([A-Z])\\1\\1\\1\\1"
-    vapply(x, function(i) {
-        ifelse(grepl(di, i) | grepl(mono, i), TRUE, FALSE)
+    vapply(x, function(y) {
+        grepl(di, y) | grepl(mono, y)
     }, logical(1))
 }
 
@@ -650,8 +708,8 @@ oligos <- function(x,
                             concNa = 0.05) {
     all <- list()
     all$sequence <- apply(x$iupacSequence, 1, .expandDegenerates)
-    ## some kind of workaround if there is only one variant of each oligo,
-    ## and apply returns a matrix instead of a list...
+    ## If there is only one variant of each oligo,
+    ## (and apply returns a matrix instead of a list):
     if (is.matrix(all$sequence)) {
         all$sequence <- t(all$sequence)
         all$sequence <- lapply(seq_len(nrow(all$sequence)), function(i) {
@@ -897,7 +955,7 @@ oligos <- function(x,
     xRev <- .convertToMatrices(xRev)
     okRev <- .isValid(xRev, rowThreshold, colThreshold)
     x <- cbind(x, okFwd, okRev)
-    x[x$okFwd | x$okRev, , drop = FALSE]
+    x[x$okFwd | x$okRev, , drop = FALSE] ########################## mixed are either ok fwd or ok rev
 }
 
 #' Find oligos that pass the criteria for being a primer
@@ -1083,7 +1141,7 @@ oligos <- function(x,
         "iupacSequence", "iupacSequenceRc",
         "coverage", "degeneracy", "gcContentMean", "gcContentRange",
         "tmMean", "tmRange", "sequence",
-        "sequenceRc", "gcContent", "tm", "roiStart",
+        "sequenceRc", "gcContent", "tm", "method", "roiStart",
         "roiEnd"
     )
     x <- x[keep]
