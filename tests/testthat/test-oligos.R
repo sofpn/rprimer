@@ -1,11 +1,40 @@
 data("exampleRprimerProfile")
 x <- exampleRprimerProfile
-oligos <- .generateOligos(x[5000:6000, ])
 
-# test_that(".oligos works", {
-
-# })
-
+test_that(".oligos returns an error when it should", {
+    expect_error(oligos(unclass(x)))
+    expect_error(oligos(x, maxGapFrequency = -1))
+    expect_error(oligos(x, maxGapFrequency = 1.1))
+    expect_error(oligos(x, maxGapFrequency = -1))
+    expect_error(oligos(x, lengthPrimer = 13))
+    expect_error(oligos(x, lengthPrimer = 31))
+    expect_error(oligos(x, maxDegeneracyPrimer = 33))
+    expect_error(oligos(x, maxDegeneracyPrimer = 0))
+    expect_error(oligos(x, gcClampPrimer = 1))
+    expect_error(oligos(x, avoidThreeEndRunsPrimer = "true"))
+    expect_error(oligos(x, gcRangePrimer = c(-0.1, 1)))
+    expect_error(oligos(x, gcRangePrimer = c(0, 1.1)))
+    expect_error(oligos(x, tmRangePrimer = c(19, 90)))
+    expect_error(oligos(x, tmRangePrimer = c(20, 91)))
+    expect_error(oligos(x, concPrimer = 19))
+    expect_error(oligos(x, concPrimer = 2001))
+    expect_error(oligos(x, designStrategyPrimer = ""))
+    expect_error(oligos(x, probe = 1))
+    expect_error(oligos(x, lengthProbe = 13))
+    expect_error(oligos(x, lengthProbe = 31))
+    expect_error(oligos(x, maxDegeneracyProbe = 33))
+    expect_error(oligos(x, maxDegeneracyProbe = 0))
+    expect_error(oligos(x, maxDegeneracyPrimer = 33))
+    expect_error(oligos(x, avoidFiveEndGProbe = 1))
+    expect_error(oligos(x, gcRangeProbe = c(-0.1, 1)))
+    expect_error(oligos(x, gcRangeProbe = c(0, 1.1)))
+    expect_error(oligos(x, tmRangeProbe = c(19, 90)))
+    expect_error(oligos(x, tmRangeProbe = c(20, 91)))
+    expect_error(oligos(x, concProbe = 19))
+    expect_error(oligos(x, concProbe = 2001))
+    expect_error(oligos(x, concNa = 0.009))
+    expect_error(oligos(x, concNa = 1.1))
+})
 
 test_that(".nmers works", {
     seq <- sample(c("A", "C", "G", "T"), 100, replace = TRUE)
@@ -20,6 +49,8 @@ test_that(".nmers works", {
     expect_true(is.matrix(nmer))
     expect_equal(dim(nmer), c(1, 3))
 })
+
+oligos <- .generateOligos(x[5000:6000, ])
 
 test_that(".countDegeneracy works", {
     seq <- c("A", "C", "R", "N", "Y")
@@ -134,7 +165,7 @@ test_that(".reverseComplement works", {
 
 test_that(".detectGcClamp works", {
     seq <- c("A", "C", "G", "T", "G", "C", "T", "A")
-    gc <- ifelse(seq == "C" | seq == "G", 1, 0)
+    gc <- as.integer(seq == "C" | seq == "G")
     gc <- t(matrix(gc))
     expect_true(.detectGcClamp(gc))
     seq <- c("A", "C", "G", "T", "T", "C", "T", "A")

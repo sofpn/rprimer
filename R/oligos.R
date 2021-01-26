@@ -1,4 +1,5 @@
-# amb, mixed, both - option in design oligos
+#  fixa problemet med prober
+# mixedFwd = only valid fwd osv
 
 #' Design oligos
 #'
@@ -35,7 +36,7 @@
 #' Minimum allowed coverage value at the 3' end of primers
 #' (last five bases). A number [0, 1], where 1 indicate that all bases at the
 #' 3' end in the alignment must be covered by all ambiguous bases. Defaults to
-#' 0.98. ######################################################################
+#' 0.98.
 #'
 #' @param gcRangePrimer
 #' GC-content range for primers (proportion, not percent).
@@ -48,6 +49,9 @@
 #' @param concPrimer
 #' Primer concentration in nM, for Tm calculation. A number
 #' [20, 2000], defaults to 500.
+#'
+#' @param designStrategyPrimer ############################################################
+#' "ambiguous" or "mixed". Defaults to "ambiguous".
 #'
 #' @param probe
 #' If probes should be designed. \code{TRUE} or \code{FALSE},
@@ -184,6 +188,7 @@ oligos <- function(x,
                    gcRangePrimer = c(0.40, 0.60),
                    tmRangePrimer = c(55, 65),
                    concPrimer = 500,
+                   designStrategyPrimer = "ambiguous",
                    probe = TRUE,
                    lengthProbe = 18:22,
                    maxDegeneracyProbe = 4,
@@ -196,7 +201,7 @@ oligos <- function(x,
         stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
     if (!(maxGapFrequency >= 0 && maxGapFrequency <= 1)) {
-        stop("'lengthPrimer' must be from 0 to 1.", call. = FALSE)
+        stop("'maxGapFrequency' must be from 0 to 1.", call. = FALSE)
     }
     if (!(min(lengthPrimer) >= 14 && max(lengthPrimer) <= 30)) {
         stop("'lengthPrimer' must be from 14 to 30.", call. = FALSE)
@@ -226,10 +231,17 @@ oligos <- function(x,
         )
     }
     if (!(concPrimer >= 20 && concPrimer <= 2000)) {
-        stop("'concPrimer' must be from 20 nM to 2000 nM.", call. = FALSE)
+        stop("'concPrimer' must be from 20 to 2000.", call. = FALSE)
+    }
+    if (!(
+        designStrategyPrimer == "ambiguous" || designStrategyPrimer == "mixed")
+        ) {
+        stop(
+            "'designStrategyPrimer' must be either 'ambiguous' or 'mixed'.",
+            call. = FALSE)
     }
     if (!is.logical(probe)) {
-        stop("'probe' must be set to TRUE or FALSE", call. = FALSE)
+        stop("'probe' must be TRUE or FALSE", call. = FALSE)
     }
     if (!(min(lengthProbe) >= 14 && max(lengthProbe) <= 30)) {
         stop("'lengthProbe' must be from 14 to 30.", call. = FALSE)
@@ -253,10 +265,10 @@ oligos <- function(x,
         )
     }
     if (!(concProbe >= 20 && concProbe <= 2000)) {
-        stop("'concProbe' must be from 20 nM to 2000 nM.", call. = FALSE)
+        stop("'concProbe' must be from 20 to 2000.", call. = FALSE)
     }
     if (!(concNa >= 0.01 && concNa <= 1)) {
-        stop("'concNa' must be from 0.01 to 1 M.", call. = FALSE)
+        stop("'concNa' must be from 0.01 to 1.", call. = FALSE)
     }
     lengthOligo <- lengthPrimer
     if (probe) {
@@ -273,6 +285,8 @@ oligos <- function(x,
         maxGapFrequency,
         maxDegeneracy,
         concPrimer,
+        designStrategyPrimer,
+        probe,
         concProbe,
         concNa
     )
@@ -284,6 +298,7 @@ oligos <- function(x,
         minThreeEndCoveragePrimer,
         gcRangePrimer,
         tmRangePrimer,
+        designStrategyPrimer,
         rowThreshold = 1,
         colThreshold = 1
     )
@@ -429,19 +444,20 @@ oligos <- function(x,
 
 #' Split two matrices in half, and paste them together
 #'
-#' Helper function to \code{.getMixedPrimers()}
+#' Helper function to \code{.getMixedOligos()}
 #'
 #' @param first
+#' The matrix that should appear first.
 #'
 #' @param last
+#' The matrix that should appear last.
 #'
-#' @return
+#' @return A matrix.
 #'
 #' @keywords internal
 #'
 #' @noRd
 .splitAndPaste <- function(first, second) {
-    ###################
     first <- first[, 1:(ncol(first) / 2), drop = FALSE]
     second <- second[, (ncol(second) / 2 + 1):ncol(second), drop = FALSE]
     cbind(first, second)
@@ -450,26 +466,75 @@ oligos <- function(x,
 #' @keywords internal
 #'
 #' @noRd
-.getMixedPrimers <- function(x) {
-    x$mixedFwd <- .splitAndPaste(x$majoritySequence, x$iupacSequence) ########################
-    x$mixedRev <- .splitAndPaste(x$iupacSequence, x$majoritySequence)
-    x$degeneracyMixedFwd <- apply(x$mixedFwd, 1, .countDegeneracy)
-    x$degeneracyMixedRev <- apply(x$mixedRev, 1, .countDegeneracy)
-    x$coverageMixedFwd <- cbind(x$identityFirstHalf, x$coverageSecondHalf)
-    x$coverageMixedRev <- cbind(x$coverageFirstHalf, x$identitySecondHalf)
-    x$coverageMixedFwd <- rowMeans(x$coverageMixedFwd)
-    x$coverageMixedRev <- rowMeans(x$coverageMixedRev)
+.generateMixedOligos <- function(x, rev = FALSE) {
+    oligos <- list()
+    if (rev) {
+        oligos$iupacSequence <- .splitAndPaste(
+            x$iupacSequence, x$majoritySequence
+        )
+        oligos$coverage <- cbind(x$coverageFirstHalf, x$identitySecondHalf)
+        oligos$method <- rep("mixedFwd", nrow(oligos$iupacSequence))
+    } else {
+        oligos$iupacSequence <- .splitAndPaste(
+            x$majoritySequence, x$iupacSequence
+        )
+        oligos$coverage <- cbind(x$identityFirstHalf, x$coverageSecondHalf)
+        oligos$method <- rep("mixedRev", nrow(oligos$iupacSequence))
+
+    }
+    oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
+    oligos$coverage <- rowMeans(oligos$coverage)
+    oligos
+}
+
+.getMixedOligos <- function(x, rev = FALSE) {
+    oligos <- list()
+    oligos <- .generateMixedOligos(x, rev)
+    oligos$start <- x$start
+    oligos$end <- x$end
+    oligos$length <- x$length
+    oligos$gapFrequency <- x$gapFrequency
+    oligos$endCoverageFwd <- x$endCoverageFwd
+    oligos$endCoverageRev <- x$endCoverageRev
+    oligos$roiStart <- x$roiStart
+    oligos$roiEnd <- x$roiEnd
+    order <-  c(
+        "iupacSequence", "start", "end", "length", "degeneracy","gapFrequency",
+        "coverage", "endCoverageFwd", "endCoverageRev", "method", "roiStart",
+        "roiEnd"
+    )
+    oligos[order]
+}
+
+.dropUnwantedItems <- function(x) {
+    majoritySequence <- identity <- identityFirstHalf <- NULL
+    identitySecondHalf <- coverageFirstHalf <- coverageSecondHalf <- NULL
+    x <- within(x, rm(
+        majoritySequence, identity, identityFirstHalf, identitySecondHalf,
+        coverageFirstHalf, coverageSecondHalf)
+    )
     x
 }
 
-.arrangeMixedPrimers <- function(x) {
-    # arrange as output to generate oligos ###########################
-    # then rbind if probes...
+.mergeOligoLists <- function(first, second) {
+    x <- lapply(names(first), function(y) {
+        if (is.matrix(first[[y]])) {
+            rbind(first[[y]], second[[y]])
+        } else {
+            c(first[[y]], second[[y]])
+        }
+    })
+    names(x) <- names(first)
+    x
 }
-# Here select/rename ################### majority should be removed
-# don't forget probes
-# method mixedFwd, mixedRev
-# FWD false, for .... must add functions later as well..............
+
+.combineOligos <- function(x, probe = TRUE) {
+    mixedFwd <- .getMixedOligos(x)
+    mixedRev <- .getMixedOligos(x, rev = TRUE)
+    out <- .mergeOligoLists(mixedFwd, mixedRev)
+    if (probe) out <- .mergeOligoLists(out, .dropUnwantedItems(x))
+    out
+}
 
 #' Remove oligos with too high gap frequency and degeneracy
 #'
@@ -787,9 +852,6 @@ oligos <- function(x,
 .makeOligoDf <- function(x) {
     gapFrequency <- NULL ## To avoid cmd check note
     x <- within(x, rm(gapFrequency))
-    x$majoritySequenceRc <- .reverseComplement(x$majoritySequence)
-    x$majoritySequence <- apply(x$majoritySequence, 1, paste, collapse = "")
-    x$majoritySequenceRc <- apply(x$majoritySequenceRc, 1, paste, collapse = "")
     x$iupacSequenceRc <- .reverseComplement(x$iupacSequence)
     x$iupacSequence <- apply(x$iupacSequence, 1, paste, collapse = "")
     x$iupacSequenceRc <- apply(x$iupacSequenceRc, 1, paste, collapse = "")
@@ -812,10 +874,19 @@ oligos <- function(x,
                           maxGapFrequency = 0.1,
                           maxDegeneracy = 4,
                           concPrimer = 500,
+                          designStrategyPrimer = "ambiguous",
+                          probe = TRUE,
                           concProbe = 250,
                           concNa = 0.05) {
     allOligos <- lapply(lengthOligo, function(i) {
         iupacOligos <- .generateOligos(x, lengthOligo = i)
+        if (designStrategyPrimer == "mixed") {
+            iupacOligos <- .combineOligos(iupacOligos, probe)
+        } else {
+            iupacOligos <- .dropUnwantedItems(iupacOligos)
+        }
+        iupacOligos
+   # }) #####################################################################
         iupacOligos <- .filterOligos(iupacOligos,
             maxGapFrequency = maxGapFrequency,
             maxDegeneracy = maxDegeneracy
@@ -838,7 +909,7 @@ oligos <- function(x,
     do.call("rbind", allOligos)
 }
 
-#' Check if vectors in a list are within a specificed range
+#' Check if vectors in a list are within a specified range
 #'
 #' Helper function to \code{.filterPrimers()} and \code{.filterProbes()}.
 #'
@@ -985,6 +1056,7 @@ oligos <- function(x,
                            minThreeEndCoveragePrimer = 0.98,
                            gcRangePrimer = c(0.45, 0.55),
                            tmRangePrimer = c(55, 65),
+                           designStrategyPrimer = "ambiguous",
                            colThreshold = 0.75,
                            rowThreshold = 0.75) {
     x <- x[
@@ -1017,8 +1089,9 @@ oligos <- function(x,
     }
     x <- cbind(x, fwd, rev)
     x <- x[x$fwd | x$rev, , drop = FALSE]
+
     remove <- c(
-        "gcInRange", "tmInRange", "endCoverageFwd", "endCoverageRev",
+        "gcInRange", "tmInRange", "endCoverageFwd", "endCoverageRev", ########################### mixedFwd/mixedRev!!!!!!!!!!!!!!!!!!!!!!!!!1
         "okFwd", "okRev", "tmProbeMean", "tmProbeRange", "tmProbe"
     )
     x <- x[!names(x) %in% remove]
@@ -1095,6 +1168,7 @@ oligos <- function(x,
                           tmRangeProbe = c(55, 65),
                           rowThreshold = 0.75,
                           colThreshold = 0.75) {
+    x <- x[x$method == "ambiguous", , drop = FALSE]
     x <- x[
         x$length >= min(lengthProbe) & x$length <= max(lengthProbe), ,
         drop = FALSE

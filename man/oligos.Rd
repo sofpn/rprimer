@@ -15,6 +15,7 @@ oligos(
   gcRangePrimer = c(0.4, 0.6),
   tmRangePrimer = c(55, 65),
   concPrimer = 500,
+  designStrategyPrimer = "ambiguous",
   probe = TRUE,
   lengthProbe = 18:22,
   maxDegeneracyProbe = 4,
@@ -47,7 +48,10 @@ C:s within the last five bases (3'-end) of the oligo.
 of the same nucleotide at the terminal 3'-end should be avoided.
 \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.}
 
-\item{minThreeEndCoveragePrimer}{Seven bases ######################################################################}
+\item{minThreeEndCoveragePrimer}{Minimum allowed coverage value at the 3' end of primers
+(last five bases). A number [0, 1], where 1 indicate that all bases at the
+3' end in the alignment must be covered by all ambiguous bases. Defaults to
+0.98.}
 
 \item{gcRangePrimer}{GC-content range for primers (proportion, not percent).
 A numeric vector [0, 1], defaults to \code{c(0.40, 0.60)}.}
@@ -57,6 +61,9 @@ A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
 
 \item{concPrimer}{Primer concentration in nM, for Tm calculation. A number
 [20, 2000], defaults to 500.}
+
+\item{designStrategyPrimer}{############################################################
+"ambiguous" or "mixed". Defaults to "ambiguous".}
 
 \item{probe}{If probes should be designed. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
@@ -122,7 +129,7 @@ The output contains the following information:
   \item{tm}{tm of all sequence variants.}
   \item{roiStart}{First position of the input \code{RprimerProfile} object
     (roi = region of interest).}
-  \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
+  \item{roiEnd}{Last position of the input \code{RprimerProfile} object.} #####################
 }
 }
 
