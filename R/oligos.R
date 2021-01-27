@@ -1,5 +1,9 @@
-#  fixa problemet med prober
-# mixedFwd = only valid fwd osv
+# tester
+# dokumentation
+# om vi har väldigt långa mixed primers och korta prober i get all vars
+# remove ols w NA och -
+# design mixed oligos probeLength primerLength
+# mixed: degen: 11-12, consensus: 18-25 (första tredjedelen istället, o rek långa primrar)
 
 #' Design oligos
 #'
@@ -380,6 +384,28 @@ oligos <- function(x,
     prod(nNucleotides)
 }
 
+#' Split two matrices in half, and paste them together
+#'
+#' Helper function to \code{.getMixedOligos()}
+#'
+#' @param first
+#' The matrix that should appear first.
+#'
+#' @param last
+#' The matrix that should appear last.
+#'
+#' @return A matrix.
+#'
+#' @keywords internal
+#'
+#' @noRd
+.splitAndPaste <- function(first, second) {
+    n <- ncol(first)
+    first <- first[ , seq_len(as.integer(n / 2))]
+    second <- second[, (as.integer(n / 2) + 1):n]
+    cbind(first, second)
+}
+
 #' Generate oligos of a specific length
 #'
 #' \code{.generateOligos()} is the first step of the oligo-design process.
@@ -413,24 +439,16 @@ oligos <- function(x,
     oligos$gapFrequency <- apply(.nmers(x$gaps, lengthOligo), 1, max)
     oligos$coverage <- .nmers(x$coverage, lengthOligo)
     oligos$identity <- .nmers(x$identity, lengthOligo)
-    oligos$identityFirstHalf <- rowMeans(
-        oligos$identity[, 1:(ncol(oligos$identity) / 2)])
-    oligos$identitySecondHalf <- rowMeans(
-        oligos$identity[
-            , (ncol(oligos$identity) / 2 + 1):ncol(oligos$identity)])
+    oligos$identityCoverage <- .splitAndPaste(oligos$identity, oligos$coverage)
+    oligos$identityCoverage <- rowMeans(oligos$identityCoverage)
+    oligos$coverageIdentity <- .splitAndPaste(oligos$coverage, oligos$identity)
+    oligos$coverageIdentity <- rowMeans(oligos$coverageIdentity)
     oligos$endCoverageFwd <- apply(
         oligos$coverage[
             , (ncol(oligos$coverage) - 5):ncol(oligos$coverage)],
         1, min
     )
     oligos$endCoverageRev <- apply(oligos$coverage[, seq_len(5)], 1, min)
-    oligos$coverageFirstHalf <- rowMeans(
-        oligos$coverage[, 1:(ncol(oligos$coverage) / 2)])
-    oligos$coverageSecondHalf <- rowMeans(
-        oligos$coverage[
-            , (ncol(oligos$coverage) / 2 + 1):ncol(oligos$coverage)
-        ]
-    )
     oligos$coverage <- rowMeans(oligos$coverage)
     oligos$method <- rep("ambiguous",  nrow(oligos$iupacSequence))
     oligos$roiStart <- rep(
@@ -442,54 +460,31 @@ oligos <- function(x,
     oligos
 }
 
-#' Split two matrices in half, and paste them together
-#'
-#' Helper function to \code{.getMixedOligos()}
-#'
-#' @param first
-#' The matrix that should appear first.
-#'
-#' @param last
-#' The matrix that should appear last.
-#'
-#' @return A matrix.
-#'
 #' @keywords internal
 #'
 #' @noRd
-.splitAndPaste <- function(first, second) {
-    first <- first[, 1:(ncol(first) / 2), drop = FALSE]
-    second <- second[, (ncol(second) / 2 + 1):ncol(second), drop = FALSE]
-    cbind(first, second)
-}
-
-#' @keywords internal
-#'
-#' @noRd
-.generateMixedOligos <- function(x, rev = FALSE) {
+.mixOligos <- function(x, rev = FALSE) {
     oligos <- list()
     if (rev) {
         oligos$iupacSequence <- .splitAndPaste(
             x$iupacSequence, x$majoritySequence
         )
-        oligos$coverage <- cbind(x$coverageFirstHalf, x$identitySecondHalf)
+        oligos$coverage <- x$coverageIdentity
         oligos$method <- rep("mixedFwd", nrow(oligos$iupacSequence))
     } else {
         oligos$iupacSequence <- .splitAndPaste(
             x$majoritySequence, x$iupacSequence
         )
-        oligos$coverage <- cbind(x$identityFirstHalf, x$coverageSecondHalf)
+        oligos$coverage <- x$identityCoverage
         oligos$method <- rep("mixedRev", nrow(oligos$iupacSequence))
-
     }
     oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
-    oligos$coverage <- rowMeans(oligos$coverage)
     oligos
 }
 
-.getMixedOligos <- function(x, rev = FALSE) {
+.generateMixedOligos <- function(x, rev = FALSE) {
     oligos <- list()
-    oligos <- .generateMixedOligos(x, rev)
+    oligos <- .mixOligos(x, rev)
     oligos$start <- x$start
     oligos$end <- x$end
     oligos$length <- x$length
@@ -506,17 +501,13 @@ oligos <- function(x,
     oligos[order]
 }
 
-.dropUnwantedItems <- function(x) {
-    majoritySequence <- identity <- identityFirstHalf <- NULL
-    identitySecondHalf <- coverageFirstHalf <- coverageSecondHalf <- NULL
-    x <- within(x, rm(
-        majoritySequence, identity, identityFirstHalf, identitySecondHalf,
-        coverageFirstHalf, coverageSecondHalf)
+.dropItems <- function(x) {
+    within(x, rm(
+        "majoritySequence", "identity", "identityCoverage", "coverageIdentity")
     )
-    x
 }
 
-.mergeOligoLists <- function(first, second) {
+.mergeLists <- function(first, second) {
     x <- lapply(names(first), function(y) {
         if (is.matrix(first[[y]])) {
             rbind(first[[y]], second[[y]])
@@ -528,17 +519,20 @@ oligos <- function(x,
     x
 }
 
-.combineOligos <- function(x, probe = TRUE) {
-    mixedFwd <- .getMixedOligos(x)
-    mixedRev <- .getMixedOligos(x, rev = TRUE)
-    out <- .mergeOligoLists(mixedFwd, mixedRev)
-    if (probe) out <- .mergeOligoLists(out, .dropUnwantedItems(x))
+.designMixedOligos <- function(x, probe = TRUE) {
+    mixedFwd <- .generateMixedOligos(x)
+    mixedRev <- .generateMixedOligos(x, rev = TRUE)
+    x <- .dropItems(x)
+    out <- .mergeLists(mixedFwd, mixedRev)
+    if (probe) {
+        out <- .mergeLists(out, x)
+    }
     out
 }
 
 #' Remove oligos with too high gap frequency and degeneracy
 #'
-#' \code{.filterOligos()} is the second step of the oligo-design process. It
+#' \code{.filterOligos()} is the second step of the oligo design process. It
 #' removes oligos with gap frequency and degeneracy above the specified
 #' thresholds.
 #'
@@ -874,19 +868,17 @@ oligos <- function(x,
                           maxGapFrequency = 0.1,
                           maxDegeneracy = 4,
                           concPrimer = 500,
-                          designStrategyPrimer = "ambiguous",
+                          designStrategyPrimer = "ambiguous", ############### om design strategy mixed så går primer o prob på separat
                           probe = TRUE,
                           concProbe = 250,
                           concNa = 0.05) {
     allOligos <- lapply(lengthOligo, function(i) {
         iupacOligos <- .generateOligos(x, lengthOligo = i)
         if (designStrategyPrimer == "mixed") {
-            iupacOligos <- .combineOligos(iupacOligos, probe)
+            iupacOligos <- .designMixedOligos(iupacOligos, probe)
         } else {
-            iupacOligos <- .dropUnwantedItems(iupacOligos)
+            iupacOligos <- .dropItems(iupacOligos)
         }
-        iupacOligos
-   # }) #####################################################################
         iupacOligos <- .filterOligos(iupacOligos,
             maxGapFrequency = maxGapFrequency,
             maxDegeneracy = maxDegeneracy
@@ -1088,10 +1080,11 @@ oligos <- function(x,
         rev <- x$okRev
     }
     x <- cbind(x, fwd, rev)
+    x$rev[x$method == "mixedFwd" & x$rev] <- FALSE
+    x$fwd[x$method == "mixedRev" & x$fwd] <- FALSE
     x <- x[x$fwd | x$rev, , drop = FALSE]
-
     remove <- c(
-        "gcInRange", "tmInRange", "endCoverageFwd", "endCoverageRev", ########################### mixedFwd/mixedRev!!!!!!!!!!!!!!!!!!!!!!!!!1
+        "gcInRange", "tmInRange", "endCoverageFwd", "endCoverageRev",
         "okFwd", "okRev", "tmProbeMean", "tmProbeRange", "tmProbe"
     )
     x <- x[!names(x) %in% remove]
