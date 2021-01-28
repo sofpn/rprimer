@@ -1,9 +1,5 @@
 # tester
 # dokumentation
-# om vi har väldigt långa mixed primers och korta prober i get all vars
-# remove ols w NA och -
-# design mixed oligos probeLength primerLength
-# mixed: degen: 11-12, consensus: 18-25 (första tredjedelen istället, o rek långa primrar)
 
 #' Design oligos
 #'
@@ -37,10 +33,9 @@
 #' \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.
 #'
 #' @param minThreeEndCoveragePrimer
-#' Minimum allowed coverage value at the 3' end of primers
-#' (last five bases). A number [0, 1], where 1 indicate that all bases at the
-#' 3' end in the alignment must be covered by all ambiguous bases. Defaults to
-#' 0.98.
+#' Minimum allowed coverage at the 3' end (the last five bases).
+#' A number [0, 1]. If set to 1, all bases of the 3' end must cover all sequence
+#' variants in the target alignment. Defaults to 0.98.
 #'
 #' @param gcRangePrimer
 #' GC-content range for primers (proportion, not percent).
@@ -384,9 +379,7 @@ oligos <- function(x,
     prod(nNucleotides)
 }
 
-#' Split two matrices in half, and paste them together
-#'
-#' Helper function to \code{.getMixedOligos()}
+#' Split two matrices, and paste them together
 #'
 #' @param first
 #' The matrix that should appear first.
@@ -399,10 +392,15 @@ oligos <- function(x,
 #' @keywords internal
 #'
 #' @noRd
-.splitAndPaste <- function(first, second) {
+.splitAndPaste <- function(first, second, rev = FALSE) {
     n <- ncol(first)
-    first <- first[ , seq_len(as.integer(n / 2))]
-    second <- second[, (as.integer(n / 2) + 1):n]
+    if (rev) {
+        first <- first[, (as.integer(2 * n / 3) + 1):n]
+        second <- second[, seq_len(as.integer(2 * n / 3))]
+    } else {
+        first <- first[, seq_len(as.integer(2 * n / 3))]
+        second <- second[, (as.integer(2 * n / 3) + 1):n]
+    }
     cbind(first, second)
 }
 
@@ -441,7 +439,8 @@ oligos <- function(x,
     oligos$identity <- .nmers(x$identity, lengthOligo)
     oligos$identityCoverage <- .splitAndPaste(oligos$identity, oligos$coverage)
     oligos$identityCoverage <- rowMeans(oligos$identityCoverage)
-    oligos$coverageIdentity <- .splitAndPaste(oligos$coverage, oligos$identity)
+    oligos$coverageIdentity <- .splitAndPaste(
+        oligos$coverage, oligos$identity, rev = TRUE)
     oligos$coverageIdentity <- rowMeans(oligos$coverageIdentity)
     oligos$endCoverageFwd <- apply(
         oligos$coverage[
@@ -467,16 +466,16 @@ oligos <- function(x,
     oligos <- list()
     if (rev) {
         oligos$iupacSequence <- .splitAndPaste(
-            x$iupacSequence, x$majoritySequence
+            x$iupacSequence, x$majoritySequence, rev = TRUE
         )
         oligos$coverage <- x$coverageIdentity
-        oligos$method <- rep("mixedFwd", nrow(oligos$iupacSequence))
+        oligos$method <- rep("mixedRev", nrow(oligos$iupacSequence))
     } else {
         oligos$iupacSequence <- .splitAndPaste(
             x$majoritySequence, x$iupacSequence
         )
         oligos$coverage <- x$identityCoverage
-        oligos$method <- rep("mixedRev", nrow(oligos$iupacSequence))
+        oligos$method <- rep("mixedFwd", nrow(oligos$iupacSequence))
     }
     oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
     oligos
@@ -548,9 +547,13 @@ oligos <- function(x,
 #'
 #' @noRd
 .filterOligos <- function(x, maxGapFrequency = 0.1, maxDegeneracy = 4) {
+    invalidCharacters <- apply(x$iupacSequence, 1, function(x) {
+        any(x == "-") | any(is.na(x))
+    })
     invalid <- unique(c(
         which(x$degeneracy > maxDegeneracy),
-        which(x$gapFrequency > maxGapFrequency)
+        which(x$gapFrequency > maxGapFrequency),
+        which(invalidCharacters)
     ))
     if (length(invalid > 0)) {
         lapply(x, function(x) {
@@ -868,7 +871,7 @@ oligos <- function(x,
                           maxGapFrequency = 0.1,
                           maxDegeneracy = 4,
                           concPrimer = 500,
-                          designStrategyPrimer = "ambiguous", ############### om design strategy mixed så går primer o prob på separat
+                          designStrategyPrimer = "ambiguous",
                           probe = TRUE,
                           concProbe = 250,
                           concNa = 0.05) {
@@ -1018,7 +1021,7 @@ oligos <- function(x,
     xRev <- .convertToMatrices(xRev)
     okRev <- .isValid(xRev, rowThreshold, colThreshold)
     x <- cbind(x, okFwd, okRev)
-    x[x$okFwd | x$okRev, , drop = FALSE] ########################## mixed are either ok fwd or ok rev
+    x[x$okFwd | x$okRev, , drop = FALSE]
 }
 
 #' Find oligos that pass the criteria for being a primer

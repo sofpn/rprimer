@@ -97,22 +97,10 @@ plotData(roi2, type = "nucleotide")
 
 ### Step 2: `oligos`
 
-The next step is to design oligos. You can either use the default settings: 
+The next step is to design oligos. You can either use the default settings as below, or adjust the constraints (see the package vignette or `?rprimer::oligos` for more information).
 
 ``` {r}
 myOligos <- oligos(myConsensusProfile)
-```
-
-Or adjust the constraints (see the package vignette or `?rprimer::oligos` for more information), for example: 
-
-``` {r}
-# myOligos2 <- oligos(myConsensusProfile, 
-#                     maxDegeneracyPrimer = 16,
-#                     tmRangePrimer = c(58, 60),
-#                     conservedThreeEndPrimer =  FALSE,
-#                     gcClampPrimer = FALSE,
-#                     avoidThreeEndRunsPrimer = FALSE,
-#                     probe = FALSE)
 ```
 
 Results (first six rows): 
