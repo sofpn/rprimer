@@ -3,12 +3,6 @@
 
 <!-- badges: start --> <!-- badges: end -->
 
-## To do
-
-  - Oligos=describe design process
-  - Classes=set validity
-  - All=test
-
 ## Installation
 
 You can install rprimer from [GitHub](https://github.com/) with:
@@ -29,11 +23,12 @@ devtools::load_all(".")
 rprimer provides tools for designing broadly reactive primers, probes
 and (RT)-(q/d)PCR assays from a multiple DNA sequence alignment.
 
-The design process is built on three functions:
+The package contains four functions:
 
   - `consensusProfile()`
   - `oligos()`
   - `assays()`
+  - `plotData()`
 
 ## Workflow
 
@@ -106,8 +101,8 @@ plotData(roi2, type = "nucleotide")
 ### Step 2: `oligos`
 
 The next step is to design oligos. You can either use the default
-settings as below, or adjust the constraints (see the package vignette
-or `?rprimer::oligos` for more information).
+settings as below, or adjust the design constraints (see the package
+vignette or `?rprimer::oligos` for more information).
 
 ``` r
 myOligos <- oligos(myConsensusProfile)
@@ -136,9 +131,8 @@ plotData(myOligos)
 
 `assays()` finds pairs of forward and reverse primers and combines them
 with probes, if probes are present in the dataset. You can either use
-default settings (as below), or customize the amplicon length and
-maximum allowed difference between the primers, and between the primer
-pair and probe.
+the default settings as below, or adjust the design constraints (see the
+package vignette or `?rprimer::assays` for more information).
 
 ``` r
 myAssays <- assays(myOligos)

@@ -1,5 +1,6 @@
 # tester
 # dokumentation
+# end coverage mixedrev - dubbelkolla detta
 
 #' Design oligos
 #'
@@ -97,11 +98,11 @@
 #'   \item{start}{Start position of the oligo.}
 #'   \item{end}{End positon of the oligo.}
 #'   \item{length}{Oligo length.}
-#'   \item{iupacSequence}{Oligo sequence, with wobble bases (if any).}
+#'   \item{iupacSequence}{Oligo sequence, with amiguous bases (if any).}
 #'   \item{iupaSequenceRc}{The reverse complement of the iupacSequence.}
-#'   \item{identity}{Average identity score of the oligo, can range from 0 to 1.
-#'     The identity is the proportion of the most common base at each position
-#'     in the input alignment.}
+#'   \item{coverage}{Average coverage of the oligo, can range from 0 to 1.
+#'     Coverage refers to the proportion of bases at
+#'     in the input alignment that are covered by the oligo.}
 #'   \item{degeneracy}{Number of sequence variants of the oligo.}
 #'   \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.
 #'   }
@@ -112,25 +113,24 @@
 #'   \item{sequence}{All sequence variants of the oligo.}
 #'   \item{sequenceRc}{Reverse complements of all sequence variants.}
 #'   \item{gcContent}{GC-content of all sequence variants.}
-#'   \item{tm}{tm of all sequence variants.}
+#'   \item{tm}{Tm of all sequence variants.}
+#'   \item{method}{Design method used to generate the oligo: "ambiguous",
+#'   "mixedFwd" or "mixedRev".}
 #'   \item{roiStart}{First position of the input \code{RprimerProfile} object
 #'     (roi = region of interest).}
-#'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.} #####################
+#'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
 #' }
 #'
-#' @section Oligos with low sequence complexity:
+#' @section Validity checks:
 #'
-#' Oligos with more than four consecutive runs of the same
+#' For an oligo to be considered as valid, all sequence variants must fulfill
+#' all the specified design constraints.
+#'
+#' Oligos with sequence variants containing
+#' more than four consecutive runs
+#' of the same
 #' nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
-#' of the same di-nucleotide (e.g. "TATATATA") are considered invalid.
-#' This check is done on all sequence variants of each oligo. ################################
-#'
-#' @section Oligos with high degeneracy:
-#'
-#' Each sequence variant of a degenerate oligo must fulfill at least
-#' 83 % of the specified design criteria,
-#' and each design criteria must be fulfilled by at least 5/6 of
-#' the sequence variants. Otherwise the oligo will be considered as invalid. ###############
+#' of the same di-nucleotide (e.g. "TATATATA") are excluded.
 #'
 #' @section Tm-calculation:
 #'

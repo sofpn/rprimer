@@ -15,7 +15,8 @@ was imported to the package using \code{Biostrings::readDNAStringSet()}.
 data("exampleRprimerAlignment")
 }
 \description{
-An alignment with 200 hepatitis E virus sequences (see inst/script
+An alignment with 200 hepatitis E virus sequences (see the file
+"documentation_example_alignment.txt" within the inst/script folder
 for more details).
 }
 \references{
