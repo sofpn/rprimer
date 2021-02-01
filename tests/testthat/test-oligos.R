@@ -50,7 +50,7 @@ test_that(".nmers works", {
     expect_equal(dim(nmer), c(1, 3))
 })
 
-oligos <- .generateOligos(x[5000:6000, ])
+#t <- .generateOligos(x[5000:6000, ])
 
 test_that(".countDegeneracy works", {
     seq <- c("A", "C", "R", "N", "Y")

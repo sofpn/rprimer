@@ -16,19 +16,23 @@ knitr::opts_chunk$set(
 )
 ```
 
+**shannon, mafft, rivm, jothi, hedman ref**
+
 # Introduction
 
-Primer and probe design are central parts of PCR assay development. Successful amplification and detection depend on several factors, such as optimal primer and probe length, GC-content, melting temperature and sequence complexity. Primer and probes must be designed so that formation of dimers and hairpin structures are avoided, and the intended target region must be sufficiently conserved to avoid severe mismatches between the primers/probe and template. This together makes PCR assay design a challenging task, which is not least reflected by the large number of computational methods available. One of the most comprehensive and widely used tools is Primer3. However, one important limitation with Primer3 is that the design process is based on a single sequence, which means that primers can be inadvertently placed in sequence heterogenous regions, resulting in amplification and quantification bias. This can, in part, be circumvented by making a “consensus profile”  from an alignment of the target sequences of interest, and masking the variable regions in the consensus sequence before the design process. However, for many applications, it can be difficult to find even a few completely conserved regions that are suitable as primer or probe targets.
+Primer and probe design are central parts of PCR assay development. Successful amplification and detection depend on several factors, such as optimal primer and probe length, GC-content, melting temperature and sequence complexity. Primer and probes must be designed so that formation of dimers and hairpin structures are avoided, and the intended target region must be sufficiently conserved to avoid severe mismatches between the primers/probe and template. This together makes PCR assay design a challenging task, which is not least reflected by the large number of computational methods available. One of the most comprehensive and widely used tools is Primer3. However, one important limitation with Primer3 is that the design process is based on a single sequence, which means that primers can be inadvertently placed in sequence heterogeneous regions, resulting in amplification and quantification bias. This can, in part, be circumvented by making a “consensus profile”  from an alignment of the target sequences of interest, and masking the variable regions in the consensus sequence before the design process. However, for many applications, it can be difficult to find even a few completely conserved regions that are suitable as primer or probe targets.
 
-A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are named according to a coding system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, the amplification efficiency may reduce as the degeneracy increases, because only a fraction of the primers will match perfectly to the target sequence and the synthesized product. The likelihood of interaction with non-targets or other primer variants also rises, which risks to reduce the specificity of the assay. An optimal design strategy would therefore be to find primer and probe binding regions with as low degeneracy as possible. 
+A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, a problem with this approach is that the amplification efficiency may decrease with increased degeneracy. This is because only a fraction of the primers match perfectly to the target sequence and the synthesized product. An optimal design strategy would therefore be to find primer binding regions with as low degeneracy as possible, but without compromising with the inclusivity (inclusivity refers to the ability for the assay to amplify the target sequences of interest). 
 
-If the degeneracy is to be kept low and the target sequence heterogeneous, it is next to impossible to fully avoid mismatches between the template and primers/probe. The effect of a mismatch depends to a great extent on its location. For primers, mismatches at the 3’ end can greatly reduce amplification efficiency and should best be avoided, while mismatches at the 5’ end are generally less detrimental. 
+If the degeneracy is to be kept low and the target sequence heterogeneous, it is next to impossible to fully avoid mismatches between the template and primers/probe. The effect of a mismatch depends to a great extent on its location. For primers, mismatches at the 3’ end can greatly reduce amplification efficiency and should best be avoided, while mismatches at the 5’ end are generally less detrimental. Mismatches within the hydrolysis probe can reduce the fluorescence signal, especially if located at the 5' end, since the 5’-3’ exonuclease activity of the DNA polymerase relies on completely hybridized nucleotides to hydrolyse DNA duplexes. **[KOLLA DETTA MER]**
 
-Mismatches within the binding region of a hydrolysis probe can also be severe, since the 5’-3’ exonuclease activity of the DNA polymerase relies on completely hybridized nucleotides to hydrolyse DNA duplexes. 
+Mismatching primer-template duplexes have lower melting temperature (tm) than their perfectly matching equivalents. Hence, the negative effect of mismatches can be reduced by either increasing the primer length (to provide a sufficiently high tm in spite of mismatches), or by lowering the annealing temperature (ta). However, a lower ta increases the likelihood of primer interaction with non-targets, which may reduce the specificity of the assay. 
 
-This R package ("rprimer") was developed to implement commonly adopted primer and probe design guidelines for sequence variable targets, such as RNA viruses. It takes a multiple sequence alignment with target sequences of interest as input and designs primers, probes and PCR assays from user specified design criteria. 
+**DET KRÄVS ALLTSÅ LITE TANKE KRING DESIGN...**
 
-In this document, I demonstrate how to use rprimer by designing a broadly-reactive RT-q/dPCR for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
+This R package ("rprimer") was developed to implement commonly adopted primer and probe design guidelines for sequence variable targets. It takes a multiple sequence alignment with target sequences of interest as input and designs primers, probes and PCR assays from user specified design criteria. 
+
+In this document, I demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR primers, probes and assays for hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
 # Installation
 
@@ -80,7 +84,7 @@ infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 myAlignment <- Biostrings::readDNAMultipleAlignment(infile, format = "fasta")
 ```
 
-For brevity, and to get the alignment to agree more with the average HEV genome length, I decided to mask all positions with a gap frequency of more than 50 %:   
+For brevity, and to get the alignment to agree more with the average HEV genome length, I masked all positions with a gap frequency of more than 50 %:   
 
 ```{r}
 myAlignment <- Biostrings::maskGaps(myAlignment, 
@@ -153,17 +157,13 @@ The next step is to design oligos. Primers are mandatory to design and probes ar
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence. This means that degenerate bases can occur at any position in the oligo
 
-* The **mixed strategy** is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle. It generates primers from both the majority and the IUPAC consensus sequence, which consist of a shorter degenerate part at the 3' end (~1/3 of the primer) and a longer consensus part at the 5' end (~2/3 of the primer). This means that the 5' end will lack ambiguous bases, and instead contain the most probable nucleotide at each position. The purpose of this strategy is . Mismatches less detrimental at the 5' end.   
-Mismatching primer-template duplexes have lower melting temperatures than their perfectly matching equivalents, which means that the tolerability to mismatches can increase if the annealing teperature drops  - but risk of non speficic interaction 
- However, consensus primers may be too dissimilar to an unknown target to efficiently anneal to the original template, and degenerate primers may be too dissimilar to each other to efficiently amplify the synthesized product.*
-
-Long primers (> 25 bases) will better accomodate mismatches due to their higher melting temperature. 
+* The **mixed strategy** is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle. It generates primers from both the majority and the IUPAC consensus sequence, which consist of a shorter degenerate part at the 3' end (~1/3 of the primer) and a longer consensus part at the 5' end (~2/3 of the primer). This means that the 5' end will lack ambiguous bases, and instead contain the most probable nucleotide at each position. **[TANKEN BAKOM DETTA ÄR... DENNA STRATEGI KAN VARA BRA OM MAN VILL AMPLIFIERA VÄLDIGT VARIABLA REGIONER, TEX INFÖR KARAKTERISERING/GENOTYPNING]** Longer primers (> 25 bases) are recommended when using this approach, to provide a sufficiently high tm in spite of mismatches. 
 
 Probes are always designed using the ambiguous strategy. 
 
 **Design settings**
 
-`oligos()` has the following arguments that can be specified by the user:  
+The arguments of `oligos()` are:
 
 * `x`: the consensus profile from Step 1
 * `maxGapFrequency`: maximum gap frequency (in the alignment) for primers and probes, defaults to `0.05`
@@ -173,7 +173,7 @@ Probes are always designed using the ambiguous strategy.
 * `avoidThreeEndRunsPrimer`: if primers with more than two runs of the same nucleotide at the terminal 3'-end should be avoided (to reduce the risk of mispriming), defaults to `TRUE`
 * `minThreeEndCoveragePrimer`: minimum allowed coverage at the 3' end (the last five bases). If set to `1`, all bases of the 3' end must cover all sequence variants in the target alignment. Defaults to `0.98` 
 * `gcRangePrimer`: GC-content range of primers (proportion), defaults to `c(0.40, 0.60)`
-* `tmRangePrimer`: melting temperature range for primers, defaults to `c(55, 65)`. Melting temperature is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method developed SantaLucia et al (REF). Formula, salt correction method and table values are from (REF). The table values can also be found by typing `rprimer:::lookup$nn`
+* `tmRangePrimer`: melting temperature range for primers, defaults to `c(55, 65)`. Melting temperature is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method developed SantaLucia et al **(REF)**. Formula, salt correction method and table values are from **(REF)**. The table values can also be found by typing `rprimer:::lookup$nn`
 * `concPrimer`: primer concentration in nM (for tm calculation), defaults to `500`
 * `designStrategyPrimer`: design strategy for primers, `"ambiguous"` or `"mixed"`, defaults to `"ambiguous"`  
 * `probe`: if probes should be designed as well, defaults to `TRUE`
@@ -193,7 +193,7 @@ An error message will return if no oligos are found. If so, a good idea could be
 
 **Design using default settings**
 
-To run the design process with default settings, it is only the first argument (`x`) that must be specified, i.e. the consensus profile from Step 1: 
+To run the design process with default settings, it is only the first argument (`x`) that must be specified, which is the consensus profile from Step 1: 
 
 ``` {r}
 myOligos <- oligos(myConsensusProfile)
@@ -208,7 +208,7 @@ myOligos[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The man page (`?oligos`) contains a detailed description of each variable. What may not be completely self-explanatory is that some variables (`sequence` `gcContent` and `tm`) in fact are lists, where each entry may contain several values. All values within an entry be retrieved by:   
+The man page (`?oligos`) contains a detailed description of each variable. What may not be completely self-explanatory is that some variables (`sequence` `gcContent` and `tm`) in fact are lists, which can hold several values in each entry. All values within an entry be retrieved by:   
 
 ```{r}
 myOligos$sequence[[1]] ## All sequence variants of the first oligo 
@@ -234,7 +234,7 @@ plotData(myOligos2)
 
 **Design of primers using the mixed strategy**
 
-I now use the mixed strategy, and design primers only, within a specified region of interest (position 1000 to 4000). I also modify some of the settings: 
+I now select a specified region of interest (position 1000 to 4000) and design primers only, using the mixed strategy. I also modify some of the other settings: 
 
 ```{r, fig.align="center", fig.width=12, fig.height=8}
 
@@ -242,9 +242,9 @@ myRoi <- myConsensusProfile[myConsensusProfile$position >= 1000 & myConsensusPro
 
 myMixedPrimers <- oligos(myRoi, 
                          designStrategyPrimer = "mixed", 
-                         maxDegeneracyPrimer = 32, 
+                         maxDegeneracyPrimer = 8, 
                          tmRangePrimer = c(55, 75), 
-                         minThreeEndCoverage = 1, 
+                         minThreeEndCoverage = 0, # # # #  
                          lengthPrimer = 25:30, 
                          probe = FALSE)
 
@@ -260,7 +260,7 @@ myMixedPrimers[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-It is possible to the oligos, to only get the ones with e.g. highest average coverage: 
+It is possible to subset the oligo dataset in many different ways. Below, I select to look at oligos with an average coverage higher than 0.9:
 
 ```{r, fig.align="center", fig.width=12, fig.height=8}
 selection <- myMixedPrimers[myMixedPrimers$coverage > 0.90, ]
@@ -268,25 +268,37 @@ selection <- myMixedPrimers[myMixedPrimers$coverage > 0.90, ]
 plotData(selection)
 ```
 
-It is also possible to select an oligo and plot the nucleotide distribution of the binding region, by subsetting the consensus profile from Step 1. I do this for the first primer in my selection: 
+It is also possible to select a specific oligo and plot the nucleotide distribution of the binding region, by subsetting the consensus profile from Step 1. I do this for the first primer in my selection.
 
 ```{r}
 ## Get the binding region of the first oligo (first row): 
 bindingRegion <- myConsensusProfile[myConsensusProfile$position >= selection[1, ]$start & myConsensusProfile$position <= selection[1, ]$end, ]
+```
 
+It can be plotted in forward direction: 
+
+```{r}
 plotData(bindingRegion, type = "nucleotide")
+```
+
+Or as reverse complement (by specifying `rc = TRUE`): 
+
+```{r}
+plotData(bindingRegion, type = "nucleotide", rc = TRUE)
 ```
 
 ### Step 3: `assays`
 
 The next step is to find pairs of forward and reverse primers, and eventually, to combine them with probes. 
 
-`assays()` has the following arguments that can be specified by the user:  
+The arguments of `assays()` are:  
 
-* `x` the oligos from Step 2.  
-* `lengthRange` Amplicon length range, defaults to `c(65, 120)`
-* `maxTmDiffPrimers` Maximum Tm difference between the two primers (absolute value, calculated for majority primers), defaults to `2`
-* `tmDiffPrimersProbe` Acceptable Tm difference between the primers (average Tm of the primer pair) and probe, defaults to `c(0, 20)`. The Tm-difference is calculated by subtracting the Tm of the (majority) probe with the average Tm of the (majority) primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair
+* `x`: the oligo dataset from Step 2.  
+* `lengthRange`: Amplicon length range, defaults to `c(65, 120)`
+* `maxTmDiffPrimers`: Maximum Tm difference between the two primers (absolute value, calculated for majority primers), defaults to `2`
+* `tmDiffPrimersProbe`: Acceptable Tm difference between the primers (average Tm of the primer pair) and probe, defaults to `c(0, 20)`. The Tm-difference is calculated by subtracting the Tm of the (majority) probe with the average Tm of the (majority) primer pair. Hence, a negative Tm-difference means that the Tm of the probe is lower than the average Tm of the primer pair
+
+Assays with probes will be designed if probes are present in the oligo dataset from Step 2. 
 
 ```{r}
 myAssays <- assays(myOligos)
@@ -309,13 +321,13 @@ Again, the output can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-I notice that all assays are located in the conserved region between position 5000-5500. 
+I notice that all assays are located in the conserved region between position 5000-5500 **[VILKER SKULLE GÖRA DET OMRÅDET TILL ETT PASSANDE MÅLOMRÅDE FÖR EN DETEKTIONSASSAY; IT IS IN FACT THE MOST WIDELY USED REGION, REF JOTHI]**
 
 An error message will return if no assays are found.
 
 ## Further handling of the data 
 
-The oligo and assay region(s) can be inspected further by using the `RprimerProfile` object. As an example, I select to take a closer look at the first assay in `myAssays`: 
+The oligo and assay region(s) can be inspected further by using the consensus profile from Step 1. As an example, I select to take a closer look at the first assay in the dataset above.  
 
 ```{r}
 
@@ -377,7 +389,7 @@ myAssays <- assays(myOligos)
 
 The "rprimer" classes (`RprimerProfile`, `RprimerOligo` and `RprimerAssay`) are extensions of the `DataFrame` class from S4Vectors, and behave in a similar manner as traditional data frames, with methods for `[`, `$`, `nrow`, `ncol`, `head`, `tail`, `rbind`, `cbind` etc. They can be coerced to traditional data frames by using `as.data.frame()`. 
 
-Example data sets of each class are provided with the package, and are loaded by: 
+Example datasets of each class are provided with the package, and are loaded by: 
 
 ```{r, warning=FALSE}
 data("exampleRprimerProfile")
@@ -389,7 +401,7 @@ To provide reproducible examples, I've also included an alignment of class `Bios
 
 # Limitations 
 
-rprimer covers a lot of steps in the oligo and assay design processes, but not all. Two very important, additional parts are: 1) checks for the potential of hairpin and primer-dimer formation and: 2) in silico checks for exclusivity, by matching the primer and probe set to non-targets. [MER HÄR]
+rprimer covers several steps in the oligo and assay design processes, but not all. Two very important, additional parts are: 1) checks for the potential of hairpin and primer-dimer formation and: 2) in silico checks for exclusivity, by matching the primer and probe set to non-targets. **[MER HÄR]**
 
 # Session info 
 
@@ -398,13 +410,3 @@ sessionInfo()
 ```
 
 # References 
-
-Allawi, H. & SantaLucia, J. (1997) Thermodynamics and NMR of Internal G-T Mismatches in DNA. Biochemistry, 36, 34: 1058-110594
-
-Pagès, H., Aboyoun, P., Gentleman, R., & DebRoy, S. (2020). Biostrings: Efficient manipulation of biological strings. R package version 2.57.2
-
-Pagès, H., Lawrence M., & Aboyoun, P. (2020). S4Vectors: Foundation of vector-like and list-like containers in Bioconductor. R package version 0.27.12
-
-SantaLucia, J., Hatim, T., Allawi H., & Seneviratne, A. (1996) Improved Nearest-Neighbor Parameters for Predicting DNA Duplex Stability. Biochemistry, 35: 3555-3562
-
-SantaLucia, J. (1998) A unified view of polymer, dumbell, and oligonucleotide DNA nearest-neighbor thermodynamics. Proc. Natl. Acad. Sci. USA, 95: 1460-1465

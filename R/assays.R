@@ -1,5 +1,3 @@
-# todo: tm diffs are calc on meanTm
-
 #' Design (RT)-PCR assays
 #'
 #' \code{assays()} combines forward and reverse primers
