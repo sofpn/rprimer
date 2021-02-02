@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 ## Installation
 
-You can install rprimer from [GitHub](https://github.com/) with:
+rprimer can be installed from [GitHub](https://github.com/) with:
 
   ``` r
 if (!requireNamespace("devtools", quietly = TRUE))

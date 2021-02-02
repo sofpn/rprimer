@@ -1,6 +1,3 @@
-allBases <- "ACGTRYSWKMBDHVN-"
-dnaBases <- "ACGT-"
-
 complement <- c(
     "A" = "T",
     "T" = "A",
@@ -165,8 +162,6 @@ dS <- c(
 nn <- data.frame(bases, dH, dS)
 
 lookup <- list(
-    "allBases" = allBases,
-    "dnaBases" = dnaBases,
     "complement" = complement,
     "iupac" = iupac,
     "degenerates" = degenerates,

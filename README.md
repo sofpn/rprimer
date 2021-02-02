@@ -5,7 +5,7 @@
 
 ## Installation
 
-You can install rprimer from [GitHub](https://github.com/) with:
+rprimer can be installed from [GitHub](https://github.com/) with:
 
 ``` r
 if (!requireNamespace("devtools", quietly = TRUE))
@@ -14,7 +14,7 @@ devtools::install_github("sofpn/rprimer")
 ```
 
 ``` r
-# library(rprimer)
+#library(rprimer)
 devtools::load_all(".")
 ```
 
