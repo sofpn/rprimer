@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 Primer and probe design are central parts of PCR assay development. Successful amplification and detection depend on several factors, such as optimal primer and probe length, GC-content, melting temperature and sequence complexity. Primer and probes must be designed so that formation of dimers and hairpin structures are avoided, and the intended target region must be sufficiently conserved to avoid severe mismatches between the primers/probe and template [@Bustin]. This together makes PCR assay design a challenging task, which is not least reflected by the large number of computational methods available. One of the most comprehensive and widely used tools is Primer3 [@Rozen]. However, one important limitation with Primer3 is that the design process is based on a single sequence, which means that primers can be inadvertently placed in sequence heterogeneous regions, resulting in amplification and quantification bias. This can, in part, be circumvented by making a “consensus profile”  from an alignment of the target sequences of interest, and masking the variable regions in the consensus sequence before the design process. However, for many applications, it can be difficult to find even a few completely conserved regions that are suitable as primer or probe targets.
 
-A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, a problem with this approach is that the amplification efficiency may decrease with increased degeneracy. This is because only a fraction of the primers match perfectly to the target sequence and the synthesized product. An optimal design strategy would therefore be to find primer binding regions with as low degeneracy as possible, but without compromising with the inclusivity (= the ability for the assay to amplify the target sequences of interest [@Hedman]). 
+A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, a problem with this approach is that the amplification efficiency may decrease with increased degeneracy. This is because only a fraction of the primers match perfectly to the target sequence and the synthesized product. An optimal design strategy would therefore be to find primer binding regions with as low degeneracy as possible, but without compromising with the inclusivity [the ability for the assay to amplify the target sequences of interest [@Hedman]]. 
 
 If the degeneracy is to be kept low and the target sequence heterogeneous, it is next to impossible to fully avoid mismatches between the template and primers/probe. The effect of a mismatch depends to a great extent on its location. For primers, mismatches at the 3’ end can greatly reduce amplification efficiency and should best be avoided, while mismatches at the 5’ end are generally less detrimental. Mismatches within the hydrolysis probe can reduce the fluorescence signal, especially if located at the 5' end, since the 5’-3’ exonuclease activity of the DNA polymerase relies on completely hybridized nucleotides to hydrolyse DNA duplexes [@Muradrasoli]. 
 
@@ -154,7 +154,7 @@ The next step is to design oligos. Primers are mandatory to design and probes ar
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence. This means that degenerate bases can occur at any position in the oligo
 
-* The **mixed strategy** is partially based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2]. It is recommended for highly variable targets. Here, primers are generated from both the majority and the IUPAC consensus sequence, and consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region), and a longer consensus part at the 5' end (~2/3 of the primer, which can target a more variable region). This means that the 5' end will lack ambiguous bases, and instead contain the most probable nucleotide at each position. The idea behind this is that the degenerate 3' end part will bind specifically to the target sequence in the initial amplification rounds, so that amplicons can be produced. When binding to the target, there will of course be risk of mismatches within the consensus part of the primer, but amplification is likely to happen anyway since 5' end mismatches are considered less severe than 3' end mismatches. The PCR products will match the 5' end perfectly, which will guarantee efficient amplification of the products during later PCR cycles. To provide a sufficiently high tm in spite of mismatches, it is recommended to use relatively long primers (> 25 bases) for this approach 
+* The **mixed strategy** is partially based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2]. It is recommended for highly variable targets. Here, primers are generated from both the majority and the IUPAC consensus sequence, and consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region), and a longer consensus part at the 5' end (~2/3 of the primer, which can target a more variable region). This means that the 5' end will lack ambiguous bases, and instead contain the most probable nucleotide at each position. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial amplification rounds, so that amplicons can be produced. When binding to the target, there will of course be risk of mismatches within the consensus part of the primer, but amplification is likely to happen anyway since 5' end mismatches are considered less severe than 3' end mismatches. The PCR products will match the 5' end perfectly, which will guarantee efficient amplification of the products during later PCR cycles. To provide a sufficiently high tm in spite of mismatches, it is recommended to use relatively long primers (> 25 bases) for this approach 
 
 Probes are always designed using the ambiguous strategy. 
 
@@ -190,7 +190,7 @@ An error message will return if no oligos are found. If so, a good idea could be
 
 **Design using default settings**
 
-To run the design process with default settings, it is only the first argument (`x`) that must be specified, which is the consensus profile from Step 1: 
+To design oligos using default settings, it is only the first argument (`x`) that must be specified, which is the consensus profile from Step 1: 
 
 ``` {r}
 myOligos <- oligos(myConsensusProfile)
@@ -320,7 +320,7 @@ Again, the output can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-All assays are located within a conserved stretch of ~70 bases. This is because I designed oligos using strict constraints on degeneracy (not more than four, which is the default). This is in fact the target region for the most widely cited RT-qPCR assay for detection of HEV [@jothikumar2006broadly].
+All assays are located within a conserved stretch of ~70 bases. This is because I designed oligos with low degeneracy (not more than four, which is the default setting). In fact, this is the target region for the most widely cited RT-qPCR assay for detection of HEV [@jothikumar2006broadly].
 
 ## Further handling of the data 
 
@@ -398,7 +398,7 @@ To provide reproducible examples, I've also included an alignment of class `Bios
 
 # Table values  
 
-Lookup tables used for determination of complement bases, IUPAC consensus character codes, degeneracy and tm can be retrieved by typing
+Lookup tables used for determination of complement bases, IUPAC consensus character codes, degeneracy and tm can be retrieved by typing:
 
 * `rprimer:::lookup$complement`
 * `rprimer:::lookup$iupac`, `rprimer:::lookup$degenerates`, 
