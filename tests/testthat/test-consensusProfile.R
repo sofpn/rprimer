@@ -34,7 +34,6 @@ testmat <- .consensusMatrix(testdata)
 test_that(".consensusMatrix works", {
     expect_equal(rownames(testmat), c("A", "C", "G", "T", "-", "other"))
     expect_equal(nrow(testmat), 6)
-    expect_true(all(colSums(testmat), 1))
     expect_false(any(is.na(testmat)))
 })
 

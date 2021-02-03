@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.2.2)  2 FEB 2021 13:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.2.2)  3 FEB 2021 11:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette
-.tex
+**C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignett
+e.tex
 
-(c:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette.
-tex
+(c:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+.tex
 LaTeX2e <2020-10-01> patch level 4
 L3 programming layer <2021-01-09> xparse <2020-03-03> (c:/Users/Sofia/AppData/R
 oaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
@@ -1059,45 +1059,25 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
 [4]
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-6-1.pdf, id=134, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-6-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-6-1.pdf  used on input
- line 333.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-6-1.pdf, id=134, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-6-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-6-1.pdf  used on inpu
+t line 333.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-7-1.pdf, id=135, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-7-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-7-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-7-1.pdf  used on input
- line 350.
-(pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
-
-Package fancyhdr Warning: \headheight is too small (42.67912pt): 
-(fancyhdr)                Make it at least 46.27916pt, for example:
-(fancyhdr)                \setlength{\headheight}{46.27916pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
-
-[5 <c:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignet
-te_files/figure-latex/unnamed-chunk-6-1.pdf>]
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-8-1.pdf, id=150, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-8-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-8-1.pdf  used on input
- line 365.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-7-1.pdf, id=135, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-7-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-7-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-7-1.pdf  used on inpu
+t line 350.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -1107,10 +1087,30 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[6 <c:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignet
-te_files/figure-latex/unnamed-chunk-7-1.pdf> <c:/Users/Sofia/AppData/Local/Temp
-/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-8
--1.pdf>]
+[5 <c:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vigne
+tte_files/figure-latex/unnamed-chunk-6-1.pdf>]
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-8-1.pdf, id=150, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-8-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-8-1.pdf  used on inpu
+t line 365.
+(pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
+
+Package fancyhdr Warning: \headheight is too small (42.67912pt): 
+(fancyhdr)                Make it at least 46.27916pt, for example:
+(fancyhdr)                \setlength{\headheight}{46.27916pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
+
+[6 <c:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vigne
+tte_files/figure-latex/unnamed-chunk-7-1.pdf> <c:/Users/Sofia/AppData/Local/Tem
+p/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk
+-8-1.pdf>]
 Underfull \hbox (badness 10000) in paragraph at lines 408--410
 
  []
@@ -1138,15 +1138,15 @@ LaTeX Font Info:    Font shape `T1/fvm/m/it' in size <10> not available
 (Font)              Font shape `T1/fvm/m/sl' tried instead on input line 484.
 LaTeX Font Info:    Font shape `T1/fvm/m/sl' will be
 (Font)              scaled to size 7.98004pt on input line 484.
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-12-1.pdf, id=177, 867.24pt x 578.16pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-12-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-12-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-12-1.pdf  used on inpu
-t line 504.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-12-1.pdf, id=177, 867.24pt x 578.16pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-12-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-12-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-12-1.pdf  used on inp
+ut line 504.
 (pdftex.def)             Requested size: 341.43787pt x 227.62523pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -1157,15 +1157,15 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
 [8]
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-14-1.pdf, id=184, 578.16pt x 361.35pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-14-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-14-1.pdf  used on inpu
-t line 526.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-14-1.pdf, id=184, 578.16pt x 361.35pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-14-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-14-1.pdf  used on inp
+ut line 526.
 (pdftex.def)             Requested size: 341.42903pt x 213.39314pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -1175,29 +1175,29 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[9 <c:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignet
-te_files/figure-latex/unnamed-chunk-12-1.pdf> <c:/Users/Sofia/AppData/Local/Tem
-p/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-
-14-1.pdf>]
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-15-1.pdf, id=207, 578.16pt x 361.35pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-15-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-15-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-15-1.pdf  used on inpu
-t line 537.
+[9 <c:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vigne
+tte_files/figure-latex/unnamed-chunk-12-1.pdf> <c:/Users/Sofia/AppData/Local/Te
+mp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette_files/figure-latex/unnamed-chun
+k-14-1.pdf>]
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-15-1.pdf, id=207, 578.16pt x 361.35pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-15-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-15-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-15-1.pdf  used on inp
+ut line 537.
 (pdftex.def)             Requested size: 341.42903pt x 213.39314pt.
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-16-1.pdf, id=208, 867.24pt x 578.16pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-16-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-16-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-16-1.pdf  used on inpu
-t line 553.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-16-1.pdf, id=208, 867.24pt x 578.16pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-16-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-16-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-16-1.pdf  used on inp
+ut line 553.
 (pdftex.def)             Requested size: 341.43787pt x 227.62523pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -1207,19 +1207,19 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[10 <c:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-15-1.pdf> <c:/Users/Sofia/AppData/Local/Te
-mp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk
--16-1.pdf>]
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-17-1.pdf, id=233, 867.24pt x 578.16pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-17-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-17-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-17-1.pdf  used on inpu
-t line 580.
+[10 <c:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-15-1.pdf> <c:/Users/Sofia/AppData/Local/T
+emp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette_files/figure-latex/unnamed-chu
+nk-16-1.pdf>]
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-17-1.pdf, id=233, 867.24pt x 578.16pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-17-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-17-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-17-1.pdf  used on inp
+ut line 580.
 (pdftex.def)             Requested size: 341.43787pt x 227.62523pt.
 
 Overfull \hbox (20.61859pt too wide) in paragraph at lines 590--590
@@ -1240,17 +1240,17 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[11 <c:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-17-1.pdf>]
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-19-1.pdf, id=251, 867.24pt x 578.16pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-19-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-19-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-19-1.pdf  used on inpu
-t line 633.
+[11 <c:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-17-1.pdf>]
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-19-1.pdf, id=251, 867.24pt x 578.16pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-19-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-19-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-19-1.pdf  used on inp
+ut line 633.
 (pdftex.def)             Requested size: 341.43787pt x 227.62523pt.
 
 Underfull \hbox (badness 10000) in paragraph at lines 647--649
@@ -1265,8 +1265,8 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[12 <c:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-19-1.pdf>]
+[12 <c:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-19-1.pdf>]
 Overfull \hbox (20.61859pt too wide) in paragraph at lines 672--672
 []\T1/fvm/m/n/10 #> table.envir): Position = right is only supported for longta
 ble in LaTeX. Setting[] 
@@ -1277,15 +1277,15 @@ Overfull \hbox (3529.61343pt too wide) in paragraph at lines 676--701
  [] 
  []
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-22-1.pdf, id=272, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-22-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-22-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-22-1.pdf  used on inpu
-t line 714.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-22-1.pdf, id=272, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-22-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-22-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-22-1.pdf  used on inp
+ut line 714.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -1295,16 +1295,27 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[13]
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/unnamed-chunk-24-1.pdf, id=279, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/unnamed-chunk-24-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-24-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk-24-1.pdf  used on inpu
-t line 742.
+[13 <c:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-22-1.pdf>]
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/unnamed-chunk-24-1.pdf, id=292, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/unnamed-chunk-24-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-24-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/unnamed-chunk-24-1.pdf  used on inp
+ut line 742.
+(pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vignette
+_files/figure-latex/fig 3-1.pdf, id=293, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vig
+nette_files/figure-latex/fig 3-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/fig 3-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1
+ac86c623e37.dir/vignette_files/figure-latex/fig 3-1.pdf  used on input line 762
+.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -1314,20 +1325,8 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[14 <c:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/unnamed-chunk-22-1.pdf> <c:/Users/Sofia/AppData/Local/Te
-mp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_files/figure-latex/unnamed-chunk
--24-1.pdf>]
-<C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vignette_
-files/figure-latex/fig 3-1.pdf, id=307, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vign
-ette_files/figure-latex/fig 3-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/fig 3-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2
-dec14d1519.dir/vignette_files/figure-latex/fig 3-1.pdf  used on input line 762.
-
-(pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
+[14 <c:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/unnamed-chunk-24-1.pdf>]
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
 (fancyhdr)                Make it at least 46.27916pt, for example:
@@ -1336,8 +1335,8 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[15 <c:/Users/Sofia/AppData/Local/Temp/RtmpayNI1Q/preview-2dec14d1519.dir/vigne
-tte_files/figure-latex/fig 3-1.pdf>]
+[15 <c:/Users/Sofia/AppData/Local/Temp/RtmpcRDVKZ/preview-1ac86c623e37.dir/vign
+ette_files/figure-latex/fig 3-1.pdf>]
 Overfull \hbox (72.19965pt too wide) in paragraph at lines 814--815
 []\T1/lmss/m/n/10 To pro-vide re-pro-ducible ex-am-ples, I've also in-cluded an
  align-ment of class [][]\T1/fvm/m/n/10 Biostrings::DNAMultipleAlignment[]\T1/l
@@ -1380,13 +1379,13 @@ Package rerunfilecheck Info: File `vignette.out' has not changed.
 (rerunfilecheck)             Checksum: 4A17751292640DD262C77546A1C671AB;866.
  ) 
 Here is how much of TeX's memory you used:
- 13566 strings out of 481265
- 221986 string characters out of 5914485
- 686271 words of memory out of 5000000
+ 13568 strings out of 481265
+ 222096 string characters out of 5914485
+ 687123 words of memory out of 5000000
  30030 multiletter control sequences out of 15000+600000
  453786 words of font info for 69 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,14n,88p,1432b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,14n,88p,1466b,444s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.e
 nc}{c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.e
 nc} <c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/
@@ -1404,94 +1403,10 @@ st/fonts/type1/public/lm/lmss10.pfb><c:/Users/Sofia/AppData/Roaming/TinyTeX/tex
 mf-dist/fonts/type1/public/lm/lmssbo10.pfb><c:/Users/Sofia/AppData/Roaming/Tiny
 TeX/texmf-dist/fonts/type1/public/lm/lmssbx10.pfb><c:/Users/Sofia/AppData/Roami
 ng/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsso10.pfb>
-Output written on vignette.pdf (18 pages, 2577285 bytes).
+Output written on vignette.pdf (18 pages, 2578503 bytes).
 PDF statistics:
- 573 PDF objects out of 1000 (max. 8388607)
- 344 compressed objects within 4 object streams
- 69 named destinations out of 1000 (max. 500000)
+ 575 PDF objects out of 1000 (max. 8388607)
+ 346 compressed objects within 4 object streams
+ 71 named destinations out of 1000 (max. 500000)
  181 words of extra memory for PDF output out of 10000 (max. 10000000)
 
-
-! This is METAFONT, Version 2.7182818 (TeX Live 2020/W32TeX) (preloaded base=mf)
-
-
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/ecr
-! m0900.mf
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exb
-! ase.mf)
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/ecr
-! m.mf
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! oman.mf
-!  Ok
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exa
-! ccess.mf
-!  Ok)
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exp
-! seudo.mf
-!  Ok)
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! uwest.mf
-!  Ok [192] [193] [194] [195] [196] [197] [198] [199] [200] [201] [202] [203]
-! [204] [205] [206] [207] [208] [209] [210] [211] [212] [213] [214] [215]
-! [216] [217] [218] [219] [220] [221] [222] [223])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! lwest.mf
-!  Ok [224] [225] [226] [227] [228] [229] [230] [231] [232] [233] [234] [235]
-! [236] [237] [238] [239] [240] [241] [242] [243] [244] [245] [246] [247]
-! [248] [249] [250] [251] [252] [253] [254] [255])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! ueast.mf
-!  Ok [128] [129] [130] [131] [132] [133] [134] [135] [136] [137] [138] [139]
-! [140] [141] [142] [143] [144] [145] [146] [147] [148] [149] [150] [151]
-! [152] [153] [154] [155] [156] [157])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! least.mf
-!  Ok [158] [160] [161] [162] [163] [164] [165] [166] [167] [168] [169] [170]
-! [171] [172] [173] [174] [175] [176] [177] [178] [179] [180] [181] [182]
-! [183] [184] [185] [186] [187] [188])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exb
-! races.mf
-!  Ok [94] [126] [23] [40] [41] [60] [124] [62] [91] [93] [92] [123] [125]
-! [95] [127] [32])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exp
-! unct.mf
-!  Ok [14] [15] [19] [20] [13] [18] [33] [39] [42] [43] [44] [46] [47] [58]
-! [59] [61] [96] [189] [17] [45] [16] [21] [22])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exa
-! ccent.mf
-!  Ok [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exs
-! ign.mf
-!  Ok [24] [34] [35] [36] [37] [64] [191] [159])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! lig.mf
-!  Ok [25] [26] [28] [27] [29] [30] [31])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! omp.mf
-!  Ok [38] [63] [190])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! ulett.mf
-!  Ok [65] [66] [67] [68] [69] [70] [71] [72] [73] [74] [75] [76] [77] [78]
-! [79] [80] [81] [82] [83] [84] [85] [86] [87] [88] [89] [90])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! llett.mf
-!  Ok [97] [98] [99] [100] [101] [102] [103] [104] [105] [106] [107] [108]
-! [109] [110] [111] [112] [113] [114] [115] [116] [117] [118] [119] [120]
-! [121] [122])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! digit.mf
-!  Ok [48] [49] [50] [51] [52] [53] [54] [55] [56] [57])
-! (c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/source/jknappen/ec/exr
-! ligtb.mf
-!  Ok) ) ) )
-! (some charht values had to be adjusted by as much as 0.07498pt)
-! Font metrics written on ecrm0900.tfm.
-! Output written on ecrm0900.600gf (256 characters, 46448 bytes).
-! Transcript written on ecrm0900.log.
-! mf-nowin.exe --progname=mf --base=mf \mode:=ljfour; \mag:=1+0/600; nonstopmode; input ecrm0900;
-! gftopk.exe ecrm0900.600gf ecrm0900.600pk
-
-! kpathsea: Running mktexpk --mfmode / --bdpi 600 --mag 1+0/600 --dpi 600 ecrm0900
-
-! The command name is C:\Users\Sofia\AppData\Roaming\TinyTeX\bin\win32\mktexpk

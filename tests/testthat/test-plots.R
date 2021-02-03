@@ -1,6 +1,6 @@
 data("exampleRprimerProfile")
 data("exampleRprimerOligo")
-# data("exampleRprimerAssay")
+data("exampleRprimerAssay")
 
 test_that("plotData works", {
     p <- plotData(exampleRprimerProfile)
@@ -9,11 +9,11 @@ test_that("plotData works", {
     expect_true(ggplot2::is.ggplot(p))
     p <- plotData(exampleRprimerOligo[exampleRprimerOligo$type == "primer", ])
     expect_true(ggplot2::is.ggplot(p))
-    # p <- plotData(exampleRprimerAssay)
-    # expect_true(ggplot2::is.ggplot(p))
-    p <- plotNucleotides(exampleRprimerProfile[1:10, ])
+    p <- plotData(exampleRprimerAssay)
     expect_true(ggplot2::is.ggplot(p))
-    p <- plotNucleotides(exampleRprimerProfile[1:10, ], rc = TRUE)
+    p <- plotData(exampleRprimerProfile[1:10, ], type = "nucleotide")
+    expect_true(ggplot2::is.ggplot(p))
+    p <- plotData(exampleRprimerProfile[1:10, ], rc = TRUE, type = "nucleotide")
     expect_true(ggplot2::is.ggplot(p))
 })
 

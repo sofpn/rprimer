@@ -1,7 +1,9 @@
+# Skriv stort test för olika fall
+
 data("exampleRprimerProfile")
 x <- exampleRprimerProfile
 
-test_that(".oligos returns an error when it should", {
+test_that("oligos returns an error when it should", {
     expect_error(oligos(unclass(x)))
     expect_error(oligos(x, maxGapFrequency = -1))
     expect_error(oligos(x, maxGapFrequency = 1.1))
@@ -50,7 +52,7 @@ test_that(".nmers works", {
     expect_equal(dim(nmer), c(1, 3))
 })
 
-#t <- .generateOligos(x[5000:6000, ])
+y <- .generateOligos(x[5000:6000, ])
 
 test_that(".countDegeneracy works", {
     seq <- c("A", "C", "R", "N", "Y")
@@ -62,38 +64,38 @@ test_that(".countDegeneracy works", {
 
 test_that(".generateOligos works", {
     expect_equal(
-        x$iupac[oligos$start[4]:oligos$end[4]], oligos$iupacSequence[4, ]
+        x$iupac[y$start[4]:y$end[4]], y$iupacSequence[4, ]
     )
     expect_equal(
-        oligos$degeneracy[4],
-        .countDegeneracy(x$iupac[oligos$start[4]:oligos$end[4]])
+        y$degeneracy[4],
+        .countDegeneracy(x$iupac[y$start[4]:y$end[4]])
     )
     expect_equal(
-        oligos$gapFrequency[4], max(x$gaps[oligos$start[4]:oligos$end[4]])
+        y$gapFrequency[4], max(x$gaps[y$start[4]:y$end[4]])
     )
     expect_equal(
-        oligos$identity[4], mean(x$identity[oligos$start[4]:oligos$end[4]])
+        y$coverage[4], mean(x$coverage[y$start[4]:y$end[4]])
     )
     expect_equal(
-        oligos$endIdentityFwd[4],
-        min(x$identity[(oligos$end[4] - 4):oligos$end[4]])
+        y$endCoverageFwd[4],
+        min(x$coverage[(y$end[4] - 4):y$end[4]])
     )
     expect_equal(
-        oligos$endIdentityRev[4],
-        min(x$identity[oligos$start[4]:(oligos$start[4] + 4)])
+        y$endCoverageRev[4],
+        min(x$coverage[y$start[4]:(y$start[4] + 4)])
     )
-    expect_equal(oligos$roiStart[4], 5000)
-    expect_equal(oligos$roiEnd[4], 6000)
-    expect_equal(unique(oligos$length), ncol(oligos$iupacSequence))
-    expect_true(is.list(oligos))
+    expect_equal(y$roiStart[4], 5000)
+    expect_equal(y$roiEnd[4], 6000)
+    expect_equal(unique(y$length), ncol(y$iupacSequence))
+    expect_true(is.list(y))
 })
 
 test_that(".filterOligos works", {
-    oligos <- .filterOligos(oligos, maxDegeneracy = 32)
-    expect_true(all(oligos$degeneracy <= 32))
-    oligos <- .filterOligos(oligos, maxGapFrequency = 0)
-    expect_true(all(oligos$gapFrequency == 0))
-    expect_true(is.list(oligos))
+    y <- .filterOligos(y, maxDegeneracy = 32)
+    expect_true(all(y$degeneracy <= 32))
+    y <- .filterOligos(y, maxGapFrequency = 0)
+    expect_true(all(y$gapFrequency == 0))
+    expect_true(is.list(y))
 })
 
 test_that(".expandDegenerates works", {
@@ -108,20 +110,20 @@ test_that(".expandDegenerates works", {
 })
 
 test_that(".makeOligoMatrix works", {
-    oligos <- .generateOligos(x[5000:6000, ])
-    oligos <- .filterOligos(oligos, maxDegeneracy = 8)
-    oligoList <- apply(oligos$iupacSequence, 1, .expandDegenerates)
+    y <- .generateOligos(x[5000:6000, ])
+    y <- .filterOligos(y, maxDegeneracy = 8)
+    oligoList <- apply(y$iupacSequence, 1, .expandDegenerates)
     expect_true(all(vapply(oligoList, is.matrix, logical(1))))
     expect_equal(
-        ncol(oligos$iupacSequence), unique(vapply(oligoList, ncol, integer(1)))
+        ncol(y$iupacSequence), unique(vapply(oligoList, ncol, integer(1)))
     )
     oligoMatrix <- .makeOligoMatrix(oligoList)
     expect_equal(length(unique(rownames(oligoMatrix))), length(oligoList))
 
     ## Test how it works when the maximum degeneracy is one
-    oligos <- .generateOligos(x[5000:6000, ])
-    oligos <- .filterOligos(oligos, maxDegeneracy = 1)
-    oligoList <- apply(oligos$iupacSequence, 1, .expandDegenerates)
+    y <- .generateOligos(x[5000:6000, ])
+    y <- .filterOligos(y, maxDegeneracy = 1)
+    oligoList <- apply(y$iupacSequence, 1, .expandDegenerates)
     if (!is.list(oligoList)) {
         oligoList <- t(oligoList)
         oligoList <- lapply(seq_len(nrow(oligoList)), function(i) {
@@ -129,27 +131,27 @@ test_that(".makeOligoMatrix works", {
         })
     }
     expect_equal(
-        ncol(oligos$iupacSequence), unique(vapply(oligoList, ncol, integer(1)))
+        ncol(y$iupacSequence), unique(vapply(oligoList, ncol, integer(1)))
     )
     oligoMatrix <- .makeOligoMatrix(oligoList)
     expect_equal(length(unique(rownames(oligoMatrix))), length(oligoList))
 
     ## Test if there is only one oligo as input
-    oligos <- lapply(oligos, function(x) {
+    y <- lapply(y, function(x) {
         if (is.matrix(x)) x[1, , drop = FALSE] else x[1]
     })
-    oligoList <- apply(oligos$iupacSequence, 1, .expandDegenerates)
+    oligoList <- apply(y$iupacSequence, 1, .expandDegenerates)
     if (!is.list(oligoList)) oligoList <- list(t(oligoList))
     oligoMatrix <- .makeOligoMatrix(oligoList)
     expect_equal(length(unique(rownames(oligoMatrix))), length(oligoList))
 
     ## Test if degeneracy is 32 (max)
-    oligos <- .generateOligos(x[5000:6000, ])
-    oligos <- .filterOligos(oligos, maxDegeneracy = 32)
-    oligoList <- apply(oligos$iupacSequence, 1, .expandDegenerates)
+    y <- .generateOligos(x[5000:6000, ])
+    y <- .filterOligos(y, maxDegeneracy = 32)
+    oligoList <- apply(y$iupacSequence, 1, .expandDegenerates)
     expect_true(all(vapply(oligoList, is.matrix, logical(1))))
     expect_equal(
-        ncol(oligos$iupacSequence), unique(vapply(oligoList, ncol, integer(1)))
+        ncol(y$iupacSequence), unique(vapply(oligoList, ncol, integer(1)))
     )
     oligoMatrix <- .makeOligoMatrix(oligoList)
     expect_equal(length(unique(rownames(oligoMatrix))), length(oligoList))
@@ -210,22 +212,22 @@ test_that(".detectRepeats works", {
 
 test_that(".getAllVariants works", {
     ## Make sure it works if max degeneracy is one
-    oligos <- .filterOligos(oligos, maxDegeneracy = 1)
-    all <- .getAllVariants(oligos)
+    y <- .filterOligos(y, maxDegeneracy = 1)
+    all <- .getAllVariants(y)
     expect_true(is.list(all))
     expect_equal(
-        all$sequence[[1]], paste(oligos$iupacSequence[1, ], collapse = "")
+        all$sequence[[1]], paste(y$iupacSequence[1, ], collapse = "")
     )
     expect_equal(
         all$sequence[[length(all$sequence)]],
-        paste(oligos$iupacSequence[nrow(oligos$iupacSequence), ], collapse = "")
+        paste(y$iupacSequence[nrow(y$iupacSequence), ], collapse = "")
     )
     expect_equal(unique(vapply(all$sequence, length, integer(1))), 1)
 
     ## If degeneracy is high
-    oligos <- .generateOligos(x[100:150, ])
-    oligos <- .filterOligos(oligos, maxDegeneracy = 16)
-    all <- .getAllVariants(oligos)
+    y <- .generateOligos(x[100:150, ])
+    y <- .filterOligos(y, maxDegeneracy = 16)
+    all <- .getAllVariants(y)
     nVariants <- lapply(all, function(x) vapply(x, length, integer(1)))
     nVariants <- do.call("rbind", nVariants)
     expect_true(all(apply(nVariants, 2, function(x) length(unique(x))) == 1))
@@ -233,34 +235,32 @@ test_that(".getAllVariants works", {
 })
 
 test_that(".getMeanAndRange, and .makeOligoDf work", {
-    oligos <- .generateOligos(x[100:150, ])
-    oligos <- .filterOligos(oligos, maxDegeneracy = 16)
-    all <- .getAllVariants(oligos)
+    y <- .generateOligos(x[100:150, ])
+    y <- .filterOligos(y, maxDegeneracy = 16)
+    all <- .getAllVariants(y)
     meanAndRange <- .getMeanAndRange(all)
     expect_true(is.data.frame(meanAndRange))
-    #   expect_equal(meanAndRange$tmMean[1], mean(all$tm[[1]]))
-    #   expect_equal(meanAndRange$tmRange[1], max(all$tm[[1]]) - min(all$tm[[1]]))
-    oligoDf <- .makeOligoDf(oligos)
+    oligoDf <- .makeOligoDf(y)
     expect_true(is.data.frame(oligoDf))
     nrows <- c(nrow(meanAndRange), nrow(oligoDf))
     expect_equal(length(unique(nrows)), 1)
 
     ## Test with only one entry in each list
-    oligos <- lapply(oligos, function(x) {
+    y <- lapply(y, function(x) {
         if (is.matrix(x)) x[1, , drop = FALSE] else x[1]
     })
-    oligoDf <- .makeOligoDf(oligos)
+    oligoDf <- .makeOligoDf(y)
     expect_equal(nrow(oligoDf), 1)
 })
 
 test_that(".designOligos and .isWithinRange work", {
-    oligos <- .designOligos(x, maxDegeneracy = 4)
-    expect_true(is.data.frame(oligos))
-    expect_true(all(oligos$degeneracy <= 8))
+    y <- .designOligos(x, maxDegeneracy = 4)
+    expect_true(is.data.frame(y))
+    expect_true(all(y$degeneracy <= 8))
     expect_error(.designOligos(x[1:50, ], maxDegeneracy = 1))
-    gcLogical <- .isWithinRange(oligos$gcContent, range = c(0.5, 0.55))
+    gcLogical <- .isWithinRange(y$gcContent, range = c(0.5, 0.55))
     expect_true(is.logical(gcLogical[[1]]))
-    gcLocical <- .isWithinRange(oligos$gcContent[[1]][1], range = c(0.5, 0.55))
+    gcLocical <- .isWithinRange(y$gcContent[[1]][1], range = c(0.5, 0.55))
     expect_true(is.logical(gcLogical[[1]]))
 })
 
