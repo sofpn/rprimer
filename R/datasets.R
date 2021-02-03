@@ -132,7 +132,7 @@
 #'   \item{endFwd}{Position where the forward primer ends.}
 #'   \item{lengthFwd}{Length of the forward primer.}
 #'   \item{iupacSequenceFwd}{IUPAC sequence of the forward primer.}
-#'   \item{identityFwd}{Average identity of the forward primer.}
+#'   \item{coverageFwd}{Average coverage of the forward primer.}
 #'   \item{degeneracyFwd}{Number of variants of the forward primer.}
 #'   \item{gcContentMeanFwd}{Mean GC-content of the forward primer.}
 #'   \item{gcContentRangeFwd}{Range in GC-content of the forward primer.}
@@ -145,7 +145,7 @@
 #'   \item{endRev}{Position where the reverse primer ends.}
 #'   \item{lengthRev}{Length of the reverse primer.}
 #'   \item{iupacSequenceRev}{IUPAC sequence of the reverse primer.}
-#'   \item{identityRev}{Average identity of the reverse primer.}
+#'   \item{coverageRev}{Average coverage of the reverse primer.}
 #'   \item{degeneracyRev}{Number of variants of the reverse primer.}
 #'   \item{gcContentMeanRev}{Mean GC-content of the reverse primer.}
 #'   \item{gcContentRangeRev}{Range in GC-content of the reverse primer.}
@@ -160,7 +160,7 @@
 #'   \item{endPr}{Position where the probe ends.}
 #'   \item{lengthPr}{Length of the probe.}
 #'   \item{iupacSequencePr}{IUPAC sequence of the probe.}
-#'   \item{identityPr}{Average identity of the probe.}
+#'   \item{coveragePr}{Average coverage of the probe.}
 #'   \item{degeneracyPr}{Number of variants of the probe.}
 #'   \item{gcContentMeanPr}{Mean GC-content of the probe.}
 #'   \item{gcContentRangePr}{Range in GC-content of the probe.}

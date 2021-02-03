@@ -17,10 +17,10 @@
 #' Acceptable tm difference between the primers (average Tm of the
 #' primer pair) and probe. A numeric vector [-20, 20],
 #' defaults to \code{c(0, 10)}.
-#' The Tm-difference is calculated by subtracting the
+#' The tm-difference is calculated by subtracting the
 #' Tm of the probe with the average Tm of the majority
-#' primer pair. A negative Tm-difference
-#' means that the Tm of the probe is lower than the average Tm of the
+#' primer pair. A negative tm-difference
+#' means that the tm of the probe is lower than the average tm of the
 #' primer pair.
 #'
 #' @return
@@ -40,7 +40,7 @@
 #'   \item{endFwd}{Position where the forward primer ends.}
 #'   \item{lengthFwd}{Length of the forward primer.}
 #'   \item{iupacSequenceFwd}{IUPAC sequence of the forward primer.}
-#'   \item{identityFwd}{Average identity of the forward primer.}
+#'   \item{coverageFwd}{Average coverage of the forward primer.}
 #'   \item{degeneracyFwd}{Number of variants of the forward primer.}
 #'   \item{gcContentMeanFwd}{Mean GC-content of the forward primer.}
 #'   \item{gcContentRangeFwd}{Range in GC-content of the forward primer.}
@@ -53,7 +53,7 @@
 #'   \item{endRev}{Position where the reverse primer ends.}
 #'   \item{lengthRev}{Length of the reverse primer.}
 #'   \item{iupacSequenceRev}{IUPAC sequence of the reverse primer.}
-#'   \item{identityRev}{Average identity of the reverse primer.}
+#'   \item{coverageRev}{Average coverage of the reverse primer.}
 #'   \item{degeneracyRev}{Number of variants of the reverse primer.}
 #'   \item{gcContentMeanRev}{Mean GC-content of the reverse primer.}
 #'   \item{gcContentRangeRev}{Range in GC-content of the reverse primer.}
@@ -77,7 +77,7 @@
 #'   \item{endPr}{Position where the probe ends.}
 #'   \item{lengthPr}{Length of the probe.}
 #'   \item{iupacSequencePr}{IUPAC sequence of the probe.}
-#'   \item{identityPr}{Average identity of the probe.}
+#'   \item{coveragePr}{Average coverage of the probe.}
 #'   \item{degeneracyPr}{Number of variants of the probe.}
 #'   \item{gcContentMeanPr}{Mean GC-content of the probe.}
 #'   \item{gcContentRangePr}{Range in GC-content of the probe.}
