@@ -4,6 +4,29 @@ data("exampleRprimerProfile")
 x <- exampleRprimerProfile
 y <- .generateOligos(x[5000:6000, ])
 
+
+test_that("oligos works", {
+    z <- oligos(x[5000:6000, ],
+                probe = FALSE,
+                lengthPrimer = 16:20,
+                maxDegeneracyPrimer = 2,
+                tmRangePrimer = c(50, 60),
+                gcRangePrimer = c(0.45, 0.75))
+    expect_true(all(z$type == "primer"))
+    expect_true(all(unlist(z$gcContent) >= 0.45))
+    expect_true(all(unlist(z$gcContent) <= 0.75))
+    expect_true(all(z$degeneracy <= 2))
+    di <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(CT){4,}|(TC){4,}|)"
+    mono <- "([A-Z])\\1\\1\\1\\1"
+    expect_false(any(grepl(di, unlist(z$sequence))))
+    expect_false(any(grepl(mono, unlist(z$sequence))))
+    expect_true(all(unlist(z$tm) >= 50))
+    expect_true(all(unlist(z$tm) <= 60))
+    expect_true(all(z$length >= 16))
+    expect_true(all(z$length <= 20)) # check mean and range as well.. # end coverage
+
+})
+
 test_that("oligos returns an error when it should", {
     expect_error(oligos(unclass(x)))
     expect_error(oligos(x, maxGapFrequency = -1))
@@ -66,14 +89,14 @@ test_that(".splitAndPaste works", {
     iupac <- .nmers(x$iupac, 10)
     fwd <- .splitAndPaste(majority, iupac)
     expect_equal(ncol(fwd), ncol(majority))
-    expect_equal(majority[, 1:6], fwd[, 1:6])
-    expect_equal(iupac[, 7:10], fwd[, 7:10])
+    expect_equal(majority[, 1:7], fwd[, 1:7])
+    expect_equal(iupac[, 8:10], fwd[, 8:10])
     rev <- .splitAndPaste(iupac, majority, rev = TRUE)
-    expect_equal(iupac[, 1:4], rev[, 1:4])
-    expect_equal(majority[, 5:10], rev[, 5:10])
+    expect_equal(iupac[, 1:3], rev[, 1:3])
+    expect_equal(majority[, 4:10], rev[, 4:10])
     expect_equal(ncol(rev), ncol(majority))
-    expect_false(any(grep("[^ACGT-]", fwd[, 1:6])))
-    expect_false(any(grep("[^ACGT-]", rev[, 7:10])))
+    expect_false(any(grep("[^ACGT-]", fwd[, 1:7])))
+    expect_false(any(grep("[^ACGT-]", rev[, 8:10])))
     majority <- majority[1, , drop = FALSE]
     iupac <- iupac[1, , drop = FALSE]
     oneRow <- .splitAndPaste(majority, iupac)
@@ -89,13 +112,13 @@ test_that(".splitAndPaste works", {
     coverage <- .nmers(x$coverage, 12)
     identity <- .nmers(x$identity, 12)
     identityCoverage <- .splitAndPaste(identity, coverage)
-    coverageIdentity <- .splitAndPaste(coverage, identity, rev = TRUE)
     expect_identical(identityCoverage[, 1:8], identity[, 1:8])
-   # expect_identical(identityCoverage[, 9:12], coverage[, 9:12])
-
+    expect_identical(identityCoverage[, 9:12], coverage[, 9:12])
+    coverageIdentity <- .splitAndPaste(coverage, identity, rev = TRUE)
+    expect_identical(coverageIdentity[, 1:4], coverage[, 1:4])
+    expect_identical(coverageIdentity[, 5:12], identity[, 5:12])
 })
 
-################################################################
 test_that(".generateOligos works", {
     expect_equal(
         x$iupac[y$start[4]:y$end[4]], y$iupacSequence[4, ]

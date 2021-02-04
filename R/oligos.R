@@ -1,7 +1,3 @@
-# tester
-# dokumentation
-# end coverage mixedrev - dubbelkolla detta
-
 #' Design oligos
 #'
 #' \code{oligos()} designs oligos (primers and probes)
@@ -51,7 +47,7 @@
 #' [20, 2000], defaults to 500.
 #'
 #' @param designStrategyPrimer
-#' "ambiguous" or "mixed". Defaults to "ambiguous".
+#' \code{"ambiguous"} or \code{"mixed"}. Defaults to \code{"ambiguous"}.
 #'
 #' @param probe
 #' If probes should be designed. \code{TRUE} or \code{FALSE},
@@ -123,11 +119,11 @@
 #'
 #' @section Design strategy for primers:
 #'
-#' Primers can be designed in either one of two ways: “ambiguous” or “mixed”.
+#' Primers can be designed in either one of two ways: "ambiguous" or "mixed".
 #'
 #' \itemize{
 #' \item{The ambiguous strategy (default) generates primers from the IUPAC
-#' consensus sequence. This means that degenerate bases can occur at
+#' consensus sequence, meaning that degenerate bases can occur at
 #' any position in the oligo. Probes are always designed using the ambiguous
 #' strategy}
 #' \item{The mixed strategy is partially based on the Consensus-Degenerate
@@ -137,9 +133,9 @@
 #' variable targets. Here, primers are generated from both the
 #' majority and the IUPAC
 #' consensus sequence, and consist of a shorter degenerate part at the
-#' 3’ end (~1/3 of the
+#' 3' end (~1/3 of the
 #' primer, targeting a conserved region), and a longer consensus part
-#' at the 5’ end (~2/3 of the primer)}
+#' at the 5' end (~2/3 of the primer)}
 #' }
 #'
 #' @section Validity checks:
@@ -174,10 +170,10 @@
 #'
 #' @references
 #' Rose, Timothy M, Emily R Schultz, Jorja G Henikoff, Shmuel Pietrokovski,
-#' Claire M McCallum, and Steven Henikoff. 1998. “Consensus-Degenerate
+#' Claire M McCallum, and Steven Henikoff. 1998. "Consensus-Degenerate
 #' Hybrid Oligonucleotide Primers for
-#' Amplification of Distantly Related Sequences.” Nucleic Acids Research 26 (7):
-#' 1628–35.
+#' Amplification of Distantly Related Sequences." Nucleic Acids Research 26 (7):
+#' 1628-35.
 #'
 #' SantaLucia Jr, J., & Hicks, D. (2004).
 #' The thermodynamics of DNA structural motifs.
@@ -408,7 +404,7 @@ oligos <- function(x,
 
 #' Split two matrices, and paste them together
 #'
-#' This is a helper function to generate primers according to the "mixed"
+#' Helper function to generate primers according to the "mixed"
 #' strategy.
 #'
 #' @param first
@@ -425,15 +421,20 @@ oligos <- function(x,
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' .splitAndPaste(t(matrix(rep(1, 10))), t(matrix(rep(2, 10))))
+#' .splitAndPaste(t(matrix(rep(1, 10))), t(matrix(rep(2, 10))), rev = TRUE)
 .splitAndPaste <- function(first, second, rev = FALSE) {
-    small <- seq_len(as.integer(ncol(first) / 3))
-    large <- seq(small[length(small)] + 1, ncol(first))
+    n <- ncol(first)
+    small <- seq_len(as.integer(n / 3))
+    large <- seq(small[length(small)] + 1, n)
     if (rev) {
         first <- first[, small, drop = FALSE]
         second <- second[, large, drop = FALSE]
     } else {
         first <- first[, seq_along(large), drop = FALSE]
-        second <- second[, small + ncol(first) - length(small), drop = FALSE]
+        second <- second[, small + n - length(small), drop = FALSE]
     }
     cbind(first, second)
 }
@@ -493,9 +494,22 @@ oligos <- function(x,
     oligos
 }
 
+#' Mix oligos
+#'
+#' Helper function to \code{.generateMixedOligos()}
+#'
+#' @param x An output from \code{.generateOligos()}.
+#'
+#' @param rev If reverse oligos should be generated.
+#'
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' data("exampleRprimerProfile")
+#' x <- .generateOligos(exampleRprimerProfile)
+#' .mixOligos(x)
 .mixOligos <- function(x, rev = FALSE) {
     oligos <- list()
     if (rev) {
@@ -515,6 +529,22 @@ oligos <- function(x,
     oligos
 }
 
+#' Generate mixed oligos
+#'
+#' Helper function to \code{.designMixedOligos()}
+#'
+#' @param x An output from \code{.generateOligos()}.
+#'
+#' @param rev If reverse oligos should be generated.
+#'
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerProfile")
+#' x <- .generateOligos(exampleRprimerProfile)
+#' .generateMixedOligos(x)
 .generateMixedOligos <- function(x, rev = FALSE) {
     oligos <- list()
     oligos <- .mixOligos(x, rev)
@@ -1006,7 +1036,7 @@ oligos <- function(x,
             "fiveEndGPlus", "fiveEndGMinus"
         )
         select <- colnames(y) %in% toInvert
-        y[, select] <- as.logical(1 - y[, select])
+        y[, select] <- !y[, select]
         col <- colMeans(y)
         row <- rowMeans(y)
         all(col >= colThreshold) & all(row >= rowThreshold)
