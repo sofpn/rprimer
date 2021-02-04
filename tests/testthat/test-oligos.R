@@ -2,6 +2,7 @@
 
 data("exampleRprimerProfile")
 x <- exampleRprimerProfile
+y <- .generateOligos(x[5000:6000, ])
 
 test_that("oligos returns an error when it should", {
     expect_error(oligos(unclass(x)))
@@ -52,8 +53,6 @@ test_that(".nmers works", {
     expect_equal(dim(nmer), c(1, 3))
 })
 
-y <- .generateOligos(x[5000:6000, ])
-
 test_that(".countDegeneracy works", {
     seq <- c("A", "C", "R", "N", "Y")
     degen <- .countDegeneracy(seq)
@@ -62,6 +61,41 @@ test_that(".countDegeneracy works", {
     expect_equal(.countDegeneracy(c("A", "C", "G", "T")), 1)
 })
 
+test_that(".splitAndPaste works", {
+    majority <- .nmers(x$majority, 10)
+    iupac <- .nmers(x$iupac, 10)
+    fwd <- .splitAndPaste(majority, iupac)
+    expect_equal(ncol(fwd), ncol(majority))
+    expect_equal(majority[, 1:6], fwd[, 1:6])
+    expect_equal(iupac[, 7:10], fwd[, 7:10])
+    rev <- .splitAndPaste(iupac, majority, rev = TRUE)
+    expect_equal(iupac[, 1:4], rev[, 1:4])
+    expect_equal(majority[, 5:10], rev[, 5:10])
+    expect_equal(ncol(rev), ncol(majority))
+    expect_false(any(grep("[^ACGT-]", fwd[, 1:6])))
+    expect_false(any(grep("[^ACGT-]", rev[, 7:10])))
+    majority <- majority[1, , drop = FALSE]
+    iupac <- iupac[1, , drop = FALSE]
+    oneRow <- .splitAndPaste(majority, iupac)
+    expect_true(is.matrix(oneRow))
+    expect_equal(nrow(oneRow), 1L)
+    expect_equal(ncol(oneRow), ncol(majority))
+    majority <- .nmers(x$majority, 11)
+    iupac <- .nmers(x$iupac, 11)
+    fwd <- .splitAndPaste(majority, iupac)
+    expect_equal(ncol(fwd), ncol(majority))
+    rev <- .splitAndPaste(iupac, majority, rev = TRUE)
+    expect_equal(ncol(rev), ncol(majority))
+    coverage <- .nmers(x$coverage, 12)
+    identity <- .nmers(x$identity, 12)
+    identityCoverage <- .splitAndPaste(identity, coverage)
+    coverageIdentity <- .splitAndPaste(coverage, identity, rev = TRUE)
+    expect_identical(identityCoverage[, 1:8], identity[, 1:8])
+   # expect_identical(identityCoverage[, 9:12], coverage[, 9:12])
+
+})
+
+################################################################
 test_that(".generateOligos works", {
     expect_equal(
         x$iupac[y$start[4]:y$end[4]], y$iupacSequence[4, ]

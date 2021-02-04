@@ -408,11 +408,17 @@ oligos <- function(x,
 
 #' Split two matrices, and paste them together
 #'
+#' This is a helper function to generate primers according to the "mixed"
+#' strategy.
+#'
 #' @param first
 #' The matrix that should appear first.
 #'
 #' @param last
 #' The matrix that should appear last.
+#'
+#' @param rev
+#' If reverse primers should be produced \code{TRUE} or {FALSE}.
 #'
 #' @return A matrix.
 #'
@@ -420,13 +426,14 @@ oligos <- function(x,
 #'
 #' @noRd
 .splitAndPaste <- function(first, second, rev = FALSE) {
-    n <- ncol(first)
+    small <- seq_len(as.integer(ncol(first) / 3))
+    large <- seq(small[length(small)] + 1, ncol(first))
     if (rev) {
-        first <- first[, (as.integer(2 * n / 3) + 1):n]
-        second <- second[, seq_len(as.integer(2 * n / 3))]
+        first <- first[, small, drop = FALSE]
+        second <- second[, large, drop = FALSE]
     } else {
-        first <- first[, seq_len(as.integer(2 * n / 3))]
-        second <- second[, (as.integer(2 * n / 3) + 1):n]
+        first <- first[, seq_along(large), drop = FALSE]
+        second <- second[, small + ncol(first) - length(small), drop = FALSE]
     }
     cbind(first, second)
 }
@@ -465,16 +472,16 @@ oligos <- function(x,
     oligos$coverage <- .nmers(x$coverage, lengthOligo)
     oligos$identity <- .nmers(x$identity, lengthOligo)
     oligos$identityCoverage <- .splitAndPaste(oligos$identity, oligos$coverage)
-    oligos$identityCoverage <- rowMeans(oligos$identityCoverage)
     oligos$coverageIdentity <- .splitAndPaste(
         oligos$coverage, oligos$identity, rev = TRUE)
-    oligos$coverageIdentity <- rowMeans(oligos$coverageIdentity)
     oligos$endCoverageFwd <- apply(
         oligos$coverage[
             , (ncol(oligos$coverage) - 5):ncol(oligos$coverage)],
         1, min
     )
     oligos$endCoverageRev <- apply(oligos$coverage[, seq_len(5)], 1, min)
+    oligos$identityCoverage <- rowMeans(oligos$identityCoverage)
+    oligos$coverageIdentity <- rowMeans(oligos$coverageIdentity)
     oligos$coverage <- rowMeans(oligos$coverage)
     oligos$method <- rep("ambiguous",  nrow(oligos$iupacSequence))
     oligos$roiStart <- rep(

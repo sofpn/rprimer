@@ -301,5 +301,5 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     s[s > ambiguityThreshold] <- 0
     coverage <- 1 - colSums(s)
     coverage[is.na(coverage)] <- 1
-    coverage
+    unname(coverage)
 }
