@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Primer and probe design are central parts of PCR assay development. Successful target amplification depend on several factors, such as optimal primer and probe length, GC-content, melting temperature and sequence complexity. The oligos must be designed so that the risks of dimer and hairpin formation are reduced, and the intended target region must be sufficiently conserved to avoid severe mismatches between the oligos and the template [@Bustin]. This together makes PCR assay design challenging, and a large number of computational methods has been developed, both for specific applications and for more general purposes [@guo2020classification]. One of the most comprehensive and widely used tools is Primer3 [@Rozen]. An important limitation with Primer3 is that the design process is based on a single sequence, which means that primers can be inadvertently placed in sequence heterogeneous regions, leading to amplification and quantification bias. This can, in part, be circumvented by making a “consensus profile”  from an alignment of the target sequences of interest, and masking the variable regions in the consensus sequence before the design process [**REF?**]. Unfortunately, for many applications, it can be difficult to find even a few completely conserved regions suitable as primer or probe targets.
+Primer and probe design are central parts of PCR assay development. Successful target amplification depend on several factors, such as optimal primer and probe length, GC-content, melting temperature and sequence complexity. The oligos must be designed so that the risks of dimer and hairpin formation are reduced, and the intended target region must be sufficiently conserved to avoid severe mismatches between the oligos and the template [@Bustin]. This together makes PCR assay design challenging, and a large number of computational methods has been developed, both for specific applications and for more general purposes [@guo2020classification]. One of the most comprehensive and widely used tools is Primer3 [@Rozen]. An important limitation with Primer3 is that the design process is based on a single sequence, which means that primers can be inadvertently placed in sequence heterogeneous regions, leading to amplification and quantification bias. This can, in part, be circumvented by making a “consensus profile”  from an alignment of the target sequences of interest, and masking the variable regions in the consensus sequence before the design process [**REF?**]. But ufortunately, for many applications, it can be difficult to find even a few completely conserved regions suitable as primer or probe targets.
 
 A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, a problem with this approach is that the amplification efficiency may decrease with increased degeneracy, because only a fraction of the primers match perfectly to the target sequence and the synthesized product [@Rose]. An optimal design strategy would therefore be to find primer binding regions with as low degeneracy as possible, but without compromising with the inclusivity [the ability for the assay to amplify the target sequences of interest [@Hedman]]. 
 
@@ -40,10 +40,10 @@ devtools::install_github("sofpn/rprimer")
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-devtools::load_all(".")
+#devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
-#library(rprimer)
+library(rprimer)
 ```
 
 # Overview
