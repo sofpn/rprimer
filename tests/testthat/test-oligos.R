@@ -22,8 +22,16 @@ test_that("oligos works", {
     expect_false(any(grepl(mono, unlist(z$sequence))))
     expect_true(all(unlist(z$tm) >= 50))
     expect_true(all(unlist(z$tm) <= 60))
+    expect_equal(z$tmMean, vapply(z$tm, mean, double(1)))
+    expect_equal(z$tmRange, vapply(z$tm, function(x) {
+        max(x) - min(x)
+    }, double(1)))
+    expect_equal(z$gcContentMean, vapply(z$gcContent, mean, double(1)))
+    expect_equal(z$gcContentRange, vapply(z$gcContent, function(x) {
+        max(x) - min(x)
+    }, double(1)))
     expect_true(all(z$length >= 16))
-    expect_true(all(z$length <= 20)) # check mean and range as well.. # end coverage
+    expect_true(all(z$length <= 20)) # # end coverage # probe # end runs fwd rev
 
 })
 

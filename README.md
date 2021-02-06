@@ -10,11 +10,11 @@ rprimer can be installed from [GitHub](https://github.com/) with:
 ``` r
 if (!requireNamespace("devtools", quietly = TRUE))
   install.packages("devtools")
-devtools::install_github("sofpn/rprimer")
+devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf58d28f25847ecbe0")
 ```
 
 ``` r
-#library(rprimer)
+library(rprimer)
 devtools::load_all(".")
 ```
 
@@ -102,7 +102,7 @@ plotData(roi2, type = "nucleotide")
 
 The next step is to design oligos. You can either use the default
 settings as below, or adjust the design constraints (see the package
-vignette or `?rprimer::oligos` for more information).
+vignette or `?oligos` for more information).
 
 ``` r
 myOligos <- oligos(myConsensusProfile)
@@ -132,7 +132,7 @@ plotData(myOligos)
 `assays()` finds pairs of forward and reverse primers and combines them
 with probes, if probes are present in the dataset. You can either use
 the default settings as below, or adjust the design constraints (see the
-package vignette or `?rprimer::assays` for more information).
+package vignette or `?assays` for more information).
 
 ``` r
 myAssays <- assays(myOligos)
