@@ -299,25 +299,6 @@ test_that(".getAllVariants works", {
     expect_true(all(nVariants <= 16))
 })
 
-test_that(".getMeanAndRange, and .makeOligoDf work", {
-    y <- .generateOligos(x[100:150, ])
-    y <- .filterOligos(y, maxDegeneracy = 16)
-    all <- .getAllVariants(y)
-    meanAndRange <- .getMeanAndRange(all)
-    expect_true(is.data.frame(meanAndRange))
-    oligoDf <- .makeOligoDf(y)
-    expect_true(is.data.frame(oligoDf))
-    nrows <- c(nrow(meanAndRange), nrow(oligoDf))
-    expect_equal(length(unique(nrows)), 1)
-
-    ## Test with only one entry in each list
-    y <- lapply(y, function(x) {
-        if (is.matrix(x)) x[1, , drop = FALSE] else x[1]
-    })
-    oligoDf <- .makeOligoDf(y)
-    expect_equal(nrow(oligoDf), 1)
-})
-
 test_that(".designOligos and .isWithinRange work", {
     y <- .designOligos(x, maxDegeneracy = 4)
     expect_true(is.data.frame(y))
