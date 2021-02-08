@@ -345,13 +345,17 @@ setMethod("plotData", "RprimerAssay", function(x) {
                 ),
                 .violinPlot(x, x$tmMean, "\n\n\nTm (mean)", color = color),
                 .violinPlot(
+                    x, x$identity, "\n\n\nIdentity (mean)",
+                    color = color
+                ),
+                .violinPlot(
                     x, x$coverage, "\n\n\nCoverage (mean)",
                     color = color
                 ),
                 .barPlot(x, x$length, "\n\n\nLength", color = color),
                 .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
             ),
-            ncol = 5
+            ncol = 6
         )
     } else {
         patchwork::wrap_plots(
@@ -363,13 +367,17 @@ setMethod("plotData", "RprimerAssay", function(x) {
                 ),
                 .dotPlot(x, x$tmMean, "\n\n\nTm (mean)", color = color),
                 .dotPlot(
+                    x, x$identity, "\n\n\nIdentity (mean)",
+                    color = color
+                ),
+                .dotPlot(
                     x, x$coverage, "\n\n\nCoverage (mean)",
                     color = color
                 ),
                 .barPlot(x, x$length, "\n\n\nLength", color = color),
                 .barPlot(x, x$degeneracy, "\n\n\nDegeneracy", color = color)
             ),
-            ncol = 5
+            ncol = 6
         )
     }
 }

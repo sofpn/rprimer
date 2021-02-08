@@ -1,3 +1,5 @@
+# skriv i man om coverage identity för mixed, generera nya exempel
+
 #' Design oligos
 #'
 #' \code{oligos()} designs oligos (primers and probes)
@@ -35,7 +37,7 @@
 #' variants in the target alignment. Defaults to 0.98.
 #'
 #' @param gcRangePrimer
-#' GC-content range for primers (proportion, not percent).
+#' GC-content range for primers.
 #' A numeric vector [0, 1], defaults to \code{c(0.40, 0.60)}.
 #'
 #' @param tmRangePrimer
@@ -96,9 +98,12 @@
 #'   \item{length}{Oligo length.}
 #'   \item{iupacSequence}{Oligo sequence, with amiguous bases (if any).}
 #'   \item{iupaSequenceRc}{The reverse complement of the iupacSequence.}
-#'   \item{coverage}{Average coverage of the oligo, can range from 0 to 1.
-#'     Coverage refers to the proportion of bases at
-#'     in the input alignment that are covered by the oligo.}
+#'   \item{identity}{For ambiguous oligos: Average identity of the oligo.
+#'     For mixed oligos: Average identity of the 5' (consensus) part of the
+#'     oligo. The value can range from 0 to 1.}
+#'   \item{coverage}{For ambiguous oligos: Average coverage of the oligo.
+#'     For mixed oligos: Average coverage of the 3' (degenerate) part of the
+#'     oligo. The value can range from 0 to 1.}
 #'   \item{degeneracy}{Number of sequence variants of the oligo.}
 #'   \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.
 #'   }
@@ -416,6 +421,10 @@ oligos <- function(x,
 #' @param rev
 #' If reverse primers should be produced \code{TRUE} or {FALSE}.
 #'
+#' @param combine
+#' If the two matrices should be pasted together in one. Defaults to \code
+#' {TRUE}. Otherwise a list with two matrices will return.
+#'
 #' @return A matrix.
 #'
 #' @keywords internal
@@ -425,7 +434,7 @@ oligos <- function(x,
 #' @examples
 #' .splitAndPaste(t(matrix(rep(1, 10))), t(matrix(rep(2, 10))))
 #' .splitAndPaste(t(matrix(rep(1, 10))), t(matrix(rep(2, 10))), rev = TRUE)
-.splitAndPaste <- function(first, second, rev = FALSE) {
+.splitAndPaste <- function(first, second, rev = FALSE, combine = TRUE) {
     n <- ncol(first)
     small <- seq_len(as.integer(n / 3))
     large <- seq(small[length(small)] + 1, n)
@@ -436,7 +445,12 @@ oligos <- function(x,
         first <- first[, seq_along(large), drop = FALSE]
         second <- second[, small + n - length(small), drop = FALSE]
     }
-    cbind(first, second)
+    if (combine) {
+        cbind(first, second)
+    } else {
+        list(first, second)
+    }
+
 }
 
 #' Generate oligos of a specific length
@@ -472,17 +486,19 @@ oligos <- function(x,
     oligos$gapFrequency <- apply(.nmers(x$gaps, lengthOligo), 1, max)
     oligos$coverage <- .nmers(x$coverage, lengthOligo)
     oligos$identity <- .nmers(x$identity, lengthOligo)
-    oligos$identityCoverage <- .splitAndPaste(oligos$identity, oligos$coverage)
+    oligos$identityCoverage <- .splitAndPaste(
+        oligos$identity, oligos$coverage, combine = FALSE
+    )
     oligos$coverageIdentity <- .splitAndPaste(
-        oligos$coverage, oligos$identity, rev = TRUE)
+        oligos$coverage, oligos$identity, rev = TRUE, combine = FALSE
+    )
     oligos$endCoverageFwd <- apply(
         oligos$coverage[
             , (ncol(oligos$coverage) - 5):ncol(oligos$coverage)],
         1, min
     )
     oligos$endCoverageRev <- apply(oligos$coverage[, seq_len(5)], 1, min)
-    oligos$identityCoverage <- rowMeans(oligos$identityCoverage)
-    oligos$coverageIdentity <- rowMeans(oligos$coverageIdentity)
+    oligos$identity <- rowMeans(oligos$identity)
     oligos$coverage <- rowMeans(oligos$coverage)
     oligos$method <- rep("ambiguous",  nrow(oligos$iupacSequence))
     oligos$roiStart <- rep(
@@ -516,13 +532,15 @@ oligos <- function(x,
         oligos$iupacSequence <- .splitAndPaste(
             x$iupacSequence, x$majoritySequence, rev = TRUE
         )
-        oligos$coverage <- x$coverageIdentity
+        oligos$coverage <- rowMeans(x$coverageIdentity[[1]]) ####
+        oligos$identity <- rowMeans(x$coverageIdentity[[2]]) ####
         oligos$method <- rep("mixedRev", nrow(oligos$iupacSequence))
     } else {
         oligos$iupacSequence <- .splitAndPaste(
             x$majoritySequence, x$iupacSequence
         )
-        oligos$coverage <- x$identityCoverage
+        oligos$coverage <- rowMeans(x$identityCoverage[[2]]) ####
+        oligos$identity <- rowMeans(x$identityCoverage[[1]]) ####
         oligos$method <- rep("mixedFwd", nrow(oligos$iupacSequence))
     }
     oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
@@ -558,7 +576,8 @@ oligos <- function(x,
     oligos$roiEnd <- x$roiEnd
     order <-  c(
         "iupacSequence", "start", "end", "length", "degeneracy","gapFrequency",
-        "coverage", "endCoverageFwd", "endCoverageRev", "method", "roiStart",
+        "identity", "coverage",
+        "endCoverageFwd", "endCoverageRev", "method", "roiStart",
         "roiEnd"
     )
     oligos[order]
@@ -566,7 +585,7 @@ oligos <- function(x,
 
 .dropItems <- function(x) {
     within(x, rm(
-        "majoritySequence", "identity", "identityCoverage", "coverageIdentity")
+        "majoritySequence", "identityCoverage", "coverageIdentity") ####
     )
 }
 
@@ -1272,7 +1291,7 @@ oligos <- function(x,
 .beautifyOligos <- function(x) {
     keep <- c(
         "type", "fwd", "rev", "start", "end", "length",
-        "iupacSequence", "iupacSequenceRc",
+        "iupacSequence", "iupacSequenceRc", "identity",
         "coverage", "degeneracy", "gcContentMean", "gcContentRange",
         "tmMean", "tmRange", "sequence",
         "sequenceRc", "gcContent", "tm", "method", "roiStart",

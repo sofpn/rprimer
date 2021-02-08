@@ -248,7 +248,7 @@ plotData(myOligos2)
 
 **Selection of a region of interest, and design of primers using the mixed strategy**
 
-Below, I specify a particular region of interest (position 1000 to 4000) and design primers using the mixed strategy. I select to not design probes, and  modify some of the other settings: 
+Below, I specify a particular region of interest (position 1000 to 4000) and design primers using the mixed strategy. I select to not design probes, and  modify some of the other settings:
 
 ```{r, fig.align="center", fig.width=12, fig.height=8}
 
@@ -274,7 +274,9 @@ myMixedPrimers[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-It is also possible to subset the oligo dataset in many different ways. I select to look at oligos with an average coverage higher than 0.9:
+In this case, identity refers to the mean identity of the 5' consensus part of the oligo and the coverage refers to the mean coverage of the 3' degenerate part of the oligo. Values of 1 indicate complete conservation of the target region in the alignment. 
+
+It is possible to subset the oligo dataset in many different ways. I select to look at oligos with an average 3' coverage higher than 0.9:
 
 ```{r, fig.align="center", fig.width=12, fig.height=8}
 selection <- myMixedPrimers[myMixedPrimers$coverage > 0.90, ]
