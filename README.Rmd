@@ -83,7 +83,7 @@ roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfi
 plotData(roi)
 ```
 
-The nucleotide distribution can be shown, preferably on a short range, by specifying `type = "nucleotide`:
+The nucleotide distribution can be shown, preferably within a short range, by specifying `type = "nucleotide`:
 
 ```{r, fig.width=12, fig.height=6}
 roi2 <- myConsensusProfile[myConsensusProfile$position >= 150 & myConsensusProfile$position <= 170, ]

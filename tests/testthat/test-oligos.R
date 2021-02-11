@@ -7,21 +7,35 @@ y <- .generateOligos(x[5000:6000, ])
 
 test_that("oligos works", {
     z <- oligos(x[5000:6000, ],
-                probe = FALSE,
                 lengthPrimer = 16:20,
                 maxDegeneracyPrimer = 2,
                 tmRangePrimer = c(50, 60),
-                gcRangePrimer = c(0.45, 0.75))
-    expect_true(all(z$type == "primer"))
-    expect_true(all(unlist(z$gcContent) >= 0.45))
-    expect_true(all(unlist(z$gcContent) <= 0.75))
-    expect_true(all(z$degeneracy <= 2))
-    di <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(CT){4,}|(TC){4,}|)"
-    mono <- "([A-Z])\\1\\1\\1\\1"
-    expect_false(any(grepl(di, unlist(z$sequence))))
-    expect_false(any(grepl(mono, unlist(z$sequence))))
-    expect_true(all(unlist(z$tm) >= 50))
-    expect_true(all(unlist(z$tm) <= 60))
+                gcRangePrimer = c(0.45, 0.75),
+                maxDegeneracyProbe = 1,
+                tmRangeProbe = c(50, 60),
+                gcRangeProbe = c(0.45, 0.75),
+                lengthProbe = 21:24)
+    expect_true(all(z$type == "primer" | z$type == "probe"))
+    expect_true(all(z$roiStart == 5000))
+    expect_true(all(z$roiEnd == 6000))
+    primers <- z[z$type == "primer", ]
+    expect_true(all(unlist(primers$gcContent) >= 0.45))
+    expect_true(all(unlist(primers$gcContent) <= 0.75))
+    expect_true(all(primers$degeneracy <= 2))
+    expect_true(all(unlist(primers$tm) >= 50))
+    expect_true(all(unlist(primers$tm) <= 60))
+    expect_true(all(primers$length >= 16))
+    expect_true(all(primers$length <= 20))
+
+    probes <- z[z$type == "probe", ]
+    expect_true(all(unlist(probes$gcContent) >= 0.45))
+    expect_true(all(unlist(probes$gcContent) <= 0.75))
+    expect_true(all(probes$degeneracy <= 1))
+    expect_true(all(unlist(probes$tm) >= 50))
+    expect_true(all(unlist(probes$tm) <= 60))
+    expect_true(all(probes$length >= 21))
+    expect_true(all(probes$length <= 24))
+
     expect_equal(z$tmMean, vapply(z$tm, mean, double(1)))
     expect_equal(z$tmRange, vapply(z$tm, function(x) {
         max(x) - min(x)
@@ -30,9 +44,28 @@ test_that("oligos works", {
     expect_equal(z$gcContentRange, vapply(z$gcContent, function(x) {
         max(x) - min(x)
     }, double(1)))
-    expect_true(all(z$length >= 16))
-    expect_true(all(z$length <= 20)) # # end coverage # probe # end runs fwd rev
+    di <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(CT){4,}|(TC){4,}|)"
+    mono <- "([A-Z])\\1\\1\\1\\1"
+    expect_false(any(grepl(di, unlist(z$sequence))))
+    expect_false(any(grepl(mono, unlist(z$sequence))))
 
+    expect_error(oligos(x, maxDegeneracyPrimer = 1, lengthPrimer = 40))
+    expect_error(oligos(x, maxDegeneracyProbe = 1, lengthProbe = 40))
+
+    # # end coverage  # end runs fwd rev
+
+})
+
+test_that("oligos works for generating mixed primers", {
+    z <- oligos(x[5100:5200, ], designStrategyPrimer = "mixed", probe = FALSE)
+    expect_true(all(z$method == "mixedFwd" | z$method == "mixedRev"))
+    z <- oligos(x[5200:5400, ], designStrategyPrimer = "mixed", probe = TRUE)
+    expect_true(all(
+        z$method == "mixedFwd" | z$method == "mixedRev" |
+            z$method == "ambiguous"
+    ))
+
+    ## fwd degen rev degen # identity # coverage
 })
 
 test_that("oligos returns an error when it should", {
@@ -41,8 +74,8 @@ test_that("oligos returns an error when it should", {
     expect_error(oligos(x, maxGapFrequency = 1.1))
     expect_error(oligos(x, maxGapFrequency = -1))
     expect_error(oligos(x, lengthPrimer = 13))
-    expect_error(oligos(x, lengthPrimer = 31))
-    expect_error(oligos(x, maxDegeneracyPrimer = 33))
+    expect_error(oligos(x, lengthPrimer = 41))
+    expect_error(oligos(x, maxDegeneracyPrimer = 65))
     expect_error(oligos(x, maxDegeneracyPrimer = 0))
     expect_error(oligos(x, gcClampPrimer = 1))
     expect_error(oligos(x, avoidThreeEndRunsPrimer = "true"))
@@ -55,11 +88,12 @@ test_that("oligos returns an error when it should", {
     expect_error(oligos(x, designStrategyPrimer = ""))
     expect_error(oligos(x, probe = 1))
     expect_error(oligos(x, lengthProbe = 13))
-    expect_error(oligos(x, lengthProbe = 31))
-    expect_error(oligos(x, maxDegeneracyProbe = 33))
+    expect_error(oligos(x, lengthProbe = 41))
     expect_error(oligos(x, maxDegeneracyProbe = 0))
-    expect_error(oligos(x, maxDegeneracyPrimer = 33))
+    expect_error(oligos(x, maxDegeneracyProbe = 65))
     expect_error(oligos(x, avoidFiveEndGProbe = 1))
+    expect_error(oligos(x, minThreeEndCoveragePrimer = 1.1))
+    expect_error(oligos(x, minThreeEndCoveragePrimer = -0.1))
     expect_error(oligos(x, gcRangeProbe = c(-0.1, 1)))
     expect_error(oligos(x, gcRangeProbe = c(0, 1.1)))
     expect_error(oligos(x, tmRangeProbe = c(19, 90)))

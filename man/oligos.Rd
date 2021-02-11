@@ -52,7 +52,7 @@ of the same nucleotide at the terminal 3'-end should be avoided.
 A number [0, 1]. If set to 1, all bases of the 3' end must cover all sequence
 variants in the target alignment. Defaults to 0.98.}
 
-\item{gcRangePrimer}{GC-content range for primers (proportion, not percent).
+\item{gcRangePrimer}{GC-content range for primers.
 A numeric vector [0, 1], defaults to \code{c(0.40, 0.60)}.}
 
 \item{tmRangePrimer}{Tm range for primers.
@@ -66,16 +66,16 @@ A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
 \item{probe}{If probes should be designed. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
 
-\item{lengthProbe}{Probe length. A numeric vector [14, 30],
+\item{lengthProbe}{Probe length. A numeric vector [14, 40],
 defaults to \code{18:22}.}
 
-\item{maxDegeneracyProbe}{Maximum number of variants of each probe. A number [1, 32], defaults to 4.}
+\item{maxDegeneracyProbe}{Maximum number of variants of each probe. A number [1, 64], defaults to 4.}
 
 \item{avoidFiveEndGProbe}{If probes with G
 at the 5'-end should be avoided. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
 
-\item{gcRangeProbe}{GC-content range for probes (proportion, not %). A numeric vector [0, 1],
+\item{gcRangeProbe}{GC-content range for probes (proportion). A numeric vector [0, 1],
 defaults to \code{c(0.40, 0.60)}.}
 
 \item{tmRangeProbe}{Tm range for probes.
@@ -111,9 +111,12 @@ The output contains the following information:
   \item{length}{Oligo length.}
   \item{iupacSequence}{Oligo sequence, with amiguous bases (if any).}
   \item{iupaSequenceRc}{The reverse complement of the iupacSequence.}
-  \item{coverage}{Average coverage of the oligo, can range from 0 to 1.
-    Coverage refers to the proportion of bases at
-    in the input alignment that are covered by the oligo.}
+  \item{identity}{For ambiguous oligos: Average identity of the oligo.
+    For mixed oligos: Average identity of the 5' (consensus) part of the
+    oligo. The value can range from 0 to 1.}
+  \item{coverage}{For ambiguous oligos: Average coverage of the oligo.
+    For mixed oligos: Average coverage of the 3' (degenerate) part of the
+    oligo. The value can range from 0 to 1.}
   \item{degeneracy}{Number of sequence variants of the oligo.}
   \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.
   }

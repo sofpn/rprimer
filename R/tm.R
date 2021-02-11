@@ -1,3 +1,5 @@
+# write tests, also add delta g in lookup and calc , w temp
+
 #' Split a DNA sequence into nearest neighbors
 #'
 #' @param x A vector with a DNA sequence.

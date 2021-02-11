@@ -227,7 +227,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     )
     if (any(is.na(consensus))) {
         warning("The consensus sequence contain NAs. \n
-    Try to lower the 'ambiguityThreshold' value.", call. = FALSE)
+    Try to lower the 'ambiguityThreshold'.", call. = FALSE)
     }
     consensus
 }

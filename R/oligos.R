@@ -1,5 +1,3 @@
-# skriv i man om coverage identity för mixed, generera nya exempel
-
 #' Design oligos
 #'
 #' \code{oligos()} designs oligos (primers and probes)
@@ -56,11 +54,11 @@
 #' defaults to \code{TRUE}.
 #'
 #' @param lengthProbe
-#' Probe length. A numeric vector [14, 30],
+#' Probe length. A numeric vector [14, 40],
 #' defaults to \code{18:22}.
 #'
 #' @param maxDegeneracyProbe
-#' Maximum number of variants of each probe. A number [1, 32], defaults to 4.
+#' Maximum number of variants of each probe. A number [1, 64], defaults to 4.
 #'
 #' @param avoidFiveEndGProbe
 #' If probes with G
@@ -68,7 +66,7 @@
 #' defaults to \code{TRUE}.
 #'
 #' @param gcRangeProbe
-#' GC-content range for probes (proportion, not %). A numeric vector [0, 1],
+#' GC-content range for probes (proportion). A numeric vector [0, 1],
 #' defaults to \code{c(0.40, 0.60)}.
 #'
 #' @param tmRangeProbe
@@ -230,11 +228,11 @@ oligos <- function(x,
     if (!(maxGapFrequency >= 0 && maxGapFrequency <= 1)) {
         stop("'maxGapFrequency' must be from 0 to 1.", call. = FALSE)
     }
-    if (!(min(lengthPrimer) >= 14 && max(lengthPrimer) <= 30)) {
-        stop("'lengthPrimer' must be from 14 to 30.", call. = FALSE)
+    if (!(min(lengthPrimer) >= 14 && max(lengthPrimer) <= 40)) {
+        stop("'lengthPrimer' must be from 14 to 40.", call. = FALSE)
     }
-    if (!(maxDegeneracyPrimer >= 1 && maxDegeneracyPrimer <= 32)) {
-        stop("'maxDegeneracyPrimer' must be from 1 to 32.", call. = FALSE)
+    if (!(maxDegeneracyPrimer >= 1 && maxDegeneracyPrimer <= 64)) {
+        stop("'maxDegeneracyPrimer' must be from 1 to 64.", call. = FALSE)
     }
     if (!is.logical(gcClampPrimer)) {
         stop("'gcClampPrimer' must be TRUE or FALSE", call. = FALSE)
@@ -270,11 +268,11 @@ oligos <- function(x,
     if (!is.logical(probe)) {
         stop("'probe' must be TRUE or FALSE", call. = FALSE)
     }
-    if (!(min(lengthProbe) >= 14 && max(lengthProbe) <= 30)) {
-        stop("'lengthProbe' must be from 14 to 30.", call. = FALSE)
+    if (!(min(lengthProbe) >= 14 && max(lengthProbe) <= 40)) {
+        stop("'lengthProbe' must be from 14 to 40.", call. = FALSE)
     }
-    if (!(maxDegeneracyProbe >= 1 && maxDegeneracyProbe <= 32)) {
-        stop("'maxDegeneracyProbe' must be from 1 to 32.", call. = FALSE)
+    if (!(maxDegeneracyProbe >= 1 && maxDegeneracyProbe <= 64)) {
+        stop("'maxDegeneracyProbe' must be from 1 to 64.", call. = FALSE)
     }
     if (!is.logical(avoidFiveEndGProbe)) {
         stop("'avoidFiveEndGProbe' must be TRUE or FALSE", call. = FALSE)
@@ -433,6 +431,7 @@ oligos <- function(x,
 #'
 #' @examples
 #' .splitAndPaste(t(matrix(rep(1, 10))), t(matrix(rep(2, 10))))
+#' .splitAndPaste(t(matrix(rep(1, 10))), t(matrix(rep(2, 10))), combine = FALSE)
 #' .splitAndPaste(t(matrix(rep(1, 10))), t(matrix(rep(2, 10))), rev = TRUE)
 .splitAndPaste <- function(first, second, rev = FALSE, combine = TRUE) {
     n <- ncol(first)
@@ -457,7 +456,7 @@ oligos <- function(x,
 #'
 #' \code{.generateOligos()} is the first step of the oligo-design process.
 #' It finds all possible oligos of a specific length from an
-#' \code{RprimerProfile} object, and returns a list containing sequences
+#' \code{RprimerProfile} object, and returns a list with oligo sequences
 #' and additional information.
 #'
 #' @param x An \code{RprimerProfile} object.
@@ -532,15 +531,15 @@ oligos <- function(x,
         oligos$iupacSequence <- .splitAndPaste(
             x$iupacSequence, x$majoritySequence, rev = TRUE
         )
-        oligos$coverage <- rowMeans(x$coverageIdentity[[1]]) ####
-        oligos$identity <- rowMeans(x$coverageIdentity[[2]]) ####
+        oligos$coverage <- rowMeans(x$coverageIdentity[[1]])
+        oligos$identity <- rowMeans(x$coverageIdentity[[2]])
         oligos$method <- rep("mixedRev", nrow(oligos$iupacSequence))
     } else {
         oligos$iupacSequence <- .splitAndPaste(
             x$majoritySequence, x$iupacSequence
         )
-        oligos$coverage <- rowMeans(x$identityCoverage[[2]]) ####
-        oligos$identity <- rowMeans(x$identityCoverage[[1]]) ####
+        oligos$coverage <- rowMeans(x$identityCoverage[[2]])
+        oligos$identity <- rowMeans(x$identityCoverage[[1]])
         oligos$method <- rep("mixedFwd", nrow(oligos$iupacSequence))
     }
     oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
@@ -724,9 +723,7 @@ oligos <- function(x,
 
 #' Identify oligos with a GC-clamp
 #'
-#' \code{.detectGcClamp()} detects the presence of a GC-clamp on oligos
-#' (good to have on primers).
-#'
+#' \code{.detectGcClamp()} detects the presence of a GC-clamp.
 #' A GC-clamp is identified as two to three G or C:s at
 #' the 3'-end (within the last five bases).
 #'
@@ -1142,12 +1139,10 @@ oligos <- function(x,
         drop = FALSE
     ]
     x <- x[x$degeneracy <= maxDegeneracyPrimer, , drop = FALSE]
-    if (minThreeEndCoveragePrimer) {
-        x <- x[
+    x <- x[
             x$endCoverageFwd >= minThreeEndCoveragePrimer |
                 x$endCoverageFwd >= minThreeEndCoveragePrimer, , drop = FALSE
         ]
-    }
     gcInRange <- .isWithinRange(x$gcContent, gcRangePrimer)
     tmInRange <- .isWithinRange(x$tmPrimer, tmRangePrimer)
     x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
@@ -1158,13 +1153,8 @@ oligos <- function(x,
         rowThreshold,
         colThreshold
     )
-    if (minThreeEndCoveragePrimer) {
-        fwd <- x$endCoverageFwd >= minThreeEndCoveragePrimer & x$okFwd
-        rev <- x$endCoverageRev >= minThreeEndCoveragePrimer & x$okRev
-    } else {
-        fwd <- x$okFwd
-        rev <- x$okRev
-    }
+    fwd <- x$endCoverageFwd >= minThreeEndCoveragePrimer & x$okFwd
+    rev <- x$endCoverageRev >= minThreeEndCoveragePrimer & x$okRev
     x <- cbind(x, fwd, rev)
     x$rev[x$method == "mixedFwd" & x$rev] <- FALSE
     x$fwd[x$method == "mixedRev" & x$fwd] <- FALSE

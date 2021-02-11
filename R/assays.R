@@ -1,3 +1,5 @@
+# write tests
+
 #' Design (RT)-PCR assays
 #'
 #' \code{assays()} combines forward and reverse primers
