@@ -1,4 +1,4 @@
-# Skriv stort test för olika fall
+# if only one ol found
 
 data("exampleRprimerProfile")
 x <- exampleRprimerProfile
@@ -66,6 +66,15 @@ test_that("oligos works for generating mixed primers", {
     ))
 
     ## fwd degen rev degen # identity # coverage
+})
+
+test_that("oligos works with only one imput sequence", {
+    infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
+    testdata <- Biostrings::readDNAMultipleAlignment(infile)
+    Biostrings::rowmask(testdata, invert = TRUE) <- 1
+    prof <- consensusProfile(testdata)
+    y <- oligos(prof[1:200, ])
+    expect_s4_class(y, "RprimerOligo")
 })
 
 test_that("oligos returns an error when it should", {

@@ -1,3 +1,6 @@
+# if nrow = 0L stop
+
+
 #' Plot an Rprimer-object (generic)
 #'
 #' @param x

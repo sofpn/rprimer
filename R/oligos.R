@@ -14,7 +14,7 @@
 #' defaults to \code{18:22}.
 #'
 #' @param maxDegeneracyPrimer
-#' Maximum number of variants of each primer. A number [1, 32], defaults to 4.
+#' Maximum number of variants of each primer. A number [1, 64], defaults to 4.
 #'
 #' @param gcClampPrimer
 #' If primers with no GC-clamp

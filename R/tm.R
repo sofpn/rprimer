@@ -1,4 +1,4 @@
-# write tests, also add delta g in lookup and calc , w temp
+# write tests,  is it conc oligo/4 or not???
 
 #' Split a DNA sequence into nearest neighbors
 #'
@@ -23,9 +23,10 @@
 #' of DNA sequences.
 #'
 #' @param table The lookup table that should be used.
-#' Either 'dH' (entropy) or 'dS' (enthalpy).
+#' Either 'dH' (entropy), 'dS' (enthalpy) or 'dG' (free energy)
 #'
-#' @return The corresponding values for dH or dS (in cal/M). A numeric matrix.
+#' @return The corresponding values for dH, dS or dG (in cal/M).
+#' A numeric matrix.
 #'
 #' @keywords internal
 #'
@@ -43,9 +44,10 @@
 #' of DNA sequences.
 #'
 #' @param table The lookup table that should be used.
-#' Either 'dH' (entropy) or 'dS' (enthalpy).
+#' Either 'dH' (entropy), 'dS' (enthalpy) or 'dG' (free energy)
 #'
-#' @return The corresponding values for dH or dS (in cal/M). A numeric vector.
+#' @return The corresponding values for dH, dS or dG (in cal/M).
+#' A numeric vector.
 #'
 #' @keywords internal
 #'
@@ -53,10 +55,8 @@
 .initiate <- function(x, table = "dH") {
     initiation <- lookup$nn[lookup$nn$bases == "Initiation", ][[table]]
     penalty <- lookup$nn[lookup$nn$bases == "AT_penalty", ][[table]]
-    penaltyFirst <- ifelse(x[, 1] == "AT" | x[, 1] == "TA", penalty, 0)
-    penaltyLast <- ifelse(
-        x[, ncol(x)] == "AT" | x[, ncol(x)] == "TA", penalty, 0
-    )
+    penaltyFirst <- ifelse(grepl("^(A|T)", x[, 1]), penalty, 0)
+    penaltyLast <- ifelse(grepl("(A|T)$", x[, ncol(x)]), penalty, 0)
     initiation + penaltyFirst + penaltyLast
 }
 
@@ -109,4 +109,20 @@
 .tm <- function(x, concOligo = 250) {
     concOligo <- concOligo * 10^(-9)
     x[["sumdH"]] / (x[["sumdS"]] + 0.368 * x[["n"]] * log(x[["concNa"]]) + 1.987 * log(concOligo)) - 273.15
+}
+
+#' Calculate delta G  at 37 C
+#'
+#' @param x A matrix with DNA sequences.
+#'
+#' @return The delta G in kcal/M, at 37 C
+#'
+#' @keywords internal
+#'
+#' @noRd
+.deltaG <- function(x) {
+    nn <- t(apply(x, 1, .nn))
+    dgStack <- rowSums(.stack(nn, "dG"))
+    dgInit <- .initiate(nn, "dG")
+    (dgStack + dgInit)/1000
 }

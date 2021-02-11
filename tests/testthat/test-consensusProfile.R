@@ -1,5 +1,12 @@
+## Import and generate data sets to test on
 infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 testdata <- Biostrings::readDNAMultipleAlignment(infile)
+testmat <- .consensusMatrix(testdata)
+selection <- testmat[, 200:220]
+x <- selection[, 1:4]
+bases <- c("A", "C", "G", "T", "-")
+s <- x[rownames(x) %in% bases, , drop = FALSE]
+s <- apply(s, 2, function(x) x / sum(x))
 
 test_that("consensusProfile returns an error when it should", {
     expect_error(consensusProfile(unclass(testdata)))
@@ -29,15 +36,11 @@ test_that("consensusProfile works with a colmask", {
     expect_equal(prof$position, 1:51)
 })
 
-testmat <- .consensusMatrix(testdata)
-
 test_that(".consensusMatrix works", {
     expect_equal(rownames(testmat), c("A", "C", "G", "T", "-", "other"))
     expect_equal(nrow(testmat), 6)
     expect_false(any(is.na(testmat)))
 })
-
-selection <- testmat[, 200:220]
 
 test_that(".majorityConsensus works", {
     expect_equal(.majorityConsensus(selection[, 1:4]), c("T", "A", "T", "T"))
@@ -54,11 +57,6 @@ test_that(".asIUPAC works", {
 test_that(".iupacConsensus returns a warning when it should", {
     expect_warning(.iupacConsensus(selection[2:3, ], ambiguityThreshold = 0.2))
 })
-
-x <- selection[, 1:4]
-bases <- c("A", "C", "G", "T", "-")
-s <- x[rownames(x) %in% bases, , drop = FALSE]
-s <- apply(s, 2, function(x) x / sum(x))
 
 test_that(".iupacConsensus works", {
     expect_equal(.iupacConsensus(x), c("N", "A", "T", "H"))
