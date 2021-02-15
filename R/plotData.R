@@ -1,4 +1,4 @@
-# if nrow = 0L stop
+# if nrow = 0L stop, white boxes to avoid warning if 0
 
 
 #' Plot an Rprimer-object (generic)

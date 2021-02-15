@@ -111,7 +111,7 @@
     x[["sumdH"]] / (x[["sumdS"]] + 0.368 * x[["n"]] * log(x[["concNa"]]) + 1.987 * log(concOligo)) - 273.15
 }
 
-#' Calculate delta G  at 37 C
+#' Calculate delta G at 37 C
 #'
 #' @param x A matrix with DNA sequences.
 #'

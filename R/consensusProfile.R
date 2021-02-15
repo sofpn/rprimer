@@ -109,6 +109,10 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' .consensusMatrix(exampleRprimerAlignment)
 .consensusMatrix <- function(x) {
     x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
     x <- x[, colSums(!is.na(x)) > 0, drop = FALSE] ## Removes masked columns
@@ -226,8 +230,12 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
         USE.NAMES = FALSE
     )
     if (any(is.na(consensus))) {
-        warning("The consensus sequence contain NAs. \n
-    Try to lower the 'ambiguityThreshold'.", call. = FALSE)
+        warning(
+        "The consensus sequence contains 'NA' at at least one positions.
+        Perharps an ambiguos base was the most common base
+        at these positions.",
+        call. = FALSE
+        )
     }
     consensus
 }

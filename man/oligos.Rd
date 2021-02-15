@@ -13,7 +13,7 @@ oligos(
   avoidThreeEndRunsPrimer = TRUE,
   minThreeEndCoveragePrimer = 0.98,
   gcRangePrimer = c(0.4, 0.6),
-  tmRangePrimer = c(55, 65),
+  tmRangePrimer = c(50, 65),
   concPrimer = 500,
   designStrategyPrimer = "ambiguous",
   probe = TRUE,
@@ -21,7 +21,7 @@ oligos(
   maxDegeneracyProbe = 4,
   avoidFiveEndGProbe = TRUE,
   gcRangeProbe = c(0.4, 0.6),
-  tmRangeProbe = c(55, 70),
+  tmRangeProbe = c(50, 70),
   concProbe = 250,
   concNa = 0.05
 )
@@ -32,10 +32,10 @@ oligos(
 \item{maxGapFrequency}{Maximum allowed gap frequency (for both primers and probes).
 A number [0, 1], defaults to 0.05.}
 
-\item{lengthPrimer}{Primer length. A numeric vector [14, 30],
+\item{lengthPrimer}{Primer length. A numeric vector [15, 30],
 defaults to \code{18:22}.}
 
-\item{maxDegeneracyPrimer}{Maximum number of variants of each primer. A number [1, 32], defaults to 4.}
+\item{maxDegeneracyPrimer}{Maximum number of variants of each primer. A number [1, 64], defaults to 4.}
 
 \item{gcClampPrimer}{If primers with no GC-clamp
 should be avoided.
@@ -56,7 +56,7 @@ variants in the target alignment. Defaults to 0.98.}
 A numeric vector [0, 1], defaults to \code{c(0.40, 0.60)}.}
 
 \item{tmRangePrimer}{Tm range for primers.
-A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
+A numeric vector [30, 90], defaults to \code{c(50, 65)}.}
 
 \item{concPrimer}{Primer concentration in nM, for Tm calculation. A number
 [20, 2000], defaults to 500.}
@@ -66,7 +66,7 @@ A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
 \item{probe}{If probes should be designed. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
 
-\item{lengthProbe}{Probe length. A numeric vector [14, 40],
+\item{lengthProbe}{Probe length. A numeric vector [15, 40],
 defaults to \code{18:22}.}
 
 \item{maxDegeneracyProbe}{Maximum number of variants of each probe. A number [1, 64], defaults to 4.}
@@ -79,7 +79,7 @@ defaults to \code{TRUE}.}
 defaults to \code{c(0.40, 0.60)}.}
 
 \item{tmRangeProbe}{Tm range for probes.
-A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
+A numeric vector [30, 90], defaults to \code{c(50, 70)}.}
 
 \item{concProbe}{Primer concentration in nM, for Tm calculation. A numeric vector
 [20, 2000], defaults to 250.}

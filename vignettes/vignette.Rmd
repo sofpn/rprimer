@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Primer and probe design are central parts of PCR assay development. Successful target amplification depend on several factors, such as optimal primer and probe length, GC-content, melting temperature and sequence complexity. The oligos must be designed so that the risks of dimer and hairpin formation are minimzed, and the intended target region must be sufficiently conserved to avoid severe mismatches between the oligos and the template [@Bustin]. This together makes PCR assay design challenging, and a large number of computational methods has been developed, both for specific applications and for more general purposes [@guo2020classification]. One of the most comprehensive and widely used tools is Primer3 [@Rozen]. However, one important limitation with Primer3 is that the design process is based on a single sequence, which means that primers can be inadvertently placed in sequence heterogeneous regions, leading to amplification and quantification bias. This can, in part, be circumvented by making a “consensus profile”  from an alignment of the target sequences of interest, and masking the variable regions in the consensus sequence before the design process. However, for many applications it is often difficult to find even a few completely conserved regions suitable as primer or probe targets.
+Primer and probe design are central parts of PCR assay development. Successful target amplification depend on several factors, such as optimal primer and probe length, GC-content, melting temperature and sequence complexity. The oligos must be designed so that the risks of dimer and hairpin formation are minimzed, and the intended target region must be sufficiently conserved to avoid severe mismatches between the oligos and the template [@Bustin]. This together makes PCR assay design challenging, and a large number of computational methods has been developed, both for specific applications and for more general purposes [@guo2020classification]. One of the most comprehensive and widely used tools is Primer3 [@Rozen]. The design process of Primer3 is based on a single sequence, which means that primers can be inadvertently placed in sequence heterogeneous regions, leading to amplification and quantification bias. This can, in part, be circumvented by making a “consensus profile”  from an alignment of the target sequences of interest, and masking the variable regions in the consensus sequence before the design process. However, for many applications, it is often difficult to find even a few completely conserved regions suitable as primer or probe targets.
 
 A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, the amplification efficiency may decrease with increased degeneracy, because only a fraction of the primers match perfectly to the target sequence and the synthesized product [@Rose]. An optimal design strategy would therefore be to find primer binding regions with as low degeneracy as possible, without compromising with the inclusivity [the ability for the assay to amplify the target sequences of interest [@Hedman]]. 
 
@@ -40,7 +40,7 @@ devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-devtools::load_all(".")
+#devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
 library(rprimer)
@@ -97,7 +97,7 @@ Once the alignment is imported, the first step is to generate a consensus profil
 
 * The proportion of the bases A, C, G, T, and “other” 
 * The proportion of gaps (-)
-* Majority consensus base, which is the most frequently occurring base 
+* Majority consensus base, which is the most frequently occurring base
 * Identity, which is the proportion of the majority consensus base when gaps and ambiguous bases ("other") are excluded
 * IUPAC consensus character (ambiguous base). It is possible to specify an “ambiguity threshold” between 0 and 0.2. All bases that occur at a proportion higher than that will be included. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating primers and probes with high degeneracy, and a higher threshold will catch most of the variability, but with the potential cost of missing minor sequence variations (this information is provided by the coverage, see below)
 * Shannon entropy, which is a measurement of variability [**REF shannon**]. A value of zero indicate complete conservation, and a high value indicate high variability. Gaps and ambiguous bases ("other") are not included in this calculation 
@@ -311,7 +311,7 @@ Assays with probes will be designed if probes are present in the oligo dataset f
 I design assays using default settings, from the dataset `myOligos` from Step 2. An error message will return if no assays are found.
 
 ```{r}
-myAssays <- assays(myOligos)
+myAssays <- assays(myOligos[myOligos$type == "primer", ]) # # # # # # 
 ```
 
 Output (first ten rows): 
@@ -340,7 +340,6 @@ myAssays2 <- assays(maskedSelection, lengthRange = c(1000, 2000))
 
 plotData(myAssays2)
 ```
-
 
 ## Further handling of the data 
 

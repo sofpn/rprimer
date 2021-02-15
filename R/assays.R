@@ -257,7 +257,7 @@ assays <- function(x,
 .addProbes <- function(x, probes, tmDiffPrimersProbe = c(0, 20)) {
     probeCandidates <- .identifyProbes(x, probes)
     assays <- .extractProbes(x, probeCandidates, tmDiffPrimersProbe)
-    if (nrow(assays) == 0) {
+    if (nrow(assays) == 0L) {
         stop("No assays with probes could be generated.", call. = FALSE)
     }
     assays
