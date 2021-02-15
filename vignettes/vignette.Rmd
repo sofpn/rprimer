@@ -40,7 +40,7 @@ devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
 library(rprimer)
@@ -311,7 +311,7 @@ Assays with probes will be designed if probes are present in the oligo dataset f
 I design assays using default settings, from the dataset `myOligos` from Step 2. An error message will return if no assays are found.
 
 ```{r}
-myAssays <- assays(myOligos[myOligos$type == "primer", ]) # # # # # # 
+myAssays <- assays(myOligos)  
 ```
 
 Output (first ten rows): 

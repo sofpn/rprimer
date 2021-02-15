@@ -36,11 +36,11 @@
 #'
 #' @param gcRangePrimer
 #' GC-content range for primers.
-#' A numeric vector [0, 1], defaults to \code{c(0.40, 0.60)}.
+#' A numeric vector [0, 1], defaults to \code{c(0.40, 0.65)}.
 #'
 #' @param tmRangePrimer
 #' Tm range for primers.
-#' A numeric vector [30, 90], defaults to \code{c(50, 65)}.
+#' A numeric vector [30, 90], defaults to \code{c(55, 65)}.
 #'
 #' @param concPrimer
 #' Primer concentration in nM, for Tm calculation. A number
@@ -67,11 +67,11 @@
 #'
 #' @param gcRangeProbe
 #' GC-content range for probes (proportion). A numeric vector [0, 1],
-#' defaults to \code{c(0.40, 0.60)}.
+#' defaults to \code{c(0.40, 0.65)}.
 #'
 #' @param tmRangeProbe
 #' Tm range for probes.
-#' A numeric vector [30, 90], defaults to \code{c(50, 70)}.
+#' A numeric vector [30, 90], defaults to \code{c(55, 70)}.
 #'
 #' @param concProbe
 #' Primer concentration in nM, for Tm calculation. A numeric vector
@@ -210,7 +210,7 @@ oligos <- function(x,
                    gcClampPrimer = TRUE,
                    avoidThreeEndRunsPrimer = TRUE,
                    minThreeEndCoveragePrimer = 0.98,
-                   gcRangePrimer = c(0.40, 0.60),
+                   gcRangePrimer = c(0.40, 0.65),
                    tmRangePrimer = c(50, 65),
                    concPrimer = 500,
                    designStrategyPrimer = "ambiguous",
@@ -218,7 +218,7 @@ oligos <- function(x,
                    lengthProbe = 18:22,
                    maxDegeneracyProbe = 4,
                    avoidFiveEndGProbe = TRUE,
-                   gcRangeProbe = c(0.40, 0.60),
+                   gcRangeProbe = c(0.40, 0.65),
                    tmRangeProbe = c(50, 70),
                    concProbe = 250,
                    concNa = 0.05) {

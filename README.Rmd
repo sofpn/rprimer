@@ -16,8 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-- tests oligos, tm, assays, plots err/warn fix (white box), FIX tm/ASSAYS etc!!!!!
-- generate new example data 
+- tests oligos, tm, assays, plots err/warn fix (white box)
 - set and test validity for S4 objs
 
 ## Installation
@@ -119,7 +118,7 @@ plotData(myOligos)
 `assays()` finds pairs of forward and reverse primers and combines them with probes, if probes are present in the dataset. You can either use the default settings as below, or adjust the design constraints (see the package vignette or `?assays` for more information).
 
 ```{r}
-myAssays <- assays(myOligos[myOligos$type == "primer", ]) # # # # # # 
+myAssays <- assays(myOligos)
 ```
 
 Results (first six rows):
