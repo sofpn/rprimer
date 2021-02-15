@@ -40,6 +40,40 @@ test_that("oligos returns an error when it should", {
     expect_error(oligos(x, concNa = 1.1))
 })
 
+test_that("oligos works", {
+    test <- oligos(x)
+    expect_s4_class(test, "RprimerOligo")
+    test <- oligos(x, probe = FALSE)
+    expect_true(all(test$type == "primer"))
+    test <- oligos(
+        x,
+        designStrategyPrimer = "mixed",
+        maxDegeneracyPrimer = 1,
+        maxDegeneracyProbe = 2,
+        lengthPrimer = 25:30,
+        lengthProbe = 18
+    )
+    primers <- test[test$type == "primer", ]
+    expect_true(all(primers$method[primers$fwd] == "mixedFwd"))
+    expect_true(all(primers$method[primers$rev] == "mixedRev"))
+    expect_true(max(primers$degeneracy) == 1)
+    expect_true(all(primers$length >= 25 & primers$length <= 30))
+    probes <- test[test$type == "probe", ]
+    expect_true(all(probes$method == "ambiguous"))
+    expect_true(all(probes$length == 18))
+    expect_true(max(probes$degeneracy) == 2)
+    expect_error(oligos(x[1:100, ]))
+    expect_error(oligos(x[1:1000, ], maxDegeneracyProbe = 1))
+
+    ## test with only one sequence
+    infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
+    testdata <- Biostrings::readDNAMultipleAlignment(infile)
+    Biostrings::rowmask(testdata, invert = TRUE) <- 3
+    prof <- consensusProfile(testdata)
+    test <- oligos(prof[1:100, ])
+    expect_s4_class(test, "RprimerOligo")
+})
+
 # .nmers =======================================================================
 
 test_that(".nmers works", {
@@ -210,6 +244,8 @@ test_that(".filterOligos works", {
     test <- .filterOligos(x, maxDegeneracy = 32, maxGapFrequency = 0)
     expect_true(all(test$degeneracy <= 32))
     expect_true(all(test$gapFrequency == 0))
+    expect_true(all(!is.na(test$majoritySequence)))
+    expect_true(all(test$majoritySequence != "-"))
 })
 
 # .expandDegenerates ===========================================================
@@ -368,23 +404,14 @@ test_that(".getAllVariants works", {
 
 test_that(".getMeanAndRange works", {
     x <- .getAllVariants(.filterOligos(.generateOligos(x)))
-
     test <- .getMeanAndRange(x)
-    expect_true(is.data.frame(test))
+    range <- function(x) max(x) - min(x)
     expect_equal(test$gcContentMean, vapply(x$gcContent, mean, double(1L)))
-    expect_equal(test$gcContentRange, vapply(x$gcContent, function(y) {
-        max(y) - min(y)
-    }, double(1L)))
     expect_equal(test$tmPrimerMean, vapply(x$tmPrimer, mean, double(1L)))
-
-    ## Check so it works only with one oligo
-    x <- lapply(x, function(y) {
-        if (is.matrix(y)) y[, 1] else y[1]
-    })
-
-    test <- .getMeanAndRange(x)
-    expect_true(is.data.frame(test))
-    expect_equal(test$gcContentMean, mean(x$gcContent[[1]]))
+    expect_equal(test$tmProbeMean, vapply(x$tmProbe, mean, double(1L)))
+    expect_equal(test$gcContentRange, vapply(x$gcContent, range, double(1L)))
+    expect_equal(test$tmPrimerRange, vapply(x$tmPrimer, range, double(1L)))
+    expect_equal(test$tmProbeRange, vapply(x$tmProbe, range, double(1L)))
 })
 
 # .makeOligoDf =================================================================
@@ -394,7 +421,6 @@ test_that(".makeOligoDf works", {
     test <- .makeOligoDf(x)
     expect_true(is.data.frame(test))
 })
-
 # .designOligos ================================================================
 
 test_that(".designOligos works", {
@@ -410,28 +436,82 @@ test_that(".designOligos works", {
         all(test$length >= 15 & test$length <= 18)
     )
     expect_error(.designOligos(x[1:50, ], maxDegeneracy = 1))
-})
 
-###############################################
-#more here!
+    test <- .designOligos(
+        x[1:2000, ], maxDegeneracy = 4,
+        maxGapFrequency = 0,
+        lengthOligo = 15:18,
+        designStrategyPrimer = "mixed"
+    )
+    expect_true(is.data.frame(test))
+})
 
 # .isWithinRange ===============================================================
 
+test_that(".isWithinRange works", {
+    x <- .getAllVariants(.filterOligos(.generateOligos(x)))
+    x$gcContent <- x$gcContent[1]
+    test <- unlist(.isWithinRange(x$gcContent, c(0.5, 0.6)))
+    expect_equal(test, c(TRUE, TRUE, TRUE, FALSE))
+})
 
+# .convertToMatrices ===========================================================
 
-# test_that(".convertToMatrices and .isValid work", {
+test_that(".convertToMatrices works", {
+    x <- .designOligos(x)
+    x <- x[1, ]
+    gcInRange <- .isWithinRange(x$gcContent, c(0.4, 0.6))
+    x <- cbind(x, data.frame(cbind(gcInRange)))
+    test <- .convertToMatrices(x["gcInRange"])
+    expect_true(is.matrix(test[[1]]))
+})
 
+# .isValid =====================================================================
 
-# })
+test_that(".isValid works", {
+    x <- .designOligos(x)
+    gcInRange <- .isWithinRange(x$gcContent, c(0.4, 0.6))
+    x <- cbind(x, data.frame(cbind(gcInRange)))
+    check <- .convertToMatrices(x[c("gcInRange", "repeats", "threeEndRunsFwd")])
+    test <- .isValid(check, rowThreshold = 1, colThreshold = 1)
+    expect_equal(nrow(x), length(test))
+})
 
-# test_that(".filterPrimers works", {
+# .checkAllPrimerVariants ======================================================
 
-# })
+test_that(".checkAllPrimer variants works", {
+    x <- .designOligos(x)
+    gcInRange <- .isWithinRange(x$gcContent, c(0.4, 0.6))
+    tmInRange <- .isWithinRange(x$tmPrimer, c(55, 65))
+    x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
+    test <- .checkAllPrimerVariants(x)
+    expect_true(all(test$okFwd | test$okRev))
+    fwd <- test[test$okFwd, ]
+    expect_equal(vapply(fwd$gcClampFwd, mean, double(1L)) == 1, fwd$okFwd)
+    rev <- test[test$okRev, ]
+    expect_equal(vapply(rev$gcClampRev, mean, double(1L)) == 1, rev$okRev)
+})
+
+# .filterPrimers ===============================================================
+
+#test_that(".filterPrimers works", {
+#    x <- .designOligos(exampleRprimerProfile)
+#    test <- .filterPrimers(x)
+
+#})
+
+# .checkAllProbeVariants =======================================================
+
+# .filterProbes ================================================================
 
 # test_that(".filterProbes works", {
 
 # })
 
-# test_that(".beautify works", {
+# .beautifyOligos ==============================================================
 
-# })
+test_that(".beautifyOligos works", {
+    x <- .filterPrimers(.designOligos(x))
+    test <- .beautifyOligos(x)
+    expect_true(is.data.frame(test))
+})

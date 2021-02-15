@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-- tests oligos, tm, assays, plots err/warn fix (white box)
+- tests tm, assays, plots err/warn fix (white box)
 - set and test validity for S4 objs
 
 ## Installation

@@ -1021,19 +1021,15 @@ oligos <- function(x,
         } else {
             iupacOligos <- .dropItems(iupacOligos)
         }
-        iupacOligos <- .filterOligos(iupacOligos,
-            maxGapFrequency = maxGapFrequency,
-            maxDegeneracy = maxDegeneracy
+        iupacOligos <- .filterOligos(
+            iupacOligos, maxGapFrequency,maxDegeneracy
         )
         nOligos <- vapply(iupacOligos, length, integer(1))
         if (all(nOligos == 0L)) {
             stop("No primers were found.", call. = FALSE)
         }
         allVariants <- .getAllVariants(
-            iupacOligos,
-            concPrimer,
-            concProbe,
-            concNa
+            iupacOligos, concPrimer, concProbe, concNa
         )
         meansAndRanges <- .getMeanAndRange(allVariants)
         allVariants <- data.frame(do.call("cbind", allVariants))

@@ -12,7 +12,7 @@ oligos(
   gcClampPrimer = TRUE,
   avoidThreeEndRunsPrimer = TRUE,
   minThreeEndCoveragePrimer = 0.98,
-  gcRangePrimer = c(0.4, 0.6),
+  gcRangePrimer = c(0.4, 0.65),
   tmRangePrimer = c(50, 65),
   concPrimer = 500,
   designStrategyPrimer = "ambiguous",
@@ -20,7 +20,7 @@ oligos(
   lengthProbe = 18:22,
   maxDegeneracyProbe = 4,
   avoidFiveEndGProbe = TRUE,
-  gcRangeProbe = c(0.4, 0.6),
+  gcRangeProbe = c(0.4, 0.65),
   tmRangeProbe = c(50, 70),
   concProbe = 250,
   concNa = 0.05
@@ -53,10 +53,10 @@ A number [0, 1]. If set to 1, all bases of the 3' end must cover all sequence
 variants in the target alignment. Defaults to 0.98.}
 
 \item{gcRangePrimer}{GC-content range for primers.
-A numeric vector [0, 1], defaults to \code{c(0.40, 0.60)}.}
+A numeric vector [0, 1], defaults to \code{c(0.40, 0.65)}.}
 
 \item{tmRangePrimer}{Tm range for primers.
-A numeric vector [30, 90], defaults to \code{c(50, 65)}.}
+A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
 
 \item{concPrimer}{Primer concentration in nM, for Tm calculation. A number
 [20, 2000], defaults to 500.}
@@ -76,10 +76,10 @@ at the 5'-end should be avoided. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
 
 \item{gcRangeProbe}{GC-content range for probes (proportion). A numeric vector [0, 1],
-defaults to \code{c(0.40, 0.60)}.}
+defaults to \code{c(0.40, 0.65)}.}
 
 \item{tmRangeProbe}{Tm range for probes.
-A numeric vector [30, 90], defaults to \code{c(50, 70)}.}
+A numeric vector [30, 90], defaults to \code{c(55, 70)}.}
 
 \item{concProbe}{Primer concentration in nM, for Tm calculation. A numeric vector
 [20, 2000], defaults to 250.}
