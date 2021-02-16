@@ -123,8 +123,8 @@ setMethod("plotData", "RprimerAssay", function(x) {
 
 .addEmptyRow <- function(x) {
     x[1, ] <- NA
-    x$start <- 0
-    x$end <- 0
+    x$start <- 1
+    x$end <- 1
     x
 }
 

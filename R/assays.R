@@ -1,4 +1,4 @@
-# write tests
+# 3' end complementarity check
 
 #' Design (RT)-PCR assays
 #'
@@ -13,7 +13,7 @@
 #'
 #' @param tmDiffPrimers
 #' Maximum tm difference between the two primers
-#' (absolute value). A number [0, 30], defaults to 5.
+#' (absolute value). A number [0, 20], defaults to 5.
 #'
 #' @param tmDiffPrimersProbe
 #' Acceptable tm difference between the primers (average Tm of the
@@ -109,8 +109,8 @@ assays <- function(x,
     if (!(min(lengthRange) >= 40 && max(lengthRange) <= 5000)) {
         stop("'lengthRange' must be from 40 to 5000.", call. = FALSE)
     }
-    if (!(tmDiffPrimers >= 0 && tmDiffPrimers <= 30)) {
-        stop("'tmDiffPrimers' must be from 0 to 30.", call. = FALSE)
+    if (!(tmDiffPrimers >= 0 && tmDiffPrimers <= 20)) {
+        stop("'tmDiffPrimers' must be from 0 to 20.", call. = FALSE)
     }
     if (!(min(tmDiffPrimersProbe) >= -20 &&
         max(tmDiffPrimersProbe) <= 20)) {
@@ -146,8 +146,12 @@ assays <- function(x,
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' data("exampleRprimerOligo")
+#' x <- exampleRprimerOligo
+#' .pairPrimers(x)
 .pairPrimers <- function(x) {
-    x <- as.data.frame(x)
     fwd <- x[x$fwd, ]
     rev <- x[x$rev, ]
     pairs <- expand.grid(
@@ -169,6 +173,11 @@ assays <- function(x,
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' data("exampleRprimerOligo)
+#' x <- exampleRprimerOligo
+#' .combinePrimers(x)
 .combinePrimers <- function(x,
                             lengthRange = c(65, 120),
                             tmDiffPrimers = 2) {
@@ -186,17 +195,23 @@ assays <- function(x,
     assays <- assays[assays$ampliconLength >= min(lengthRange), , drop = FALSE]
     assays <- assays[assays$ampliconLength <= max(lengthRange), , drop = FALSE]
     assays <- assays[assays$tmDifferencePrimer <= tmDiffPrimers, , drop = FALSE]
-    if (nrow(assays) == 0) {
+    if (nrow(assays) == 0L) {
         stop("No assays were found.", call. = FALSE)
     }
     assays
 }
+
+#############################################################################################
 
 #' Find all possible probe candidates to all primer pairs
 #'
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' data("exampleRprimerOligo")
+#'
 .identifyProbes <- function(x, probes) {
     lapply(seq_len(nrow(x)), function(i) {
         from <- x$endFwd[[i]] + 1
@@ -221,7 +236,7 @@ assays <- function(x,
     )
     select <- unlist(select)
     x <- x[select, , drop = FALSE]
-    if (nrow(x) == 0) {
+    if (nrow(x) == 0L) {
         stop("No assays with probes could be generated.", call. = FALSE)
     }
     probes <- do.call("rbind", probes)

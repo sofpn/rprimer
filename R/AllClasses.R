@@ -55,8 +55,8 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
     )
     if (!all(colnames %in% names(object))) {
         msg <- c(
-            msg, "The object must contain the following columns: \n
-            position, a, c, g, t, other, gaps, majority, identity, \n
+            msg, "The object must contain the following columns:
+            position, a, c, g, t, other, gaps, majority, identity,
             iupac, entropy and coverage."
         )
     }
@@ -120,7 +120,23 @@ RprimerOligo <- function(...) {
 
 S4Vectors::setValidity2("RprimerOligo", function(object) {
     msg <- NULL
-    # if (!) msg <- c(msg, "")
+    colnames <- c(
+        "type", "fwd", "rev", "start", "end", "length", "iupacSequence",
+        "iupacSequenceRc", "identity",
+        "coverage", "degeneracy", "gcContentMean", "gcContentRange", "tmMean",
+        "tmRange", "sequence", "sequenceRc", "gcContent", "tm", "method",
+        "roiStart", "roiEnd"
+    )
+    if (!all(colnames %in% names(object))) {
+        msg <- c(
+            msg, "The object must contain the following columns:
+            type, fwd, rev, start, end, length, iupacSequence,
+            iupacSequenceRc, identity,
+            coverage, degeneracy, gcContentMean, gcContentRange, tmMean,
+            tmRange, sequence, sequenceRc, gcContent, tm, method,
+            roiStart, roiEnd"
+        )
+    }
     if (is.null(msg)) {
         TRUE
     } else {
