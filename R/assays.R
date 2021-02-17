@@ -201,8 +201,6 @@ assays <- function(x,
     assays
 }
 
-#############################################################################################
-
 #' Find all possible probe candidates to all primer pairs
 #'
 #' @keywords internal
@@ -211,7 +209,9 @@ assays <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerOligo")
-#'
+#' x <- exampleRprimerOligo
+#' assays <- .combinePrimers(x)
+#' .identifyProbes(assays, x[x$type == "probe", ])
 .identifyProbes <- function(x, probes) {
     lapply(seq_len(nrow(x)), function(i) {
         from <- x$endFwd[[i]] + 1
@@ -222,12 +222,16 @@ assays <- function(x,
 
 #' Combine primers and probes
 #'
-#' @inheritParams assays
-#'
 #' @keywords internal
 #'
 #' @noRd
-.extractProbes <- function(x, probes, tmDiffPrimersProbe = 2) {
+#'
+#' @examples
+#' data("exampleRprimerOligo)
+#' x <- exampleRprimerOligo
+#' probes <- .identifyProbes(assays, x[x$type == "probe", ])
+#' test <- .extractProbes(assays, probes)
+.extractProbes <- function(x, probes, tmDiffPrimersProbe = c(0, 20)) {
     nProbes <- vapply(probes, nrow, integer(1), USE.NAMES = FALSE)
     select <- lapply(
         seq_along(nProbes), function(x) {
@@ -253,29 +257,26 @@ assays <- function(x,
         x$tmDifferencePrimerProbe >= min(tmDiffPrimersProbe) &
             x$tmDifferencePrimerProbe <= max(tmDiffPrimersProbe),
     ]
+    if (nrow(x) == 0L) {
+        stop("No assays with probes could be generated.", call. = FALSE)
+    }
     x
 }
 
 #' Add probes to primer pairs.
 #'
-#' @param x Assays to add probes to.
-#'
-#' @param probes Candidate probes.
-#'
-#' @inheritParams assays
-#'
-#' @return A data frame.
-#'
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' data("exampleRprimerOligo)
+#' x <- exampleRprimerOligo
+#' assays <- .combinePrimers(x)
+#' test <- .addProbes(assays, x[x$type == "probe", ])
 .addProbes <- function(x, probes, tmDiffPrimersProbe = c(0, 20)) {
     probeCandidates <- .identifyProbes(x, probes)
-    assays <- .extractProbes(x, probeCandidates, tmDiffPrimersProbe)
-    if (nrow(assays) == 0L) {
-        stop("No assays with probes could be generated.", call. = FALSE)
-    }
-    assays
+    .extractProbes(x, probeCandidates, tmDiffPrimersProbe)
 }
 
 .beautifyPrimers <- function(x) {

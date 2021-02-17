@@ -45,7 +45,7 @@ test_that(".consensusMatrix works", {
 # .majorityConsensus ===========================================================
 
 test_that(".majorityConsensus works", {
-    testmat <- testmat[ , 1:5]
+    testmat <- testmat[, 1:5]
     expect_equal(.majorityConsensus(testmat), rep("-", 5))
 })
 
@@ -100,7 +100,7 @@ test_that(".shannonEntropy works", {
     s <- x[rownames(x) %in% bases, , drop = FALSE]
     s <- apply(s, 2, function(x) x / sum(x))
     expect_equal(.shannonEntropy(x), .shannonEntropy(s))
-    entropy <- 0.035*log2(0.035) + 0.240*log2(0.240) + 0.045*log2(0.045) + 0.680*log2(0.680)
+    entropy <- 0.035 * log2(0.035) + 0.240 * log2(0.240) + 0.045 * log2(0.045) + 0.680 * log2(0.680)
     entropy <- abs(entropy)
     expect_equal(.shannonEntropy(s[, 1, drop = FALSE]), entropy)
 })

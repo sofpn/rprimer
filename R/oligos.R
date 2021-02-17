@@ -200,8 +200,8 @@
 #'
 #' ## Allow higher degeneracy
 #' oligos(roi,
-#'        maxDegeneracyPrimer = 32,
-#'        probe = FALSE
+#'     maxDegeneracyPrimer = 32,
+#'     probe = FALSE
 #' )
 oligos <- function(x,
                    maxGapFrequency = 0.05,
@@ -260,10 +260,11 @@ oligos <- function(x,
     }
     if (!(
         designStrategyPrimer == "ambiguous" || designStrategyPrimer == "mixed")
-        ) {
+    ) {
         stop(
             "'designStrategyPrimer' must be either 'ambiguous' or 'mixed'.",
-            call. = FALSE)
+            call. = FALSE
+        )
     }
     if (!is.logical(probe)) {
         stop("'probe' must be TRUE or FALSE", call. = FALSE)
@@ -449,7 +450,6 @@ oligos <- function(x,
     } else {
         list(first, second)
     }
-
 }
 
 #' Generate oligos of a specific length
@@ -486,20 +486,23 @@ oligos <- function(x,
     oligos$coverage <- .nmers(x$coverage, lengthOligo)
     oligos$identity <- .nmers(x$identity, lengthOligo)
     oligos$identityCoverage <- .splitAndPaste(
-        oligos$identity, oligos$coverage, combine = FALSE
+        oligos$identity, oligos$coverage,
+        combine = FALSE
     )
     oligos$coverageIdentity <- .splitAndPaste(
-        oligos$coverage, oligos$identity, rev = TRUE, combine = FALSE
+        oligos$coverage, oligos$identity,
+        rev = TRUE, combine = FALSE
     )
     oligos$endCoverageFwd <- apply(
         oligos$coverage[
-            , (ncol(oligos$coverage) - 5):ncol(oligos$coverage)],
+            , (ncol(oligos$coverage) - 5):ncol(oligos$coverage)
+        ],
         1, min
     )
     oligos$endCoverageRev <- apply(oligos$coverage[, seq_len(5)], 1, min)
     oligos$identity <- rowMeans(oligos$identity)
     oligos$coverage <- rowMeans(oligos$coverage)
-    oligos$method <- rep("ambiguous",  nrow(oligos$iupacSequence))
+    oligos$method <- rep("ambiguous", nrow(oligos$iupacSequence))
     oligos$roiStart <- rep(
         min(x$position, na.rm = TRUE), nrow(oligos$iupacSequence)
     )
@@ -529,7 +532,8 @@ oligos <- function(x,
     oligos <- list()
     if (rev) {
         oligos$iupacSequence <- .splitAndPaste(
-            x$iupacSequence, x$majoritySequence, rev = TRUE
+            x$iupacSequence, x$majoritySequence,
+            rev = TRUE
         )
         oligos$coverage <- rowMeans(x$coverageIdentity[[1]])
         oligos$identity <- rowMeans(x$coverageIdentity[[2]])
@@ -573,8 +577,8 @@ oligos <- function(x,
     oligos$endCoverageRev <- x$endCoverageRev
     oligos$roiStart <- x$roiStart
     oligos$roiEnd <- x$roiEnd
-    order <-  c(
-        "iupacSequence", "start", "end", "length", "degeneracy","gapFrequency",
+    order <- c(
+        "iupacSequence", "start", "end", "length", "degeneracy", "gapFrequency",
         "identity", "coverage",
         "endCoverageFwd", "endCoverageRev", "method", "roiStart",
         "roiEnd"
@@ -594,8 +598,8 @@ oligos <- function(x,
 #' .dropItems(x)
 .dropItems <- function(x) {
     within(x, rm(
-        "majoritySequence", "identityCoverage", "coverageIdentity")
-    )
+        "majoritySequence", "identityCoverage", "coverageIdentity"
+    ))
 }
 
 #' Merge two lists with the same structure
@@ -1022,7 +1026,7 @@ oligos <- function(x,
             iupacOligos <- .dropItems(iupacOligos)
         }
         iupacOligos <- .filterOligos(
-            iupacOligos, maxGapFrequency,maxDegeneracy
+            iupacOligos, maxGapFrequency, maxDegeneracy
         )
         nOligos <- vapply(iupacOligos, length, integer(1))
         if (all(nOligos == 0L)) {
@@ -1229,9 +1233,10 @@ oligos <- function(x,
     x <- x[x$length %in% lengthPrimer, , drop = FALSE]
     x <- x[x$degeneracy <= maxDegeneracyPrimer, , drop = FALSE]
     x <- x[
-            x$endCoverageFwd >= minThreeEndCoveragePrimer |
-                x$endCoverageFwd >= minThreeEndCoveragePrimer, , drop = FALSE
-        ]
+        x$endCoverageFwd >= minThreeEndCoveragePrimer |
+            x$endCoverageFwd >= minThreeEndCoveragePrimer, ,
+        drop = FALSE
+    ]
     gcInRange <- .isWithinRange(x$gcContent, gcRangePrimer)
     tmInRange <- .isWithinRange(x$tmPrimer, tmRangePrimer)
     x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))

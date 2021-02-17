@@ -18,7 +18,7 @@ assays(
 \code{c(65, 120)}.}
 
 \item{tmDiffPrimers}{Maximum tm difference between the two primers
-(absolute value). A number [0, 30], defaults to 5.}
+(absolute value). A number [0, 20], defaults to 5.}
 
 \item{tmDiffPrimersProbe}{Acceptable tm difference between the primers (average Tm of the
 primer pair) and probe. A numeric vector [-20, 20],

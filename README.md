@@ -3,11 +3,6 @@
 
 <!-- badges: start --> <!-- badges: end -->
 
-  - tests oligos, tm, assays, plots err/warn fix (white box), FIX
-    tm/ASSAYS etc\!\!\!\!\!
-  - generate new example data
-  - set and test validity for S4 objs
-
 ## Installation
 
 rprimer can be installed from [GitHub](https://github.com/) with:

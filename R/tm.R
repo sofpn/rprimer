@@ -124,5 +124,5 @@
     nn <- t(apply(x, 1, .nn))
     dgStack <- rowSums(.stack(nn, "dG"))
     dgInit <- .initiate(nn, "dG")
-    (dgStack + dgInit)/1000
+    (dgStack + dgInit) / 1000
 }

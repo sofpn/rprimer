@@ -198,7 +198,31 @@ RprimerAssay <- function(...) {
 
 S4Vectors::setValidity2("RprimerAssay", function(object) {
     msg <- NULL
-    # if (!) msg <- c(msg, "")
+    colnames <- c(
+        "start", "end", "ampliconLength", "tmDifferencePrimer",
+        "totalDegeneracy", "startFwd", "endFwd", "lengthFwd",
+        "iupacSequenceFwd", "identityFwd", "coverageFwd",
+        "degeneracyFwd", "gcContentMeanFwd", "gcContentRangeFwd",
+        "tmMeanFwd", "tmRangeFwd", "methodFwd",
+        "startRev", "endRev", "lengthRev",
+        "iupacSequenceRev", "identityRev", "coverageRev",
+        "degeneracyRev", "gcContentMeanRev", "gcContentRangeRev",
+        "tmMeanRev", "tmRangeRev", "methodRev"
+    )
+    if (!all(colnames %in% names(object))) {
+        msg <- c(
+            msg, "The object must contain the following columns:
+            start, end, ampliconLength, tmDifferencePrimer,
+            totalDegeneracy, startFwd, endFwd, lengthFwd,
+            iupacSequenceFwd, identityFwd, coverageFwd,
+            degeneracyFwd, gcContentMeanFwd, gcContentRangeFwd,
+            tmMeanFwd, tmRangeFwd, methodFwd,
+            startRev, endRev, lengthRev,
+            iupacSequenceRev, identityRev, coverageRev,
+            degeneracyRev, gcContentMeanRev, gcContentRangeRev,
+            tmMeanRev, tmRangeRev, methodRev."
+        )
+    }
     if (is.null(msg)) {
         TRUE
     } else {

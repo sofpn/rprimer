@@ -24,10 +24,10 @@ test_that("RprimerOligo validation works", {
 
 # RprimerAssay =================================================================
 
-#test_that("RprimerAssay validation works", {
-  #  expect_error(RprimerAssay(10))
+test_that("RprimerAssay validation works", {
+    expect_error(RprimerAssay(10))
 
     ## Should be subsettable by row, but not by column
-   # expect_error(exampleRprimerAssay[, 1:2])
-    #expect_s4_class(exampleRprimerAssay[1:10, ], "RprimerAssay")
-#})
+    expect_error(exampleRprimerAssay[, 1:2])
+    expect_s4_class(exampleRprimerAssay[1:10, ], "RprimerAssay")
+})

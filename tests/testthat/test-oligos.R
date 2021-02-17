@@ -103,7 +103,6 @@ test_that(".countDegeneracy works", {
 # .splitAndPaste ===============================================================
 
 test_that(".splitAndPaste works", {
-
     first <- t(matrix(rep(0, 12)))
     second <- t(matrix(rep(1, 12)))
     test <- .splitAndPaste(first, second)
@@ -115,12 +114,12 @@ test_that(".splitAndPaste works", {
 
     ## If fwd, first (0) should be two thirds (= 8)
     ## and second (1) one third (= 4)
-    expect_equal(sum(test[ , 1:8]), 0)
+    expect_equal(sum(test[, 1:8]), 0)
     expect_equal(sum(test[9:12]), 4)
 
     ## If rev, first (0) should be one third (= 4)
     ## and second (1) two thirds (= 8)
-    expect_equal(sum(testRev[ , 1:4]), 0)
+    expect_equal(sum(testRev[, 1:4]), 0)
     expect_equal(sum(testRev[5:12]), 8)
 
     # Confirm that it works for numbers not dividable with three
@@ -203,7 +202,6 @@ test_that(".generateMixedOligos work", {
     expect_equal(x$endCoverageFwd, test$endCoverageFwd)
     expect_equal(x$endCoverageRev, test$endCoverageRev)
     expect_equal(x$gapFrequency, test$gapFrequency)
-
 })
 
 # .dropItems ===================================================================
@@ -221,7 +219,7 @@ test_that(".dropItems works", {
 
 test_that(".mergeLists works", {
     l1 <- list("M" = matrix(rep(1, 10)), "V" = rep("A", 10))
-    l2 <- list("M" =  matrix(rep(2, 10)), "V" = rep("B", 10))
+    l2 <- list("M" = matrix(rep(2, 10)), "V" = rep("B", 10))
     l <- .mergeLists(l1, l2)
     expect_equal(names(l), names(l1))
     expect_true(is.matrix(l[[1]]))
@@ -425,7 +423,8 @@ test_that(".makeOligoDf works", {
 
 test_that(".designOligos works", {
     test <- .designOligos(
-        x, maxDegeneracy = 4,
+        x,
+        maxDegeneracy = 4,
         maxGapFrequency = 0,
         lengthOligo = 15:18
     )
@@ -438,7 +437,8 @@ test_that(".designOligos works", {
     expect_error(.designOligos(x[1:50, ], maxDegeneracy = 1))
 
     test <- .designOligos(
-        x[1:2000, ], maxDegeneracy = 4,
+        x[1:2000, ],
+        maxDegeneracy = 4,
         maxGapFrequency = 0,
         lengthOligo = 15:18,
         designStrategyPrimer = "mixed"
@@ -494,11 +494,11 @@ test_that(".checkAllPrimer variants works", {
 
 # .filterPrimers ===============================================================
 
-#test_that(".filterPrimers works", {
+# test_that(".filterPrimers works", {
 #    x <- .designOligos(exampleRprimerProfile)
 #    test <- .filterPrimers(x)
 
-#})
+# })
 
 # .checkAllProbeVariants =======================================================
 
