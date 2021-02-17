@@ -14,11 +14,11 @@
 #' (absolute value). A number [0, 20], defaults to 5.
 #'
 #' @param tmDiffPrimersProbe
-#' Acceptable tm difference between the primers (average Tm of the
+#' Acceptable tm difference between the primers (average tm of the
 #' primer pair) and probe. A numeric vector [-20, 20],
 #' defaults to \code{c(0, 10)}.
 #' The tm-difference is calculated by subtracting the
-#' Tm of the probe with the average Tm of the majority
+#' Tm of the probe with the average tm of the majority
 #' primer pair. A negative tm-difference
 #' means that the tm of the probe is lower than the average tm of the
 #' primer pair.
@@ -33,7 +33,7 @@
 #'   \item{start}{Position where the assay starts.}
 #'   \item{end}{Position where the assay ends.}
 #'   \item{ampliconLength}{Length of the amplicon.}
-#'   \item{tmDifferencePrimer}{Difference in Tm between
+#'   \item{tmDifferencePrimer}{Difference in tm between
 #'   the forward and reverse primer, absolute value.}
 #'   \item{totalDegeneracy}{Total number of oligos in the assay.}
 #'   \item{startFwd}{Position where the forward primer starts.}

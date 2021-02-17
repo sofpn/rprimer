@@ -125,7 +125,7 @@
 #'   \item{start}{Position where the assay starts.}
 #'   \item{end}{Position where the assay ends.}
 #'   \item{ampliconLength}{Length of the amplicon.}
-#'   \item{tmDifferencePrimer}{Difference in Tm between
+#'   \item{tmDifferencePrimer}{Difference in tm between
 #'   the forward and reverse primer, absolute value.}
 #'   \item{totalDegeneracy}{Total number of oligos in the assay.}
 #'   \item{startFwd}{Position where the forward primer starts.}
