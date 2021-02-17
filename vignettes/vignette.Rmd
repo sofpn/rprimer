@@ -40,7 +40,7 @@ devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
 library(rprimer)
@@ -178,7 +178,8 @@ The arguments of `oligos()` are:
 * `gcRangeProbe`: defaults to `c(0.40, 0.65)`
 * `tmRangeProbe`: defaults to `c(55, 70)`
 * `concProbe`: defaults to `250`
-* `concNa` Sodium ion concentration (in M) in the PCR reaction (for tm calculation), defaults to `0.05` (50 mM)
+* `concNa` Sodium ion concentration (in M) in the PCR reaction (for calculation of tm and delta G), defaults to `0.05` (50 mM)
+* `temperature` Annealing temperature (in Celcius), for calculation of delta G, which is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method developed by [@SantaLuciaUnified]. Formula, salt correction method and table values are from [@santalucia2004thermodynamics]
 
 For an oligo to be considered as valid, all sequence variants must fulfill all the specified design constraints.
 
@@ -203,12 +204,13 @@ myOligos[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The man page (`?oligos`) contains a detailed description of each variable. What may not be entirely self-explanatory is that some columns (`sequence` `gcContent` and `tm`) can hold several values. For these cases, all values within an entry can be retrieved by:   
+The man page (`?oligos`) contains a detailed description of each variable. What may not be entirely self-explanatory is that some columns (`sequence` `gcContent`, `tm` and `deltaG`) can hold several values. For these cases, all values within an entry can be retrieved by:   
 
 ```{r}
 myOligos$sequence[[1]] ## All sequence variants of the first oligo 
-myOligos$gcContent[[1]] ## GC content of all variants of the first oligo 
+myOligos$gcContent[[1]] ## GC-content of all variants of the first oligo 
 myOligos$tm[[1]] ## Tm of all variants of the first oligo 
+myOligos$deltaG[[1]] ## Delta G of all variants of the first oligo (in kcal/mole)
 ```
 
 The primer and probe candidates can be visualized using `plotData()`:

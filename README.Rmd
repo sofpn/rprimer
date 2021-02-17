@@ -25,10 +25,14 @@ if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
 devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf58d28f25847ecbe0")
 ```
-``` {r, message=FALSE, warn=FALSE}
-library(rprimer)
+``` {r, message=FALSE, warn=FALSE, echo=FALSE}
 devtools::load_all(".")
 ```
+
+```{r, warn=FALSE, message=FALSE}
+library(rprimer)
+```
+
 
 ## Overview 
 

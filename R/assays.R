@@ -1,3 +1,5 @@
+# match deltaG, upd doc om deltaG
+
 #' Design (RT)-PCR assays
 #'
 #' \code{assays()} combines forward and reverse primers

@@ -1,4 +1,4 @@
-# write tests,  is it conc oligo/4 or not???
+# conc oligo/4 or not???
 
 #' Split a DNA sequence into nearest neighbors
 #'
@@ -31,6 +31,10 @@
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' x <- t(matrix(.nn(c("A", "C", "G"))))
+#' .stack(x)
 .stack <- function(x, table = "dH") {
     selected <- lookup$nn[[table]]
     stack <- matrix(nrow = nrow(x), ncol = ncol(x), dimnames = dimnames(x))
@@ -52,6 +56,10 @@
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' x <- t(matrix(.nn(c("A", "C", "G"))))
+#' .initiate(x)
 .initiate <- function(x, table = "dH") {
     initiation <- lookup$nn[lookup$nn$bases == "Initiation", ][[table]]
     penalty <- lookup$nn[lookup$nn$bases == "AT_penalty", ][[table]]
@@ -78,7 +86,7 @@
 #' @noRd
 #'
 #' @examples
-#' .tmParameters(matrix(c("A", "G", "T", "T", "C", "G", "G", "T", "C", "G")))
+#' .tmParameters(t(matrix(c("A", "G", "T", "T", "C", "G", "G", "T", "C", "G"))))
 .tmParameters <- function(x, concNa = 0.05) {
     nn <- t(apply(x, 1, .nn))
     dhStack <- rowSums(.stack(nn, "dH"))
@@ -99,30 +107,42 @@
 
 #' Calculate melting temperature
 #'
-#' @param x An output from \code{.tmParameters()}
+#' @param x A named vector with tm parameters.
 #'
 #' @param concOligo Oligo concentration in nM.
 #'
 #' @keywords internal
 #'
 #' @noRd
+#'
+#' @examples
+#' x <- .tmParameters(t(matrix(c("A", "G", "T", "T", "C", "G", "G", "T", "C"))))
+#' .tm(x)
 .tm <- function(x, concOligo = 250) {
     concOligo <- concOligo * 10^(-9)
-    x[["sumdH"]] / (x[["sumdS"]] + 0.368 * x[["n"]] * log(x[["concNa"]]) + 1.987 * log(concOligo)) - 273.15
+    tm <- x[, "sumdH"] / (x[, "sumdS"] + 0.368 * x[, "n"] * log(x[, "concNa"]) + 1.987 * log(concOligo)) - 273.15
+    unname(tm)
+    names(tm) <- rownames(x)
+    tm
 }
 
 #' Calculate delta G at 37 C
 #'
 #' @param x A matrix with DNA sequences.
 #'
+#' @param concNa Sodium ion concentration in M.
+#'
 #' @return The delta G in kcal/M, at 37 C
 #'
 #' @keywords internal
 #'
 #' @noRd
-.deltaG <- function(x) {
-    nn <- t(apply(x, 1, .nn))
-    dgStack <- rowSums(.stack(nn, "dG"))
-    dgInit <- .initiate(nn, "dG")
-    (dgStack + dgInit) / 1000
+.deltaG <- function(x, temperature = 37) {
+    temperature <- temperature + 273.15
+    deltaG <- x[, "sumdH"] - temperature*x[, "sumdS"]
+    deltaG <- deltaG/1000
+    deltaG <- deltaG - 0.114 * x[, "n"] * log(x[, "concNa"])
+    unname(deltaG)
+    names(deltaG) <- rownames(x)
+    deltaG
 }

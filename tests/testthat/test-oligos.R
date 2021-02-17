@@ -38,6 +38,8 @@ test_that("oligos returns an error when it should", {
     expect_error(oligos(x, concProbe = 2001))
     expect_error(oligos(x, concNa = 0.009))
     expect_error(oligos(x, concNa = 1.1))
+    expect_error(oligos(x, temperature = 36))
+    expect_error(oligos(x, temperature = 71))
 })
 
 test_that("oligos works", {

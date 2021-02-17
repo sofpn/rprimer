@@ -24,9 +24,12 @@ The object contains the following information:
   \item{length}{Oligo length.}
   \item{iupacSequence}{Oligo sequence, with amiguous bases (if any).}
   \item{iupaSequenceRc}{The reverse complement of the iupacSequence.}
-  \item{coverage}{Average coverage of the oligo, can range from 0 to 1.
-    Coverage refers to the proportion of bases at
-    in the input alignment that are covered by the oligo.}
+  \item{identity}{For ambiguous oligos: Average identity of the oligo.
+    For mixed oligos: Average identity of the 5' (consensus) part of the
+    oligo. The value can range from 0 to 1.}
+  \item{coverage}{For ambiguous oligos: Average coverage of the oligo.
+    For mixed oligos: Average coverage of the 3' (degenerate) part of the
+    oligo. The value can range from 0 to 1.}
   \item{degeneracy}{Number of sequence variants of the oligo.}
   \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.
   }
@@ -34,15 +37,25 @@ The object contains the following information:
     the oligo.}
   \item{tmMean}{Mean tm of all sequence variants of the oligo.}
   \item{tmRange}{Range in tm of all sequence variants of the oligo.}
+  \item{deltaGMean}{Mean delta G (in kcal/mole)
+  of all sequence variants of the oligo.}
+  \item{deltaGRange}{Range in delta G (in kcal/mole)
+  of all sequence variants of the oligo.}
   \item{sequence}{All sequence variants of the oligo.}
   \item{sequenceRc}{Reverse complements of all sequence variants.}
   \item{gcContent}{GC-content of all sequence variants.}
   \item{tm}{Tm of all sequence variants.}
+  \item{deltaG}{deltaG (in kcal/mole) of all sequence variants.}
   \item{method}{Design method used to generate the oligo: "ambiguous",
   "mixedFwd" or "mixedRev".}
   \item{roiStart}{First position of the input \code{RprimerProfile} object
     (roi = region of interest).}
   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
 }
+
+Tm was calculated for a sodium ion concentration of 0.05 M, a primer
+concentration of 500 nM and a probe concentration of 250 nM. Delta G was
+calculated for a temperature of 60C, and a sodium ion concentration
+of 0.05 M.
 }
 \keyword{datasets}

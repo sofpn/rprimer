@@ -32,8 +32,7 @@ as reverse complement or not.
 \code{TRUE} or {FALSE}, defaults to \code{FALSE}.}
 
 \item{type}{For code{RprimerProfile}-objects.
-Which type of plot that should be generated: "overview", or "nucleotide",
-defaults to "overview".}
+Type of plot: "overview", or "nucleotide", defaults to "overview".}
 }
 \value{
 A plot.

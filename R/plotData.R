@@ -1,14 +1,10 @@
-# if nrow = 0L stop, white boxes to avoid warning if 0
-
-
 #' Plot an Rprimer-object (generic)
 #'
 #' @param x
 #' An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.
 #'
 #' @param type For code{RprimerProfile}-objects.
-#' Which type of plot that should be generated: "overview", or "nucleotide",
-#' defaults to "overview".
+#' Type of plot: "overview", or "nucleotide", defaults to "overview".
 #'
 #' @param ... Optional arguments when plotting \code{RprimerProfile} objects:
 #'

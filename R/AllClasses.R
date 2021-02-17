@@ -124,7 +124,8 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
         "type", "fwd", "rev", "start", "end", "length", "iupacSequence",
         "iupacSequenceRc", "identity",
         "coverage", "degeneracy", "gcContentMean", "gcContentRange", "tmMean",
-        "tmRange", "sequence", "sequenceRc", "gcContent", "tm", "method",
+        "tmRange", "deltaGMean", "deltaGRange",
+        "sequence", "sequenceRc", "gcContent", "tm", "deltaG", "method",
         "roiStart", "roiEnd"
     )
     if (!all(colnames %in% names(object))) {
@@ -133,7 +134,8 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
             type, fwd, rev, start, end, length, iupacSequence,
             iupacSequenceRc, identity,
             coverage, degeneracy, gcContentMean, gcContentRange, tmMean,
-            tmRange, sequence, sequenceRc, gcContent, tm, method,
+            tmRange, deltaGMean, deltaGRange,
+            sequence, sequenceRc, gcContent, tm, deltaG, method,
             roiStart, roiEnd"
         )
     }

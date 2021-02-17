@@ -15,7 +15,6 @@ devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf
 
 ``` r
 library(rprimer)
-devtools::load_all(".")
 ```
 
 ## Overview
@@ -77,7 +76,7 @@ entire genome:
 plotData(myConsensusProfile)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 Or zoom into a specific region of interest:
 
@@ -86,7 +85,7 @@ roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfi
 plotData(roi)
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 The nucleotide distribution can be shown, preferably within a short
 range, by specifying `type = "nucleotide`:
@@ -96,7 +95,7 @@ roi2 <- myConsensusProfile[myConsensusProfile$position >= 150 & myConsensusProfi
 plotData(roi2, type = "nucleotide")
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
 ### Step 2: `oligos`
 
@@ -125,7 +124,7 @@ The results can be visualized using `plotData()`.
 plotData(myOligos)
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 ### Step 3: `assays`
 
@@ -155,7 +154,7 @@ The assays can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
 ## More information
 

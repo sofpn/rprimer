@@ -23,7 +23,8 @@ oligos(
   gcRangeProbe = c(0.4, 0.65),
   tmRangeProbe = c(50, 70),
   concProbe = 250,
-  concNa = 0.05
+  concNa = 0.05,
+  temperature = 60
 )
 }
 \arguments{
@@ -81,11 +82,15 @@ defaults to \code{c(0.40, 0.65)}.}
 \item{tmRangeProbe}{Tm range for probes.
 A numeric vector [30, 90], defaults to \code{c(55, 70)}.}
 
-\item{concProbe}{Primer concentration in nM, for Tm calculation. A numeric vector
+\item{concProbe}{Primer concentration in nM, for tm calculation. A numeric vector
 [20, 2000], defaults to 250.}
 
-\item{concNa}{The sodium ion concentration in the PCR reaction in M, for Tm calculation.
+\item{concNa}{The sodium ion concentration in the PCR reaction in M, for calculation of
+tm and delta G.
 A numeric vector [0.01, 1], defaults to 0.05 (50 mM).}
+
+\item{temperature}{Annealing temperature in Celcius, for calculation of delta G.
+A number [37, 70], defaults to 60.}
 }
 \value{
 An \code{RprimerOligo} object. An error message will return
@@ -124,10 +129,15 @@ The output contains the following information:
     the oligo.}
   \item{tmMean}{Mean tm of all sequence variants of the oligo.}
   \item{tmRange}{Range in tm of all sequence variants of the oligo.}
+  \item{deltaGMean}{Mean delta G (in kcal/mole)
+  of all sequence variants of the oligo.}
+  \item{deltaGRange}{Range in delta G (in kcal/mole)
+  of all sequence variants of the oligo.}
   \item{sequence}{All sequence variants of the oligo.}
   \item{sequenceRc}{Reverse complements of all sequence variants.}
   \item{gcContent}{GC-content of all sequence variants.}
   \item{tm}{Tm of all sequence variants.}
+  \item{deltaG}{deltaG (in kcal/mole) of all sequence variants.}
   \item{method}{Design method used to generate the oligo: "ambiguous",
   "mixedFwd" or "mixedRev".}
   \item{roiStart}{First position of the input \code{RprimerProfile} object
@@ -172,10 +182,11 @@ nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
 of the same di-nucleotide (e.g. "TATATATA") are excluded.
 }
 
-\section{Tm-calculation}{
+\section{Tm and delta G}{
 
 
-Melting temperatures are calculated using SantaLucia's nearest-neighbor
+Melting temperature and delta G are calculated using SantaLucia's
+nearest-neighbor
 method, with the following assumptions:
 
 \itemize{

@@ -74,12 +74,17 @@
 #' A numeric vector [30, 90], defaults to \code{c(55, 70)}.
 #'
 #' @param concProbe
-#' Primer concentration in nM, for Tm calculation. A numeric vector
+#' Primer concentration in nM, for tm calculation. A numeric vector
 #' [20, 2000], defaults to 250.
 #'
 #' @param concNa
-#' The sodium ion concentration in the PCR reaction in M, for Tm calculation.
+#' The sodium ion concentration in the PCR reaction in M, for calculation of
+#' tm and delta G.
 #' A numeric vector [0.01, 1], defaults to 0.05 (50 mM).
+#'
+#' @param temperature
+#' Annealing temperature in Celcius, for calculation of delta G.
+#' A number [37, 70], defaults to 60.
 #'
 #' @section Output:
 #'
@@ -109,10 +114,15 @@
 #'     the oligo.}
 #'   \item{tmMean}{Mean tm of all sequence variants of the oligo.}
 #'   \item{tmRange}{Range in tm of all sequence variants of the oligo.}
+#'   \item{deltaGMean}{Mean delta G (in kcal/mole)
+#'   of all sequence variants of the oligo.}
+#'   \item{deltaGRange}{Range in delta G (in kcal/mole)
+#'   of all sequence variants of the oligo.}
 #'   \item{sequence}{All sequence variants of the oligo.}
 #'   \item{sequenceRc}{Reverse complements of all sequence variants.}
 #'   \item{gcContent}{GC-content of all sequence variants.}
 #'   \item{tm}{Tm of all sequence variants.}
+#'   \item{deltaG}{deltaG (in kcal/mole) of all sequence variants.}
 #'   \item{method}{Design method used to generate the oligo: "ambiguous",
 #'   "mixedFwd" or "mixedRev".}
 #'   \item{roiStart}{First position of the input \code{RprimerProfile} object
@@ -152,9 +162,10 @@
 #' nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
 #' of the same di-nucleotide (e.g. "TATATATA") are excluded.
 #'
-#' @section Tm-calculation:
+#' @section Tm and delta G:
 #'
-#' Melting temperatures are calculated using SantaLucia's nearest-neighbor
+#' Melting temperature and delta G are calculated using SantaLucia's
+#' nearest-neighbor
 #' method, with the following assumptions:
 #'
 #' \itemize{
@@ -221,7 +232,8 @@ oligos <- function(x,
                    gcRangeProbe = c(0.40, 0.65),
                    tmRangeProbe = c(50, 70),
                    concProbe = 250,
-                   concNa = 0.05) {
+                   concNa = 0.05,
+                   temperature = 60) {
     if (!methods::is(x, "RprimerProfile")) {
         stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
@@ -296,6 +308,9 @@ oligos <- function(x,
     if (!(concNa >= 0.01 && concNa <= 1)) {
         stop("'concNa' must be from 0.01 to 1.", call. = FALSE)
     }
+    if (!(temperature >= 37 && temperature <= 70)) {
+        stop("'temperature' must be from 37 to 70.", call. = FALSE)
+    }
     lengthOligo <- lengthPrimer
     if (probe) {
         lengthOligo <- unique(c(lengthOligo, lengthProbe))
@@ -314,7 +329,8 @@ oligos <- function(x,
         designStrategyPrimer,
         probe,
         concProbe,
-        concNa
+        concNa,
+        temperature
     )
     primers <- .filterPrimers(oligos,
         lengthPrimer,
@@ -897,7 +913,8 @@ oligos <- function(x,
 .getAllVariants <- function(x,
                             concPrimer = 500,
                             concProbe = 250,
-                            concNa = 0.05) {
+                            concNa = 0.05,
+                            temperature = 60) {
     all <- list()
     all$sequence <- apply(x$iupacSequence, 1, .expandDegenerates)
     ## If there is only one variant of each oligo,
@@ -923,15 +940,16 @@ oligos <- function(x,
     all$fiveEndGPlus <- all$sequence[, 1] == "G"
     all$fiveEndGMinus <- all$sequence[, ncol(all$sequence)] == "C"
     tmParam <- .tmParameters(all$sequence, concNa)
-    all$tmPrimer <- apply(tmParam, 1, function(x) .tm(x, concPrimer))
-    all$tmProbe <- apply(tmParam, 1, function(x) .tm(x, concProbe))
+    all$tmPrimer <- .tm(tmParam, concPrimer)
+    all$tmProbe <- .tm(tmParam, concProbe)
+    all$deltaG <- .deltaG(tmParam, temperature)
     all$sequence <- apply(all$sequence, 1, paste, collapse = "")
     all$repeats <- .detectRepeats(all$sequence)
     all$sequenceRc <- apply(all$sequenceRc, 1, paste, collapse = "")
     lapply(all, function(x) unname(split(unname(x), f = as.integer(names(x)))))
 }
 
-#' Calculate mean values and ranges for GC-content and Tm
+#' Calculate mean values and ranges for GC-content, Tm and deltaG
 #'
 #' When all sequence variants of each oligo are generated with
 #' \code{.getAllVariants()}, the next step is to compute mean values and ranges
@@ -952,7 +970,7 @@ oligos <- function(x,
 #' x <- .getAllVariants(.filterOligos(.generateOligos(exampleRprimerProfile)))
 #' .getMeanAndRange(x)
 .getMeanAndRange <- function(x) {
-    x <- x[c("gcContent", "tmPrimer", "tmProbe")]
+    x <- x[c("gcContent", "tmPrimer", "tmProbe", "deltaG")]
     means <- lapply(x, function(y) {
         vapply(y, function(z) {
             sum(z) / length(z)
@@ -1017,7 +1035,8 @@ oligos <- function(x,
                           designStrategyPrimer = "ambiguous",
                           probe = TRUE,
                           concProbe = 250,
-                          concNa = 0.05) {
+                          concNa = 0.05,
+                          temperature = 60) {
     allOligos <- lapply(lengthOligo, function(i) {
         iupacOligos <- .generateOligos(x, lengthOligo = i)
         if (designStrategyPrimer == "mixed") {
@@ -1033,7 +1052,7 @@ oligos <- function(x,
             stop("No primers were found.", call. = FALSE)
         }
         allVariants <- .getAllVariants(
-            iupacOligos, concPrimer, concProbe, concNa
+            iupacOligos, concPrimer, concProbe, concNa, temperature
         )
         meansAndRanges <- .getMeanAndRange(allVariants)
         allVariants <- data.frame(do.call("cbind", allVariants))
@@ -1392,8 +1411,8 @@ oligos <- function(x,
         "type", "fwd", "rev", "start", "end", "length",
         "iupacSequence", "iupacSequenceRc", "identity",
         "coverage", "degeneracy", "gcContentMean", "gcContentRange",
-        "tmMean", "tmRange", "sequence",
-        "sequenceRc", "gcContent", "tm", "method", "roiStart",
+        "tmMean", "tmRange", "deltaGMean", "deltaGRange", "sequence",
+        "sequenceRc", "gcContent", "tm", "deltaG", "method", "roiStart",
         "roiEnd"
     )
     x <- x[keep]
