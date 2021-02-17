@@ -1,4 +1,4 @@
-# RprimerProfile ==============================================================
+# RprimerProfile ===============================================================
 
 #' An S4 class for representation of a consensus profile
 #'

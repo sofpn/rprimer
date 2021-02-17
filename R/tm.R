@@ -87,7 +87,7 @@
     dsInit <- .initiate(nn, "dS")
     sumdH <- dhStack + dhInit
     sumdS <- dsStack + dsInit
-    n <- dim(x)[2] - 1 ## Number of phosphates
+    n <- dim(x)[[2]] - 1 ## Number of phosphates
     m <- matrix(
         c(sumdH, sumdS, rep(n, nrow(nn)), rep(concNa, nrow(nn))),
         ncol = 4

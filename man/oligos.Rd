@@ -205,8 +205,8 @@ oligos(roi, probe = FALSE)
 
 ## Allow higher degeneracy
 oligos(roi,
-       maxDegeneracyPrimer = 32,
-       probe = FALSE
+    maxDegeneracyPrimer = 32,
+    probe = FALSE
 )
 }
 \references{

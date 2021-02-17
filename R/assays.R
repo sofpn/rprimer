@@ -1,5 +1,3 @@
-# 3' end complementarity check
-
 #' Design (RT)-PCR assays
 #'
 #' \code{assays()} combines forward and reverse primers
