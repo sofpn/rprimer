@@ -1,6 +1,7 @@
 ## Import data to test on
 data("exampleRprimerProfile")
 data("exampleRprimerOligo")
+data("exampleRprimerAssay")
 
 # RprimerProfile ===============================================================
 

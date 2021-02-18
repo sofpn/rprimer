@@ -1,4 +1,5 @@
-# match deltaG, upd doc om deltaG
+# match deltaG, upd doc om deltaG (mean deltaG primer pair)
+# new example data set
 
 #' Design (RT)-PCR assays
 #'
@@ -12,18 +13,17 @@
 #' \code{c(65, 120)}.
 #'
 #' @param tmDiffPrimers
-#' Maximum tm difference between the two primers
+#' Maximum allowed difference between the mean tm of the forward primer
+#' and the mean tm of the reverse primer
 #' (absolute value). A number [0, 20], defaults to 5.
 #'
 #' @param tmDiffPrimersProbe
-#' Acceptable tm difference between the primers (average tm of the
-#' primer pair) and probe. A numeric vector [-20, 20],
+#' Acceptable difference between the mean tm of the probe and the mean tm
+#' of the primers. A numeric vector [-20, 20],
 #' defaults to \code{c(0, 10)}.
-#' The tm-difference is calculated by subtracting the
-#' Tm of the probe with the average tm of the majority
-#' primer pair. A negative tm-difference
-#' means that the tm of the probe is lower than the average tm of the
-#' primer pair.
+#' A negative tm-difference
+#' means that the mean tm of the probe is lower than the mean tm of the
+#' primers.
 #'
 #' @return
 #' An \code{RprimerAssay} object.
@@ -184,12 +184,15 @@ assays <- function(x,
     assays <- .pairPrimers(x)
     ampliconLength <- assays$endRev - assays$startFwd + 1
     tmDifferencePrimer <- abs(assays$tmMeanFwd - assays$tmMeanRev)
+    deltaGDifferencePrimer <- abs(
+        assays$deltaGMeanFwd - assays$deltaGMeanRev
+    )
     start <- assays$startFwd
     end <- assays$endRev
     totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
     assays <- cbind(
         start, end, ampliconLength,
-        tmDifferencePrimer, totalDegeneracy,
+        tmDifferencePrimer, deltaGDifferencePrimer, totalDegeneracy,
         assays
     )
     assays <- assays[assays$ampliconLength >= min(lengthRange), , drop = FALSE]
@@ -249,7 +252,7 @@ assays <- function(x,
     x$totalDegeneracy <- x$totalDegeneracy + probes$degeneracyPr
     tmDifferencePrimerProbe <- vapply(seq_len(nrow(x)), function(i) {
         x$tmMeanPr[[i]] - mean(c(
-            x$tmMeanFwd[[i]], x$tmMeanRev[[i]]
+            x$tmFwd[[i]], x$tmRev[[i]]
         ))
     }, double(1), USE.NAMES = FALSE)
     x <- cbind(x, tmDifferencePrimerProbe)

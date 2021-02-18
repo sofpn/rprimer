@@ -1,8 +1,9 @@
-*.html
-*.Rprofile
-*.Rproj
-*.Rproj.user
-*.Rhistory
-*.RData
-*.Ruserdata
+.html
+.Rprofile
+.Rproj
 .Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user
+rprimer.Rproj

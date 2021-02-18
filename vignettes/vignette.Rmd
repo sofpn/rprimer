@@ -21,9 +21,9 @@ knitr::opts_chunk$set(
 
 Primer and probe design are central parts of PCR assay development. Successful target amplification depends on several factors, such as optimal primer and probe length, GC-content, melting temperature and sequence complexity. The oligos must be designed so that the risks of dimer and hairpin formation are minimized, and the intended target region must be sufficiently conserved to avoid severe mismatches between the oligos and the template [@Bustin]. This together makes PCR assay design challenging, and a large number of computational methods has been developed, both for specific applications and for more general purposes [@guo2020classification]. One of the most comprehensive and widely used tools is Primer3 [@Rozen]. However, one disadvantage with Primer3 is that the design process is based on a single sequence, which means that primers can be inadvertently placed in sequence heterogeneous regions, leading to amplification and quantification bias. This can, in part, be circumvented by making a “consensus profile”  from an alignment of the target sequences of interest, and masking the variable regions in the consensus sequence before the design process. Yet, for some targets, it can be difficult to find even a few completely conserved regions suitable as primer or probe binding sites. 
 
-A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For many applications, is not uncommon to use primers with up to several hundreds or thousands of sequence variants. But, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. An optimal design strategy would therefore be to find primer binding regions with as low degeneracy as possible, while maintaining high inclusivity [the ability for the assay to amplify all target sequence variants of interest [@Hedman]]. 
+A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These, ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For many applications, is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. An optimal design strategy would therefore be to find primer binding regions with as low degeneracy as possible, without compromising with the inclusivity [the ability for the assay to amplify all target sequence variants of interest [@Hedman]]. 
 
-If the degeneracy is to be kept low and the target sequence heterogeneous, it is often difficult to fully avoid mismatches between the template and primers/probe. The effect of a mismatch depends to a great extent on its location. For primers, mismatches at the 3’ end can greatly reduce amplification efficiency and should best be avoided, while mismatches at the 5’ end are generally less detrimental. Mismatches within the hydrolysis probe can reduce the fluorescence signal, especially if located at the 5' end, since the 5’-3’ exonuclease activity of the DNA polymerase relies on completely hybridized nucleotides to hydrolyse DNA duplexes [@Muradrasoli]. Mismatching DNA duplexes have lower melting temperature (tm) than their perfectly matching counterparts. The negative effect of mismatches can be reduced by either lowering the annealing temperature or by increasing the primer length (to provide a high tm in spite of mismatches, so that the annealing temperature can be kept high enough to avoid primer interaction with non-targets). Hence, with careful design it is possible to efficiently amplify targets despite a few mismatches.
+If the degeneracy is to be kept low and the target sequence heterogeneous, it is often difficult to fully avoid mismatches between the template and primers/probe. The effect of a mismatch depends to a great extent on its location. For primers, mismatches at the 3’ end can greatly reduce amplification efficiency and should best be avoided, while mismatches at the 5’ end are generally less detrimental. Mismatches within the hydrolysis probe can reduce the fluorescence signal, especially if located at the 5' end, since the 5’-3’ exonuclease activity of the DNA polymerase relies on completely hybridized nucleotides to hydrolyse DNA duplexes [@Muradrasoli]. Mismatching DNA duplexes have lower melting temperature (tm) than their perfectly matching counterparts. The negative effect of mismatches can be reduced by either lowering the annealing temperature or by increasing the primer length, to increase tm so that the annealing temperature can be kept high enough to avoid primer interaction with non-targets. Hence, with careful design it is possible to efficiently amplify targets despite a few mismatches.
 
 rprimer was developed to implement commonly adopted primer and probe design guidelines for sequence variable targets, such as RNA viruses. It takes a multiple sequence alignment with target sequences of interest as input and designs primers, probes and PCR assays from user specified design criteria. 
 
@@ -179,7 +179,7 @@ The arguments of `oligos()` are:
 * `tmRangeProbe`: defaults to `c(55, 70)`
 * `concProbe`: defaults to `250`
 * `concNa` Sodium ion concentration (in M) in the PCR reaction (for calculation of tm and delta G), defaults to `0.05` (50 mM)
-* `temperature` Annealing temperature (in Celcius), for calculation of delta G, which is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method developed by [@SantaLuciaUnified]. Formula, salt correction method and table values are from [@santalucia2004thermodynamics]
+* `temperature` Annealing temperature (in Celcius), for calculation of delta G. Delta G is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method developed by [@SantaLuciaUnified]. Formula, salt correction method and table values are from [@santalucia2004thermodynamics]
 
 For an oligo to be considered as valid, all sequence variants must fulfill all the specified design constraints.
 
@@ -212,7 +212,6 @@ myOligos$gcContent[[1]] ## GC-content of all variants of the first oligo
 myOligos$tm[[1]] ## Tm of all variants of the first oligo 
 myOligos$deltaG[[1]] ## Delta G of all variants of the first oligo (in kcal/mole)
 ```
-
 The primer and probe candidates can be visualized using `plotData()`:
 
 ```{r, fig.align="center", fig.width=12, fig.height=8}
@@ -296,6 +295,12 @@ maskedSelection <- selection[
 
 plotData(maskedSelection)
 ```
+It is, of course, also possible to use R's standard functionality to visualize the object. For the dataset above, I select to plot the tm of all sequence variants of each oligo:
+
+```{r}
+boxplot(maskedSelection$tm)
+```
+
 
 ### Step 3: `assays`
 
@@ -306,7 +311,7 @@ The arguments of `assays()` are:
 * `x`: the oligo dataset from Step 2.  
 * `lengthRange`: Amplicon length range, defaults to `c(65, 120)`
 * `maxTmDiffPrimers`: Maximum tm difference between the (mean tm) of the two primers (absolute value), defaults to `2`
-* `tmDiffPrimersProbe`: Acceptable tm difference between the primer pair and probe, defaults to `c(0, 20)`. The tm-difference is calculated by subtracting the mean tm of the probe with the mean tm of the primer pair
+* `tmDiffPrimersProbe`: Acceptable tm difference between the primer pair and probe, defaults to `c(0, 20)`. The tm-difference is calculated by subtracting the mean tm of the probe with the mean tm of the primers
 
 **MAKE A NOTE ON TM DIFF -> BETTER TO MATCH DELTA G AT ANNEALING TEMP INSTEAD! (SantaLucia)**
 
