@@ -53,9 +53,11 @@ The object contains the following information:
   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
 }
 
-Tm was calculated for a sodium ion concentration of 0.05 M, a primer
+Tm was calculated for perfectly matching DNA duplexes at a sodium ion
+concentration of 0.05 M, a primer
 concentration of 500 nM and a probe concentration of 250 nM. Delta G was
-calculated for a temperature of 60C, and a sodium ion concentration
+calculated for perfectly matching DNA duplexes at a
+temperature of 60C, and a sodium ion concentration
 of 0.05 M.
 }
 \keyword{datasets}

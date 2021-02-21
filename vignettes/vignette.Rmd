@@ -23,9 +23,9 @@ Primer and probe design are central parts of PCR assay development. Successful t
 
 A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These, ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For many applications, is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. An optimal design strategy would therefore be to find primer binding regions with as low degeneracy as possible, without compromising with the inclusivity [the ability for the assay to amplify all target sequence variants of interest [@Hedman]]. 
 
-If the degeneracy is to be kept low and the target sequence heterogeneous, it is often difficult to fully avoid mismatches between the template and primers/probe. The effect of a mismatch depends to a great extent on its location. For primers, mismatches at the 3’ end can greatly reduce amplification efficiency and should best be avoided, while mismatches at the 5’ end are generally less detrimental. Mismatches within the hydrolysis probe can reduce the fluorescence signal, especially if located at the 5' end, since the 5’-3’ exonuclease activity of the DNA polymerase relies on completely hybridized nucleotides to hydrolyse DNA duplexes [@Muradrasoli]. Mismatching DNA duplexes have lower melting temperature (tm) than their perfectly matching counterparts. The negative effect of mismatches can be reduced by either lowering the annealing temperature or by increasing the primer length, to increase tm so that the annealing temperature can be kept high enough to avoid primer interaction with non-targets. Hence, with careful design it is possible to efficiently amplify targets despite a few mismatches.
+If the degeneracy is to be kept low and the target sequence heterogeneous, it is often difficult to fully avoid mismatches between the template and primers/probe. The effect of a mismatch depends to a great extent on its location. For primers, mismatches at the 3’ end can greatly reduce amplification efficiency and should best be avoided, while mismatches at the 5’ end are generally less detrimental. Mismatches within the hydrolysis probe can reduce the fluorescence signal, especially if located at the 5' end, since the 5’-3’ exonuclease activity of the DNA polymerase relies on completely hybridized nucleotides to hydrolyse DNA duplexes [@Muradrasoli]. Mismatching DNA duplexes have lower melting temperature (tm) than their perfectly matching counterparts. The negative effect of mismatches can be reduced by either lowering the annealing temperature or by increasing the primer length, to raise the tm so that the annealing temperature can be kept high enough to avoid primer interaction with non-targets. Hence, with careful design it is possible to efficiently amplify targets even with a few mismatches.
 
-rprimer was developed to implement commonly adopted primer and probe design guidelines for sequence variable targets, such as RNA viruses. It takes a multiple sequence alignment with target sequences of interest as input and designs primers, probes and PCR assays from user specified design criteria. 
+rprimer was developed to implement commonly adopted primer and probe design guidelines for sequence variable targets. It takes a multiple sequence alignment with target sequences of interest as input and designs primers, probes and PCR assays from user specified design criteria. 
 
 In this document, I demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR primers, probes and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
@@ -40,7 +40,7 @@ devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-devtools::load_all(".")
+#devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
 library(rprimer)
@@ -100,7 +100,7 @@ Once the alignment is imported, the first step is to generate a consensus profil
 * Majority consensus base, which is the most frequently occurring base
 * Identity, which is the proportion of the majority consensus base when gaps and ambiguous bases ("other") are excluded
 * IUPAC consensus character (ambiguous base). It is possible to specify an “ambiguity threshold” between 0 and 0.2. All bases that occur at a proportion higher than that will be included. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating primers and probes with high degeneracy, and a higher threshold will catch most of the variability, but with the potential cost of missing minor sequence variations (this information is provided by the coverage, see below)
-* Shannon entropy, which is a measurement of variability [**REF shannon**]. A value of zero indicate complete conservation, and a high value indicate high variability. Gaps and ambiguous bases ("other") are not included in this calculation 
+* Shannon entropy, which is a measurement of variability [@shannon1951prediction]. A value of zero indicate complete conservation, and a high value indicate high variability. Gaps and ambiguous bases ("other") are not included in this calculation 
 * Coverage, which describes the total proportion of bases that are "covered" by the IUPAC consensus character. Gaps and ambiguous bases ("other") are not included in this calculation
 
 Below, I make a consensus profile with an ambiguity threshold of 5 %:
@@ -148,7 +148,7 @@ plotData(ntSelection, type = "nucleotide")
 
 ### Step 2: `oligos`
 
-The next step is to design oligos. Primers are mandatory to design and probes are optional. Primers can be designed in either one of two ways: "ambiguous" or "mixed".
+The next step is to design oligos. Primers must be designed and probes are optional. Primers can be generated by using either one of two strategies:
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence, meaning that degenerate bases can occur at any position in the oligo
 
@@ -165,7 +165,7 @@ The arguments of `oligos()` are:
 * `lengthPrimer`: primer length, defaults to `18:22`
 * `maxDegeneracyPrimer`: maximum degeneracy for primers, defaults to `4`
 * `gcClampPrimer`: if primers should have a GC clamp, defaults to `TRUE`'. A GC clamp is here defined as the presence of two to three G or C:s within the last five bases (3' end) of the oligo. A GC clamp helps to promote specific binding of the 3' end
-* `avoidThreeEndRunsPrimer`: if primers with more than two runs of the same nucleotide at the terminal 3'-end should be avoided (to reduce the risk of mispriming), defaults to `TRUE`
+* `avoidThreeEndRunsPrimer`: if primers with more than two runs of the same nucleotide at the terminal 3' end should be avoided (to reduce the risk of mispriming), defaults to `TRUE`
 * `minThreeEndCoveragePrimer`: minimum allowed coverage at the 3' end (the last five bases). If set to `1`, all bases of the 3' end must cover all sequence variants in the target alignment. Defaults to `0.98` 
 * `gcRangePrimer`: GC-content range of primers (proportion), defaults to `c(0.40, 0.65)`
 * `tmRangePrimer`: melting temperature range for primers, defaults to `c(55, 65)`. Melting temperature is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method developed by [@SantaLuciaUnified]. Formula, salt correction method and table values are from [@santalucia2004thermodynamics]
@@ -311,7 +311,7 @@ The arguments of `assays()` are:
 * `x`: the oligo dataset from Step 2.  
 * `lengthRange`: Amplicon length range, defaults to `c(65, 120)`
 * `maxTmDiffPrimers`: Maximum tm difference between the (mean tm) of the two primers (absolute value), defaults to `2`
-* `tmDiffPrimersProbe`: Acceptable tm difference between the primer pair and probe, defaults to `c(0, 20)`. The tm-difference is calculated by subtracting the mean tm of the probe with the mean tm of the primers
+* `tmDiffPrimersProbe`: Acceptable tm difference between the primer pair and probe, defaults to `c(0, 20)`. The tm difference is calculated by subtracting the mean tm of the probe with the mean tm of the primers
 
 **MAKE A NOTE ON TM DIFF -> BETTER TO MATCH DELTA G AT ANNEALING TEMP INSTEAD! (SantaLucia)**
 
@@ -352,7 +352,7 @@ plotData(myAssays2)
 
 ## Further handling of the data 
 
-The oligo and assay region(s) can be inspected further by using the consensus profile from Step 1. As an example, I select to take a closer look at the first assay in the dataset above.  
+The oligo and assay region(s) can be inspected in more detail by using the consensus profile from Step 1. As an example, I select to take a closer look at the first assay in the dataset above.  
 
 ```{r}
 ## Find start and end positions for the first assay 
@@ -379,9 +379,88 @@ It is also possible to highlight the amplicon region, using the argument `highli
 plotData(myConsensusProfile, highlight = c(from, to))
 ```
 
-## Save results to file  
+## Export to file
 
-The results can be saved to .txt or .csv-files, for instance: 
+The workflow presented here covers several important steps for primer and PCR assay design, but not all. Two important, additional steps are: 1) checks for the potential of hairpin and primer-dimer formation and: 2) *in silico* checks for exclusivity, by matching the primer and probe set to non-targets. Below, I present a few examples on how to export the results to file, so that they can be analyzed further by other software. 
+
+**Oligos and assays to fasta-format**
+
+The following functions can be used for converting all sequence variants of all oligos or assays to a DNAStringSet-object. The `revAsRc` option regulates whether reverse primers should be written as reverse complements or not. 
+
+```{r}
+oligosToDNAStringSet <- function(x, revAsRc = TRUE) { 
+  fwd <- x$sequence[x$fwd]
+  fwd <- unlist(lapply(seq_along(fwd), function(i) {
+  names(fwd[[i]]) <- paste0(
+    "fwd_", i, "_variant_", seq_along(fwd[[i]])
+    ); fwd[[i]]
+  }))
+  rev <- if (revAsRc) x$sequenceRc[x$rev] else x$sequence[x$rev]
+  rev <- unlist(lapply(seq_along(rev), function(i) {
+  names(rev[[i]]) <- paste0(
+    "rev_", i, "_variant_", seq_along(rev[[i]])
+  ); rev[[i]]
+  }))
+  Biostrings::DNAStringSet(c(fwd, rev))
+}
+
+assaysToDNAStringSet <- function(x, revAsRc = TRUE) { 
+  fwd <- x$sequenceFwd
+  fwd <- unlist(lapply(seq_along(fwd), function(i) {
+  names(fwd[[i]]) <- paste0(
+    "assay_", i, "_fwd_variant_", seq_along(fwd[[i]])
+    ); fwd[[i]]
+  }))
+  rev <- if (revAsRc) {
+    x$sequenceRev 
+    } else {
+      lapply(x$sequenceRev, function(y) {
+        y <- strsplit(y, split = "")
+        y <- do.call("rbind", y)
+        y <- rprimer:::.reverseComplement(y)
+        apply(y, 1, paste, collapse = "")
+      })
+    } 
+  rev <- unlist(lapply(seq_along(rev), function(i) {
+  names(rev[[i]]) <- paste0(
+    "assay_", i, "_rev_variant_", seq_along(rev[[i]])
+  ); rev[[i]]
+  }))
+  if ("sequencePr" %in% names(x)) {
+    pr <- x$sequencePr 
+    pr <- unlist(lapply(seq_along(pr), function(i) {
+      names(pr[[i]]) <- paste0(
+        "assay_", i, "_pr_variant_", seq_along(pr[[i]])
+      ); pr[[i]]
+    }))
+    prRc <- x$sequenceRcPr 
+    prRc <- unlist(lapply(seq_along(prRc), function(i) {
+      names(prRc[[i]]) <- paste0(
+        "assay_", i, "_pr_rc_variant_", seq_along(prRc[[i]])
+      ); prRc[[i]]
+    }))
+    } else {
+    pr <- prRc <- NULL
+  }
+  Biostrings::DNAStringSet(c(fwd, rev, pr, prRc))  
+}
+
+## Example: convert the first two oligos in myOligos 
+oligosToDNAStringSet(myOligos[1:2, ])
+
+```
+
+This object can then easily be exported in fasta-format, for use in software for e.g. multiple sequence alignment or dimer check. 
+
+```r
+toFile <- oligosToDNAStringSet(myOligos)
+Biostrings::writeXStringSet(toFile, file = "myOligos.txt")
+
+```
+
+**Export result tables to file**
+
+Result tables can be saved to .txt or .csv-files, for instance: 
 
 ```r
 write.csv(myAssays, file = "myAssays.csv", quote = FALSE, row.names = FALSE) 
@@ -431,10 +510,6 @@ Lookup tables used for determination of complement bases, IUPAC consensus charac
 * `rprimer:::lookup$iupac`, `rprimer:::lookup$degenerates`, 
 * `rprimer:::lookup$degeneracy` and 
 * `rprimer:::lookup$nn`, respectively. 
-
-# Limitations 
-
-The workflow presented here covers several important steps for PCR assay design, but not all. Two important, additional steps are: 1) checks for the potential of hairpin and primer-dimer formation and: 2) *in silico* checks for exclusivity, by matching the primer and probe set to non-targets. **[MER HÄR]**
 
 # Session info 
 

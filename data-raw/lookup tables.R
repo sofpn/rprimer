@@ -160,29 +160,7 @@ dS <- c(
     1.4
 ) * -1
 
-dG <- c(
-    1,
-    1,
-    0.88,
-    0.58,
-    1.45,
-    1.45,
-    1.44,
-    1.44,
-    1.28,
-    1.28,
-    1.30,
-    1.30,
-    2.17,
-    2.24,
-    1.84,
-    1.84,
-    -1.96,
-    -0.05,
-    -0.43
-) * -1000
-
-nn <- data.frame(bases, dH, dS, dG)
+nn <- data.frame(bases, dH, dS)
 
 lookup <- list(
     "complement" = complement,

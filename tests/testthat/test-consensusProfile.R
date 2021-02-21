@@ -42,6 +42,13 @@ test_that(".consensusMatrix works", {
     expect_false(any(is.na(testmat)))
 })
 
+# .findMostCommonBase ==========================================================
+
+test_that(".findMostCommonbase works", {
+    testvec <- testmat[, 2]
+    expect_equal(.findMostCommonBase(testvec), "-")
+})
+
 # .majorityConsensus ===========================================================
 
 test_that(".majorityConsensus works", {

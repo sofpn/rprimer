@@ -367,8 +367,10 @@ test_that(".detectThreeEndRuns works", {
 test_that(".detectRepeats works", {
     mono <- "CTTTTTA"
     di <- "CTCTCTCTCTA"
+    monodi <- "CTCTCTCTCTACTTTTTA"
     expect_true(.detectRepeats(mono))
     expect_true(.detectRepeats(di))
+    expect_true(.detectRepeats(monodi))
     expect_equal(sum(.detectRepeats(c(di, mono))), 2)
 })
 

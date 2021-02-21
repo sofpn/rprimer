@@ -1,5 +1,3 @@
-# conc oligo/4 or not???
-
 #' Split a DNA sequence into nearest neighbors
 #'
 #' @param x A vector with a DNA sequence.
@@ -120,13 +118,12 @@
 #' .tm(x)
 .tm <- function(x, concOligo = 250) {
     concOligo <- concOligo * 10^(-9)
-    tm <- x[, "sumdH"] / (x[, "sumdS"] + 0.368 * x[, "n"] * log(x[, "concNa"]) + 1.987 * log(concOligo)) - 273.15
-    unname(tm)
+    tm <- x[, "sumdH"] / (x[, "sumdS"] + 0.368 * x[, "n"] * log(x[, "concNa"]) + 1.987 * log(concOligo/4)) - 273.15
     names(tm) <- rownames(x)
     tm
 }
 
-#' Calculate delta G at 37 C
+#' Calculate delta G
 #'
 #' @param x A matrix with DNA sequences.
 #'
@@ -142,7 +139,6 @@
     deltaG <- x[, "sumdH"] - temperature*x[, "sumdS"]
     deltaG <- deltaG/1000
     deltaG <- deltaG - 0.114 * x[, "n"] * log(x[, "concNa"])
-    unname(deltaG)
     names(deltaG) <- rownames(x)
     deltaG
 }

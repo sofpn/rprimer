@@ -21,12 +21,12 @@
 #' should be avoided.
 #' A GC-clamp
 #' is identified as two to three G or
-#' C:s within the last five bases (3'-end) of the oligo.
+#' C:s within the last five bases (3' end) of the oligo.
 #' \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.
 #'
 #' @param avoidThreeEndRunsPrimer
 #' If primers with more than two runs
-#' of the same nucleotide at the terminal 3'-end should be avoided.
+#' of the same nucleotide at the terminal 3' end should be avoided.
 #' \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.
 #'
 #' @param minThreeEndCoveragePrimer
@@ -62,7 +62,7 @@
 #'
 #' @param avoidFiveEndGProbe
 #' If probes with G
-#' at the 5'-end should be avoided. \code{TRUE} or \code{FALSE},
+#' at the 5' end should be avoided. \code{TRUE} or \code{FALSE},
 #' defaults to \code{TRUE}.
 #'
 #' @param gcRangeProbe
@@ -164,19 +164,14 @@
 #'
 #' @section Tm and delta G:
 #'
-#' Melting temperature and delta G are calculated using SantaLucia's
+#' Melting temperature and delta G are calculated for perfectly matching
+#' DNA duplexes using SantaLucia's
 #' nearest-neighbor
-#' method, with the following assumptions:
-#'
-#' \itemize{
-#'   \item Oligos are not expected to be self-complementary (no symmetry
-#'   correction is done).
-#'   \item The oligo concentration is assumed to be much higher
-#'   than the target concentration.
-#' }
-#'
-#' See references for table values and equations. Table values can also be
+#' method. Table values and equations are listed in the reference section.
+#' Table values can also be
 #' found by calling \code{rprimer:::lookup$nn}.
+#'
+#' The delta G is calculated at the specified \code{temperature}.
 #'
 #' @return
 #' An \code{RprimerOligo} object. An error message will return
@@ -694,7 +689,7 @@ oligos <- function(x,
         which(x$gapFrequency > maxGapFrequency),
         which(invalidCharacters)
     ))
-    if (length(invalid > 0)) {
+    if (length(invalid > 0L)) {
         lapply(x, function(x) {
             if (is.matrix(x)) x[-invalid, , drop = FALSE] else x[-invalid]
         })
@@ -785,7 +780,7 @@ oligos <- function(x,
 #'
 #' \code{.detectGcClamp()} detects the presence of a GC-clamp.
 #' A GC-clamp is identified as two to three G or C:s at
-#' the 3'-end (within the last five bases).
+#' the 3' end (within the last five bases).
 #'
 #' Helper function to \code{.getAllVariants()}.
 #'
@@ -821,7 +816,7 @@ oligos <- function(x,
 #' Identify oligos with runs of the same nucleotide at the 3' end
 #'
 #' \code{.detectThreeEndRuns()} checks if the same nucleotide is repeated at
-#' at least 3 times at the terminal 3'-end of an oligo (e.g. "AAA")
+#' at least 3 times at the terminal 3' end of an oligo (e.g. "AAA")
 #'
 #' Helper function to \code{.getAllVariants()}.
 #'
@@ -885,7 +880,7 @@ oligos <- function(x,
 #' both in sense and anti-sense
 #' (reverse complement) direction. It calculates GC-content and
 #' melting temperature, and provides information on the presence of a GC-clamp,
-#' terminal 3'-end runs, mono- and di-nucleotide repeats
+#' terminal 3' end runs, mono- and di-nucleotide repeats
 #' and terminal five end G:s.
 #'
 #' Helper function to \code{.designOligos()},

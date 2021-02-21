@@ -425,9 +425,10 @@ setMethod("plotData", "RprimerAssay", function(x) {
             ggplot2::aes(x = start, xend = end, y = 0, yend = 0)
         ) +
         ggplot2::geom_rect(
-            data = x, ggplot2::aes(
+            data = x[!duplicated(data.frame(x$start, x$end)), ],
+            ggplot2::aes(
                 xmin = start, xmax = end, ymin = 0.05, ymax = 0.65
-            ), fill = "#424B54"
+            ), fill = "#424B54", alpha = 0.5
         ) +
         ggplot2::annotate(
             "label",

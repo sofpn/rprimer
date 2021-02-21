@@ -124,6 +124,22 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     rbind(x, other)
 }
 
+#' Find the most common base in a named vector
+#'
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' x <- .consensusMatrix(exampleRprimerAlignment)
+#' .findMostCommonBase(x[, 1])
+.findMostCommonBase <- function(x) {
+    mostCommon <- names(x)[x == max(x)]
+    if (length(mostCommon > 1)) mostCommon <- sample(mostCommon, 1)
+    mostCommon
+}
+
 #' Majority consensus sequence
 #'
 #' @param x A consensus matrix.
@@ -139,12 +155,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' x <- .consensusMatrix(exampleRprimerAlignment)
 #' .majorityConsensus(x)
 .majorityConsensus <- function(x) {
-    .findMostCommonBase <- function(x, y) {
-        mostCommon <- rownames(x)[y == max(y)]
-        if (length(mostCommon > 1)) mostCommon <- sample(mostCommon, 1)
-        mostCommon
-    }
-    consensus <- apply(x, 2, function(y) .findMostCommonBase(x, y))
+    consensus <- apply(x, 2, .findMostCommonBase)
     unname(consensus)
 }
 

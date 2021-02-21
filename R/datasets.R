@@ -119,9 +119,11 @@
 #'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
 #' }
 #'
-#' Tm was calculated for a sodium ion concentration of 0.05 M, a primer
+#' Tm was calculated for perfectly matching DNA duplexes at a sodium ion
+#' concentration of 0.05 M, a primer
 #' concentration of 500 nM and a probe concentration of 250 nM. Delta G was
-#' calculated for a temperature of 60C, and a sodium ion concentration
+#' calculated for perfectly matching DNA duplexes at a
+#' temperature of 60C, and a sodium ion concentration
 #' of 0.05 M.
 #'
 #' @usage data("exampleRprimerOligo")
@@ -138,8 +140,19 @@
 #'   \item{start}{Position where the assay starts.}
 #'   \item{end}{Position where the assay ends.}
 #'   \item{ampliconLength}{Length of the amplicon.}
-#'   \item{tmDifferencePrimer}{Difference in tm between
-#'   the forward and reverse primer, absolute value.}
+#'   \item{tmDifferencePrimer}{Difference between
+#'   the mean tm of the forward primer and the mean tm of the reverse primer,
+#'   absolute value.}
+#'   \item{deltaGDifferencePrimer}{Difference between
+#'   the mean delta G of the forward primer and the mean delta G of
+#'   the reverse primer, absolute value.}
+#'   \item{tmDifferencePrimerProbe}{Tm difference between the primer pair
+#'   and probe. The tm difference is calculated by subtracting the
+#'   mean tm of the probe with the mean tm of the primers.}
+#'   \item{deltaGDifferencePrimerProbe}{Difference in delta G between
+#'   the primer pair and probe. It is calculated by subtracting the
+#'   mean delta G of the probe with the mean delta G of the primers.}
+#'   \item{plusPr}{If the probe is valid in positive sense.}
 #'   \item{totalDegeneracy}{Total number of oligos in the assay.}
 #'   \item{startFwd}{Position where the forward primer starts.}
 #'   \item{endFwd}{Position where the forward primer ends.}
@@ -151,9 +164,12 @@
 #'   \item{gcContentRangeFwd}{Range in GC-content of the forward primer.}
 #'   \item{tmMeanFwd}{Mean tm of the forward primer.}
 #'   \item{tmRangeFwd}{Range in tm of the forward primer.}
+#'   \item{deltaGMeanFwd}{Mean delta G of the forward primer.}
+#'   \item{deltaGRangeFwd}{Range in delta G of the forward primer.}
 #'   \item{sequenceFwd}{Sequence of the forward primer, all variants.}
 #'   \item{gcContentFwd}{GC-content of the forward primer, all variants.}
 #'   \item{tmFwd}{Tm of the forward primer, all variants.}
+#'   \item{deltaGFwd}{Delta G of the forward primer, all variants.}
 #'   \item{startRev}{Position where the reverse primer starts.}
 #'   \item{endRev}{Position where the reverse primer ends.}
 #'   \item{lengthRev}{Length of the reverse primer.}
@@ -164,10 +180,12 @@
 #'   \item{gcContentRangeRev}{Range in GC-content of the reverse primer.}
 #'   \item{tmMeanRev}{Mean tm of the reverse primer.}
 #'   \item{tmRangeRev}{Range in tm of the reverse primer.}
+#'   \item{deltaGMeanRev}{Mean delta G of the reverse primer.}
+#'   \item{deltaGRangeRev}{Range in delta G of the reverse primer.}
 #'   \item{sequenceRev}{Sequence of the reverse primer, all variants.}
 #'   \item{gcContentRev}{GC-content of the reverse primer, all variants.}
 #'   \item{tmRev}{Tm of the reverse primer, all variants.}
-#'   \item{plusPr}{If the probe is valid in positive sense.}
+#'   \item{deltaGRev}{Delta G of the reverse primer, all variants.}
 #'   \item{minusPr}{If the probe is valid in negative sense.}
 #'   \item{startPr}{Position where the probe starts.}
 #'   \item{endPr}{Position where the probe ends.}
@@ -179,14 +197,24 @@
 #'   \item{gcContentRangePr}{Range in GC-content of the probe.}
 #'   \item{tmMeanPr}{Mean tm of the probe.}
 #'   \item{tmRangePr}{Range in tm of the probe.}
+#'   \item{deltaGMeanPr}{Mean delta G of the probe.}
+#'   \item{deltaGRangePr}{Range in delta G of the probe.}
 #'   \item{sequencePr}{Sequence of the probe, all variants.}
 #'   \item{gcContentPr}{GC-content of the probe, all variants.}
 #'   \item{tmPr}{Tm of the probe, all variants.}
+#'   \item{deltaGPr}{delta G of the probe, all variants.}
 #'   \item{roiStart}{Start position of the input consensus profile
 #'   used for oligo design.}
 #'   \item{roiEnd}{End position of the input consensus profile used
 #'   for oligo design.}
-#'  }
+#' }
+#'
+#' Tm was calculated for perfectly matching DNA duplexes at a sodium ion
+#' concentration of 0.05 M, a primer
+#' concentration of 500 nM and a probe concentration of 250 nM. Delta G was
+#' calculated for perfectly matching DNA duplexes at a
+#' temperature of 60C, and a sodium ion concentration
+#' of 0.05 M.
 #'
 #' @usage data("exampleRprimerAssay")
 "exampleRprimerAssay"

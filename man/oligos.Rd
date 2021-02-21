@@ -185,19 +185,14 @@ of the same di-nucleotide (e.g. "TATATATA") are excluded.
 \section{Tm and delta G}{
 
 
-Melting temperature and delta G are calculated using SantaLucia's
+Melting temperature and delta G are calculated for perfectly matching
+DNA duplexes using SantaLucia's
 nearest-neighbor
-method, with the following assumptions:
-
-\itemize{
-  \item Oligos are not expected to be self-complementary (no symmetry
-  correction is done).
-  \item The oligo concentration is assumed to be much higher
-  than the target concentration.
-}
-
-See references for table values and equations. Table values can also be
+method. Table values and equations are listed in the reference section.
+Table values can also be
 found by calling \code{rprimer:::lookup$nn}.
+
+The delta G is calculated at the specified \code{temperature}.
 }
 
 \examples{
