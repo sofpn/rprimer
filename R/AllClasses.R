@@ -201,28 +201,41 @@ RprimerAssay <- function(...) {
 S4Vectors::setValidity2("RprimerAssay", function(object) {
     msg <- NULL
     colnames <- c(
-        "start", "end", "ampliconLength", "tmDifferencePrimer",
-        "totalDegeneracy", "startFwd", "endFwd", "lengthFwd",
-        "iupacSequenceFwd", "identityFwd", "coverageFwd",
-        "degeneracyFwd", "gcContentMeanFwd", "gcContentRangeFwd",
-        "tmMeanFwd", "tmRangeFwd", "methodFwd",
-        "startRev", "endRev", "lengthRev",
-        "iupacSequenceRev", "identityRev", "coverageRev",
-        "degeneracyRev", "gcContentMeanRev", "gcContentRangeRev",
-        "tmMeanRev", "tmRangeRev", "methodRev"
+        "start", "end", "ampliconLength",
+        "tmDifferencePrimer", "deltaGDifferencePrimer",
+        "totalDegeneracy", "startFwd", "endFwd",
+        "lengthFwd", "iupacSequenceFwd", "identityFwd",
+        "coverageFwd", "degeneracyFwd", "gcContentMeanFwd",
+        "gcContentRangeFwd", "tmMeanFwd", "tmRangeFwd",
+        "deltaGMeanFwd", "deltaGRangeFwd", "sequenceFwd",
+        "gcContentFwd", "tmFwd", "deltaGFwd",
+        "methodFwd", "startRev", "endRev",
+        "lengthRev", "iupacSequenceRev", "identityRev",
+        "coverageRev", "degeneracyRev", "gcContentMeanRev",
+        "gcContentRangeRev", "tmMeanRev", "tmRangeRev",
+        "deltaGMeanRev", "deltaGRangeRev", "sequenceRev",
+        "gcContentRev", "tmRev", "deltaGRev", "methodRev",
+        "roiStart", "roiEnd"
     )
+
     if (!all(colnames %in% names(object))) {
         msg <- c(
             msg, "The object must contain the following columns:
-            start, end, ampliconLength, tmDifferencePrimer,
-            totalDegeneracy, startFwd, endFwd, lengthFwd,
-            iupacSequenceFwd, identityFwd, coverageFwd,
-            degeneracyFwd, gcContentMeanFwd, gcContentRangeFwd,
-            tmMeanFwd, tmRangeFwd, methodFwd,
-            startRev, endRev, lengthRev,
-            iupacSequenceRev, identityRev, coverageRev,
-            degeneracyRev, gcContentMeanRev, gcContentRangeRev,
-            tmMeanRev, tmRangeRev, methodRev."
+            start, end, ampliconLength,
+            tmDifferencePrimer, deltaGDifferencePrimer,
+            totalDegeneracy, startFwd, endFwd,
+            lengthFwd, iupacSequenceFwd, identityFwd,
+            coverageFwd, degeneracyFwd, gcContentMeanFwd,
+            gcContentRangeFwd, tmMeanFwd, tmRangeFwd,
+            deltaGMeanFwd, deltaGRangeFwd, sequenceFwd,
+            gcContentFwd, tmFwd, deltaGFwd,
+            methodFwd, startRev, endRev,
+            lengthRev, iupacSequenceRev, identityRev,
+            coverageRev, degeneracyRev, gcContentMeanRev,
+            gcContentRangeRev, tmMeanRev, tmRangeRev,
+            deltaGMeanRev, deltaGRangeRev, sequenceRev,
+            gcContentRev, tmRev, deltaGRev, methodRev,
+            roiStart, roiEnd"
         )
     }
     if (is.null(msg)) {
@@ -231,3 +244,4 @@ S4Vectors::setValidity2("RprimerAssay", function(object) {
         msg
     }
 })
+

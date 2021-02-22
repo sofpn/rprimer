@@ -123,13 +123,14 @@
     tm
 }
 
-#' Calculate delta G
+#' Calculate delta G for perfectly matching DNA duplexes
 #'
 #' @param x A matrix with DNA sequences.
 #'
-#' @param concNa Sodium ion concentration in M.
+#' @param temperature
+#' The temperature (in C) at which to calculate delta G for.
 #'
-#' @return The delta G in kcal/M, at 37 C
+#' @return The delta G in kcal/M.
 #'
 #' @keywords internal
 #'
