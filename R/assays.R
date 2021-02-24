@@ -1,4 +1,7 @@
 # skriv ut, las igenom dokumentation, dubbelkolla tabellvarden
+# IUPAC_CODE_MAP
+# 3 end komplementar, worst case
+# vignette biostrings rc
 # R 4.1 utan errors, upd version, bioc cmd check envir
 
 #' Design (RT)-PCR assays

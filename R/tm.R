@@ -137,7 +137,7 @@
 #' @noRd
 .deltaG <- function(x, temperature = 37) {
     temperature <- temperature + 273.15
-    deltaG <- x[, "sumdH"] - temperature*x[, "sumdS"]
+    deltaG <- x[, "sumdH"] - temperature * x[, "sumdS"]
     deltaG <- deltaG/1000
     deltaG <- deltaG - 0.114 * x[, "n"] * log(x[, "concNa"])
     names(deltaG) <- rownames(x)
