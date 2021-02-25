@@ -2,9 +2,6 @@
 #' The package contains four functions: \code{consensusProfile()},
 #' \code{oligos()}, \code{assays()} and \code{plotData()}.
 #'
-#' For more information about rprimer and its
-#' functionality, please see the package vignette.
-#'
 #' @keywords internal
 "_PACKAGE"
 
