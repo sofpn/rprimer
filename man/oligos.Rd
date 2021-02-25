@@ -42,11 +42,11 @@ defaults to \code{18:22}.}
 should be avoided.
 A GC-clamp
 is identified as two to three G or
-C:s within the last five bases (3'-end) of the oligo.
+C:s within the last five bases (3' end) of the oligo.
 \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.}
 
 \item{avoidThreeEndRunsPrimer}{If primers with more than two runs
-of the same nucleotide at the terminal 3'-end should be avoided.
+of the same nucleotide at the terminal 3' end should be avoided.
 \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.}
 
 \item{minThreeEndCoveragePrimer}{Minimum allowed coverage at the 3' end (the last five bases).
@@ -73,7 +73,7 @@ defaults to \code{18:22}.}
 \item{maxDegeneracyProbe}{Maximum number of variants of each probe. A number [1, 64], defaults to 4.}
 
 \item{avoidFiveEndGProbe}{If probes with G
-at the 5'-end should be avoided. \code{TRUE} or \code{FALSE},
+at the 5' end should be avoided. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
 
 \item{gcRangeProbe}{GC-content range for probes (proportion). A numeric vector [0, 1],
