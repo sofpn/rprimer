@@ -19,11 +19,17 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguity letters are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. 
+Primer, probe and PCR assay design can be challenging, especially if the target sequence is short and display high sequence heterogeneity, which is the case for many RNA viruses. A common approach for amplifying sequence variable targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For many applications, is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency (Rose, Henikoff, and Henikoff 2003). An optimal design strategy would therefore be to find primer binding regions with as low degeneracy as possible, without compromising with the inclusivity [the ability for the assay to amplify all target sequence variants of interest (Hedman et al. 2018)]. However, if the degeneracy is to be kept low and the target sequence heterogeneous, it is often difficult to fully avoid mismatches between the template and primers/probe. The effect of a mismatch depends to a great extent on its location. For primers, mismatches at the 3’ end can greatly reduce amplification efficiency and should best be avoided, while mismatches at the 5’ end are generally less detrimental. Hence, with careful design it is possible to efficiently amplify targets even with a few mismatches.
 
-rprimer was developed to implement commonly adopted primer and probe design guidelines for sequence variable targets. It takes a multiple sequence alignment with target sequences of interest as input and designs primers, probes and PCR assays from user specified design criteria.
+rprimer seeks to adress the above described challenges by providing functions for: 
 
-In this document, I demonstrate how to use the rprimer by designing broadly-reactive RT-(q/d)PCR primers, probes and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
+* Visualizing sequence conservation, GC-content and gap frequency of a multiple sequence alignment 
+* To find most conserved regions 
+* To design primers, probes and PCR assays 
+* All sequence variants 
+* Results in table format 
+
+In this document, I demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR primers, probes and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
 # Installation
 
@@ -307,11 +313,9 @@ The arguments of `assays()` are:
 * `x`: the oligo dataset from Step 2.  
 * `lengthRange`: Amplicon length range, defaults to `c(65, 120)`
 * `maxTmDiffPrimers`: Maximum tm difference between the (mean tm) of the two primers (absolute value), defaults to `2`
-* `tmDiffPrimersProbe`: Acceptable tm difference between the primer pair and probe, defaults to `c(0, 20)`. The tm difference is calculated by subtracting the mean tm of the probe with the mean tm of the primers
+* `tmDiffPrimersProbe`: Acceptable tm difference between the primer pair and probe, defaults to `c(0, 20)`. The tm difference is calculated by subtracting the mean tm of the probe with the mean tm of the primers. A positive value means that the average tm of the probe is higher than the average tm of the primer
 
-**MAKE A NOTE ON TM DIFF -> BETTER TO MATCH DELTA G AT ANNEALING TEMP INSTEAD! (SantaLucia)**
-
-Assays with probes will be designed if probes are present in the oligo dataset from Step 2. 
+Assays will contain probes if probes are present in the oligo dataset from Step 2. 
 
 I design assays using default settings, from `myOligos`. An error message will return if no assays are found.
 
@@ -336,7 +340,7 @@ Again, the output can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-All assays are located within a conserved stretch of ~70 bases. This is in fact the target region for the most frequently cited RT-qPCR assay for detection of HEV [@jothikumar2006broadly].
+All assays are located within a conserved stretch of ~70 bases. This is in fact the target region for the most frequently used RT-qPCR assay for detection of HEV [@jothikumar2006broadly].
 
 **Selection ROI/mask**
 
@@ -377,7 +381,9 @@ plotData(myConsensusProfile, highlight = c(from, to))
 
 ## Export to file
 
-The workflow presented here covers several important steps for primer and PCR assay design, but not all. Two important, additional steps are: 1) checks for the potential of hairpin and primer-dimer formation and: 2) *in silico* checks for exclusivity, by matching the primer and probe set to non-targets. Below, I present a few examples on how to export the results to file, so that they can be analyzed further by other software. 
+The workflow presented here covers several important steps for primer and PCR assay design, but not all. Two important, additional steps are for instance: 1) checks for the potential of primer-dimer and hairpin formation and: 2) *in silico* checks for exclusivity, by matching the primer and probe set to non-targets. 
+
+Below, I provide examples on how to export the results to file, so that they can be analyzed further by other software. 
 
 **Oligos and assays to fasta format**
 
