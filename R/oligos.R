@@ -747,7 +747,7 @@ oligos <- function(x,
 #' x$sequence <- apply(x$iupacSequence, 1, .expandDegenerates)
 #' .makeOligoMatrix(x$sequence)
 .makeOligoMatrix <- function(x) {
-    degeneracy <- vapply(x, nrow, integer(1))
+    degeneracy <- vapply(x, nrow, integer(1L))
     id <- lapply(seq_along(degeneracy), function(x) rep(x, degeneracy[[x]]))
     id <- unlist(id)
     x <- do.call("rbind", x)
@@ -871,7 +871,7 @@ oligos <- function(x,
     mono <- "([A-Z])\\1\\1\\1\\1"
     vapply(x, function(y) {
         grepl(di, y) | grepl(mono, y)
-    }, logical(1))
+    }, logical(1L))
 }
 
 #' Get all variants of oligos with degenerate bases
@@ -969,14 +969,14 @@ oligos <- function(x,
     means <- lapply(x, function(y) {
         vapply(y, function(z) {
             sum(z) / length(z)
-        }, double(1))
+        }, double(1L))
     })
     means <- do.call("cbind.data.frame", means)
     names(means) <- paste0(names(means), "Mean")
     ranges <- lapply(x, function(y) {
         vapply(y, function(z) {
             max(z) - min(z)
-        }, double(1))
+        }, double(1L))
     })
     ranges <- do.call("cbind.data.frame", ranges)
     names(ranges) <- paste0(names(ranges), "Range")
@@ -1151,7 +1151,7 @@ oligos <- function(x,
         col <- colMeans(y)
         row <- rowMeans(y)
         all(col >= colThreshold) & all(row >= rowThreshold)
-    }, logical(1))
+    }, logical(1L))
     valid
 }
 

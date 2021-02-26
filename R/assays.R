@@ -1,4 +1,5 @@
 # om manga primers, valj basta
+# plot tm diff primers probe om probe
 
 #' Design (RT)-PCR assays
 #'
