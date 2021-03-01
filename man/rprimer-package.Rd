@@ -7,17 +7,14 @@
 \title{rprimer: Design (RT)-(q/d)PCR Assays from a Multiple DNA Sequence Alignment}
 \description{
 Functions and workflow to design
-    primers, probes and (RT)-(q/d)PCR assays from a multiple DNA sequence 
-    alignment. The design process is especially developed
-    for sequence variable targets, such as RNA viruses. 
-    Please see the package vignette for more information.
+    degenerate primers, probes and (RT)-(q/d)PCR assays from a 
+    multiple DNA sequence alignment. The design process is especially 
+    developed for short, variable viral genomes. 
+    For more information, please see the package vignette.
 }
 \details{
 The package contains four functions: \code{consensusProfile()},
 \code{oligos()}, \code{assays()} and \code{plotData()}.
-
-For more information about rprimer and its
-functionality, please see the package vignette.
 }
 \seealso{
 Useful links:

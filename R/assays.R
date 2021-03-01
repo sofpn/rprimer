@@ -188,7 +188,7 @@ assays <- function(x,
 #' @noRd
 #'
 #' @examples
-#' data("exampleRprimerOligo)
+#' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
 #' .combinePrimers(x)
 .combinePrimers <- function(x,
@@ -243,7 +243,7 @@ assays <- function(x,
 #' @noRd
 #'
 #' @examples
-#' data("exampleRprimerOligo)
+#' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
 #' probes <- .identifyProbes(assays, x[x$type == "probe", ])
 #' test <- .extractProbes(assays, probes)
@@ -291,7 +291,7 @@ assays <- function(x,
 #' @noRd
 #'
 #' @examples
-#' data("exampleRprimerOligo)
+#' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
 #' assays <- .combinePrimers(x)
 #' test <- .addProbes(assays, x[x$type == "probe", ])

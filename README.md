@@ -20,9 +20,7 @@ library(rprimer)
 ## Overview
 
 rprimer provides tools for designing broadly reactive primers, probes
-and (RT)-(q/d)PCR assays from a multiple DNA sequence alignment. It is
-especially designed for finding degenerate primers to sequence variable
-viruses.
+and (RT)-(q/d)PCR assays from a multiple DNA sequence alignment.
 
 The package contains four functions:
 
