@@ -2,11 +2,11 @@ Type: Package
 Package: rprimer
 Title: Design (RT)-(q/d)PCR Assays from a Multiple DNA Sequence Alignment
 Version: 0.99.0
-Description: Functions and workflow to design
+Description: Functions and workflow for visualizing sequence conservation 
+    and designing
     degenerate primers, probes and (RT)-(q/d)PCR assays from a 
-    multiple DNA sequence alignment. The design process is especially 
-    developed for short, variable viral genomes. 
-    For more information, please see the package vignette. 
+    multiple DNA sequence alignment. The workflow is especially developed for
+    sequence variable viruses. 
 Authors@R: 
     person(given = "Sofia",
            family = "Persson",
