@@ -114,7 +114,7 @@ If a probe is used, the following columns are also included:
 }
 \description{
 \code{assays()} combines forward, reverse primers
-and probes to (RT)-PCR assays.
+and probes to (RT)-PCR assays from an \code{RprimerOligo} object.
 }
 \examples{
 data("exampleRprimerOligo")

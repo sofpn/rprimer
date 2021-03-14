@@ -17,8 +17,7 @@
 #' Maximum number of variants of each primer. A number [1, 64], defaults to 4.
 #'
 #' @param gcClampPrimer
-#' If primers with no GC-clamp
-#' should be avoided.
+#' If primers must have a GC-clamp.
 #' A GC-clamp
 #' is identified as two to three G or
 #' C:s within the last five bases (3' end) of the oligo.
@@ -31,7 +30,8 @@
 #'
 #' @param minThreeEndCoveragePrimer
 #' Minimum allowed coverage at the 3' end (the last five bases).
-#' A number [0, 1]. If set to 1, all bases of the 3' end must cover all sequence
+#' A number [0, 1]. A value of 1 means that all bases within the 3' end
+#' must cover all sequence
 #' variants in the target alignment. Defaults to 0.98.
 #'
 #' @param gcRangePrimer
@@ -122,7 +122,7 @@
 #'   \item{sequenceRc}{Reverse complements of all sequence variants.}
 #'   \item{gcContent}{GC-content of all sequence variants.}
 #'   \item{tm}{Tm of all sequence variants.}
-#'   \item{deltaG}{deltaG (in kcal/mole) of all sequence variants.}
+#'   \item{deltaG}{delta G (in kcal/mole) of all sequence variants.}
 #'   \item{method}{Design method used to generate the oligo: "ambiguous",
 #'   "mixedFwd" or "mixedRev".}
 #'   \item{roiStart}{First position of the input \code{RprimerProfile} object

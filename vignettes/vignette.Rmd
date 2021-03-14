@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 Reverse transcription (RT) PCR based methods are important cornerstones of both clinical diagnosis and environmental surveillance of viruses. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which can result in underestimation of the target concentration or false-negative results. A well-designed oligo binds exclusively to a conserved region of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. Because many viruses display high sequence variability, it is often difficult to find even a few completely conserved regions that are suitable as primer or probe binding targets. This means that sequence variation must be taken into account in the design process.
 
-A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For many applications, is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency (Rose, Henikoff, and Henikoff 2003). An optimal design strategy would therefore be to find primer/primer binding regions with low degeneracy, without compromising the inclusivity [the ability for the assay to amplify all target sequence variants of interest (Hedman et al. 2018)]. 
+A common approach for amplifying sequence diverse targets is to use degenerate primers. A degenerate primer has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For many applications, is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency (Rose, Henikoff, and Henikoff 2003). An optimal design strategy would therefore be to find primer/primer binding regions with as low degeneracy as possible, without compromising the inclusivity [the ability for the assay to amplify all target sequence variants of interest (Hedman et al. 2018)]. 
 
 rprimer seeks to address the challenge of amplifying sequence diverse targets by providing tools to visualize sequence conservation and generate degenerate primer and probe candidates from a multiple sequence alignment. In this document, I demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR primers, probes and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
@@ -44,7 +44,7 @@ library(rprimer)
 
 # Overview
 
-The package contains four functions:
+The package consists of four functions:
 
 * `consensusProfile()`
 * `oligos()`  
@@ -75,7 +75,7 @@ infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 myAlignment <- Biostrings::readDNAMultipleAlignment(infile, format = "fasta")
 ```
 
-For brevity's sake, and to get the alignment to agree more with the average HEV genome length, I masked all positions with a gap frequency of more than 50 %:   
+For brevity's sake, and to get the alignment to agree more with the average HEV genome length, I mask all positions with a gap frequency of more than 50 %:   
 
 ```{r}
 myAlignment <- Biostrings::maskGaps(myAlignment, 
@@ -83,7 +83,7 @@ myAlignment <- Biostrings::maskGaps(myAlignment,
                                     min.block.width = 1) 
 ```
 
-However, this should be done with caution, since it may lead to placement of primers and probes in insert-rich regions. This can be checked by verifying the design process without gap mask. 
+However, keep in mind that gap masking may lead to placement of primers and probes in insert-rich regions.
 
 ## Design process
 
@@ -93,13 +93,13 @@ Once the alignment is imported, the first step is to generate a consensus profil
 
 * The proportion of the bases A, C, G, T, and “other” 
 * The proportion of gaps (-)
-* Majority consensus base, which is the most frequently occurring base
+* Majority consensus character, which is the most frequently occurring DNA base
 * Identity, which is the proportion of the majority consensus base when gaps and ambiguous bases ("other") are excluded
 * IUPAC consensus character (ambiguous base). The user can specify an “ambiguity threshold” between 0 and 0.2, and bases with a relative frequency higher than that will be included in the consensus character. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating oligos with high degeneracy. A higher threshold will catch most of the variation, but with the potential cost of missing minor sequence variations (this information is provided by the coverage, see below)
 * Shannon entropy, which is a measurement of variability [@shannon1951prediction]. A value of zero indicate complete conservation, and a high value indicate high variability. Gaps and ambiguous bases ("other") are not included in this calculation
 * Coverage, which describes the total proportion of bases that are "covered" by the IUPAC consensus character. Gaps and ambiguous bases ("other") are not included in this calculation
 
-Below, I make a consensus profile with an ambiguity threshold of 5 %:
+For example: 
 
 ```{r}
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
@@ -380,7 +380,7 @@ Below, I show how to export the results to file, so that they can be analyzed fu
 
 **Oligos and assays to fasta format**
 
-The following functions can be used for converting all sequence variants of all oligos or assays to a DNAStringSet-object. The `revAsRc` option regulates whether reverse primers should be written as reverse complement or not. 
+The following functions can be used for converting all sequence variants of all oligos or assays to a `Biostrings::DNAStringSet`-object. The `revAsRc` option regulates whether reverse primers should be written as reverse complement or not. 
 
 ```{r}
 oligosToDNAStringSet <- function(x, revAsRc = TRUE) { 

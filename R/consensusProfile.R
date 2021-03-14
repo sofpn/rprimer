@@ -8,7 +8,7 @@
 #'
 #' @param ambiguityThreshold
 #' A number [0, 0.2], defaults to 0.
-#' At each position, all nucleotides with a proportion
+#' All DNA bases that occurs with a frequency
 #' higher than the \code{ambiguityThreshold} will be included in
 #' the IUPAC consensus character.
 #'
@@ -49,17 +49,17 @@
 #'   A value of \code{0} indicate no variability and a high value
 #'   indicate high variability.
 #'   Gaps (-), as well as bases other than
-#'   A, C, G and T are excluded from the calculation.}
+#'   A, C, G and T are not included in the calculation.}
 #'   \item{coverage}{The proportion of bases that are included the
 #'   consensus/ambiguous (IUPAC) base.
 #'   Will be one if there are no "remaining" bases (and if
 #'   \code{ambiguityThreshold = 0}).
-#'   Gaps (-), as well as bases other than A, C, G and T are excluded from the
+#'   Gaps (-), as well as bases other than A, C, G and T are not included in the
 #'   calculation.}
 #' }
 #'
 #' @references
-#' This function is a wrapper to \code{Biostrings::consensusMatrix()}:
+#' \code{consensusProfile()} is a wrapper to \code{Biostrings::consensusMatrix()}:
 #'
 #' H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
 #' Efficient manipulation of biological strings. R package version
@@ -231,13 +231,13 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' x <- .consensusMatrix(exampleRprimerAlignment)
 #' .iupacConsensus(x)
 .iupacConsensus <- function(x, ambiguityThreshold = 0) {
-    s <- .dnaBasesOnly(x)
-    basesToInclude <- apply(s, 2, function(x) {
-        paste(rownames(s)[x > ambiguityThreshold], collapse = ",")
+    x <- .dnaBasesOnly(x)
+    basesToInclude <- apply(x, 2, function(y) {
+        paste(rownames(x)[y > ambiguityThreshold], collapse = ",")
     })
     basesToInclude <- unname(basesToInclude)
     consensus <- vapply(
-        basesToInclude, .asIUPAC, character(1),
+        basesToInclude, .asIUPAC, character(1L),
         USE.NAMES = FALSE
     )
     if (any(is.na(consensus))) {
@@ -266,8 +266,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' x <- .consensusMatrix(exampleRprimerAlignment)
 #' .nucleotideIdentity(x)
 .nucleotideIdentity <- function(x) {
-    s <- .dnaBasesOnly(x)
-    identity <- apply(s, 2, max)
+    x <- .dnaBasesOnly(x)
+    identity <- apply(x, 2, max)
     identity <- unname(identity)
     identity[is.na(identity)] <- 1
     identity
@@ -288,8 +288,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' x <- .consensusMatrix(exampleRprimerAlignment)
 #' .shannonEntropy(x)
 .shannonEntropy <- function(x) {
-    s <- .dnaBasesOnly(x)
-    entropy <- apply(s, 2, function(x) ifelse(x == 0, 0, x * log2(x)))
+    x <- .dnaBasesOnly(x)
+    entropy <- apply(x, 2, function(y) ifelse(y == 0, 0, y * log2(y)))
     entropy <- abs(colSums(entropy))
     entropy <- unname(entropy)
     entropy[is.na(entropy)] <- 0
@@ -316,9 +316,9 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' x <- .consensusMatrix(exampleRprimerAlignment)
 #' .coverage(x, ambiguityThreshold = 0.05)
 .coverage <- function(x, ambiguityThreshold = 0) {
-    s <- .dnaBasesOnly(x)
-    s[s > ambiguityThreshold] <- 0
-    coverage <- 1 - colSums(s)
+    x <- .dnaBasesOnly(x)
+    x[x > ambiguityThreshold] <- 0
+    coverage <- 1 - colSums(x)
     coverage[is.na(coverage)] <- 1
     unname(coverage)
 }

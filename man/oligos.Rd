@@ -38,8 +38,7 @@ defaults to \code{18:22}.}
 
 \item{maxDegeneracyPrimer}{Maximum number of variants of each primer. A number [1, 64], defaults to 4.}
 
-\item{gcClampPrimer}{If primers with no GC-clamp
-should be avoided.
+\item{gcClampPrimer}{If primers must have a GC-clamp.
 A GC-clamp
 is identified as two to three G or
 C:s within the last five bases (3' end) of the oligo.
@@ -50,7 +49,8 @@ of the same nucleotide at the terminal 3' end should be avoided.
 \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.}
 
 \item{minThreeEndCoveragePrimer}{Minimum allowed coverage at the 3' end (the last five bases).
-A number [0, 1]. If set to 1, all bases of the 3' end must cover all sequence
+A number [0, 1]. A value of 1 means that all bases within the 3' end
+must cover all sequence
 variants in the target alignment. Defaults to 0.98.}
 
 \item{gcRangePrimer}{GC-content range for primers.
@@ -137,7 +137,7 @@ The output contains the following information:
   \item{sequenceRc}{Reverse complements of all sequence variants.}
   \item{gcContent}{GC-content of all sequence variants.}
   \item{tm}{Tm of all sequence variants.}
-  \item{deltaG}{deltaG (in kcal/mole) of all sequence variants.}
+  \item{deltaG}{delta G (in kcal/mole) of all sequence variants.}
   \item{method}{Design method used to generate the oligo: "ambiguous",
   "mixedFwd" or "mixedRev".}
   \item{roiStart}{First position of the input \code{RprimerProfile} object

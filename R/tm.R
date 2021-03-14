@@ -12,7 +12,7 @@
     to <- seq_along(x)[-1]
     vapply(seq_along(from), function(i) {
         paste(x[from[[i]]:to[[i]]], collapse = "")
-    }, character(1))
+    }, character(1L))
 }
 
 #' Calculate stack values for dH or dS of nearest neighbors

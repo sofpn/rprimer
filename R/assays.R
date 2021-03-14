@@ -1,7 +1,7 @@
 #' Design (RT)-PCR assays
 #'
 #' \code{assays()} combines forward, reverse primers
-#' and probes to (RT)-PCR assays.
+#' and probes to (RT)-PCR assays from an \code{RprimerOligo} object.
 #'
 #' @param x An \code{RprimerOligo} object, with or without probes.
 #'

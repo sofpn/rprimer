@@ -6,11 +6,11 @@
 \alias{rprimer-package}
 \title{rprimer: Design (RT)-(q/d)PCR Assays from a Multiple DNA Sequence Alignment}
 \description{
-Functions and workflow to design
+Functions and workflow for visualizing sequence conservation 
+    and designing
     degenerate primers, probes and (RT)-(q/d)PCR assays from a 
-    multiple DNA sequence alignment. The design process is especially 
-    developed for short, variable viral genomes. 
-    For more information, please see the package vignette.
+    multiple DNA sequence alignment. The workflow is especially developed for
+    sequence variable viruses.
 }
 \details{
 The package contains four functions: \code{consensusProfile()},

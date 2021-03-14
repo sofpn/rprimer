@@ -10,7 +10,7 @@ consensusProfile(x, ambiguityThreshold = 0)
 \item{x}{A \code{Biostrings::DNAMultipleAlignment} object.}
 
 \item{ambiguityThreshold}{A number [0, 0.2], defaults to 0.
-At each position, all nucleotides with a proportion
+All DNA bases that occurs with a frequency
 higher than the \code{ambiguityThreshold} will be included in
 the IUPAC consensus character.}
 }
@@ -51,12 +51,12 @@ An \code{RprimerProfile} object, which contains the following information:
   A value of \code{0} indicate no variability and a high value
   indicate high variability.
   Gaps (-), as well as bases other than
-  A, C, G and T are excluded from the calculation.}
+  A, C, G and T are not included in the calculation.}
   \item{coverage}{The proportion of bases that are included the
   consensus/ambiguous (IUPAC) base.
   Will be one if there are no "remaining" bases (and if
   \code{ambiguityThreshold = 0}).
-  Gaps (-), as well as bases other than A, C, G and T are excluded from the
+  Gaps (-), as well as bases other than A, C, G and T are not included in the
   calculation.}
 }
 }
@@ -69,7 +69,7 @@ data("exampleRprimerAlignment")
 consensusProfile(exampleRprimerAlignment)
 }
 \references{
-This function is a wrapper to \code{Biostrings::consensusMatrix()}:
+\code{consensusProfile()} is a wrapper to \code{Biostrings::consensusMatrix()}:
 
 H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
 Efficient manipulation of biological strings. R package version
