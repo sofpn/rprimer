@@ -22,12 +22,13 @@ library(rprimer)
 rprimer provides tools for designing broadly reactive primers, probes
 and (RT)-(q/d)PCR assays from a multiple DNA sequence alignment.
 
-The package contains four functions:
+The package contains five functions:
 
   - `consensusProfile()`
   - `oligos()`
   - `assays()`
   - `plotData()`
+  - `convertToDNAStringSet()`
 
 ## Workflow
 
@@ -155,6 +156,20 @@ plotData(myAssays)
 ```
 
 <img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+
+### Convert to fasta format
+
+`convertToDNAStringSet()` converts oligos and assays to a
+`Biostrings::DNAStringSet`-object, which can be exported to a fasta
+file.
+
+``` r
+## Convert the first two assays in myAssays 
+myAssaysConverted <- convertToDNAStringSet(myAssays[1:2, ], revAsRc = FALSE)
+
+## Save as fasta-format
+Biostrings::writeXStringSet(myAssaysConverted, file = "myAssays.txt")
+```
 
 ## More information
 

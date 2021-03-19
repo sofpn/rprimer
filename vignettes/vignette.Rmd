@@ -383,13 +383,11 @@ Below, I show how to export the results to file. It highly recommended to also e
 `convertToDNAStringSet()` can be used for converting all sequence variants of all oligos or assays to a `Biostrings::DNAStringSet`-object. The `revAsRc` option regulates whether reverse primers should be written as reverse complement or not. 
 
 ```{r}
-
 ## Convert the first two oligos in myOligos 
 convertToDNAStringSet(myOligos[1:2, ])
 
 ## Convert the first assay in myAssays 
 convertToDNAStringSet(myAssays[1, ], revAsRc = FALSE)
-
 ```
 
 The sequences can then be exported to fasta-format:
