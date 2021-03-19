@@ -13,8 +13,9 @@ Functions and workflow for visualizing sequence conservation
     sequence variable viruses.
 }
 \details{
-The package contains four functions: \code{consensusProfile()},
-\code{oligos()}, \code{assays()} and \code{plotData()}.
+The package contains five functions: \code{consensusProfile()},
+\code{oligos()}, \code{assays()}, \code{plotData()} and
+\code{convertToDNAStringSet()}
 }
 \seealso{
 Useful links:

@@ -19,9 +19,9 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Reverse transcription (RT) PCR based methods are important cornerstones of both clinical diagnosis and environmental surveillance of viruses. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false-negative results. A well-designed oligo binds exclusively to a conserved region of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. A large number of computational tools has been developed to aid in the design process [@guo2020classification], but many of them are based on a single sequence, which means that oligos can be inadvertently placed in sequence heterogeneous regions. This can, in part, be circumvented by making a “consensus profile” from an alignment of the target sequences of interest, and masking the variable parts of the consensus sequence before the design process. Yet, for sequence variable viruses, it is often difficult to find even a few completely conserved regions that can serve as oligo binding regions. 
+Reverse transcription (RT) PCR based methods are important cornerstones of both clinical diagnosis and environmental surveillance of viruses. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false-negative results. A well-designed oligo binds exclusively to a conserved region of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. A large number of computational tools has been developed to aid in the design process [@guo2020classification], but many of them are based on a single input sequence, which means that oligos can be inadvertently placed in sequence heterogeneous regions. This can, in part, be circumvented by making a “consensus profile” from an alignment of the target sequences of interest, and masking the variable parts of the consensus sequence before the design process. Yet, for sequence variable viruses, it is often difficult to find even a few completely conserved regions that can serve as oligo binding regions. 
 
-A common approach for amplifying sequence diverse targets is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For many applications, is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency (Rose, Henikoff, and Henikoff 2003). A preferred design strategy would therefore be to oligo binding regions with as low degeneracy as possible, without compromising the inclusivity [the ability for the assay to amplify all target sequence variants of interest (Hedman et al. 2018)]. 
+A common approach for amplifying sequence diverse targets is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For many applications, is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency (Rose, Henikoff, and Henikoff 2003). A preferred design strategy would thus be to find oligo binding regions with as low degeneracy as possible, without compromising the inclusivity [the ability for the assay to amplify all target sequence variants of interest (Hedman et al. 2018)]. 
 
 rprimer seeks to address the challenge of amplifying sequence diverse targets by providing tools to visualize sequence conservation and generate degenerate oligos from a multiple sequence alignment, using some commonly adopted design guidelines. In this document, I demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR primers, probes and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
@@ -36,7 +36,7 @@ devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-devtools::load_all(".")
+#devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
 library(rprimer)
@@ -44,12 +44,13 @@ library(rprimer)
 
 # Overview
 
-The package consists of four functions:
+The package consists of five functions:
 
 * `consensusProfile()`
 * `oligos()`  
 * `assays()` 
 * `plotData()`
+* `convertToDNAStringSet()`
 
 # Workflow
 
@@ -67,23 +68,19 @@ These sequences were collected by searching for “[a-z]”[porgn:__txid1678143]
 
 Before the design process can begin, the alignment must be imported to R using the `readDNAMultipleAlignment()` function from Biostrings [@PagesBios]. The input file can contain from one up to several thousands of sequences.
 
-For example:
-
 ```{r}
-infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
+filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 
-myAlignment <- Biostrings::readDNAMultipleAlignment(infile, format = "fasta")
+myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta")
 ```
 
-For brevity's sake, and to get the alignment to agree more with the average HEV genome length, I mask all positions with a gap frequency of more than 50 %:   
+For brevity's sake of this example, and to get the alignment to agree more with the average HEV genome length, I mask all positions with a gap frequency of more than 50 %. But keep in mind that gap masking may lead to placement of primers and probes in insert-rich regions.
 
 ```{r}
 myAlignment <- Biostrings::maskGaps(myAlignment, 
                                     min.fraction = 0.5, 
                                     min.block.width = 1) 
 ```
-
-However, keep in mind that gap masking may lead to placement of primers and probes in insert-rich regions.
 
 ## Design process
 
@@ -99,9 +96,8 @@ Once the alignment is imported, the first step is to generate a consensus profil
 * Shannon entropy, which is a measurement of variability [@shannon1951prediction]. A value of zero indicate complete conservation, and a high value indicate high variability. Gaps and ambiguous bases ("other") are not included in this calculation
 * Coverage, which describes the total proportion of bases that are "covered" by the IUPAC consensus character. Gaps and ambiguous bases ("other") are not included in this calculation
 
-For example: 
-
 ```{r}
+## Generate a consensus profile with an ambiguity threshold of 5 %
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
 ```
 
@@ -145,7 +141,7 @@ plotData(ntSelection, type = "nucleotide")
 
 ### Step 2: `oligos`
 
-The next step is to design oligos. Primers must be designed and probes are optional. Primers can be generated from either one of two strategies:
+Once the consensus profile is generated, the next step is to design oligos. Primers must be designed and probes are optional. Primers can be generated from either one of two strategies:
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence, meaning that degenerate bases can occur at any position
 
@@ -296,12 +292,6 @@ maskedSelection <- selection[
 plotData(maskedSelection)
 ```
 
-It is of course also possible to use R's standard functionality to visualize the object. For the dataset above, I select to plot the tm of all sequence variants of each oligo:
-
-```{r}
-boxplot(maskedSelection$tm)
-```
-
 ### Step 3: `assays`
 
 The next step is to find pairs of forward and reverse primers, and eventually, to combine them with probes. 
@@ -309,9 +299,9 @@ The next step is to find pairs of forward and reverse primers, and eventually, t
 The arguments of `assays()` are:  
 
 * `x`: the oligo dataset from Step 2
-* `lengthRange`: Amplicon length range, defaults to `c(65, 120)`
-* `maxTmDiffPrimers`: Maximum tm difference between the (mean tm) of the two primers (absolute value), defaults to `2`
-* `tmDiffPrimersProbe`: Acceptable tm difference between the primer pair and probe, defaults to `c(0, 20)`. The tm difference is calculated by subtracting the mean tm of the probe with the mean tm of the primers. A positive value means that the average tm of the probe is higher than the average tm of the primer
+* `lengthRange`: amplicon length range, defaults to `c(65, 120)`
+* `maxTmDiffPrimers`: maximum tm difference between the (mean tm) of the two primers (absolute value), defaults to `2`
+* `tmDiffPrimersProbe`: acceptable tm difference between the primer pair and probe, defaults to `c(0, 20)`. The tm difference is calculated by subtracting the mean tm of the probe with the mean tm of the primers. A positive value means that the average tm of the probe is higher than the average tm of the primer
 
 Assays will contain probes if probes are present in the oligo dataset from Step 2. 
 
@@ -371,6 +361,13 @@ The consensus amplicon sequence can be obtained by:
 paste(selection$iupac, collapse = "")
 ```
 
+And the amplicon (majority) GC content can be retrieved by: 
+
+```{r}
+gc <- selection$majority == "G" | selection$majority == "C"
+sum(gc) / length(gc)
+```
+
 It is also possible to highlight the amplicon region, using the argument `highlight`.
 
 ```{r fig 3, fig.width=12, fig.height=6}
@@ -383,68 +380,19 @@ Below, I show how to export the results to file. It highly recommended to also e
 
 **Oligos and assays to fasta format**
 
-The following functions can be used for converting all sequence variants of all oligos or assays to a `Biostrings::DNAStringSet`-object. The `revAsRc` option regulates whether reverse primers should be written as reverse complement or not. 
+`convertToDNAStringSet()` can be used for converting all sequence variants of all oligos or assays to a `Biostrings::DNAStringSet`-object. The `revAsRc` option regulates whether reverse primers should be written as reverse complement or not. 
 
 ```{r}
-oligosToDNAStringSet <- function(x, revAsRc = TRUE) { 
-  fwd <- x$sequence[x$fwd]
-  fwd <- unlist(lapply(seq_along(fwd), function(i) {
-  names(fwd[[i]]) <- paste0(
-    "fwd_", i, "_variant_", seq_along(fwd[[i]])
-    ); fwd[[i]]
-  }))
-  rev <- if (revAsRc) x$sequenceRc[x$rev] else x$sequence[x$rev]
-  rev <- unlist(lapply(seq_along(rev), function(i) {
-  names(rev[[i]]) <- paste0(
-    "rev_", i, "_variant_", seq_along(rev[[i]])
-  ); rev[[i]]
-  }))
-  Biostrings::DNAStringSet(c(fwd, rev))
-}
 
-assaysToDNAStringSet <- function(x, revAsRc = TRUE) { 
-  fwd <- x$sequenceFwd
-  fwd <- unlist(lapply(seq_along(fwd), function(i) {
-  names(fwd[[i]]) <- paste0(
-    "assay_", i, "_fwd_variant_", seq_along(fwd[[i]])
-    ); fwd[[i]]
-  }))
-  fwd <- Biostrings::DNAStringSet(fwd)
-  rev <- x$sequenceRev 
-  rev <- unlist(lapply(seq_along(rev), function(i) {
-  names(rev[[i]]) <- paste0(
-    "assay_", i, "_rev_variant_", seq_along(rev[[i]])
-  ); rev[[i]]
-  }))
-  rev <- Biostrings::DNAStringSet(rev)
-  if (!revAsRc) rev <- Biostrings::reverseComplement(rev)
-  if ("sequencePr" %in% names(x)) {
-    pr <- x$sequencePr 
-    pr <- unlist(lapply(seq_along(pr), function(i) {
-      names(pr[[i]]) <- paste0(
-        "assay_", i, "_pr_variant_", seq_along(pr[[i]])
-      ); pr[[i]]
-    }))
-    prRc <- Biostrings::DNAStringSet(pr)
-    prRc <- x$sequenceRcPr 
-    prRc <- unlist(lapply(seq_along(prRc), function(i) {
-      names(prRc[[i]]) <- paste0(
-        "assay_", i, "_pr_rc_variant_", seq_along(prRc[[i]])
-      ); prRc[[i]]
-    }))
-    prRc <- Biostrings::DNAStringSet(prRc)
-    } else {
-    pr <- prRc <- NULL
-  }
-  c(fwd, rev, pr, prRc)  
-}
+## Convert the first two oligos in myOligos 
+convertToDNAStringSet(myOligos[1:2, ])
 
-## Example: convert the first two oligos in myOligos 
-oligosToDNAStringSet(myOligos[1:2, ])
+## Convert the first assay in myAssays 
+convertToDNAStringSet(myAssays[1, ], revAsRc = FALSE)
 
 ```
 
-These objects can then easily be exported in fasta-format:
+The sequences can then be exported to fasta-format:
 
 ```r
 toFile <- oligosToDNAStringSet(myOligos)
