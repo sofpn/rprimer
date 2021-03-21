@@ -19,11 +19,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Reverse transcription (RT) PCR based methods are important cornerstones of both clinical diagnosis and environmental surveillance of viruses. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false-negative results. A well-designed oligo binds exclusively to a conserved region of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. A large number of computational tools has been developed to aid in the design process [@guo2020classification], but many of them are based on a single input sequence, which means that oligos can be inadvertently placed in sequence heterogeneous regions. This can, in part, be circumvented by making a “consensus profile” from an alignment of the target sequences of interest, and masking the variable parts of the consensus sequence before the design process. Yet, for sequence variable viruses, it is often difficult to find even a few completely conserved regions that can serve as oligo binding regions. 
-
-A common approach for amplifying sequence diverse targets is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For many applications, is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency (Rose, Henikoff, and Henikoff 2003). A preferred design strategy would thus be to find oligo binding regions with as low degeneracy as possible, without compromising the inclusivity [the ability for the assay to amplify all target sequence variants of interest (Hedman et al. 2018)]. 
-
-rprimer seeks to address the challenge of amplifying sequence diverse targets by providing tools to visualize sequence conservation and generate degenerate oligos from a multiple sequence alignment, using some commonly adopted design guidelines. In this document, I demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR primers, probes and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
+rprimer seeks to address the challenge of amplifying sequence diverse viruses by providing tools for visualizing sequence conservation and designing degenerate oligos^[A degenerate oligo has one or more positions with several possible bases, which are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. The degeneracy refers to the number of unique sequence variants encompassed by the oligo.] from a multiple sequence alignment. In this document, I demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR primers, probes and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
 # Installation
 
@@ -36,7 +32,7 @@ devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
 library(rprimer)
@@ -74,7 +70,7 @@ filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta")
 ```
 
-For brevity's sake of this example, and to get the alignment to agree more with the average HEV genome length, I mask all positions with a gap frequency of more than 50 %. But keep in mind that gap masking may lead to placement of primers and probes in insert-rich regions.
+For brevity's sake, and to get the alignment to agree more with the average HEV genome length, I chose to mask all positions with a gap frequency of more than 50 %. But keep in mind that gap masking may lead to placement of primers and probes in insert-rich regions.  
 
 ```{r}
 myAlignment <- Biostrings::maskGaps(myAlignment, 
@@ -195,7 +191,7 @@ myOligos[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The man page (`?oligos`) contains a detailed description of each variable. What may not be entirely self-explanatory is that some columns (`sequence` `gcContent`, `tm` and `deltaG`) can hold several values. All values within an entry can be retrieved by:   
+The man page (`?oligos`) contains a detailed description of each variable. What may not be entirely self-explanatory is that some columns (`sequence` `gcContent`, `tm` and `deltaG`) can hold several values. In such cases, all values within an entry can be retrieved by:   
 
 ```{r}
 myOligos$sequence[[1]] ## All sequence variants of the first oligo 
@@ -365,7 +361,7 @@ And the amplicon (majority) GC content can be retrieved by:
 
 ```{r}
 gc <- selection$majority == "G" | selection$majority == "C"
-sum(gc) / length(gc)
+sum(gc) / length(gc[!gc == "-"])
 ```
 
 It is also possible to highlight the amplicon region, using the argument `highlight`.
