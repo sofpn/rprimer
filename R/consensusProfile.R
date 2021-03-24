@@ -117,7 +117,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
     x <- x[, colSums(!is.na(x)) > 0, drop = FALSE] ## Removes masked columns
     colnames(x) <- seq_len(ncol(x))
-    x <- x[(rownames(x) != "+" & rownames(x) != "."), , drop = FALSE]
     bases <- c("A", "C", "G", "T", "-")
     other <- colSums(x[!rownames(x) %in% bases, , drop = FALSE])
     x <- x[rownames(x) %in% bases, , drop = FALSE]

@@ -23,7 +23,7 @@ rprimer can be installed from [GitHub](https://github.com/) with:
   ``` r
 if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
-devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf58d28f25847ecbe0")
+devtools::install_github("sofpn/rprimer")
 ```
 ``` {r, message=FALSE, warn=FALSE, echo=FALSE}
 devtools::load_all(".")
@@ -35,7 +35,7 @@ library(rprimer)
 
 ## Overview 
 
-*rprimer* seeks to address the challenge of amplifying sequence diverse viruses by providing tools for visualizing sequence conservation and designing degenerate oligos from a multiple sequence alignment.
+rprimer seeks to address the challenge of amplifying sequence variable viruses by providing tools for visualization of sequence conservation and generating degenerate DNA oligos from a multiple sequence alignment.
 
 The package contains five functions:
 
