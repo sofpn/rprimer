@@ -4,7 +4,8 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-  <!-- badges: start -->
+ <!-- badges: start -->
+  [![R build status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
   <!-- badges: end -->
 
 ```{r, include = FALSE}
@@ -116,7 +117,7 @@ Results (first six rows):
 knitr::kable(head(myOligos), digits = 2)
 ```
 
-The results can be visualized using `plotData()`. 
+The results can be visualized using `plotData()`: 
 
 ```{r, fig.width=12, fig.height=8}
 plotData(myOligos)

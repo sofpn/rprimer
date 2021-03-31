@@ -1,7 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<!-- badges: start --> <!-- badges: end -->
+<!-- badges: start --> [![R build
+status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
+<!-- badges: end -->
 
 *This package is in development, and will only work for R \>4.1.*
 
@@ -128,7 +130,7 @@ Results (first six rows):
 | probe  | TRUE  | TRUE  |    26 |  44 |     19 | ATGGAGGCCCAYCAGTTYA  | TRAACTGRTGGGCCTCCAT  |     0.95 |        1 |          4 |          0.53 |           0.11 |  54.57 |    5.20 |     \-9.11 |        2.23 | ATGGAGGC…. | TGAACTGG…. | 0.578947…. | 57.17288…. | \-10.2223…. | ambiguous |        1 |   7238 |
 | probe  | TRUE  | TRUE  |    26 |  45 |     20 | ATGGAGGCCCAYCAGTTYAT | ATRAACTGRTGGGCCTCCAT |     0.96 |        1 |          4 |          0.50 |           0.10 |  54.91 |    4.96 |     \-9.17 |        2.23 | ATGGAGGC…. | ATGAACTG…. | 0.55, 0….. | 57.38719…. | \-10.2845…. | ambiguous |        1 |   7238 |
 
-The results can be visualized using `plotData()`.
+The results can be visualized using `plotData()`:
 
 ``` r
 plotData(myOligos)
