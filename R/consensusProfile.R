@@ -7,7 +7,7 @@
 #' A \code{Biostrings::DNAMultipleAlignment} object.
 #'
 #' @param ambiguityThreshold
-#' A number [0, 0.2], defaults to 0.
+#' A number within the range of 0 and 0.2, defaults to 0.
 #' All DNA bases that occurs with a frequency
 #' higher than the \code{ambiguityThreshold} will be included in
 #' the IUPAC consensus character.

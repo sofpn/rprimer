@@ -3,6 +3,8 @@
 
 <!-- badges: start --> <!-- badges: end -->
 
+*This package is in development, and will only work for R \>4.1.*
+
 ## Installation
 
 rprimer can be installed from [GitHub](https://github.com/) with:
@@ -17,11 +19,15 @@ devtools::install_github("sofpn/rprimer")
 library(rprimer)
 ```
 
+## Citation
+
+To cite rprimer, please use: `citation("rprimer")`.
+
 ## Overview
 
-rprimer seeks to address the challenge of amplifying sequence variable
-viruses by providing tools for visualization of sequence conservation
-and generating degenerate DNA oligos from a multiple sequence alignment.
+rprimer provides tools for visualization of sequence conservation and
+generating degenerate DNA oligos from a multiple sequence alignment. It
+is especially developed for sequence variable viruses.
 
 The package contains five functions:
 
@@ -36,10 +42,12 @@ The package contains five functions:
 ### Import alignment
 
 The first step is to import an alignment with target sequences of
-interest and, if preferred, mask positions with e.g. high gap frequency.
-`readDNAMultipleAlignment()` and `maskGaps()` from Biostrings do the
-work for this part. The file “example\_alignment.txt” contains an
-alignment of 200 hepatitis E virus sequences.
+interest and, if preferred, mask positions with high gap frequency.
+Please use the `readDNAMultipleAlignment()` and `maskGaps()` from the
+Biostrings for this part.
+
+The file “example\_alignment.txt” contains an alignment of 200 hepatitis
+E virus sequences.
 
 ``` r
 infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")

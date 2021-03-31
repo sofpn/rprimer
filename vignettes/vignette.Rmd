@@ -21,12 +21,11 @@ knitr::opts_chunk$set(
 
 Reverse transcription (RT) PCR based methods are important cornerstones of both clinical diagnosis and environmental surveillance of viruses. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to  underestimation of the target concentration or false negative results.
 
-For an oligo to work efficiently, it must bind exclusively to a conserved region of the target of interest and not fold or form stable interactions (primer dimers) with other oligos. 
-This together makes (RT)-PCR assay development a challenging task, and a large number of computational tools have been developed to aid in the design process [@guo2020classification]. Unfortunately, many of them are based on a single sequence, which means that oligos can be inadvertently placed in sequence heterogeneous regions. This can, in part, be circumvented by making a “consensus profile” from an alignment of the target sequences of interest, and masking the variable regions before the design process. Yet, for many viruses, it can be difficult to find even a few completely conserved regions that are suitable as primer or probe targets. 
+For an oligo to work efficiently, it must bind exclusively to a conserved region of the target of interest and not fold or form stable interactions (primer dimers) with other oligos. This together makes (RT)-PCR assay development challenging, and a large number of computational tools have been developed to aid in the design process [@guo2020classification]. Unfortunately, many of them are based on a single sequence, which means that oligos can be inadvertently placed in sequence heterogeneous regions. This can, in part, be circumvented by making a “consensus profile” from an alignment of the target sequences of interest, and masking the variable regions before the design process. Yet, for many viruses, it can be difficult to find even a few completely conserved regions that are suitable as primer or probe targets. 
 
 A common approach for amplifying sequence variable regions is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. These ambiguity letters are specified by a code system determined by IUPAC. For instance, the IUPAC consensus character K can be either G or T, and N can be A, C, G or T. For many applications, is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of oligos that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. An optimal design strategy would therefore be to find oligo binding regions with as low degeneracy as possible, without compromising with the inclusivity [the ability for the assay to amplify all target sequence variants of interest [@Hedman]]
 
-rprimer seeks to address the challenge of amplifying sequence variable viruses by providing tools for visualization of sequence conservation and generating degenerate DNA oligos from a multiple sequence alignment. In this document, I demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR primers, probes and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
+rprimer seeks to address the challenge of amplifying sequence variable viruses by providing tools for visualizing sequence conservation and generating degenerate oligos from a multiple DNA sequence alignment. In this document, I demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR primers, probes and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
 # Installation
 
@@ -35,11 +34,11 @@ rprimer can be installed from [GitHub](https://github.com/) with:
 ``` r
 if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
-devtools::install_github("sofpn/rprimer", auth_token = "85946c568a9f7f71285067bf58d28f25847ecbe0")
+devtools::install_github("sofpn/rprimer")
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
 library(rprimer)
@@ -95,7 +94,7 @@ Once the alignment is imported, the first step is to generate a consensus profil
 * The proportion of gaps (-)
 * Majority consensus character, which is the most frequently occurring DNA base
 * Identity, which is the proportion of the majority consensus base when gaps and ambiguous bases ("other") are excluded
-* IUPAC consensus character (ambiguous base). The user can specify an “ambiguity threshold” between 0 and 0.2, and bases with a relative frequency higher than that will be included in the consensus character. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating oligos with high degeneracy. A higher threshold will catch most of the variation, but with the potential cost of missing minor sequence variations (this information is provided by the coverage, see below)
+* IUPAC consensus character (ambiguous base). The user can specify an “ambiguity threshold” from 0 to 0.2, and bases with a relative frequency higher than that will be included in the consensus character. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating oligos with high degeneracy. A higher threshold will catch most of the variation, but with the potential cost of missing minor sequence variations (this information is provided by the coverage, see below)
 * Shannon entropy, which is a measurement of variability [@shannon1951prediction]. A value of zero indicate complete conservation, and a high value indicate high variability. Gaps and ambiguous bases ("other") are not included in this calculation
 * Coverage, which describes the total proportion of bases that are "covered" by the IUPAC consensus character. Gaps and ambiguous bases ("other") are not included in this calculation
 
@@ -124,6 +123,7 @@ The dots represent the value at each position and the black lines represent cent
 It is possible to zoom into a specific region of interest:
 
 ```{r, fig.width=12, fig.height=6}
+## Select position 1000 to 1500 in the consensus profile 
 selection <- myConsensusProfile[
   myConsensusProfile$position >= 1000 & myConsensusProfile$position <= 1500, 
   ]
@@ -131,7 +131,7 @@ selection <- myConsensusProfile[
 plotData(selection)
 ```
 
-Or visualize the nucleotide distribution, by specifying `type = nucleotide`: 
+Or to visualize the nucleotide distribution, by specifying `type = nucleotide`: 
 
 ```{r, fig.width=12, fig.height=6}
 ## Select position 1000 to 1020 in the consensus profile 
@@ -144,11 +144,11 @@ plotData(ntSelection, type = "nucleotide")
 
 ### Step 2: `oligos`
 
-Once the consensus profile is generated, the next step is to design oligos. Primers must be designed and probes are optional. Primers can be generated from either one of two strategies:
+Once the consensus profile is generated, oligos can be designed. Primers must be designed and probes are optional. Primers can be generated from either one of the two following strategies:
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence, meaning that degenerate bases can occur at any position
 
-* The **mixed strategy** is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2], and is recommended for highly variable target regions. Here, primers are generated from both the majority and the IUPAC consensus sequence, and consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region), and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since mismatches at the 5' end are generally less detrimental than 3' end mismatches) [@Rose2]. The generated products will match the 5' ends of all primers perfectly, which will allow for efficient amplification of the PCR products in the later cycles. To provide a sufficiently high tm in spite of mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy  
+* The **mixed strategy** is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2], and is recommended for highly variable regions. Here, primers are generated from both the majority and the IUPAC consensus sequence, and consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region), and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since mismatches at the 5' end are generally less detrimental than 3' end mismatches) [@Rose2]. The generated products will match the 5' ends of all primers perfectly, which will allow for efficient amplification of the PCR products in the later cycles. To provide a sufficiently high tm in spite of mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy  
 
 Probes are always designed using the ambiguous strategy. 
 
@@ -438,6 +438,14 @@ Lookup tables used for determination of complement bases, IUPAC consensus charac
 * `rprimer:::lookup$iupac`, `rprimer:::lookup$degenerates`, 
 * `rprimer:::lookup$degeneracy` and 
 * `rprimer:::lookup$nn`, respectively. 
+
+# Source code 
+
+The source code is available at https://github.com/sofpn/rprimer. 
+
+# Citation
+
+To cite rprimer, please use: `citation("rprimer")`.
 
 # Session info 
 
