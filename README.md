@@ -1,8 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<!-- badges: start --> [![R build
-status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
+<!-- badges: start -->
+
+![R build
+status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)
+[![Codecov test
+coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
 
 *This package is in development, and will only work for R \>4.1.*
