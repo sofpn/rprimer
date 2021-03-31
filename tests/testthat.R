@@ -1,4 +1,4 @@
-# library(testthat)
-# library(rprimer)
+library(testthat)
+library(rprimer)
 
-# test_check("rprimer")
+test_check("rprimer")
