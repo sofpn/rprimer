@@ -43,7 +43,7 @@ To cite rprimer, please use: `citation("rprimer")`.
 
 ## Overview 
 
-rprimer provides tools for visualization of sequence conservation and generating degenerate DNA oligos from a multiple sequence alignment. It is especially developed for sequence variable viruses. 
+rprimer provides tools for visualizing sequence conservation and generating degenerate oligos from a multiple DNA sequence alignment. It is especially developed for sequence variable viruses. 
 
 The package contains five functions:
 
