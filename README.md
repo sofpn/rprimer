@@ -49,8 +49,8 @@ The package contains five functions:
 
 The first step is to import an alignment with target sequences of
 interest and, if preferred, mask positions with high gap frequency.
-Please use the `readDNAMultipleAlignment()` and `maskGaps()` from the
-Biostrings for this part.
+`readDNAMultipleAlignment()` and `maskGaps()` from Biostrings is used
+for this part.
 
 The file “example\_alignment.txt” contains an alignment of 200 hepatitis
 E virus sequences.
@@ -97,17 +97,21 @@ plotData(myConsensusProfile)
 Or zoom into a specific region of interest:
 
 ``` r
+## Select position 5000 to 5500 
 roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5500, ]
+
 plotData(roi)
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
-The nucleotide distribution can be shown, preferably within a short
-range, by specifying `type = "nucleotide`:
+The nucleotide distribution can be shown by specifying `type =
+"nucleotide`:
 
 ``` r
+## Select position 150 to 170
 roi2 <- myConsensusProfile[myConsensusProfile$position >= 150 & myConsensusProfile$position <= 170, ]
+
 plotData(roi2, type = "nucleotide")
 ```
 
@@ -116,8 +120,8 @@ plotData(roi2, type = "nucleotide")
 ### Step 2: `oligos`
 
 The next step is to design oligos. You can either use the default
-settings as below, or adjust the design constraints (see the package
-vignette or `?oligos` for more information).
+settings as below, or adjust the design constraints in several different
+ways (see the package vignette or `?oligos` for more information).
 
 ``` r
 myOligos <- oligos(myConsensusProfile)
@@ -134,7 +138,7 @@ Results (first six rows):
 | probe  | TRUE  | TRUE  |    26 |  44 |     19 | ATGGAGGCCCAYCAGTTYA  | TRAACTGRTGGGCCTCCAT  |     0.95 |        1 |          4 |          0.53 |           0.11 |  54.57 |    5.20 |     \-9.11 |        2.23 | ATGGAGGC…. | TGAACTGG…. | 0.578947…. | 57.17288…. | \-10.2223…. | ambiguous |        1 |   7238 |
 | probe  | TRUE  | TRUE  |    26 |  45 |     20 | ATGGAGGCCCAYCAGTTYAT | ATRAACTGRTGGGCCTCCAT |     0.96 |        1 |          4 |          0.50 |           0.10 |  54.91 |    4.96 |     \-9.17 |        2.23 | ATGGAGGC…. | ATGAACTG…. | 0.55, 0….. | 57.38719…. | \-10.2845…. | ambiguous |        1 |   7238 |
 
-The results can be visualized using `plotData()`:
+The results can be visualized as a dashboard, using `plotData()`:
 
 ``` r
 plotData(myOligos)

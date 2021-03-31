@@ -57,7 +57,7 @@ The package contains five functions:
 
 ### Import alignment
 
-The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with high gap frequency. Please use the `readDNAMultipleAlignment()` and `maskGaps()` from the Biostrings for this part. 
+The first step is to import an alignment with target sequences of interest and, if preferred, mask positions with high gap frequency. `readDNAMultipleAlignment()` and `maskGaps()` from Biostrings is used for this part. 
 
 The file "example_alignment.txt" contains an alignment of 200 hepatitis E virus sequences. 
 
@@ -93,20 +93,24 @@ plotData(myConsensusProfile)
 Or zoom into a specific region of interest: 
 
 ```{r, fig.width=12, fig.height=6}
+## Select position 5000 to 5500 
 roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5500, ]
+
 plotData(roi)
 ```
 
-The nucleotide distribution can be shown, preferably within a short range, by specifying `type = "nucleotide`:
+The nucleotide distribution can be shown by specifying `type = "nucleotide`:
 
 ```{r, fig.width=12, fig.height=6}
+## Select position 150 to 170
 roi2 <- myConsensusProfile[myConsensusProfile$position >= 150 & myConsensusProfile$position <= 170, ]
+
 plotData(roi2, type = "nucleotide")
 ```
 
 ### Step 2: `oligos`
 
-The next step is to design oligos. You can either use the default settings as below, or adjust the design constraints (see the package vignette or `?oligos` for more information).
+The next step is to design oligos. You can either use the default settings as below, or adjust the design constraints in several different ways (see the package vignette or `?oligos` for more information).
 
 ``` {r}
 myOligos <- oligos(myConsensusProfile)
@@ -118,7 +122,7 @@ Results (first six rows):
 knitr::kable(head(myOligos), digits = 2)
 ```
 
-The results can be visualized using `plotData()`: 
+The results can be visualized as a dashboard, using `plotData()`: 
 
 ```{r, fig.width=12, fig.height=8}
 plotData(myOligos)
