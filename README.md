@@ -3,8 +3,8 @@
 
 <!-- badges: start -->
 
-![R build
-status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)
+[![R build
+status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
@@ -24,10 +24,6 @@ devtools::install_github("sofpn/rprimer")
 ``` r
 library(rprimer)
 ```
-
-## Citation
-
-To cite rprimer, please use: `citation("rprimer")`.
 
 ## Overview
 
@@ -120,8 +116,8 @@ plotData(roi2, type = "nucleotide")
 ### Step 2: `oligos`
 
 The next step is to design oligos. You can either use the default
-settings as below, or adjust the design constraints in several different
-ways (see the package vignette or `?oligos` for more information).
+settings as below, or adjust them (see the package vignette or `?oligos`
+for more information).
 
 ``` r
 myOligos <- oligos(myConsensusProfile)
@@ -194,3 +190,7 @@ Biostrings::writeXStringSet(myAssaysConverted, file = "myAssays.txt")
 
 The package vignette contains more information. It is loaded by
 `browseVignettes("rprimer")`.
+
+## Citation
+
+To cite rprimer, please use: `citation("rprimer")`.

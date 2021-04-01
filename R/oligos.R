@@ -626,11 +626,11 @@ oligos <- function(x,
 #' mixedRev <- .generateMixedOligos(x, rev = TRUE)
 #' .mergeLists(mixedFwd, mixedRev)
 .mergeLists <- function(first, second) {
-    x <- lapply(names(first), function(y) {
-        if (is.matrix(first[[y]])) {
-            rbind(first[[y]], second[[y]])
+    x <- lapply(names(first), function(i) {
+        if (is.matrix(first[[i]])) {
+            rbind(first[[i]], second[[i]])
         } else {
-            c(first[[y]], second[[y]])
+            c(first[[i]], second[[i]])
         }
     })
     names(x) <- names(first)

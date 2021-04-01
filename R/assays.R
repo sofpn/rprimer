@@ -168,8 +168,7 @@ assays <- function(x,
     fwd <- x[x$fwd, ]
     rev <- x[x$rev, ]
     pairs <- expand.grid(
-        fwd$iupacSequence, rev$iupacSequenceRc,
-        stringsAsFactors = FALSE
+        fwd$iupacSequence, rev$iupacSequenceRc, stringsAsFactors = FALSE
     )
     names(pairs) <- c("fwd", "rev")
     fwd <- x[match(pairs$fwd, x$iupacSequence), ]

@@ -9,7 +9,8 @@
 Functions and workflow for visualizing sequence conservation 
     and designing
     degenerate primers, probes and (RT)-(q/d)PCR assays from a 
-    multiple DNA sequence alignment. The workflow is especially developed for
+    multiple DNA sequence alignment. The workflow uses commonly adopted PCR
+    design guidelines and is especially developed for
     sequence variable viruses.
 }
 \details{
