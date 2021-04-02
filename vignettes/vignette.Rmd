@@ -144,7 +144,7 @@ plotData(ntSelection, type = "nucleotide")
 
 ### Step 2: `oligos`
 
-Once the consensus profile is generated, oligos can be designed. Primers must be designed and probes are optional. Primers can be generated from either one of the two following strategies:
+Once the consensus profile is generated, oligos can be designed. Primers must be designed and probes are optional. Primers can be generated using either one of the two following strategies:
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence, meaning that degenerate bases can occur at any position
 
@@ -177,7 +177,7 @@ The arguments of `oligos()` are:
 * `concNa`: sodium ion concentration (in M) in the PCR reaction (for calculation of tm and delta G), defaults to `0.05` (50 mM)
 * `temperature`: annealing temperature (in C), for calculation of Gibbs energy (delta G). Delta G is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method [@SantaLuciaUnified], using formula, salt correction method and table values as described in [@santalucia2004thermodynamics]
 
-All sequence variants must fulfill all the specified design constraints for an oligo to be considered as valid.
+For an oligo to be considered as valid, all sequence variants must fulfill all the specified design constraints. 
 
 Oligos with sequence variants containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded for consideration. 
 
