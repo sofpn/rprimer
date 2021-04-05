@@ -27,9 +27,8 @@ library(rprimer)
 
 ## Overview
 
-rprimer provides tools for visualizing sequence conservation and
-generating degenerate oligos from a multiple DNA sequence alignment. It
-is especially developed for sequence variable viruses.
+rprimer provides tools for designing degenerate DNA oligos for sequence
+variable viruses.
 
 The package contains five functions:
 

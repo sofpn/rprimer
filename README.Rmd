@@ -39,7 +39,7 @@ library(rprimer)
 
 ## Overview 
 
-Reverse transcription (RT) PCR based methods are important cornerstones of both clinical diagnosis and environmental surveillance of viruses. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development. rprimer provides tools for generating degenerate oligos for sequence variable viruses.
+rprimer provides tools for designing degenerate DNA oligos for sequence variable viruses.
 
 The package contains five functions:
 
