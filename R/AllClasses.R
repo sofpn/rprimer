@@ -203,7 +203,7 @@ S4Vectors::setValidity2("RprimerAssay", function(object) {
     colnames <- c(
         "start", "end", "ampliconLength",
         "tmDifferencePrimer", "deltaGDifferencePrimer",
-        "totalDegeneracy", "startFwd", "endFwd",
+        "totalDegeneracy", "score", "startFwd", "endFwd",
         "lengthFwd", "iupacSequenceFwd", "identityFwd",
         "coverageFwd", "degeneracyFwd", "gcContentMeanFwd",
         "gcContentRangeFwd", "tmMeanFwd", "tmRangeFwd",
@@ -223,7 +223,7 @@ S4Vectors::setValidity2("RprimerAssay", function(object) {
             msg, "The object must contain the following columns:
             start, end, ampliconLength,
             tmDifferencePrimer, deltaGDifferencePrimer,
-            totalDegeneracy, startFwd, endFwd,
+            totalDegeneracy, score, startFwd, endFwd,
             lengthFwd, iupacSequenceFwd, identityFwd,
             coverageFwd, degeneracyFwd, gcContentMeanFwd,
             gcContentRangeFwd, tmMeanFwd, tmRangeFwd,

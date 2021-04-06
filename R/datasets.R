@@ -153,8 +153,9 @@
 #'   \item{deltaGDifferencePrimerProbe}{Difference in delta G between
 #'   the primer pair and probe. It is calculated by subtracting the
 #'   mean delta G of the probe with the mean delta G of the primers.}
-#'   \item{plusPr}{If the probe is valid in positive sense.}
 #'   \item{totalDegeneracy}{Total number of oligos in the assay.}
+#'   \item{score}{Summarized oligo score.}
+#'   \item{plusPr}{If the probe is valid in positive sense.}
 #'   \item{startFwd}{Position where the forward primer starts.}
 #'   \item{endFwd}{Position where the forward primer ends.}
 #'   \item{lengthFwd}{Length of the forward primer.}

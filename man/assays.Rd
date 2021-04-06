@@ -45,6 +45,11 @@ The object contains the following information:
   the mean delta G of the forward primer and the mean delta G of
   the reverse primer, absolute value.}
   \item{totalDegeneracy}{Total number of oligos in the assay.}
+  \item{score}{Summarized oligo score. The lowest, and best,
+  possible score is 0. The highest possible score is 24 for assays
+  with only primers,
+  and 36 for assays with probes.
+  See \code{?oligos} for more information about the scoring system.}
   \item{startFwd}{Position where the forward primer starts.}
   \item{endFwd}{Position where the forward primer ends.}
   \item{lengthFwd}{Length of the forward primer.}

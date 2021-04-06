@@ -39,6 +39,11 @@
 #'   the mean delta G of the forward primer and the mean delta G of
 #'   the reverse primer, absolute value.}
 #'   \item{totalDegeneracy}{Total number of oligos in the assay.}
+#'   \item{score}{Summarized oligo score. The lowest, and best,
+#'   possible score is 0. The highest possible score is 24 for assays
+#'   with only primers,
+#'   and 36 for assays with probes.
+#'   See \code{?oligos} for more information about the scoring system.}
 #'   \item{startFwd}{Position where the forward primer starts.}
 #'   \item{endFwd}{Position where the forward primer ends.}
 #'   \item{lengthFwd}{Length of the forward primer.}
@@ -202,9 +207,10 @@ assays <- function(x,
     start <- assays$startFwd
     end <- assays$endRev
     totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
+    score <- assays$scoreFwd + assays$scoreRev
     assays <- cbind(
         start, end, ampliconLength,
-        tmDifferencePrimer, deltaGDifferencePrimer, totalDegeneracy,
+        tmDifferencePrimer, deltaGDifferencePrimer, totalDegeneracy, score,
         assays
     )
     assays <- assays[assays$ampliconLength >= min(lengthRange), , drop = FALSE]
@@ -262,6 +268,7 @@ assays <- function(x,
     names(probes) <- paste0(names(probes), "Pr")
     x <- cbind(x, probes)
     x$totalDegeneracy <- x$totalDegeneracy + probes$degeneracyPr
+    x$score <- x$score + probes$scorePr
     tmDifferencePrimerProbe <- vapply(seq_len(nrow(x)), function(i) {
         x$tmMeanPr[[i]] - mean(c(
             x$tmFwd[[i]], x$tmRev[[i]]
@@ -303,7 +310,7 @@ assays <- function(x,
     drop <- c(
         "typeFwd", "fwdFwd", "revFwd", "typeRev", "fwdRev", "revRev",
         "iupacSequenceRcFwd", "sequenceRcFwd", "iupacSequenceRev",
-        "sequenceRev", "roiStartFwd", "roiEndFwd"
+        "sequenceRev", "scoreFwd", "scoreRev", "roiStartFwd", "roiEndFwd"
     )
     x <- x[!(names(x) %in% drop)]
     names(x)[
@@ -318,7 +325,7 @@ assays <- function(x,
 }
 
 .beautifyProbes <- function(x) {
-    drop <- c("typePr", "roiStartPr", "roiEndPr")
+    drop <- c("typePr", "scorePr", "roiStartPr", "roiEndPr")
     x <- x[!(names(x) %in% drop)]
     rename <- c("fwdPr", "revPr")
     names(x)[names(x) %in% rename] <- c("plusPr", "minusPr")
