@@ -114,6 +114,7 @@
 #'   \item{deltaG}{deltaG (in kcal/mole) of all sequence variants.}
 #'   \item{method}{Design method used to generate the oligo: "ambiguous",
 #'   "mixedFwd" or "mixedRev".}
+#'   \item{score}{Oligo score, the lower the better.}
 #'   \item{roiStart}{First position of the input \code{RprimerProfile} object
 #'     (roi = region of interest).}
 #'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}

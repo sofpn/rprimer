@@ -126,7 +126,7 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
         "coverage", "degeneracy", "gcContentMean", "gcContentRange", "tmMean",
         "tmRange", "deltaGMean", "deltaGRange",
         "sequence", "sequenceRc", "gcContent", "tm", "deltaG", "method",
-        "roiStart", "roiEnd"
+        "score", "roiStart", "roiEnd"
     )
     if (!all(colnames %in% names(object))) {
         msg <- c(
@@ -135,7 +135,7 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
             iupacSequenceRc, identity,
             coverage, degeneracy, gcContentMean, gcContentRange, tmMean,
             tmRange, deltaGMean, deltaGRange,
-            sequence, sequenceRc, gcContent, tm, deltaG, method,
+            sequence, sequenceRc, gcContent, tm, deltaG, method, score
             roiStart, roiEnd"
         )
     }

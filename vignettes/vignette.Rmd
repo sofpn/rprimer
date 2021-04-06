@@ -21,11 +21,11 @@ knitr::opts_chunk$set(
 
 Reverse transcription (RT) PCR based methods are important cornerstones of both clinical diagnosis and environmental surveillance of viruses. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false negative results.
 
-The ideal oligo binds exclusively to a conserved part of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos, but it is often both difficult and time consuming to identify target regions that meets all these criteria. Many viruses, especially RNA viruses, evolve quickly and thereby pose significant sequence variability between strains. This makes sequence conservation analysis a key step of the design process, since primers or probes that captures only a part of the target variation may bias the PCR outcome. 
+The ideal oligo binds exclusively to a conserved part of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos, but it is often both difficult and time consuming to identify target regions and oligo combinations that meets all these criteria. Many viruses, especially RNA viruses, evolve quickly and thereby pose significant sequence variability between strains. This makes sequence conservation analysis a key step of the design process, since primers or probes that captures only a part of the target variation may bias the PCR outcome.
 
 A common approach for amplifying sequence variable regions is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of oligos that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. A preferred design strategy would therefore be to find oligo binding regions with as low degeneracy as possible.
 
-rprimer provides tools for visualizing sequence conservation and designing degenerate oligos from a multiple DNA sequence alignment. In this document, I describe and demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR oligos and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
+rprimer seeks to address the challenge of amplyfying sequence variable viruses by providing tools for visualizing sequence conservation and designing degenerate oligos from a multiple DNA sequence alignment. In this document, I describe and demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR oligos and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
 # Installation
 
@@ -131,7 +131,7 @@ selection <- myConsensusProfile[
 plotData(selection)
 ```
 
-Or to visualize the nucleotide distribution, by specifying `type = nucleotide`: 
+And to visualize the nucleotide distribution, by specifying `type = nucleotide`: 
 
 ```{r, fig.width=12, fig.height=6}
 ## Select position 1000 to 1020 in the consensus profile 
@@ -177,9 +177,13 @@ The arguments of `oligos()` are:
 * `concNa`: sodium ion concentration (in M) in the PCR reaction (for calculation of tm and delta G), defaults to `0.05` (50 mM)
 * `temperature`: annealing temperature (in C), for calculation of Gibbs energy (delta G). Delta G is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method [@SantaLuciaUnified], using formula, salt correction method and table values as described in [@santalucia2004thermodynamics]
 
-All sequence variants of an oligo must fulfill all the specified design constraints to be considered. Also, oligos with sequence variants containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded for consideration.
+All sequence variants of an oligo must fulfill all the specified design constraints to be considered. 
+
+Oligos with sequence variants containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded for consideration.
 
 An error message will return if no oligos are found. If so, a good idea could be to re-run the process from Step 1 and increase the `ambiguityThreshold` in `consensusProfile()`, and/or relax the design constraints above. 
+
+Eac oligo is scored according to a simple system, based upon their average identity, coverage, degeneracy, GC-content and tm range. The best possible score is 0 and the worst possible score is 12. Detailed information about the scoring system can be found at the man page (`?oligos`).
 
 **Design with default settings**
 
@@ -196,7 +200,7 @@ myOligos[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The man page (`?oligos`) contains a detailed description of each variable. What may not be entirely self-explanatory is that some columns (`sequence` `gcContent`, `tm` and `deltaG`) can hold several values. In such cases, all values within an entry can be retrieved by:   
+The man page (`?oligos`) contains a detailed description of each variable. What may not be entirely self-explanatory is that some columns (`sequence` `gcContent`, `tm` and `deltaG`) can hold several values. All values within these entries can be retrieved by:   
 
 ```{r}
 myOligos$sequence[[1]] ## All sequence variants of the first oligo 
@@ -234,9 +238,13 @@ plotData(bindingRegion, type = "nucleotide", rc = TRUE)
 
 I modify the settings as follows: 
 
-```{r, fig.align="center", fig.width=12, fig.height=8}
+```{r}
 myOligos2 <- oligos(myConsensusProfile, maxDegeneracyPrimer = 32, tmRangePrimer = c(50, 70), lengthPrimer = 16:24, maxDegeneracyProbe = 1)
+```
 
+Now, there are more primer candidates (due to relaxed constraints) and less probe candidates (due to tighter constraints):
+
+```{r, fig.align="center", fig.width=12, fig.height=8}
 plotData(myOligos2)
 ```
 
@@ -282,7 +290,7 @@ plotData(selection)
 
 **Masking**
 
-Sometimes the amplicon must span a certain genomic region. To accomplish this, it is possible to "mask" the primer dataset, to not place forward primers after the start position and to not place reverse primers after the end position. This is exemplified below: 
+Sometimes, for instance for sequencing and genotyping applications, the amplicon must span a certain genomic region. To accomplish this, it is possible to "mask" the primer dataset, to not place forward primers after the start position and to not place reverse primers after the end position of the desired amplicon region.
 
 ```{r}
 ## Keep fwd primers that starts before position 2000 and rev primers that starts after position 3000
@@ -302,7 +310,7 @@ The arguments of `assays()` are:
 
 * `x`: the oligo dataset from Step 2
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
-* `maxTmDiffPrimers`: maximum tm difference between the (mean tm) of the two primers (absolute value), defaults to `2`
+* `tmDiffPrimers`: maximum tm difference between the (mean tm) of the two primers (absolute value), defaults to `2`
 * `tmDiffPrimersProbe`: acceptable tm difference between the primer pair and probe, defaults to `c(0, 20)`. The tm difference is calculated by subtracting the mean tm of the probe with the mean tm of the primers. A positive value means that the average tm of the probe is higher than the average tm of the primer
 
 Assays will contain probes if probes are present in the oligo dataset from Step 2. 
@@ -332,23 +340,36 @@ plotData(myAssays)
 
 All assays are located within a conserved stretch of ~70 bases. This is also the target region for the most frequently used RT-qPCR assay for detection of HEV, developed by Jothikumar and colleagues [@jothikumar2006broadly].
 
+**Design with modified settings**
+
+To illustrate assay design with modified settings, I use the masked dataset from Step 2 (`myMaskedSelection`). Recall that I wanted an assay with only primers, that covers position 2000-3000.
+
+```{r}
+myAssays2 <- assays(maskedSelection, 
+                    lengthRange = c(1000, 2000), 
+                    tmDiffPrimers = 2)
+
+plotData(myAssays2)
+```
+
 ## Further handling of the data 
 
 The oligo and assay region(s) can be inspected in more detail by using the consensus profile from Step 1. As an example, I select to take a closer look at the first assay in `myAssays`. 
 
+The first step is to retrieve the start and end position of the assay, as below:
+
 ```{r}
-## Find start and end positions for the first assay 
 from <- myAssays[1, ]$start
 to <- myAssays[1, ]$end
 ```
 
-To get an overview, it is possible to highlight the amplicon region in the consensus profile, using the argument `highlight`:
+Now, it is possible to highlight the amplicon region, using the argument `highlight` in `plotData()`:
 
 ```{r fig 3, fig.width=12, fig.height=6}
 plotData(myConsensusProfile, highlight = c(from, to))
 ```
 
-I now make a subset of the consensus profile above, so that it only contains the amplicon region: 
+To get a more detailed view, I can make a subset of the consensus profile, so that it only contains the amplicon region: 
 
 ```{r}
 ## Subset the RprimerProfile object based on these positions

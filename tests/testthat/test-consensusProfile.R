@@ -81,7 +81,7 @@ test_that(".iupacConsensus works", {
     s <- apply(s, 2, function(x) x / sum(x))
     expect_equal(.iupacConsensus(x), c("N", "A", "T", "H"))
     expect_equal(.iupacConsensus(x, 0.05), c("Y", "A", "T", "H"))
-    expect_equivalent(colSums(s), rep(1, 4))
+    expect_equal(colSums(s), rep(1, 4), ignore_attr = TRUE)
 })
 
 # .nucleotideIdentity ==========================================================
@@ -117,7 +117,8 @@ test_that(".shannonEntropy works", {
 test_that(".coverage works", {
     selection <- testmat[, 200:220]
     x <- selection[, 1:4]
-    expect_equivalent(
-        .coverage(x[, 1, drop = FALSE], 0.2), 1 - (0.035 + 0.045)
+    expect_equal(
+        .coverage(x[, 1, drop = FALSE], 0.2), 1 - (0.035 + 0.045),
+        ignore_attr = TRUE
     )
 })

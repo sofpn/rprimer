@@ -318,7 +318,7 @@ test_that(".reverseComplement works", {
     rc <- .reverseComplement(seq)
     expect_true(is.matrix(rc))
     expect_equal(dim(rc), c(1, 3))
-    expect_equivalent(rc, c("C", "G", "T"))
+    expect_equal(rc, c("C", "G", "T"), ignore_attr = TRUE)
 })
 
 # .detectGcClamp ===============================================================
@@ -516,6 +516,7 @@ test_that(".checkAllPrimer variants works", {
 
 test_that(".beautifyOligos works", {
     x <- .filterPrimers(.designOligos(x))
+    x <- .scoreOligos(x)
     test <- .beautifyOligos(x)
     expect_true(is.data.frame(test))
 })

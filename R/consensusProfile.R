@@ -290,9 +290,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     x <- .dnaBasesOnly(x)
     entropy <- apply(x, 2, function(y) ifelse(y == 0, 0, y * log2(y)))
     entropy <- abs(colSums(entropy))
-    entropy <- unname(entropy)
     entropy[is.na(entropy)] <- 0
-    entropy
+    unname(entropy)
 }
 
 #' Coverage

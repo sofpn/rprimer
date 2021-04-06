@@ -118,7 +118,7 @@
 #' .tm(x)
 .tm <- function(x, concOligo = 250) {
     concOligo <- concOligo * 10^(-9)
-    tm <- x[, "sumdH"] / (x[, "sumdS"] + 0.368 * x[, "n"] * log(x[, "concNa"]) + 1.987 * log(concOligo/4)) - 273.15
+    tm <- x[, "sumdH"] / (x[, "sumdS"] + 0.368 * x[, "n"] * log(x[, "concNa"]) + 1.987 * log(concOligo / 4)) - 273.15
     names(tm) <- rownames(x)
     tm
 }

@@ -140,6 +140,8 @@ The output contains the following information:
   \item{deltaG}{delta G (in kcal/mole) of all sequence variants.}
   \item{method}{Design method used to generate the oligo: "ambiguous",
   "mixedFwd" or "mixedRev".}
+  \item{score}{Oligo score, the lower the better.
+  See "Score" for more details.}
   \item{roiStart}{First position of the input \code{RprimerProfile} object
     (roi = region of interest).}
   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
@@ -156,7 +158,7 @@ Primers can be designed in either one of two ways: "ambiguous" or "mixed".
 consensus sequence, meaning that degenerate bases can occur at
 any position in the oligo. Probes are always designed using the ambiguous
 strategy}
-\item{The mixed strategy is partially based on the Consensus-Degenerate
+\item{The mixed strategy is inspired by the Consensus-Degenerate
 Hybrid
 Oligonucleotide Primer (CODEHOP) principle (Rose et al. 1998).
 It is recommended for highly
@@ -179,7 +181,7 @@ Oligos with sequence variants containing
 more than four consecutive runs
 of the same
 nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
-of the same di-nucleotide (e.g. "TATATATA") are excluded.
+of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
 }
 
 \section{Tm and delta G}{
@@ -193,6 +195,47 @@ Table values can also be
 found by calling \code{rprimer:::lookup$nn}.
 
 The delta G is calculated at the specified \code{temperature}.
+}
+
+\section{Score}{
+
+
+Oligos are scored according to their values on identity, coverage,
+degeneracy,
+average GC content and tm range. These scores are summarized,
+and the weight of each individual score is 1. The lowest, and best,
+possible score is 0, and the worst possible score is 12.
+
+The scoring scheme is presented below:
+
+Identity and coverage:
+
+<= 1 and > 0.99: 0
+<= 0.99 and > 0.95: 1
+<= 0.95 and > 0.90: 2
+<= 0.90: 3
+
+Degeneracy:
+
+1: 0
+2 or 3: 1
+3 or 4: 2
+Higher than 4: 3
+
+Average GC-content: The score for the average GC-content is based on how much
+it deviates (in absolute value) from 0.5:
+
+>= 0 and < 0.05: 0
+>= 0.05 and < 0.1: 1
+>= 0.1 and < 0.2: 2
+>= 0.2: 3
+
+Tm-range:
+
+>= 0 and < 1: 0
+>= 1 and < 2: 1
+>= 2 and < 3: 2
+>= 3: 3
 }
 
 \examples{
