@@ -10,10 +10,10 @@ exampleRprimerAlignment <- Biostrings::readDNAMultipleAlignment(
     format = "fasta"
 )
 
-exampleRprimerAlignment <- Biostrings::maskGaps(
-    exampleRprimerAlignment,
-    min.fraction = 0.5, min.block.width = 1
-)
+#exampleRprimerAlignment <- Biostrings::maskGaps(
+#    exampleRprimerAlignment,
+#    min.fraction = 0.5, min.block.width = 1
+#)
 
 exampleRprimerProfile <- consensusProfile(exampleRprimerAlignment, 0.05)
 exampleRprimerOligo <- oligos(exampleRprimerProfile)

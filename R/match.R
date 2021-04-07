@@ -1,53 +1,87 @@
+# tryCatch
+# snyggare scoretabell i man,
+# tester scores, tester match
 
-catchThreeEnd <- function(x) {
-    vapply(x, function(y) {
-        y <- unlist(strsplit(y, split = ""))
-        y <- y[(length(y) - 7):length(y)] ## regulate the "size" of the 3' end here
-        paste(y, collapse = "")
-    }, character(1L), USE.NAMES = FALSE)
-}
+# catch missing or partially missing targets!!! ......................
+# fix RprimerMatch class
 
-checkMatch <- function(x, target, max.mismatch = 4, threeEndsOnly = FALSE) {
+# "kor slut" pa antalet mismatches
+# flexibilitet i plotten ocksa
+
+#' Get indexes of perfectly matching and mismatching sequences
+#'
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerOligo")
+#' data("exampleRprimerAlignment")
+#' x <- head(exampleRprimerOligo)
+#' .getMatchIndex(x, exampleRprimerAlignment)
+.getMatchIndex <- function(x, target, maxMismatch = 6) {
     target <- Biostrings::DNAStringSet(target)
-    target <- ShortRead::clean(target) ## Remove target sequences with wobble bases
-    fwd <- unlist(x$sequenceFwd)
-    rev <- unlist(x$sequenceRev)
-    if (threeEndsOnly) {
-        fwd <- catchThreeEnd(fwd)
-        rev <- catchThreeEnd(rev)
-    }
-    fwd <- Biostrings::DNAStringSet(fwd)
-    rev <- Biostrings::DNAStringSet(rev)
-    rev <- Biostrings::reverseComplement(rev)
-    matchFwd <- Biostrings::vcountPDict(fwd, target, max.mismatch = max.mismatch)
-    matchRev <- Biostrings::vcountPDict(rev, target, max.mismatch = max.mismatch)
-    isMatchFwd <- colSums(matchFwd) > 0
-    isMatchRev <- colSums(matchRev) > 0
-    isMatchBoth <- isMatchFwd & isMatchRev
-    propMatchFwd <- sum(isMatchFwd) / length(isMatchFwd)
-    propMatchRev <- sum(isMatchRev) / length(isMatchRev)
-    propMatchBoth <- sum(isMatchBoth) / length(isMatchBoth)
-    c("fwd" = propMatchFwd, "rev" = propMatchRev, "both" = propMatchBoth)
+    x <- Biostrings::DNAStringSet(x)
+    res <- lapply(seq(0, maxMismatch), function(i) {
+        result <- Biostrings::vcountPDict(x, target, max.mismatch = i)
+        which(colSums(result) == 0)
+    })
+    res[seq_len(maxMismatch - 1)] <- lapply(
+        seq_len(maxMismatch - 1), function(i) {
+        res[[i]] <- setdiff(res[[i]], res[[i + 1]])
+        }
+    )
+    names(res) <- c(
+        paste0("n_", seq_len(maxMismatch), "_mm"),
+        paste0("n_", maxMismatch, "or_more_mm")
+    )
+    res$pm <- setdiff(seq_along(target), unlist(res))
+    res <- res[c(length(res), 1:(length(res) - 1))]
+    res
 }
 
-checkAssayMatch <- function(x,
-                            target,
-                            max.mismatch = 4,
-                            threeEndsOnly = FALSE) {
-    match <- lapply(seq_len(nrow(x)), function(i) {
-        checkMatch(x[i, ], target, max.mismatch, threeEndsOnly)
+#' Get proportion of perfectly matching and mismatching sequences
+#'
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerOligo")
+#' data("exampleRprimerAlignment")
+#' x <- head(exampleRprimerOligo)
+#' .getMatchProportion(x, exampleRprimerAlignment)
+.getMatchProportion <- function(x, target, maxMismatch = 3) {
+    seq <- x$sequence
+    proportions <- lapply(seq, function(x) {
+        match <- .getMatchIndex(x, target, maxMismatch)
+        match <- vapply(match, function(x) {
+            length(x) / length(target)
+        }, double(1L), USE.NAMES = FALSE)
     })
-    match <- round(do.call("rbind", match), 2)
-    rownames(match) <- paste0("assay_", seq_len(nrow(match)))
-    match
+    proportions <- data.frame(do.call("rbind", proportions))
+    cbind("iupacSequence" = x$iupacSequence, proportions)
 }
 
-checkAssayInclusitivty <- function(
-    x, target, n.mismatch = 0:3, threeEndsOnly = FALSE
-) {
-    result <- lapply(n.mismatch, function(i) {
-        checkAssayMatch(x, target, i, threeEndsOnly)
-    })
-    names(result) <- paste0("With_<=_", n.mismatch, "_mismatches")
-    result
+.plotMatch <- function(x) {
+    x <- reshape2::melt(x)
+    names(x)[2] <- "mismatches"
+    ggplot2::ggplot(data = x, ggplot2::aes(
+        fill = mismatches, x = iupacSequence, y = value)
+    ) +
+        ggplot2::geom_bar(stat = "identity", position = "fill") +
+        #ggplot2::scale_fill_manual("Perfect match" = "green") +
+        ggplot2::coord_flip() +
+        scale_fill_discrete(
+            name = "mismatch", labels = c(
+                "Perfect match", "1 mismatch", "2 mismatches", "3 mismatches",
+                "4 or more mismatches")
+            ) +
+        ggplot2::theme(
+            axis.title.x = ggplot2::element_blank(),
+            axis.title.y = ggplot2::element_blank(),
+            legend.title = ggplot2::element_blank()
+        )
 }
+
+
