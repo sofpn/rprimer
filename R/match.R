@@ -1,11 +1,8 @@
 # tryCatch
 # snyggare scoretabell i man,
 # tester scores, tester match
-
-# catch missing or partially missing targets!!! ......................
+# catch missing or partially missing targets!!!
 # fix RprimerMatch class
-
-# "kor slut" pa antalet mismatches
 # flexibilitet i plotten ocksa
 
 #' Get indexes of perfectly matching and mismatching sequences
@@ -19,12 +16,12 @@
 #' data("exampleRprimerAlignment")
 #' x <- head(exampleRprimerOligo)
 #' .getMatchIndex(x, exampleRprimerAlignment)
-.getMatchIndex <- function(x, target, maxMismatch = 6) {
+.getMatchIndex <- function(x, target, maxMismatch = 3) {
     target <- Biostrings::DNAStringSet(target)
     x <- Biostrings::DNAStringSet(x)
     res <- lapply(seq(0, maxMismatch), function(i) {
         result <- Biostrings::vcountPDict(x, target, max.mismatch = i)
-        which(colSums(result) == 0)
+        result <- which(colSums(result) == 0)
     })
     res[seq_len(maxMismatch - 1)] <- lapply(
         seq_len(maxMismatch - 1), function(i) {
@@ -50,38 +47,42 @@
 #' data("exampleRprimerOligo")
 #' data("exampleRprimerAlignment")
 #' x <- head(exampleRprimerOligo)
-#' .getMatchProportion(x, exampleRprimerAlignment)
-.getMatchProportion <- function(x, target, maxMismatch = 3) {
+#' .getMatchNumbers(x, exampleRprimerAlignment)
+.getMatchNumbers <- function(x, target, maxMismatch = 3) {
     seq <- x$sequence
-    proportions <- lapply(seq, function(x) {
+    numbers <- lapply(seq, function(x) {
         match <- .getMatchIndex(x, target, maxMismatch)
-        match <- vapply(match, function(x) {
-            length(x) / length(target)
-        }, double(1L), USE.NAMES = FALSE)
+        match <- vapply(match, length, double(1L), USE.NAMES = FALSE)
     })
-    proportions <- data.frame(do.call("rbind", proportions))
-    cbind("iupacSequence" = x$iupacSequence, proportions)
+    numbers <- data.frame(do.call("rbind", numbers))
+    cbind("iupacSequence" = x$iupacSequence, numbers)
 }
 
 .plotMatch <- function(x) {
+    id <- as.character(seq_len(nrow(x)))
+    x <- cbind(x, id)
     x <- reshape2::melt(x)
     names(x)[2] <- "mismatches"
+    levels(x$mismatches) <- c(
+        "Perfect match", "1 mismatch", "2 mismatches", "3 mimsathces",
+        "4 or more mismatches"
+    )
+    mismatchPalette <- rev(c(
+        "#435457", "#586f73", "#6d898f", "#89a0a4", "#c0cccf"
+    ))
     ggplot2::ggplot(data = x, ggplot2::aes(
-        fill = mismatches, x = iupacSequence, y = value)
+        fill = mismatches, x = id, y = value)
     ) +
-        ggplot2::geom_bar(stat = "identity", position = "fill") +
-        #ggplot2::scale_fill_manual("Perfect match" = "green") +
+        ggplot2::geom_bar(stat = "identity") +
+        ggplot2::ylab("Number of sequences") +
+        ggplot2::xlab("") +
+       # ggplot2::scale_x_discrete(x$iupacSequence) +
         ggplot2::coord_flip() +
-        scale_fill_discrete(
-            name = "mismatch", labels = c(
-                "Perfect match", "1 mismatch", "2 mismatches", "3 mismatches",
-                "4 or more mismatches")
-            ) +
-        ggplot2::theme(
-            axis.title.x = ggplot2::element_blank(),
-            axis.title.y = ggplot2::element_blank(),
-            legend.title = ggplot2::element_blank()
-        )
+        ggplot2::scale_fill_manual(values = mismatchPalette) +
+        .themeRprimer(showLegend = TRUE)
 }
+
+
+
 
 
