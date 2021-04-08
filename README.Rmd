@@ -61,9 +61,6 @@ The file "example_alignment.txt" contains an alignment of 200 hepatitis E virus 
 infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 
 myAlignment <- Biostrings::readDNAMultipleAlignment(infile, format = "fasta")
-myAlignment <- Biostrings::maskGaps(myAlignment, 
-                                    min.fraction = 0.5, 
-                                    min.block.width = 1) 
 ```
 
 ### Step 1: `consensusProfile` 
