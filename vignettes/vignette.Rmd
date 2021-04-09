@@ -38,7 +38,8 @@ devtools::install_github("sofpn/rprimer")
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+#
+devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
 library(rprimer)
@@ -96,10 +97,10 @@ The consensus profile is generated as follows:
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
 ```
 
-Results (first ten rows):
+Results (row 100-110):
 
 ```{r, echo=FALSE}
-myConsensusProfile[1:10, ] %>%
+myConsensusProfile[100:110, ] %>%
   kbl(., digits = 2) %>%
   kable_material(c("striped", "hover"), position = "right") %>%
   scroll_box(width = "650px", height = "300px")

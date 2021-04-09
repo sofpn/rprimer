@@ -71,10 +71,10 @@ myAlignment <- Biostrings::readDNAMultipleAlignment(infile, format = "fasta")
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
 ```
 
-Results (first six rows):
+Results (row 100-110):
 
 ```{r, echo=FALSE}
-knitr::kable(head(myConsensusProfile), digits = 2)
+knitr::kable(myConsensusProfile[100:110, ], digits = 2)
 ```
 
 The results can be visualized with `plotData()`. You can either plot the entire genome:
