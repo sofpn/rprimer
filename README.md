@@ -43,9 +43,8 @@ The package contains five functions:
 ### Import alignment
 
 The first step is to import an alignment with target sequences of
-interest and, if preferred, mask positions with high gap frequency.
-`readDNAMultipleAlignment()` and `maskGaps()` from Biostrings is used
-for this part.
+interest. `readDNAMultipleAlignment()` from Biostrings is used for this
+part.
 
 The file “example\_alignment.txt” contains an alignment of 200 hepatitis
 E virus sequences.
