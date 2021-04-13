@@ -17,7 +17,7 @@
 #' @param tmDiffPrimersProbe
 #' Acceptable difference between the mean tm of the probe and the mean tm
 #' of the primers. A numeric vector [-20, 20],
-#' defaults to \code{c(0, 10)}.
+#' defaults to \code{c(-10, 10)}.
 #' A negative tm difference
 #' means that the mean tm of the probe is lower than the mean tm of the
 #' primers.
@@ -120,7 +120,7 @@
 assays <- function(x,
                    lengthRange = c(65, 120),
                    tmDiffPrimers = 5,
-                   tmDiffPrimersProbe = c(0, 10)) {
+                   tmDiffPrimersProbe = c(-10, 10)) {
     if (!methods::is(x, "RprimerOligo")) {
         stop("'x' must be an RprimerOligo object.")
     }

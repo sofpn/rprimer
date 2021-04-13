@@ -72,22 +72,22 @@ setMethod("convertToDNAStringSet", "RprimerAssay", function(x,
     rev <- Biostrings::DNAStringSet(rev)
     if (!revAsRc) rev <- Biostrings::reverseComplement(rev)
     if ("sequencePr" %in% names(x)) {
-        pr <- x$sequencePr
-        pr <- unlist(lapply(seq_along(pr), function(i) {
+        prPlus <- x$sequencePr
+        prPlus <- unlist(lapply(seq_along(pr), function(i) {
             names(pr[[i]]) <- paste0(
-                "assay_", i, "_pr_variant_", seq_along(pr[[i]])
+                "assay_", i, "_pr_variant_", seq_along(pr[[i]]) ########### IF pr minus!!!!!!!!!!!!!
             ); pr[[i]]
         }))
-        prRc <- Biostrings::DNAStringSet(pr)
-        prRc <- x$sequenceRcPr
-        prRc <- unlist(lapply(seq_along(prRc), function(i) {
-            names(prRc[[i]]) <- paste0(
-                "assay_", i, "_pr_rc_variant_", seq_along(prRc[[i]])
-            ); prRc[[i]]
+        prMinus <- Biostrings::DNAStringSet(prPlus)
+        prMinus <- x$sequenceRcPr
+        prMinus <- unlist(lapply(seq_along(prMinus), function(i) {
+            names(prMinus[[i]]) <- paste0(
+                "assay_", i, "_pr_rc_variant_", seq_along(prMinus[[i]])
+            ); prMinus[[i]]
         }))
-        prRc <- Biostrings::DNAStringSet(prRc)
+        prMinus <- Biostrings::DNAStringSet(prMinus)
     } else {
-        pr <- prRc <- NULL
+        prPlus <- prMinus <- NULL
     }
-    c(fwd, rev, pr, prRc)
+    c(fwd, rev, prPlus, prMinus)
 })

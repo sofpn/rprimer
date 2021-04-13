@@ -53,7 +53,7 @@ The package contains five functions:
 
 ### Import alignment
 
-The first step is to import an alignment with target sequences of interest. `readDNAMultipleAlignment()` from Biostrings is used for this part. 
+The first step is to import an alignment with target sequences of interest. This is done by using `readDNAMultipleAlignment()` from the Biostrings package.. 
 
 The file "example_alignment.txt" contains an alignment of 200 hepatitis E virus sequences. 
 
@@ -123,7 +123,7 @@ plotData(myOligos)
 
 ### Step 3: `assays`
 
-`assays()` finds pairs of forward and reverse primers and combines them with probes, if probes are present in the dataset. You can either use the default settings as below, or adjust the design constraints (see the package vignette or `?assays` for more information).
+`assays()` finds pairs of forward and reverse primers and combines them with probes, if probes are present in the input dataset. You can either use the default settings as below, or adjust the design constraints (see the package vignette or `?assays` for more information).
 
 ```{r}
 myAssays <- assays(myOligos)
