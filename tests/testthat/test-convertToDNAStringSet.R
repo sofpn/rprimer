@@ -5,11 +5,11 @@ test_that("convertToDNAStringSetWorks", {
     expect_s4_class(assay, "DNAStringSet")
 
     assayRc <- exampleRprimerAssay[1, ]
-    assayRc <- convertToDNAStringSet(assayRc, revAsRc = FALSE)
+    assayRc <- convertToDNAStringSet(assayRc, asRc = FALSE)
     expect_s4_class(assayRc, "DNAStringSet")
 
     data("exampleRprimerOligo")
     oligo <- exampleRprimerOligo[1:10, ]
-    oligo <- convertToDNAStringSet(oligo, revAsRc = FALSE)
+    oligo <- convertToDNAStringSet(oligo, asRc = FALSE)
     expect_s4_class(oligo, "DNAStringSet")
 })

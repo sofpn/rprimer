@@ -4,11 +4,15 @@
 #' variants of all oligos or assays to a \code{Biostrings::DNAStringSet} object.
 #'
 #' @param x
-#' An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.
+#' An \code{RprimerOligo} or \code{RprimerAssay} object.
 #'
-#' @param revAsRc
-#' If reverse primers/negative sense probes should be written as reverse
-#' complements. Defaults to \code{TRUE}.
+#' @param asRc
+#' For \code{RprimerOligo} objects: if oligos should be
+#' written as reverse complements.
+#' For  \code{RprimerAssay} objects: if reverse primers and minus
+#' sense probes should be
+#' written as reverse complements.
+#' Defaults to \code{TRUE}.
 #'
 #' @return A Biostrings::DNAStringSet object
 #'
@@ -24,8 +28,8 @@
 #' convertToDNAStringSet(exampleRprimerOligo[1:2, ])
 #'
 #' data("exampleRprimerAssay")
-#' convertToDNAStringSet(exampleRprimerAssay[1:2, ], revAsRc = FALSE)
-setGeneric("convertToDNAStringSet", function(x, revAsRc = TRUE) standardGeneric("convertToDNAStringSet"))
+#' convertToDNAStringSet(exampleRprimerAssay[1:2, ], asRc = FALSE)
+setGeneric("convertToDNAStringSet", function(x, asRc = TRUE) standardGeneric("convertToDNAStringSet"))
 
 #' Convert an RprimerOligo object to a DNAStringSet (method)
 #'
@@ -33,20 +37,15 @@ setGeneric("convertToDNAStringSet", function(x, revAsRc = TRUE) standardGeneric(
 #'
 #' @export
 setMethod("convertToDNAStringSet", "RprimerOligo", function(x,
-                                                            revAsRc) {
-    fwd <- x$sequence[x$fwd]
-    fwd <- unlist(lapply(seq_along(fwd), function(i) {
-        names(fwd[[i]]) <- paste0(
-            "fwd_", i, "_variant_", seq_along(fwd[[i]])
-        ); fwd[[i]]
+                                                            asRc) {
+    oligo <- if (asRc) x$sequenceRc else x$sequence
+    oligo <- unlist(lapply(seq_along(oligo), function(i) {
+        names(oligo[[i]]) <- paste0(
+            "oligo_", i, "_variant_", seq_along(oligo[[i]])
+        ); oligo[[i]]
     }))
-    rev <- if (revAsRc) x$sequenceRc[x$rev] else x$sequence[x$rev]
-    rev <- unlist(lapply(seq_along(rev), function(i) {
-        names(rev[[i]]) <- paste0(
-            "rev_", i, "_variant_", seq_along(rev[[i]])
-        ); rev[[i]]
-    }))
-    Biostrings::DNAStringSet(c(fwd, rev))
+    if (asRc) names(oligo) <- paste0(names(oligo), "_rc")
+    Biostrings::DNAStringSet(oligo)
 })
 
 #' Convert an RprimerAssay object to a DNAStringSet (method)
@@ -55,7 +54,7 @@ setMethod("convertToDNAStringSet", "RprimerOligo", function(x,
 #'
 #' @export
 setMethod("convertToDNAStringSet", "RprimerAssay", function(x,
-                                                            revAsRc) {
+                                                            asRc) {
     fwd <- x$sequenceFwd
     fwd <- unlist(lapply(seq_along(fwd), function(i) {
         names(fwd[[i]]) <- paste0(
@@ -69,25 +68,38 @@ setMethod("convertToDNAStringSet", "RprimerAssay", function(x,
             "assay_", i, "_rev_variant_", seq_along(rev[[i]])
         ); rev[[i]]
     }))
+    if (asRc) {
+        names(rev) <- paste0(names(rev), "_rc")
+    }
     rev <- Biostrings::DNAStringSet(rev)
-    if (!revAsRc) rev <- Biostrings::reverseComplement(rev)
+    if (!asRc) rev <- Biostrings::reverseComplement(rev)
     if ("sequencePr" %in% names(x)) {
         prPlus <- x$sequencePr
         prPlus <- unlist(lapply(seq_along(prPlus), function(i) {
             names(prPlus[[i]]) <- paste0(
-                "assay_", i, "_pr_variant_", seq_along(prPlus[[i]]) ########### IF pr minus!!!!!!!!!!!!!
+                "assay_", i, "_pr_plus_variant_", seq_along(prPlus[[i]])
             ); prPlus[[i]]
         }))
-        prMinus <- Biostrings::DNAStringSet(prPlus)
-        prMinus <- x$sequenceRcPr
+        prPlus[!x$plusPr] <- "-"
+        prPlus <- Biostrings::DNAStringSet(prPlus)
+        if (asRc) {
+            prMinus <- x$sequenceRcPr[x$minusPr]
+        } else {
+            prMinus <- x$sequencePr[x$minusPr]
+        }
         prMinus <- unlist(lapply(seq_along(prMinus), function(i) {
             names(prMinus[[i]]) <- paste0(
-                "assay_", i, "_pr_rc_variant_", seq_along(prMinus[[i]])
+                "assay_", i, "_pr_minus_variant_", seq_along(prMinus[[i]])
             ); prMinus[[i]]
         }))
+        if (asRc) {
+            names(prMinus) <- paste0(names(prMinus), "_rc")
+        }
+        prMinus[!x$minusPr] <- "-"
         prMinus <- Biostrings::DNAStringSet(prMinus)
     } else {
         prPlus <- prMinus <- NULL
     }
-    c(fwd, rev, prPlus, prMinus)
+    out <- c(fwd, rev, prPlus, prMinus)
+    out[out != "-"]
 })
