@@ -10,7 +10,7 @@
 #' If reverse primers/negative sense probes should be written as reverse
 #' complements. Defaults to \code{TRUE}.
 #'
-#' @return A Biostrings::DNAStringSet
+#' @return A Biostrings::DNAStringSet object
 #'
 #' @export
 #'
@@ -73,10 +73,10 @@ setMethod("convertToDNAStringSet", "RprimerAssay", function(x,
     if (!revAsRc) rev <- Biostrings::reverseComplement(rev)
     if ("sequencePr" %in% names(x)) {
         prPlus <- x$sequencePr
-        prPlus <- unlist(lapply(seq_along(pr), function(i) {
-            names(pr[[i]]) <- paste0(
-                "assay_", i, "_pr_variant_", seq_along(pr[[i]]) ########### IF pr minus!!!!!!!!!!!!!
-            ); pr[[i]]
+        prPlus <- unlist(lapply(seq_along(prPlus), function(i) {
+            names(prPlus[[i]]) <- paste0(
+                "assay_", i, "_pr_variant_", seq_along(prPlus[[i]]) ########### IF pr minus!!!!!!!!!!!!!
+            ); prPlus[[i]]
         }))
         prMinus <- Biostrings::DNAStringSet(prPlus)
         prMinus <- x$sequenceRcPr
