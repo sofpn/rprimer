@@ -241,7 +241,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     )
     if (any(is.na(consensus))) {
         warning(
-            "The consensus sequence contains 'NA' at at least one positions.
+            "The consensus sequence contains 'NA' at at least one position.
         Perharps an ambiguos base was the most common base
         at these positions.",
             call. = FALSE

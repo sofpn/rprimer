@@ -7,7 +7,7 @@
 #'
 #' @param maxGapFrequency
 #' Maximum allowed gap frequency (for both primers and probes).
-#' A number [0, 1], defaults to 0.05.
+#' A number [0, 1], defaults to 0.01.
 #'
 #' @param lengthPrimer
 #' Primer length. A numeric vector [15, 30],
@@ -251,7 +251,7 @@
 #'     probe = FALSE
 #' )
 oligos <- function(x,
-                   maxGapFrequency = 0.05,
+                   maxGapFrequency = 0.01,
                    lengthPrimer = 18:22,
                    maxDegeneracyPrimer = 4,
                    gcClampPrimer = TRUE,

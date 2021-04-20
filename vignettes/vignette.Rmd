@@ -21,11 +21,13 @@ knitr::opts_chunk$set(
 
 Reverse transcription (RT) PCR based methods are important cornerstones of both clinical diagnosis and environmental surveillance of viruses. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false negative results.
 
-The ideal oligo binds exclusively to a conserved part of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. However, it is often both difficult and time consuming to identify target regions and oligo combinations that meets all these criteria. Moreover, many viruses, especially RNA viruses, evolve quickly and thereby pose significant sequence variation between strains. This makes sequence conservation analysis a key step of the oligo design process, since primers or probes that captures only a part of the target variation can cause severe detection and quantification bias.
+The ideal oligo binds exclusively to a conserved part of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. However, it is often both difficult and time consuming to identify target regions and oligo combinations that meets all these criteria. Moreover, many viruses, especially RNA viruses who lack replication proofreading mechanism, evolve quickly and thereby pose significant sequence variation between strains. This makes sequence conservation analysis a key step of the oligo design process, since primers or probes that captures only a part of the target variation can cause severe detection and quantification bias.
 
 A common approach for amplifying sequence variable regions is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of oligos that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. A preferred design strategy would therefore be to find oligo binding regions with as low degeneracy as possible.
 
-rprimer provides tools for analyzing sequence conservation and designing degenerate primers and probes for sequence variable viruses. A multiple DNA sequence alignment with target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots. In this document, I describe and demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR oligos and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
+rprimer provides tools for analyzing sequence conservation and designing degenerate primers and probes for sequence variable viruses. A multiple DNA sequence alignment with target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots. 
+
+In this document, I describe and demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR oligos and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
 # Installation
 
@@ -58,7 +60,7 @@ The package contains five functions:
 
 ## Collection of target sequences and multiple alignment 
 
-The first step is to identify and align target sequences of interest. The file “example_alignment.txt” contains an alignment of 200 HEV sequences. The filepath can be retrieved by:  
+The first step is to identify and align target sequences of interest. The file “example_alignment.txt” is provided with the package and contains an alignment of 200 HEV sequences. The filepath can be retrieved by:  
 
 ```r
 system.file("extdata", "example_alignment.txt", package = "rprimer")
@@ -86,9 +88,9 @@ Once the alignment is imported, the first step is to generate a consensus profil
 * The proportion of gaps (-)
 * Majority consensus base, which is the most frequently occurring DNA base
 * Identity, which is the proportion of the majority consensus base when gaps and ambiguous bases ("other") in the target alignment are excluded
-* IUPAC consensus character (ambiguous base). The user can specify an “ambiguity threshold” from 0 to 0.2, and all bases with a relative frequency higher than that will be included in the consensus character. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating oligos with high degeneracy. A higher threshold will catch most of the variation, but with the potential cost of missing minor sequence variations (this information is provided by the coverage, see below)
+* IUPAC consensus character (ambiguous base). The user can specify an “ambiguity threshold” from 0 to 0.2. All bases with a relative frequency higher than that will be included in the consensus character. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating oligos with high degeneracy. A higher threshold will catch most of the variation, but with the potential cost of missing minor sequence variations (this information is provided by the coverage, see below)
 * Shannon entropy, which is a measurement of variability [@shannon1951prediction]. A value of zero indicate complete conservation, and a high value indicate high variability. Gaps and ambiguous bases ("other") in the target alignment are not included in this calculation
-* Coverage, which describes the total proportion of bases that are "covered" by the IUPAC consensus character. Gaps and ambiguous bases ("other") in the target alignment are not included in this calculation
+* Coverage, which describes the total proportion of bases that are covered by the IUPAC consensus character. Gaps and ambiguous bases ("other") in the target alignment are not included in this calculation
 
 The consensus profile is generated as follows:
 
@@ -137,23 +139,23 @@ plotData(ntSelection, type = "nucleotide")
 
 ### Step 2: `oligos`
 
-The next step is to design oligos. Primers must be designed and probes are optional. Primers can be generated from one of the two following strategies:
+The next step is to design oligos. Primers must be designed and probes are optional. Primers can be generated by using one of the two following strategies:
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence, which means that degenerate bases can occur at any position in the primer
 
-* The **mixed strategy** is inspired by the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2]. Here, primers are generated from both the majority and the IUPAC consensus sequence, and consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region), and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since 5' end mismatches are generally less detrimental than 3' end mismatches) [@Rose2]. The generated products will match the 5' ends of all primers perfectly, which allows for efficient amplification of the PCR products in the later cycles. To provide a sufficiently high tm in spite of mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy  
+* The **mixed strategy** generates primers from both the majority and the IUPAC consensus sequence. These primers consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region) and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. This strategy is inspired by the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2]. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since 5' end mismatches are generally less detrimental than 3' end mismatches) [@Rose2]. In this way, the generated products will match the 5' ends of all primers perfectly, which allows them to be efficiently amplified in later PCR cycles. To provide a sufficiently high tm in spite of mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy  
 
 Probes are always designed using the ambiguous strategy. 
 
 The design settings (i.e. the arguments of `oligos()`) are listed below:
 
 * `x`: the consensus profile from Step 1
-* `maxGapFrequency`: maximum gap frequency (in the alignment) for primers and probes, defaults to `0.05`
+* `maxGapFrequency`: maximum gap frequency (in the alignment) for primers and probes, defaults to `0.01`
 * `lengthPrimer`: primer length, defaults to `18:22`
 * `maxDegeneracyPrimer`: maximum degeneracy for primers, defaults to `4`
 * `gcClampPrimer`: if primers should have a GC clamp, defaults to `TRUE`. A GC clamp is here defined as the presence of two to three G or C:s within the last five bases (3' end) of the oligo. A GC clamp helps to promote specific binding of the 3' end
 * `avoidThreeEndRunsPrimer`: if primers with more than two runs of the same nucleotide at the terminal 3' end should be avoided (to reduce the risk of mispriming), defaults to `TRUE`
-* `minThreeEndCoveragePrimer`: minimum allowed coverage at the 3' end (the last five bases). If set to `1`, all bases of the 3' end must cover all sequence variants in the target alignment. Defaults to `0.98` 
+* `minThreeEndCoveragePrimer`: minimum allowed coverage at the 3' end (the last five bases). If set to `1`, all bases of the 3' end must be complementary to all sequence variants in the target alignment. Defaults to `0.98` 
 * `gcRangePrimer`: GC-content range of primers (proportion), defaults to `c(0.40, 0.65)`
 * `tmRangePrimer`: melting temperature range for primers, defaults to `c(55, 65)`. Melting temperature is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method [@SantaLuciaUnified], using formula, salt correction method and table values as described in [@santalucia2004thermodynamics]
 * `concPrimer`: primer concentration in nM (for tm calculation), defaults to `500`
@@ -166,9 +168,11 @@ The design settings (i.e. the arguments of `oligos()`) are listed below:
 * `tmRangeProbe`: defaults to `c(55, 70)`
 * `concProbe`: defaults to `250`
 * `concNa`: sodium ion concentration (in M) in the PCR reaction (for calculation of tm and delta G), defaults to `0.05` (50 mM)
-* `temperature`: annealing temperature (in C), for calculation of delta G. Delta G is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method [@SantaLuciaUnified], using formula, salt correction method and table values as described in [@santalucia2004thermodynamics]
+* `temperature`: the intended annealing temperature (in C), defaults to `60`. It is used to calculate the change in Gibbs free energy (delta G) when an oligo goes from random coil to a perfect complementary oligo-target duplex. Delta G is calculated using the nearest neighbor method [@SantaLuciaUnified], using formula, salt correction method and table values as described in [@santalucia2004thermodynamics]
 
-All sequence variants of an oligo must fulfill all the specified design constraints to be considered. 
+Gibbs free energy change from going to random coil to a perfect complementary duplex 
+
+All sequence variants of an oligo must fulfill all specified design constraints to be considered. 
 
 Oligos with sequence variants containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
 
@@ -264,7 +268,7 @@ plotData(myOligosModified)
 
 **Select a region of interest**
 
-Below, I show how to select a particular region of interest (position 1000 to 4000):
+Below, I show how to select a particular region of interest of the genome (position 1000 to 4000):
 
 ```{r}
 roi <- myConsensusProfile[
@@ -291,11 +295,11 @@ myMixedPrimers[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-Importantly, for mixed primers, identity refers to the mean identity of the target alignment at the 5' consensus part and coverage refers to the mean coverage of the target alignment at the 3' degenerate part. Values of 1 indicate perfect complementary to all target variants in the input alignment. 
+Importantly, for mixed primers, identity refers to the mean identity of the target alignment at the 5' consensus part of the primer and coverage refers to the mean coverage of the target alignment at the 3' degenerate part of the primer. Values of 1 indicate perfect complementary to all target variants in the input alignment. 
 
 **Masking**
 
-For sequencing applications such as genotyping, there is often an interest in amplifying a specific region of the genome. In such cases, the primer dataset must be masked to not contain forward primers after the intended start position and to not contain reverse primers after the end position of the desired amplicon.
+For sequencing applications such as genotyping, there is often an interest in amplifying a specific region of the genome. In such cases, the primer dataset can be masked to not contain forward primers after the intended start position and to not contain reverse primers after the end position of the desired amplicon.
 
 Below, I show how to create a subset of `myMixedPrimers`, where all primers between position 2000-3000 are removed: 
 
@@ -318,6 +322,8 @@ The arguments of `assays()` are:
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
 * `tmDiffPrimers`: maximum tm difference between the (mean tm) of the two primers (absolute value), defaults to `2`
 * `tmDiffPrimersProbe`: acceptable tm difference between the primer pair and probe, defaults to `c(-10, 10)`. The tm difference is calculated by subtracting the mean tm of the probe with the mean tm of the primers. A positive value means that the average tm of the probe is higher than the average tm of the primer
+
+**Note on Tm diff**
 
 The assays will contain probes if probes are present in the oligo dataset from Step 2. An error message will return if no assays are found.
 
@@ -346,7 +352,7 @@ plotData(myAssays)
 
 All assays are located within a conserved stretch of ~70 bases. This is also the target region for the most frequently used RT-qPCR assay for detection of HEV, developed by Jothikumar and colleagues [@jothikumar2006broadly].
 
-There are now over 1000 assay candidates, but the number can be reduced by making a subset based on score. The assay score is the summarized oligo score. Thus, the best possible score is 0 and the worst possible score is 24 for assays with only primers and 36 for assays with probes (since the maximum possible score for each oligo is 12, see Step 2: `oligos`). 
+There are now over 1000 assay candidates, but the number can be reduced by subsetting the dataset to only contain the assays with the best score(s). The assay score is the summarized oligo score. Thus, the best possible score is 0 and the worst possible score is 24 for assays with only primers and 36 for assays with probes (since the maximum possible score for each oligo is 12, see Step 2: `oligos`). 
 
 ```{r, fig.width=12, fig.height=6}
 ## Get the minimum score from myAssays
@@ -413,7 +419,7 @@ paste(myAssayRegion$iupac, collapse = "")
 
 ## Export to file
 
-Before proceeding to wet-lab evaluation, it is highly recommended to also evaluate the primer and probe candidates for 1) the potential to form primer-dimers and hairpin structures, and 2), the potential to cross react with non-targets.
+Before proceeding to wet lab evaluation, it is highly recommended to also evaluate the primer and probe candidates for 1) the potential to form primer-dimers and hairpin structures, and 2), the potential to cross react with non-targets.
 
 These tasks are best performed by other software. Below, I show how to export the results to file so that they can be analyzed by other tools.  
 
@@ -431,7 +437,7 @@ convertToDNAStringSet(myAssays[1, ], asRc = FALSE)
 
 The `asRC` option regulates whether reverse primers and minus sense probes should be written as reverse complements or not. 
 
-The sequences can then be exported to fasta-format:
+The sequences can then be exported to fasta format:
 
 ```r
 toFile <- oligosToDNAStringSet(myOligos)
