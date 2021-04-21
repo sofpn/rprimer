@@ -56,7 +56,7 @@
 #' plotData(oligos)
 #'
 #' ## Select a subset of the oligos, and plot
-#' selected <- oligos[oligos$start >= 5000 & oligos$end <= 5500, ]
+#' selected <- oligos[oligos$start >= 5000, ]
 #' plotData(selected)
 #'
 #' ## Plot an RrimerAssay object
@@ -74,6 +74,9 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 setMethod("plotData", "RprimerProfile", function(x,
                                                  type = "overview",
                                                  ...) {
+    if (nrow(x) == 0L) {
+        stop("'x' does not contain any observations.", call. = FALSE)
+    }
     if (type == "overview") {
         .plotOverview(x, ...)
     }
@@ -93,6 +96,9 @@ setMethod("plotData", "RprimerProfile", function(x,
 #'
 #' @export
 setMethod("plotData", "RprimerOligo", function(x) {
+    if (nrow(x) == 0L) {
+        stop("'x' does not contain any observations.", call. = FALSE)
+    }
     x <- as.data.frame(x)
     patchwork::wrap_plots(
         list(.oligoPlot(x), .oligoFeaturePlot(x)),
@@ -108,6 +114,9 @@ setMethod("plotData", "RprimerOligo", function(x) {
 #'
 #' @export
 setMethod("plotData", "RprimerAssay", function(x) {
+    if (nrow(x) == 0L) {
+        stop("'x' does not contain any observations.", call. = FALSE)
+    }
     x <- as.data.frame(x)
     patchwork::wrap_plots(
         list(.assayPlot(x), .assayFeaturePlot(x)),

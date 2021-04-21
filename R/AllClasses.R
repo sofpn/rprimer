@@ -34,7 +34,7 @@
 #' @importFrom S4Vectors DataFrame
 #'
 #' @references
-#'  H. Pagès, M. Lawrence and P. Aboyoun (2020). S4Vectors:
+#' Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
 #' Foundation of vector-like and list-like containers in
 #' Bioconductor. R package version 0.28.0.
 #'
@@ -105,7 +105,7 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 #' @importFrom S4Vectors DataFrame
 #'
 #' @references
-#' H. Pagès, M. Lawrence and P. Aboyoun (2020). S4Vectors:
+#' Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
 #' Foundation of vector-like and list-like containers in
 #' Bioconductor. R package version 0.28.0.
 #'
@@ -185,7 +185,7 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 #' @importFrom S4Vectors DataFrame
 #'
 #' @references
-#' H. Pagès, M. Lawrence and P. Aboyoun (2020). S4Vectors:
+#' Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
 #' Foundation of vector-like and list-like containers in
 #' Bioconductor. R package version 0.28.0.
 #'

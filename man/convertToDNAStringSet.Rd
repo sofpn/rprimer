@@ -6,20 +6,24 @@
 \alias{convertToDNAStringSet,RprimerAssay-method}
 \title{Convert to DNA string set (generic)}
 \usage{
-convertToDNAStringSet(x, revAsRc = TRUE)
+convertToDNAStringSet(x, asRc = TRUE)
 
-\S4method{convertToDNAStringSet}{RprimerOligo}(x, revAsRc = TRUE)
+\S4method{convertToDNAStringSet}{RprimerOligo}(x, asRc = TRUE)
 
-\S4method{convertToDNAStringSet}{RprimerAssay}(x, revAsRc = TRUE)
+\S4method{convertToDNAStringSet}{RprimerAssay}(x, asRc = TRUE)
 }
 \arguments{
-\item{x}{An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.}
+\item{x}{An \code{RprimerOligo} or \code{RprimerAssay} object.}
 
-\item{revAsRc}{If reverse primers/negative sense probes should be written as reverse
-complements. Defaults to \code{TRUE}.}
+\item{asRc}{For \code{RprimerOligo} objects: if oligos should be
+written as reverse complements.
+For  \code{RprimerAssay} objects: if reverse primers and minus
+sense probes should be
+written as reverse complements.
+Defaults to \code{TRUE}.}
 }
 \value{
-A Biostrings::DNAStringSet
+A Biostrings::DNAStringSet object
 }
 \description{
 \code{convertToDNAStringSet()} can be used for converting all sequence
@@ -37,7 +41,7 @@ data("exampleRprimerOligo")
 convertToDNAStringSet(exampleRprimerOligo[1:2, ])
 
 data("exampleRprimerAssay")
-convertToDNAStringSet(exampleRprimerAssay[1:2, ], revAsRc = FALSE)
+convertToDNAStringSet(exampleRprimerAssay[1:2, ], asRc = FALSE)
 }
 \references{
 H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:

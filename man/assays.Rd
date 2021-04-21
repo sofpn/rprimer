@@ -19,7 +19,7 @@ assays(
 
 \item{tmDiffPrimers}{Maximum allowed difference between the mean tm of the forward primer
 and the mean tm of the reverse primer
-(absolute value). A number [0, 20], defaults to 5.}
+(absolute value). A number [0, 20], defaults to \code{5}.}
 
 \item{tmDiffPrimersProbe}{Acceptable difference between the mean tm of the probe and the mean tm
 of the primers. A numeric vector [-20, 20],

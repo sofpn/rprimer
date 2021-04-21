@@ -7,7 +7,7 @@
 #' A \code{Biostrings::DNAMultipleAlignment} object.
 #'
 #' @param ambiguityThreshold
-#' A number within the range of 0 and 0.2, defaults to 0.
+#' A number within the range of 0 and 0.2, defaults to \code{0}.
 #' All DNA bases that occurs with a frequency
 #' higher than the \code{ambiguityThreshold} will be included in
 #' the IUPAC consensus character.
@@ -41,7 +41,7 @@
 #'   position.}
 #'   \item{entropy}{Shannon entropy.
 #'   Shannon entropy is a measurement of
-#'   variability.
+#'   variability (Shannon, 1951)
 #'   First, for each nucleotide that occurs at a specific position,
 #'   \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
 #'   that nucleotide. Then, these values are summarized,
@@ -59,11 +59,15 @@
 #' }
 #'
 #' @references
-#' \code{consensusProfile()} is a wrapper to \code{Biostrings::consensusMatrix()}:
+#' \code{consensusProfile()} is a wrapper to
+#' \code{Biostrings::consensusMatrix()}:
 #'
-#' H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
+#' Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
 #' Efficient manipulation of biological strings. R package version
 #' 2.57.2.
+#'
+#' Shannon, SE. (1951). Prediction and Entropy of Printed English.
+#' Bell System Technical Journal 30 (1): 50–64.
 #'
 #' @export
 #'

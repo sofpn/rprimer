@@ -9,7 +9,7 @@ consensusProfile(x, ambiguityThreshold = 0)
 \arguments{
 \item{x}{A \code{Biostrings::DNAMultipleAlignment} object.}
 
-\item{ambiguityThreshold}{A number within the range of 0 and 0.2, defaults to 0.
+\item{ambiguityThreshold}{A number within the range of 0 and 0.2, defaults to \code{0}.
 All DNA bases that occurs with a frequency
 higher than the \code{ambiguityThreshold} will be included in
 the IUPAC consensus character.}

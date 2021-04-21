@@ -170,8 +170,6 @@ The design settings (i.e. the arguments of `oligos()`) are listed below:
 * `concNa`: sodium ion concentration (in M) in the PCR reaction (for calculation of tm and delta G), defaults to `0.05` (50 mM)
 * `temperature`: the intended annealing temperature (in C), defaults to `60`. It is used to calculate the change in Gibbs free energy (delta G) when an oligo goes from random coil to a perfect complementary oligo-target duplex. Delta G is calculated using the nearest neighbor method [@SantaLuciaUnified], using formula, salt correction method and table values as described in [@santalucia2004thermodynamics]
 
-Gibbs free energy change from going to random coil to a perfect complementary duplex 
-
 All sequence variants of an oligo must fulfill all specified design constraints to be considered. 
 
 Oligos with sequence variants containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
