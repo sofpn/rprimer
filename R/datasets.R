@@ -103,15 +103,12 @@
 #'     the oligo.}
 #'   \item{tmMean}{Mean tm of all sequence variants of the oligo.}
 #'   \item{tmRange}{Range in tm of all sequence variants of the oligo.}
-#'   \item{deltaGMean}{Mean delta G (in kcal/mole)
 #'   of all sequence variants of the oligo.}
-#'   \item{deltaGRange}{Range in delta G (in kcal/mole)
 #'   of all sequence variants of the oligo.}
 #'   \item{sequence}{All sequence variants of the oligo.}
 #'   \item{sequenceRc}{Reverse complements of all sequence variants.}
 #'   \item{gcContent}{GC-content of all sequence variants.}
 #'   \item{tm}{Tm of all sequence variants.}
-#'   \item{deltaG}{deltaG (in kcal/mole) of all sequence variants.}
 #'   \item{method}{Design method used to generate the oligo: "ambiguous",
 #'   "mixedFwd" or "mixedRev".}
 #'   \item{score}{Oligo score, the lower the better.}
@@ -119,13 +116,6 @@
 #'     (roi = region of interest).}
 #'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
 #' }
-#'
-#' Tm was calculated for perfectly matching DNA duplexes at a sodium ion
-#' concentration of 0.05 M, a primer
-#' concentration of 500 nM and a probe concentration of 250 nM. Delta G was
-#' calculated for perfectly matching DNA duplexes at a
-#' temperature of 60C, and a sodium ion concentration
-#' of 0.05 M.
 #'
 #' @usage data("exampleRprimerOligo")
 "exampleRprimerOligo"

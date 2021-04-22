@@ -2,14 +2,12 @@ Type: Package
 Package: rprimer
 Title: Design Degenerate Oligos from a Multiple DNA Sequence Alignment
 Version: 0.99.0
-Description: Functions and workflow for visualizing sequence conservation 
-    and designing
-    degenerate primers, probes and (RT)-(q/d)PCR assays from a 
+Description: 
+    Functions and workflow for visualizing sequence conservation 
+    and designig degenerate primers, probes and (RT)-(q/d)PCR assays from a 
     multiple DNA sequence alignment. The workflow uses commonly adopted PCR
-    design guidelines and is especially developed for
-    sequence variable viruses. 
-    The results are presented in a data-frame format and as 
-    visual dashboards.  
+    design guidelines and is especially developed for sequence variable viruses. 
+    The results are presented in a data-frame format and as visual dashboards.  
 Authors@R: 
     person(given = "Sofia",
            family = "Persson",

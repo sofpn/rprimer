@@ -88,7 +88,7 @@ oligos <- exampleRprimerOligo
 plotData(oligos)
 
 ## Select a subset of the oligos, and plot
-selected <- oligos[oligos$start >= 5000 & oligos$end <= 5500, ]
+selected <- oligos[oligos$start >= 5000, ]
 plotData(selected)
 
 ## Plot an RrimerAssay object

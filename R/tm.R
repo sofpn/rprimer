@@ -117,8 +117,8 @@
 #' x <- .tmParameters(t(matrix(c("A", "G", "T", "T", "C", "G", "G", "T", "C"))))
 #' .tm(x)
 .tm <- function(x, concOligo = 250) {
-    concOligo <- concOligo * 10^(-9)
-    tm <- x[, "sumdH"] / (x[, "sumdS"] + 0.368 * x[, "n"] * log(x[, "concNa"]) + 1.987 * log(concOligo / 4)) - 273.15
+    concOligo <- concOligo * 1e-9
+    tm <- x[, "sumdH"] / (x[, "sumdS"] + 0.368 * x[, "n"] * log(x[, "concNa"]) + 1.987 * log(concOligo)) - 273.15
     names(tm) <- rownames(x)
     tm
 }
@@ -138,7 +138,7 @@
 .deltaG <- function(x, temperature = 37) {
     temperature <- temperature + 273.15
     deltaG <- x[, "sumdH"] - temperature * x[, "sumdS"]
-    deltaG <- deltaG/1000
+    deltaG <- deltaG / 1000
     deltaG <- deltaG - 0.114 * x[, "n"] * log(x[, "concNa"])
     names(deltaG) <- rownames(x)
     deltaG

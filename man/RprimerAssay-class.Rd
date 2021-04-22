@@ -37,7 +37,7 @@ x <- as.data.frame(exampleRprimerAssay)
 RprimerAssay(x)
 }
 \references{
-H. Pagès, M. Lawrence and P. Aboyoun (2020). S4Vectors:
+Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
 Foundation of vector-like and list-like containers in
 Bioconductor. R package version 0.28.0.
 }

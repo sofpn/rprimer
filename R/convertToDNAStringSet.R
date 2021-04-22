@@ -1,3 +1,5 @@
+## Fix as IUPAC!
+
 #' Convert to DNA string set (generic)
 #'
 #' \code{convertToDNAStringSet()} can be used for converting all sequence
@@ -14,7 +16,12 @@
 #' written as reverse complements.
 #' Defaults to \code{TRUE}.
 #'
-#' @return A Biostrings::DNAStringSet object
+#' @param asIUPAC
+#' If sequences should be presented in IUPAC (degenerate) format. Defaults to
+#' \code{TRUE}. If set to code{FALSE}, all sequence variants
+#' of each oligo will be presented.
+#'
+#' @return A \code{Biostrings::DNAStringSet} object
 #'
 #' @export
 #'
@@ -29,7 +36,7 @@
 #'
 #' data("exampleRprimerAssay")
 #' convertToDNAStringSet(exampleRprimerAssay[1:2, ], asRc = FALSE)
-setGeneric("convertToDNAStringSet", function(x, asRc = TRUE) standardGeneric("convertToDNAStringSet"))
+setGeneric("convertToDNAStringSet", function(x, asRc = TRUE, asIUPAC = TRUE) standardGeneric("convertToDNAStringSet"))
 
 #' Convert an RprimerOligo object to a DNAStringSet (method)
 #'
@@ -37,7 +44,8 @@ setGeneric("convertToDNAStringSet", function(x, asRc = TRUE) standardGeneric("co
 #'
 #' @export
 setMethod("convertToDNAStringSet", "RprimerOligo", function(x,
-                                                            asRc) {
+                                                            asRc,
+                                                            asIUPAC) {
     oligo <- if (asRc) x$sequenceRc else x$sequence
     oligo <- unlist(lapply(seq_along(oligo), function(i) {
         names(oligo[[i]]) <- paste0(
@@ -54,7 +62,8 @@ setMethod("convertToDNAStringSet", "RprimerOligo", function(x,
 #'
 #' @export
 setMethod("convertToDNAStringSet", "RprimerAssay", function(x,
-                                                            asRc) {
+                                                            asRc,
+                                                            asIUPAC) {
     fwd <- x$sequenceFwd
     fwd <- unlist(lapply(seq_along(fwd), function(i) {
         names(fwd[[i]]) <- paste0(

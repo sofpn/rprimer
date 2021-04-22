@@ -25,7 +25,7 @@ The ideal oligo binds exclusively to a conserved part of the target of interest 
 
 A common approach for amplifying sequence variable regions is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of oligos that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. A preferred design strategy would therefore be to find oligo binding regions with as low degeneracy as possible.
 
-rprimer provides tools for analyzing sequence conservation and designing degenerate primers and probes for sequence variable viruses. A multiple DNA sequence alignment with target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots. 
+The aim of rprimer is to provide tools for analyzing sequence conservation and designing degenerate primers and probes for sequence variable viruses. A multiple DNA sequence alignment with target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots. 
 
 In this document, I describe and demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR oligos and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
@@ -40,7 +40,8 @@ devtools::install_github("sofpn/rprimer")
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+#
+devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
 library(rprimer)
@@ -84,13 +85,14 @@ myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta")
 
 Once the alignment is imported, the first step is to generate a consensus profile, which contains the following information: 
 
+* Position in the alignment 
 * The proportion of the bases A, C, G, T and “other”
 * The proportion of gaps (-)
 * Majority consensus base, which is the most frequently occurring DNA base
-* Identity, which is the proportion of the majority consensus base when gaps and ambiguous bases ("other") in the target alignment are excluded
-* IUPAC consensus character (ambiguous base). The user can specify an “ambiguity threshold” from 0 to 0.2. All bases with a relative frequency higher than that will be included in the consensus character. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating oligos with high degeneracy. A higher threshold will catch most of the variation, but with the potential cost of missing minor sequence variations (this information is provided by the coverage, see below)
+* Identity, which is the proportion of sequences, among all sequences with a DNA base (i.e., A, C, G or T), that has the majority consensus base
+* IUPAC consensus character (ambiguous base). It includes all DNA bases that occurs at a proportion higher than the user-specified "ambiguity threshold". The threshold can range from 0 to 0.2. A threshold of 0 (default) will catch all the variation, but with the potential cost of generating oligos with high degeneracy. A higher threshold will catch most of the variation, but with the potential cost of missing minor sequence variations (this information is provided by the coverage, see below)
 * Shannon entropy, which is a measurement of variability [@shannon1951prediction]. A value of zero indicate complete conservation, and a high value indicate high variability. Gaps and ambiguous bases ("other") in the target alignment are not included in this calculation
-* Coverage, which describes the total proportion of bases that are covered by the IUPAC consensus character. Gaps and ambiguous bases ("other") in the target alignment are not included in this calculation
+* Coverage, which describes the proportion of sequences in the target alignment, among all sequences with a DNA base, that are covered the IUPAC consensus character. 
 
 The consensus profile is generated as follows:
 
@@ -157,7 +159,7 @@ The design settings (i.e. the arguments of `oligos()`) are listed below:
 * `avoidThreeEndRunsPrimer`: if primers with more than two runs of the same nucleotide at the terminal 3' end should be avoided (to reduce the risk of mispriming), defaults to `TRUE`
 * `minThreeEndCoveragePrimer`: minimum allowed coverage at the 3' end (the last five bases). If set to `1`, all bases of the 3' end must be complementary to all sequence variants in the target alignment. Defaults to `0.98` 
 * `gcRangePrimer`: GC-content range of primers (proportion), defaults to `c(0.40, 0.65)`
-* `tmRangePrimer`: melting temperature range for primers, defaults to `c(55, 65)`. Melting temperature is calculated for perfectly matching oligo-target duplexes using the nearest neighbor method [@SantaLuciaUnified], using formula, salt correction method and table values as described in [@santalucia2004thermodynamics]
+* `tmRangePrimer`: melting temperature range for primers, defaults to `c(55, 65)`. Melting temperatures are calculated for perfectly matching oligo-target duplexes using the nearest neighbor method [@SantaLuciaUnified], using formula, salt correction method and table values as described in [@santalucia2004thermodynamics]. See the man page (`?oligos`) for more information 
 * `concPrimer`: primer concentration in nM (for tm calculation), defaults to `500`
 * `designStrategyPrimer`: design strategy for primers, `"ambiguous"` or `"mixed"`, defaults to `"ambiguous"` 
 * `probe`: if probes should be designed as well, defaults to `TRUE`
@@ -167,8 +169,7 @@ The design settings (i.e. the arguments of `oligos()`) are listed below:
 * `gcRangeProbe`: defaults to `c(0.40, 0.65)`
 * `tmRangeProbe`: defaults to `c(55, 70)`
 * `concProbe`: defaults to `250`
-* `concNa`: sodium ion concentration (in M) in the PCR reaction (for calculation of tm and delta G), defaults to `0.05` (50 mM)
-* `temperature`: the intended annealing temperature (in C), defaults to `60`. It is used to calculate the change in Gibbs free energy (delta G) when an oligo goes from random coil to a perfect complementary oligo-target duplex. Delta G is calculated using the nearest neighbor method [@SantaLuciaUnified], using formula, salt correction method and table values as described in [@santalucia2004thermodynamics]
+* `concNa`: sodium ion concentration (in M) in the PCR reaction (for tm calculation), defaults to `0.05` (50 mM)
 
 All sequence variants of an oligo must fulfill all specified design constraints to be considered. 
 
@@ -193,13 +194,12 @@ myOligos[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The man page (`?oligos`) contains a detailed description of each variable, but what may not be entirely self-explanatory is that some variables (`sequence` `gcContent`, `tm` and `deltaG`) can hold several values in each row. All values within a specific row can be retrieved by:   
+The man page (`?oligos`) contains a detailed description of each variable, but what may not be entirely self-explanatory is that some variables (e.g. `sequence` `gcContent` and `tm`) can hold several values in each row. All values within a specific row can be retrieved by:   
 
 ```{r}
 myOligos$sequence[[1]] ## All sequence variants of the first oligo (i.e., first row) 
 myOligos$gcContent[[1]] ## GC-content of all variants of the first oligo 
 myOligos$tm[[1]] ## Tm of all variants of the first oligo 
-myOligos$deltaG[[1]] ## Delta G of all variants of the first oligo (in kcal/mole)
 ```
 
 The primer and probe candidates can be visualized using `plotData()`:
@@ -208,7 +208,7 @@ The primer and probe candidates can be visualized using `plotData()`:
 plotData(myOligos)
 ```
 
-Each oligo is scored upon on their average identity, coverage, degeneracy, GC-content and tm range (see the 'score' variable in the table above). The value can range from 0 to 12, where 0 is best. Detailed information about the scoring system can be found at the man page (`?oligos`).
+All valid oligos are scored using a simple system, which is based on average identity, coverage, degeneracy, GC-content and tm range. The value can range from 0 to 12, where 0 is best. Detailed information about the scoring system can be found at the man page (`?oligos`).
 
 The best scoring oligos are shown below:
 
@@ -297,7 +297,7 @@ Importantly, for mixed primers, identity refers to the mean identity of the targ
 
 **Masking**
 
-For sequencing applications such as genotyping, there is often an interest in amplifying a specific region of the genome. In such cases, the primer dataset can be masked to not contain forward primers after the intended start position and to not contain reverse primers after the end position of the desired amplicon.
+For sequencing applications such as genotyping, there is often an interest in amplifying a specific region of the genome. In such cases, the primer dataset can be masked to not contain forward primers after the start position and to not contain reverse primers after the end position of the intended amplicon.
 
 Below, I show how to create a subset of `myMixedPrimers`, where all primers between position 2000-3000 are removed: 
 
@@ -312,20 +312,16 @@ plotData(myMixedPrimersMasked)
 
 ### Step 3: `assays`
 
-The next step is to find pairs of forward and reverse primers, and eventually, to combine them with probes. 
+The next step is to find pairs of forward and reverse primers. Probes will be added to the assays if probes were designed in the previous step. 
 
-The arguments of `assays()` are:  
+The `assays()` function has only two arguments:   
 
 * `x`: the oligo dataset from Step 2
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
-* `tmDiffPrimers`: maximum tm difference between the (mean tm) of the two primers (absolute value), defaults to `2`
-* `tmDiffPrimersProbe`: acceptable tm difference between the primer pair and probe, defaults to `c(-10, 10)`. The tm difference is calculated by subtracting the mean tm of the probe with the mean tm of the primers. A positive value means that the average tm of the probe is higher than the average tm of the primer
 
-**Note on Tm diff**
+An error message will return if no assays are found.
 
-The assays will contain probes if probes are present in the oligo dataset from Step 2. An error message will return if no assays are found.
-
-Below, I show how to design assays using default settings using the dataset `myOligos` from Step 1.  
+Below, I show how to design assays using default settings using the dataset `myOligos` from Step 1. 
 
 ```{r}
 myAssays <- assays(myOligos)  
@@ -387,7 +383,7 @@ from <- myAssaySelection[1, ]$start
 to <- myAssaySelection[1, ]$end
 ```
 
-Now, it is possible to highlight the amplicon region, using the `highlight` argument in `plotData()`:
+It is now possible to indicate the amplicon region, using the `highlight` argument in `plotData()`:
 
 ```{r fig 3, fig.width=12, fig.height=6}
 plotData(myConsensusProfile, highlight = c(from, to))
@@ -417,23 +413,25 @@ paste(myAssayRegion$iupac, collapse = "")
 
 ## Export to file
 
-Before proceeding to wet lab evaluation, it is highly recommended to also evaluate the primer and probe candidates for 1) the potential to form primer-dimers and hairpin structures, and 2), the potential to cross react with non-targets.
+Before proceeding to wet lab evaluation, the primer and probe candidates must be evaluated for the potential to form primer-dimers and hairpin structures and the potential to cross react with non-targets.
 
 These tasks are best performed by other software. Below, I show how to export the results to file so that they can be analyzed by other tools.  
 
 **Oligos and assays to fasta format**
 
-`convertToDNAStringSet()` can be used for converting all sequence variants of all oligos or assays to a `Biostrings::DNAStringSet`-object.  
+`convertToDNAStringSet()` can be used for converting oligos or assays to a `Biostrings::DNAStringSet`-object.  
+
+The `asRC` option regulates whether reverse primers and minus sense probes should be written as reverse complements or not. Defaults to `TRUE`. 
+
+The `asIUPAC` option regulates whether the oligos should be presented in IUPAC-format or not. Defaults to `TRUE`. If set to `FALSE`, it will instead include all sequence variants of each oligo. 
 
 ```{r}
 ## Convert the first two oligos in myOligos 
 convertToDNAStringSet(myOligos[1:2, ])
 
 ## Convert the first assay in myAssays 
-convertToDNAStringSet(myAssays[1, ], asRc = FALSE)
+convertToDNAStringSet(myAssays[1, ], asRc = FALSE, asIUPAC = FALSE)
 ```
-
-The `asRC` option regulates whether reverse primers and minus sense probes should be written as reverse complements or not. 
 
 The sequences can then be exported to fasta format:
 
@@ -465,7 +463,7 @@ filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 ## Import the alignment 
 myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta") 
 
-## Design primers, probes and assays using default settings 
+## Design primers, probes and assays (modify settings if wished) 
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
 myOligos <- oligos(myConsensusProfile)
 myAssays <- assays(myOligos)

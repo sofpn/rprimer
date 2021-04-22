@@ -23,8 +23,7 @@ oligos(
   gcRangeProbe = c(0.4, 0.65),
   tmRangeProbe = c(50, 70),
   concProbe = 250,
-  concNa = 0.05,
-  temperature = 60
+  concNa = 0.05
 )
 }
 \arguments{
@@ -87,12 +86,9 @@ A numeric vector [30, 90], defaults to \code{c(55, 70)}.}
 \item{concProbe}{Primer concentration in nM, for tm calculation. A numeric vector
 [20, 2000], defaults to \code{250}.}
 
-\item{concNa}{The sodium ion concentration in the PCR reaction in M, for calculation of
-tm and delta G.
+\item{concNa}{The sodium ion concentration, in M, in the PCR reaction. For calculation of
+tm.
 A numeric vector [0.01, 1], defaults to \code{0.05} (50 mM).}
-
-\item{temperature}{Annealing temperature in Celcius, for calculation of delta G.
-A number [37, 70], defaults to \code{60}.}
 }
 \value{
 An \code{RprimerOligo} object. An error message will return
@@ -131,15 +127,10 @@ The output contains the following information:
     the oligo.}
   \item{tmMean}{Mean tm of all sequence variants of the oligo.}
   \item{tmRange}{Range in tm of all sequence variants of the oligo.}
-  \item{deltaGMean}{Mean delta G (in kcal/mole)
-  of all sequence variants of the oligo.}
-  \item{deltaGRange}{Range in delta G (in kcal/mole)
-  of all sequence variants of the oligo.}
   \item{sequence}{All sequence variants of the oligo.}
   \item{sequenceRc}{Reverse complements of all sequence variants.}
   \item{gcContent}{GC-content of all sequence variants.}
   \item{tm}{Tm of all sequence variants.}
-  \item{deltaG}{delta G (in kcal/mole) of all sequence variants.}
   \item{method}{Design method used to generate the oligo: "ambiguous",
   "mixedFwd" or "mixedRev".}
   \item{score}{Oligo score, the lower the better.
@@ -197,17 +188,32 @@ nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
 of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
 }
 
-\section{Tm and delta G}{
+\section{Tm}{
 
 
-Melting temperature and delta G (change in Gibbs free energy)
+Melting temperatures (in degrees Celcius)
 are calculated for perfectly matching
 DNA duplexes using the
 nearest-neighbor
-method (SantaLucia and Hicks, 2004).
-Table values, salt correction method and equations are
-from SantaLucia and Hicks, 2004.
-The table values can also be
+method (SantaLucia and Hicks, 2004), by using the following equation:
+
+\deqn{Tm = \Delta H ^o / (\Delta S ^o + R \cdot \log [\mathrm{oligo}] - 273.15)}
+
+where \eqn{\Delta H ^o} is
+the change in enthalpy (in kcal/mol) and \eqn{\Delta S ^o} is the
+change in entropy (in cal/K/mol) when an
+oligo goes from random coil to a perfectly matching oligo-target-duplex.
+\eqn{K} is the gas constant (1.9872 cal/mol \emph{K}).
+
+The following salt correction method is used for \eqn{\Delta S^o}, as
+described in SantaLucia and Hicks, 2004:
+
+\deqn{\Delta S^o [\mathrm{Na^+}] = \Delta S^o [\mathrm{1 M NaCl}] + 0.368 \cdot N / 2 \cdot \log [\mathrm{Na^+}]}
+
+where \eqn{N} is the total number of phosphates in the duplex, and [Na+] is the total
+concentration of monovalent cations.
+
+Table values for nearest neighbors can be
 found by calling \code{rprimer:::lookup$nn}.
 }
 
@@ -226,10 +232,10 @@ The scoring scheme is presented below.
 
 \tabular{lr}{
 Value range \tab Score \cr
-(0.99, 1] \tab 0 \cr
-(0.95, 0.99] \tab 1 \cr
-(0.90, 0.95] \tab 2 \cr
-<= 0.90 \tab 3
+\eqn{(0.99, 1]} \tab 0 \cr
+\eqn{(0.95, 0.99]} \tab 1 \cr
+\eqn{(0.90, 0.95]} \tab 2 \cr
+\eqn{\leq 0.90} \tab 3
 }
 
 \strong{Degeneracy}
@@ -249,26 +255,26 @@ it deviates (in absolute value) from 0.5.
 
 \tabular{lr}{
 Value range \tab Score \cr
-[0, 0.05)
+\eqn{[0, 0.05)}
 \tab 0 \cr
-[0.05, 0.1)
+\eqn{[0.05, 0.1)}
 \tab 1 \cr
-[0.1,  0.2)
+\eqn{[0.1,  0.2)}
 \tab 2 \cr
->= 0.2 \tab 3
+\eqn{\geq 0.2} \tab 3
 }
 
 \strong{Tm range}
 
 \tabular{lr}{
 Value \tab Score \cr
-[0, 1)
+\eqn{[0, 1)}
 \tab 0 \cr
-[1, 2)
+\eqn{[1, 2)}
 \tab 1 \cr
-[2, 3)
+\eqn{[2, 3)}
 \tab 2 \cr
->= 3 \tab 3
+\eqn{\geq 3} \tab 3
 }
 }
 
@@ -293,8 +299,8 @@ oligos(roi,
 )
 }
 \references{
-Rose, Timothy M, Emily R Schultz, Jorja G Henikoff, Shmuel Pietrokovski,
-Claire M McCallum, and Steven Henikoff. 1998. Consensus-Degenerate
+Rose, TM., Schultz ER., Henikoff JG., Pietrokovski S.,
+McCallum CM., and Henikoff S. 1998. Consensus-Degenerate
 Hybrid Oligonucleotide Primers for
 Amplification of Distantly Related Sequences. Nucleic Acids Research 26 (7):
 1628-35.

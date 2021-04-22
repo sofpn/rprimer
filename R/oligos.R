@@ -80,13 +80,9 @@
 #' [20, 2000], defaults to \code{250}.
 #'
 #' @param concNa
-#' The sodium ion concentration in the PCR reaction in M, for calculation of
-#' tm and delta G.
+#' The sodium ion concentration, in M, in the PCR reaction. For calculation of
+#' tm.
 #' A numeric vector [0.01, 1], defaults to \code{0.05} (50 mM).
-#'
-#' @param temperature
-#' Annealing temperature in Celcius, for calculation of delta G.
-#' A number [37, 70], defaults to \code{60}.
 #'
 #' @section Output:
 #'
@@ -116,15 +112,10 @@
 #'     the oligo.}
 #'   \item{tmMean}{Mean tm of all sequence variants of the oligo.}
 #'   \item{tmRange}{Range in tm of all sequence variants of the oligo.}
-#'   \item{deltaGMean}{Mean delta G (in kcal/mole)
-#'   of all sequence variants of the oligo.}
-#'   \item{deltaGRange}{Range in delta G (in kcal/mole)
-#'   of all sequence variants of the oligo.}
 #'   \item{sequence}{All sequence variants of the oligo.}
 #'   \item{sequenceRc}{Reverse complements of all sequence variants.}
 #'   \item{gcContent}{GC-content of all sequence variants.}
 #'   \item{tm}{Tm of all sequence variants.}
-#'   \item{deltaG}{delta G (in kcal/mole) of all sequence variants.}
 #'   \item{method}{Design method used to generate the oligo: "ambiguous",
 #'   "mixedFwd" or "mixedRev".}
 #'   \item{score}{Oligo score, the lower the better.
@@ -177,16 +168,31 @@
 #' nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
 #' of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
 #'
-#' @section Tm and delta G:
+#' @section Tm:
 #'
-#' Melting temperature and delta G (change in Gibbs free energy)
+#' Melting temperatures (in degrees Celcius)
 #' are calculated for perfectly matching
 #' DNA duplexes using the
 #' nearest-neighbor
-#' method (SantaLucia and Hicks, 2004).
-#' Table values, salt correction method and equations are
-#' from SantaLucia and Hicks, 2004.
-#' The table values can also be
+#' method (SantaLucia and Hicks, 2004), by using the following equation:
+#'
+#' \deqn{Tm = \Delta H ^o / (\Delta S ^o + R \cdot \log [\mathrm{oligo}] - 273.15)}
+#'
+#' where \eqn{\Delta H ^o} is
+#' the change in enthalpy (in kcal/mol) and \eqn{\Delta S ^o} is the
+#' change in entropy (in cal/K/mol) when an
+#' oligo goes from random coil to a perfectly matching oligo-target-duplex.
+#' \eqn{K} is the gas constant (1.9872 cal/mol \emph{K}).
+#'
+#' The following salt correction method is used for \eqn{\Delta S^o}, as
+#' described in SantaLucia and Hicks, 2004:
+#'
+#' \deqn{\Delta S^o [\mathrm{Na^+}] = \Delta S^o [\mathrm{1 M NaCl}] + 0.368 \cdot N / 2 \cdot \log [\mathrm{Na^+}]}
+#'
+#' where \eqn{N} is the total number of phosphates in the duplex, and [Na+] is the total
+#' concentration of monovalent cations.
+#'
+#' Table values for nearest neighbors can be
 #' found by calling \code{rprimer:::lookup$nn}.
 #'
 #' @section Score:
@@ -203,10 +209,10 @@
 #'
 #' \tabular{lr}{
 #' Value range \tab Score \cr
-#' (0.99, 1] \tab 0 \cr
-#' (0.95, 0.99] \tab 1 \cr
-#' (0.90, 0.95] \tab 2 \cr
-#' <= 0.90 \tab 3
+#' \eqn{(0.99, 1]} \tab 0 \cr
+#' \eqn{(0.95, 0.99]} \tab 1 \cr
+#' \eqn{(0.90, 0.95]} \tab 2 \cr
+#' \eqn{\leq 0.90} \tab 3
 #' }
 #'
 #' \strong{Degeneracy}
@@ -226,26 +232,26 @@
 #'
 #' \tabular{lr}{
 #' Value range \tab Score \cr
-#' [0, 0.05)
+#' \eqn{[0, 0.05)}
 #' \tab 0 \cr
-#' [0.05, 0.1)
+#' \eqn{[0.05, 0.1)}
 #' \tab 1 \cr
-#' [0.1,  0.2)
+#' \eqn{[0.1,  0.2)}
 #' \tab 2 \cr
-#' >= 0.2 \tab 3
+#' \eqn{\geq 0.2} \tab 3
 #' }
 #'
 #' \strong{Tm range}
 #'
 #' \tabular{lr}{
 #' Value \tab Score \cr
-#' [0, 1)
+#' \eqn{[0, 1)}
 #' \tab 0 \cr
-#' [1, 2)
+#' \eqn{[1, 2)}
 #' \tab 1 \cr
-#' [2, 3)
+#' \eqn{[2, 3)}
 #' \tab 2 \cr
-#' >= 3 \tab 3
+#' \eqn{\geq 3} \tab 3
 #' }
 #'
 #' @return
@@ -302,8 +308,7 @@ oligos <- function(x,
                    gcRangeProbe = c(0.40, 0.65),
                    tmRangeProbe = c(50, 70),
                    concProbe = 250,
-                   concNa = 0.05,
-                   temperature = 60) {
+                   concNa = 0.05) {
     if (!methods::is(x, "RprimerProfile")) {
         stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }
@@ -378,9 +383,6 @@ oligos <- function(x,
     if (!(concNa >= 0.01 && concNa <= 1)) {
         stop("'concNa' must be from 0.01 to 1.", call. = FALSE)
     }
-    if (!(temperature >= 37 && temperature <= 70)) {
-        stop("'temperature' must be from 37 to 70.", call. = FALSE)
-    }
     lengthOligo <- lengthPrimer
     if (probe) {
         lengthOligo <- unique(c(lengthOligo, lengthProbe))
@@ -399,8 +401,7 @@ oligos <- function(x,
         designStrategyPrimer,
         probe,
         concProbe,
-        concNa,
-        temperature
+        concNa
     )
     primers <- .filterPrimers(oligos,
         lengthPrimer,
@@ -984,8 +985,7 @@ oligos <- function(x,
 .getAllVariants <- function(x,
                             concPrimer = 500,
                             concProbe = 250,
-                            concNa = 0.05,
-                            temperature = 60) {
+                            concNa = 0.05) {
     all <- list()
     all$sequence <- apply(x$iupacSequence, 1, .expandDegenerates)
     ## If there is only one variant of each oligo,
@@ -1013,14 +1013,13 @@ oligos <- function(x,
     tmParam <- .tmParameters(all$sequence, concNa)
     all$tmPrimer <- .tm(tmParam, concPrimer)
     all$tmProbe <- .tm(tmParam, concProbe)
-    all$deltaG <- .deltaG(tmParam, temperature)
     all$sequence <- apply(all$sequence, 1, paste, collapse = "")
     all$repeats <- .detectRepeats(all$sequence)
     all$sequenceRc <- apply(all$sequenceRc, 1, paste, collapse = "")
     lapply(all, function(x) unname(split(unname(x), f = as.integer(names(x)))))
 }
 
-#' Calculate mean values and ranges for GC-content, Tm and deltaG
+#' Calculate mean values and ranges for GC-content and Tm
 #'
 #' When all sequence variants of each oligo are generated with
 #' \code{.getAllVariants()}, the next step is to compute mean values and ranges
@@ -1041,7 +1040,7 @@ oligos <- function(x,
 #' x <- .getAllVariants(.filterOligos(.generateOligos(exampleRprimerProfile)))
 #' .getMeanAndRange(x)
 .getMeanAndRange <- function(x) {
-    x <- x[c("gcContent", "tmPrimer", "tmProbe", "deltaG")]
+    x <- x[c("gcContent", "tmPrimer", "tmProbe")]
     means <- lapply(x, function(y) {
         vapply(y, function(z) {
             sum(z) / length(z)
@@ -1106,8 +1105,7 @@ oligos <- function(x,
                           designStrategyPrimer = "ambiguous",
                           probe = TRUE,
                           concProbe = 250,
-                          concNa = 0.05,
-                          temperature = 60) {
+                          concNa = 0.05) {
     allOligos <- lapply(lengthOligo, function(i) {
         iupacOligos <- .generateOligos(x, lengthOligo = i)
         if (designStrategyPrimer == "mixed") {
@@ -1123,7 +1121,7 @@ oligos <- function(x,
             stop("No primers were found.", call. = FALSE)
         }
         allVariants <- .getAllVariants(
-            iupacOligos, concPrimer, concProbe, concNa, temperature
+            iupacOligos, concPrimer, concProbe, concNa
         )
         meansAndRanges <- .getMeanAndRange(allVariants)
         allVariants <- data.frame(do.call("cbind", allVariants))
@@ -1572,8 +1570,8 @@ oligos <- function(x,
         "type", "fwd", "rev", "start", "end", "length",
         "iupacSequence", "iupacSequenceRc", "identity",
         "coverage", "degeneracy", "gcContentMean", "gcContentRange",
-        "tmMean", "tmRange", "deltaGMean", "deltaGRange", "sequence",
-        "sequenceRc", "gcContent", "tm", "deltaG", "method", "score",
+        "tmMean", "tmRange", "sequence",
+        "sequenceRc", "gcContent", "tm", "method", "score",
         "roiStart", "roiEnd"
     )
     x <- x[keep]

@@ -9,7 +9,7 @@ consensusProfile(x, ambiguityThreshold = 0)
 \arguments{
 \item{x}{A \code{Biostrings::DNAMultipleAlignment} object.}
 
-\item{ambiguityThreshold}{A number within the range of 0 and 0.2, defaults to \code{0}.
+\item{ambiguityThreshold}{A number [0, 0.2], defaults to \code{0}.
 All DNA bases that occurs with a frequency
 higher than the \code{ambiguityThreshold} will be included in
 the IUPAC consensus character.}
@@ -18,60 +18,84 @@ the IUPAC consensus character.}
 An \code{RprimerProfile} object, which contains the following information:
 
 \describe{
-  \item{position}{Position in the alignment. Note that masked columns
-  from the original alignment are removed, and
-  hence not taken into account when position is determined.}
+  \item{position}{Position in the alignment.}
   \item{a}{Proportion of A.}
   \item{c}{Proportion of C.}
   \item{g}{Proportion of G.}
   \item{t}{Proportion of T.}
   \item{other}{Proportion of bases other than A, C, G, T.}
   \item{gaps}{Proportion of gaps (recognized as "-" in the alignment).}
-  \item{majority}{Majority consensus sequence.
-  The most frequently occurring nucleotide.
-  If two or more bases occur with the same frequency,
-  the consensus nucleotide will be randomly selected among these bases.}
-  \item{identity}{Proportion of the most common nucleotide.
-  Gaps (-), as well as bases other than A, C, G and T are excluded from the
-  calculation.}
-  \item{iupac}{
-  The consensus sequence expressed in IUPAC format.
-  Note that the IUPAC consensus sequence only
-  takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
-  present in the alignment will be skipped. If a position only contains
-  degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
-  position.}
-  \item{entropy}{Shannon entropy.
-  Shannon entropy is a measurement of
-  variability.
-  First, for each nucleotide that occurs at a specific position,
-  \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
-  that nucleotide. Then, these values are summarized,
-  and multiplied by \code{-1}.
-  A value of \code{0} indicate no variability and a high value
-  indicate high variability.
-  Gaps (-), as well as bases other than
-  A, C, G and T are not included in the calculation.}
-  \item{coverage}{The proportion of bases that are included the
-  consensus/ambiguous (IUPAC) base.
-  Will be one if there are no "remaining" bases (and if
-  \code{ambiguityThreshold = 0}).
-  Gaps (-), as well as bases other than A, C, G and T are not included in the
-  calculation.}
+  \item{majority}{Majority consensus sequence.}
+  \item{identity}{Proportion of sequences, among all sequences with a
+  DNA base (i.e., A, C, G or T), that has the majority consensus base.}
+  \item{iupac}{The consensus sequence expressed in IUPAC format.}
+  \item{entropy}{Shannon entropy.}
+  \item{coverage}{Proportion of sequences in the target alignment,
+  among all sequences with a DNA base, that are covered the IUPAC consensus
+  character.
+  The value will be 1 if there are no "remaining" DNA bases (and/or if
+  \code{ambiguityThreshold = 0}).}
 }
+
+Below follows more detailed information about some of the variables.
 }
 \description{
 \code{consensusProfile()} takes a DNA multiple alignment as input and
 returns all the data needed for subsequent primer and probe design.
 }
+\section{Position}{
+
+
+Note that masked columns from the original alignment are removed, and
+hence not taken into account when the position is determined.
+}
+
+\section{Majority consensus sequence}{
+
+
+Denotes the most frequently occurring nucleotide.
+If two or more bases occur with the same frequency,
+the consensus nucleotide will be randomly selected among these.
+}
+
+\section{IUPAC consensus sequence}{
+
+
+Note that the IUPAC consensus sequence only
+takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases that are
+present in the alignment will be skipped. If a position only contains
+degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
+position.
+}
+
+\section{Shannon entropy}{
+
+
+Shannon entropy \eqn{H} is a measurement of
+variability (Shannon, 1951).
+
+It is calculated from all
+DNA bases \eqn{X}, i.e., \eqn{x_i, ..., x_n}, that are present
+with proportions of \eqn{P(x_i), ..., P(x_n)} at the given position.
+
+\deqn{H(X) = -\sum_{i = 1}^{n}P(x_i) \cdot \log_2(P(x_i))}
+
+A value of \code{0} indicate no variability and a high value
+indicate high variability.
+}
+
 \examples{
 data("exampleRprimerAlignment")
 consensusProfile(exampleRprimerAlignment)
 }
 \references{
-\code{consensusProfile()} is a wrapper to \code{Biostrings::consensusMatrix()}:
+\code{consensusProfile()} is a wrapper to
+\code{Biostrings::consensusMatrix()}:
 
-H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
+Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
 Efficient manipulation of biological strings. R package version
 2.57.2.
+
+Shannon, SE. (1951). Prediction and Entropy of Printed English.
+Bell System Technical Journal 30 (1): 50-64.
 }
