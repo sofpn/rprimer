@@ -94,12 +94,10 @@
     sumdH <- dhStack + dhInit
     sumdS <- dsStack + dsInit
     n <- dim(x)[[2]] - 1 ## Number of phosphates
-    m <- matrix(
-        c(sumdH, sumdS, rep(n, nrow(nn)), rep(concNa, nrow(nn))),
-        ncol = 4
-    )
+    sumdS <- sumdS + 0.368 * n * log(concNa) ## Salt correction of deltaS
+    m <- matrix(c(sumdH, sumdS), ncol = 2)
     rownames(m) <- rownames(nn)
-    colnames(m) <- c("sumdH", "sumdS", "n", "concNa")
+    colnames(m) <- c("sumdH", "sumdS")
     m
 }
 
@@ -118,7 +116,7 @@
 #' .tm(x)
 .tm <- function(x, concOligo = 250) {
     concOligo <- concOligo * 1e-9
-    tm <- x[, "sumdH"] / (x[, "sumdS"] + 0.368 * x[, "n"] * log(x[, "concNa"]) + 1.987 * log(concOligo)) - 273.15
+    tm <- (x[, "sumdH"] * 1000) / (x[, "sumdS"] + 1.987 * log(concOligo)) - 273.15
     names(tm) <- rownames(x)
     tm
 }
@@ -139,7 +137,6 @@
     temperature <- temperature + 273.15
     deltaG <- x[, "sumdH"] - temperature * x[, "sumdS"]
     deltaG <- deltaG / 1000
-    deltaG <- deltaG - 0.114 * x[, "n"] * log(x[, "concNa"])
     names(deltaG) <- rownames(x)
     deltaG
 }

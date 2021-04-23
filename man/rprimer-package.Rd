@@ -7,10 +7,11 @@
 \title{rprimer: Design Degenerate Oligos from a Multiple DNA Sequence Alignment}
 \description{
 Functions and workflow for visualizing sequence conservation 
-    and designig degenerate primers, probes and (RT)-(q/d)PCR assays from a 
+    and designing degenerate primers, probes and (RT)-(q/d)PCR assays from a 
     multiple DNA sequence alignment. The workflow uses commonly adopted PCR
     design guidelines and is especially developed for sequence variable viruses. 
-    The results are presented in a data-frame format and as visual dashboards.
+    The results are presented in data-frame format and as visual dashboards.
+    For more information, please se the package vignette.
 }
 \details{
 The package contains five functions: \code{consensusProfile()},

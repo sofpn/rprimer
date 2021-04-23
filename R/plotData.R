@@ -3,29 +3,40 @@
 #' @param x
 #' An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.
 #'
-#' @param type For code{RprimerProfile}-objects.
-#' Type of plot: "overview", or "nucleotide", defaults to "overview".
+#' @param ...
+#' Optional arguments for \code{RprimerProfile} objects. These are:
 #'
-#' @param ... Optional arguments when plotting \code{RprimerProfile} objects:
+#' \code{type}: Type of plot: "overview", or "nucleotide",
+#' defaults to "overview".
 #'
-#' For \code{type = "overview"}:
-#'
-#' \code{highligt}: If a specific genomic region should be highlighted.
+#' \code{highlight}:
+#' If a specific genomic region should be highlighted
+#' (for \code{type = "overview"} plots).
 #' A numeric vector, e.g. \code{c(100, 1000)}, defaults to \code{NULL}.
 #'
-#' For \code{type = "nucleotide"}:
-#'
-#' \code{rc}: If the plotted sequence should be displayed
-#' as reverse complement or not.
+#' \code{rc}:
+#' If the plotted sequence should be displayed
+#' as reverse complement or not (for \code{type = "nucleotide"} plots).
 #' \code{TRUE} or {FALSE}, defaults to \code{FALSE}.
+#'
+#' See examples below.
 #'
 #' @return A plot.
 #'
 #' @export
+setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
+
+# Methods ======================================================================
+
+#' Plot an RprimerProfile-object (method)
+#'
+#' @describeIn plotData
+#'
+#' @importFrom patchwork wrap_plots
+#'
+#' @export
 #'
 #' @examples
-#' ## Plot an RprimerProfile object
-#'
 #' data("exampleRprimerProfile")
 #' prof <- exampleRprimerProfile
 #'
@@ -46,31 +57,6 @@
 #'
 #' ## Plot the nucleotide distribution of the roi, as reverse complement
 #' plotData(roi, type = "nucleotide", rc = TRUE)
-#'
-#' ## Plot an RprimerOligo object
-#'
-#' data("exampleRprimerOligo")
-#' oligos <- exampleRprimerOligo
-#'
-#' ## Plot all oligos
-#' plotData(oligos)
-#'
-#' ## Select a subset of the oligos, and plot
-#' selected <- oligos[oligos$start >= 5000, ]
-#' plotData(selected)
-#'
-#' ## Plot an RrimerAssay object
-#' data("exampleRprimerAssay")
-#' plotData(exampleRprimerAssay)
-setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
-
-#' Plot an RprimerProfile-object (method)
-#'
-#' @describeIn plotData
-#'
-#' @importFrom patchwork wrap_plots
-#'
-#' @export
 setMethod("plotData", "RprimerProfile", function(x,
                                                  type = "overview",
                                                  ...) {
@@ -95,6 +81,17 @@ setMethod("plotData", "RprimerProfile", function(x,
 #' @importFrom patchwork wrap_plots
 #'
 #' @export
+#'
+#' @examples
+#' data("exampleRprimerOligo")
+#' oligos <- exampleRprimerOligo
+#'
+#' ## Plot all oligos
+#' plotData(oligos)
+#'
+#' ## Select a subset of the oligos, and plot
+#' selected <- oligos[oligos$start >= 5000, ]
+#' plotData(selected)
 setMethod("plotData", "RprimerOligo", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -113,6 +110,10 @@ setMethod("plotData", "RprimerOligo", function(x) {
 #' @importFrom patchwork wrap_plots
 #'
 #' @export
+#'
+#' @examples
+#' data("exampleRprimerAssay")
+#' plotData(exampleRprimerAssay)
 setMethod("plotData", "RprimerAssay", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -454,11 +455,6 @@ setMethod("plotData", "RprimerAssay", function(x) {
     if (nrow(x) >= 10) {
         patchwork::wrap_plots(
             list(
-                .violinPlot(
-                    x, x$tmDifferencePrimer,
-                    "\n\nTm (mean) difference, primers",
-                    color = color
-                ),
                 .boxPlot(
                     x, x$ampliconLength, "\n\nAmplicon length",
                     color = color
@@ -468,16 +464,11 @@ setMethod("plotData", "RprimerAssay", function(x) {
                     color = color
                 )
             ),
-            ncol = 3
+            ncol = 2
         )
     } else {
         patchwork::wrap_plots(
             list(
-                .dotPlot(
-                    x, x$tmDifferencePrimer,
-                    "\n\nTm difference (mean), primers",
-                    color = color
-                ),
                 .barPlot(
                     x, x$ampliconLength, "\n\nAmplicon length",
                     color = color
@@ -487,7 +478,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
                     color = color
                 )
             ),
-            ncol = 3
+            ncol = 2
         )
     }
 }

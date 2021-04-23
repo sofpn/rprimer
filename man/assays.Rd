@@ -4,29 +4,13 @@
 \alias{assays}
 \title{Design (RT)-PCR assays}
 \usage{
-assays(
-  x,
-  lengthRange = c(65, 120),
-  tmDiffPrimers = 5,
-  tmDiffPrimersProbe = c(-10, 10)
-)
+assays(x, lengthRange = c(65, 120))
 }
 \arguments{
 \item{x}{An \code{RprimerOligo} object, with or without probes.}
 
 \item{lengthRange}{Amplicon length range, a numeric vector [40, 5000], defaults to
 \code{c(65, 120)}.}
-
-\item{tmDiffPrimers}{Maximum allowed difference between the mean tm of the forward primer
-and the mean tm of the reverse primer
-(absolute value). A number [0, 20], defaults to \code{5}.}
-
-\item{tmDiffPrimersProbe}{Acceptable difference between the mean tm of the probe and the mean tm
-of the primers. A numeric vector [-20, 20],
-defaults to \code{c(-10, 10)}.
-A negative tm difference
-means that the mean tm of the probe is lower than the mean tm of the
-primers.}
 }
 \value{
 An \code{RprimerAssay} object.
@@ -38,12 +22,6 @@ The object contains the following information:
   \item{start}{Position where the assay starts.}
   \item{end}{Position where the assay ends.}
   \item{ampliconLength}{Length of the amplicon.}
-  \item{tmDifferencePrimer}{Difference between
-  the mean tm of the forward primer and the mean tm of the reverse primer,
-  absolute value.}
-  \item{deltaGDifferencePrimer}{Difference between
-  the mean delta G of the forward primer and the mean delta G of
-  the reverse primer, absolute value.}
   \item{totalDegeneracy}{Total number of oligos in the assay.}
   \item{score}{Summarized oligo score. The lowest, and best,
   possible score is 0. The highest possible score is 24 for assays
@@ -60,12 +38,13 @@ The object contains the following information:
   \item{gcContentRangeFwd}{Range in GC-content of the forward primer.}
   \item{tmMeanFwd}{Mean tm of the forward primer.}
   \item{tmRangeFwd}{Range in tm of the forward primer.}
-  \item{deltaGMeanFwd}{Mean delta G of the forward primer.}
-  \item{deltaGRangeFwd}{Range in delta G of the forward primer.}
   \item{sequenceFwd}{Sequence of the forward primer, all variants.}
   \item{gcContentFwd}{GC-content of the forward primer, all variants.}
   \item{tmFwd}{Tm of the forward primer, all variants.}
-  \item{deltaGFwd}{Delta G of the forward primer, all variants.}
+  \item{dHFwd}{delta H of all sequence variants of the forward
+  primer (in cal/mol).}
+  \item{dSFwd}{delta S of all sequence
+  variants of the forward primer (in cal/K/mol).}
   \item{startRev}{Position where the reverse primer starts.}
   \item{endRev}{Position where the reverse primer ends.}
   \item{lengthRev}{Length of the reverse primer.}
@@ -76,12 +55,13 @@ The object contains the following information:
   \item{gcContentRangeRev}{Range in GC-content of the reverse primer.}
   \item{tmMeanRev}{Mean tm of the reverse primer.}
   \item{tmRangeRev}{Range in tm of the reverse primer.}
-  \item{deltaGMeanRev}{Mean delta G of the reverse primer.}
-  \item{deltaGRangeRev}{Range in delta G of the reverse primer.}
   \item{sequenceRev}{Sequence of the reverse primer, all variants.}
   \item{gcContentRev}{GC-content of the reverse primer, all variants.}
   \item{tmRev}{Tm of the reverse primer, all variants.}
-  \item{deltaGRev}{Delta G of the reverse primer, all variants.}
+  \item{dHRev}{delta H of all sequence variants of the reverse
+  primer (in cal/mol).}
+  \item{dSRev}{delta S of all sequence
+  variants of the reverse primer (in cal/K/mol).}
   \item{roiStart}{Start position of the input consensus profile
   used for oligo design.}
   \item{roiEnd}{End position of the input consensus profile used
@@ -91,12 +71,6 @@ The object contains the following information:
 If a probe is used, the following columns are also included:
 
 \describe{
-  \item{tmDifferencePrimerProbe}{Tm difference between the primer pair
-  and probe. The tm difference is calculated by subtracting the
-  mean tm of the probe with the mean tm of the primers.}
-  \item{deltaGDifferencePrimerProbe}{Difference in delta G between
-  the primer pair and probe. It is calculated by subtracting the
-  mean delta G of the probe with the mean delta G of the primers.}
   \item{plusPr}{If the probe is valid in positive sense.}
   \item{minusPr}{If the probe is valid in negative sense.}
   \item{startPr}{Position where the probe starts.}
@@ -109,12 +83,13 @@ If a probe is used, the following columns are also included:
   \item{gcContentRangePr}{Range in GC-content of the probe.}
   \item{tmMeanPr}{Mean tm of the probe.}
   \item{tmRangePr}{Range in tm of the probe.}
-  \item{deltaGMeanPr}{Mean delta G of the probe.}
-  \item{deltaGRangePr}{Range in delta G of the probe.}
   \item{sequencePr}{Sequence of the probe, all variants.}
   \item{gcContentPr}{GC-content of the probe, all variants.}
   \item{tmPr}{Tm of the probe, all variants.}
-  \item{deltaGPr}{Delta G of the probe, all variants.}
+  \item{dHPr}{delta H of all sequence variants of the forward
+  primer (in cal/mol).}
+  \item{dSPr}{delta S of all sequence
+  variants of the forward primer (in cal/K/mol).}
 }
 }
 \description{
@@ -123,6 +98,7 @@ and probes to (RT)-PCR assays from an \code{RprimerOligo} object.
 }
 \examples{
 data("exampleRprimerOligo")
-## Get assays using default settings
+
+## Design assays using default settings
 assays(exampleRprimerOligo)
 }

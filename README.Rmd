@@ -147,7 +147,7 @@ plotData(myAssays)
 
 ```r
 ## Convert the first two assays in myAssays 
-myAssaysConverted <- convertToDNAStringSet(myAssays[1:2, ], revAsRc = FALSE)
+myAssaysConverted <- convertToDNAStringSet(myAssays[1:2, ])
 
 ## Save as fasta-format
 Biostrings::writeXStringSet(myAssaysConverted, file = "myAssays.txt")

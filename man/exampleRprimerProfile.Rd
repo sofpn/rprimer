@@ -14,6 +14,8 @@ The sequences were collected from NCBI GenBank.
 data("exampleRprimerProfile")
 }
 \description{
+The object contains the following information:
+
 \describe{
   \item{position}{Position in the alignment. Note that masked columns
   from the original alignment are removed, and

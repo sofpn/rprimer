@@ -97,7 +97,8 @@
 #'   \item{start}{Start position of the oligo.}
 #'   \item{end}{End positon of the oligo.}
 #'   \item{length}{Oligo length.}
-#'   \item{iupacSequence}{Oligo sequence, with amiguous bases (if any).}
+#'   \item{iupacSequence}{Oligo sequence in IUPAC format
+#'   (i.e. with ambiguous bases).}
 #'   \item{iupaSequenceRc}{The reverse complement of the iupacSequence.}
 #'   \item{identity}{For ambiguous oligos: Average identity of the oligo.
 #'     For mixed oligos: Average identity of the 5' (consensus) part of the
@@ -115,7 +116,10 @@
 #'   \item{sequence}{All sequence variants of the oligo.}
 #'   \item{sequenceRc}{Reverse complements of all sequence variants.}
 #'   \item{gcContent}{GC-content of all sequence variants.}
-#'   \item{tm}{Tm of all sequence variants.}
+#'   \item{tm}{Tm of all sequence variants (in Celcius degrees).}
+#'   \item{dH}{delta H of all sequence variants (in cal/mol).}
+#'   \item{dS}{delta S of all sequence
+#'   variants (in cal/K/mol).}
 #'   \item{method}{Design method used to generate the oligo: "ambiguous",
 #'   "mixedFwd" or "mixedRev".}
 #'   \item{score}{Oligo score, the lower the better.
@@ -153,7 +157,7 @@
 #' will match the 5' ends of all primers perfectly, which allows them
 #' to be efficiently amplified in later PCR cycles.
 #' To provide a sufficiently high tm in spite of mismatches, it is
-#' recommended to design relatively long primers (> 25 bases) when using
+#' recommended to design relatively long primers (at least 25 bases) when using
 #' this strategy}
 #' }
 #'
@@ -170,18 +174,19 @@
 #'
 #' @section Tm:
 #'
-#' Melting temperatures (in degrees Celcius)
+#' Melting temperatures
 #' are calculated for perfectly matching
 #' DNA duplexes using the
 #' nearest-neighbor
 #' method (SantaLucia and Hicks, 2004), by using the following equation:
 #'
-#' \deqn{Tm = \Delta H ^o / (\Delta S ^o + R \cdot \log [\mathrm{oligo}] - 273.15)}
+#' \deqn{Tm = (\Delta H ^o \cdot 1000) / (\Delta S ^o + R \cdot \log [\mathrm{oligo}]) - 273.15}
 #'
 #' where \eqn{\Delta H ^o} is
-#' the change in enthalpy (in kcal/mol) and \eqn{\Delta S ^o} is the
+#' the change in enthalpy (in cal/mol) and \eqn{\Delta S ^o} is the
 #' change in entropy (in cal/K/mol) when an
-#' oligo goes from random coil to a perfectly matching oligo-target-duplex.
+#' oligo and a perfectly matching target sequence goes from random coil to
+#' duplex formation.
 #' \eqn{K} is the gas constant (1.9872 cal/mol \emph{K}).
 #'
 #' The following salt correction method is used for \eqn{\Delta S^o}, as
@@ -273,13 +278,13 @@
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' target <- exampleRprimerProfile
+#' x <- exampleRprimerProfile
 #'
 #' ## Design primers and probes with default values
-#' oligos(target)
+#' oligos(x)
 #'
 #' ## Design primers and probes only within a specific region of interest
-#' roi <- target[target$position >= 5000 & target$position <= 6000, ]
+#' roi <- x[x$position >= 5000 & x$position <= 6000, ]
 #' oligos(roi)
 #'
 #' ## Design primers only
@@ -403,7 +408,8 @@ oligos <- function(x,
         concProbe,
         concNa
     )
-    primers <- .filterPrimers(oligos,
+    primers <- .filterPrimers(
+        oligos,
         lengthPrimer,
         maxDegeneracyPrimer,
         gcClampPrimer,
@@ -419,7 +425,8 @@ oligos <- function(x,
         stop("No primers were found.", call. = FALSE)
     }
     if (probe) {
-        probes <- .filterProbes(oligos,
+        probes <- .filterProbes(
+            oligos,
             lengthProbe,
             maxDegeneracyProbe,
             avoidFiveEndGProbe,
@@ -1013,6 +1020,10 @@ oligos <- function(x,
     tmParam <- .tmParameters(all$sequence, concNa)
     all$tmPrimer <- .tm(tmParam, concPrimer)
     all$tmProbe <- .tm(tmParam, concProbe)
+    all$dH <- tmParam[, "sumdH"]
+    names(all$dH) <- rownames(tmParam)
+    all$dS <- tmParam[, "sumdS"]
+    names(all$dS) <- rownames(tmParam)
     all$sequence <- apply(all$sequence, 1, paste, collapse = "")
     all$repeats <- .detectRepeats(all$sequence)
     all$sequenceRc <- apply(all$sequenceRc, 1, paste, collapse = "")
@@ -1563,7 +1574,7 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .filterPrimers(.designOligos(exampleRprimerProfile))
+#' x <- .scoreOligos(.filterPrimers(.designOligos(exampleRprimerProfile)))
 #' .beautifyOligos(x)
 .beautifyOligos <- function(x) {
     keep <- c(
@@ -1571,7 +1582,7 @@ oligos <- function(x,
         "iupacSequence", "iupacSequenceRc", "identity",
         "coverage", "degeneracy", "gcContentMean", "gcContentRange",
         "tmMean", "tmRange", "sequence",
-        "sequenceRc", "gcContent", "tm", "method", "score",
+        "sequenceRc", "gcContent", "tm", "dH", "dS", "method", "score",
         "roiStart", "roiEnd"
     )
     x <- x[keep]

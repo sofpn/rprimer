@@ -58,17 +58,11 @@
 #'
 #' @section Shannon entropy:
 #'
-#' Shannon entropy \eqn{H} is a measurement of
-#' variability (Shannon, 1951).
-#'
-#' It is calculated from all
-#' DNA bases \eqn{X}, i.e., \eqn{x_i, ..., x_n}, that are present
-#' with proportions of \eqn{P(x_i), ..., P(x_n)} at the given position.
-#'
-#' \deqn{H(X) = -\sum_{i = 1}^{n}P(x_i) \cdot \log_2(P(x_i))}
-#'
-#' A value of \code{0} indicate no variability and a high value
-#' indicate high variability.
+#' Shannon entropy is a measurement of
+#' variability (Shannon, 1951). It is calculated among occuring DNA bases
+#' (gaps and ambiguous bases are not included) at each
+#' position in the alignment. A value of \code{0} indicate complete
+#' conservation and a high value indicate high variability.
 #'
 #' @references
 #' \code{consensusProfile()} is a wrapper to

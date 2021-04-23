@@ -23,6 +23,7 @@
 #' @format An \code{RprimerProfile} object.
 #'
 #' @description
+#' The object contains the following information:
 #'
 #' \describe{
 #'   \item{position}{Position in the alignment. Note that masked columns
@@ -88,7 +89,8 @@
 #'   \item{start}{Start position of the oligo.}
 #'   \item{end}{End positon of the oligo.}
 #'   \item{length}{Oligo length.}
-#'   \item{iupacSequence}{Oligo sequence, with amiguous bases (if any).}
+#'   \item{iupacSequence}{Oligo sequence in IUPAC format
+#'   (i.e. with ambiguous bases).}
 #'   \item{iupaSequenceRc}{The reverse complement of the iupacSequence.}
 #'   \item{identity}{For ambiguous oligos: Average identity of the oligo.
 #'     For mixed oligos: Average identity of the 5' (consensus) part of the
@@ -109,6 +111,9 @@
 #'   \item{sequenceRc}{Reverse complements of all sequence variants.}
 #'   \item{gcContent}{GC-content of all sequence variants.}
 #'   \item{tm}{Tm of all sequence variants.}
+#'   \item{dH}{delta H of all sequence variants (in cal/mol).}
+#'   \item{dS}{delta S (change in entropy) of all sequence
+#'   variants (in cal/K/mol).}
 #'   \item{method}{Design method used to generate the oligo: "ambiguous",
 #'   "mixedFwd" or "mixedRev".}
 #'   \item{score}{Oligo score, the lower the better.}
@@ -131,19 +136,6 @@
 #'   \item{start}{Position where the assay starts.}
 #'   \item{end}{Position where the assay ends.}
 #'   \item{ampliconLength}{Length of the amplicon.}
-#'   \item{tmDifferencePrimer}{Difference between
-#'   the mean tm of the forward primer and the mean tm of the reverse primer,
-#'   absolute value.}
-#'   \item{deltaGDifferencePrimer}{Difference between
-#'   the mean delta G of the forward primer and the mean delta G of
-#'   the reverse primer, absolute value.}
-#'   \item{tmDifferencePrimerProbe}{Tm difference between the primer pair
-#'   and probe. The tm difference is calculated by subtracting the
-#'   mean tm of the probe with the mean tm of the primers.}
-#'   \item{deltaGDifferencePrimerProbe}{Difference in delta G between
-#'   the primer pair and probe. It is calculated by subtracting the
-#'   mean delta G of the probe with the mean delta G of the primers.}
-#'   \item{totalDegeneracy}{Total number of oligos in the assay.}
 #'   \item{score}{Summarized oligo score.}
 #'   \item{plusPr}{If the probe is valid in positive sense.}
 #'   \item{startFwd}{Position where the forward primer starts.}
@@ -156,12 +148,13 @@
 #'   \item{gcContentRangeFwd}{Range in GC-content of the forward primer.}
 #'   \item{tmMeanFwd}{Mean tm of the forward primer.}
 #'   \item{tmRangeFwd}{Range in tm of the forward primer.}
-#'   \item{deltaGMeanFwd}{Mean delta G of the forward primer.}
-#'   \item{deltaGRangeFwd}{Range in delta G of the forward primer.}
 #'   \item{sequenceFwd}{Sequence of the forward primer, all variants.}
 #'   \item{gcContentFwd}{GC-content of the forward primer, all variants.}
 #'   \item{tmFwd}{Tm of the forward primer, all variants.}
-#'   \item{deltaGFwd}{Delta G of the forward primer, all variants.}
+#'   \item{dHFwd}{delta H of all sequence variants of the forward
+#'   primer (in cal/mol).}
+#'   \item{dSFwd}{delta S of all sequence
+#'   variants of the forward primer (in cal/K/mol).}
 #'   \item{startRev}{Position where the reverse primer starts.}
 #'   \item{endRev}{Position where the reverse primer ends.}
 #'   \item{lengthRev}{Length of the reverse primer.}
@@ -172,12 +165,13 @@
 #'   \item{gcContentRangeRev}{Range in GC-content of the reverse primer.}
 #'   \item{tmMeanRev}{Mean tm of the reverse primer.}
 #'   \item{tmRangeRev}{Range in tm of the reverse primer.}
-#'   \item{deltaGMeanRev}{Mean delta G of the reverse primer.}
-#'   \item{deltaGRangeRev}{Range in delta G of the reverse primer.}
 #'   \item{sequenceRev}{Sequence of the reverse primer, all variants.}
 #'   \item{gcContentRev}{GC-content of the reverse primer, all variants.}
 #'   \item{tmRev}{Tm of the reverse primer, all variants.}
-#'   \item{deltaGRev}{Delta G of the reverse primer, all variants.}
+#'   \item{dHRev}{delta H of all sequence variants of the reverse
+#'   primer (in cal/mol).}
+#'   \item{dSRev}{delta S of all sequence
+#'   variants of the reverse primer (in cal/K/mol).}
 #'   \item{minusPr}{If the probe is valid in negative sense.}
 #'   \item{startPr}{Position where the probe starts.}
 #'   \item{endPr}{Position where the probe ends.}
@@ -189,12 +183,13 @@
 #'   \item{gcContentRangePr}{Range in GC-content of the probe.}
 #'   \item{tmMeanPr}{Mean tm of the probe.}
 #'   \item{tmRangePr}{Range in tm of the probe.}
-#'   \item{deltaGMeanPr}{Mean delta G of the probe.}
-#'   \item{deltaGRangePr}{Range in delta G of the probe.}
 #'   \item{sequencePr}{Sequence of the probe, all variants.}
 #'   \item{gcContentPr}{GC-content of the probe, all variants.}
 #'   \item{tmPr}{Tm of the probe, all variants.}
-#'   \item{deltaGPr}{delta G of the probe, all variants.}
+#'   \item{dHPr}{delta H of all sequence variants of the forward
+#'   primer (in cal/mol).}
+#'   \item{dSPr}{delta S of all sequence
+#'   variants of the forward primer (in cal/K/mol).}
 #'   \item{roiStart}{Start position of the input consensus profile
 #'   used for oligo design.}
 #'   \item{roiEnd}{End position of the input consensus profile used

@@ -18,21 +18,22 @@ plotData(x, ...)
 \arguments{
 \item{x}{An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.}
 
-\item{...}{Optional arguments when plotting \code{RprimerProfile} objects:
+\item{...}{Optional arguments for \code{RprimerProfile} objects. These are:
 
-For \code{type = "overview"}:
+\code{type}: Type of plot: "overview", or "nucleotide",
+defaults to "overview".
 
-\code{highligt}: If a specific genomic region should be highlighted.
+\code{highlight}:
+If a specific genomic region should be highlighted
+(for \code{type = "overview"} plots).
 A numeric vector, e.g. \code{c(100, 1000)}, defaults to \code{NULL}.
 
-For \code{type = "nucleotide"}:
+\code{rc}:
+If the plotted sequence should be displayed
+as reverse complement or not (for \code{type = "nucleotide"} plots).
+\code{TRUE} or {FALSE}, defaults to \code{FALSE}.
 
-\code{rc}: If the plotted sequence should be displayed
-as reverse complement or not.
-\code{TRUE} or {FALSE}, defaults to \code{FALSE}.}
-
-\item{type}{For code{RprimerProfile}-objects.
-Type of plot: "overview", or "nucleotide", defaults to "overview".}
+See examples below.}
 }
 \value{
 A plot.
@@ -56,8 +57,6 @@ Plot an RprimerAssay-object (method)
 }}
 
 \examples{
-## Plot an RprimerProfile object
-
 data("exampleRprimerProfile")
 prof <- exampleRprimerProfile
 
@@ -78,9 +77,6 @@ plotData(roi, type = "nucleotide")
 
 ## Plot the nucleotide distribution of the roi, as reverse complement
 plotData(roi, type = "nucleotide", rc = TRUE)
-
-## Plot an RprimerOligo object
-
 data("exampleRprimerOligo")
 oligos <- exampleRprimerOligo
 
@@ -90,8 +86,6 @@ plotData(oligos)
 ## Select a subset of the oligos, and plot
 selected <- oligos[oligos$start >= 5000, ]
 plotData(selected)
-
-## Plot an RrimerAssay object
 data("exampleRprimerAssay")
 plotData(exampleRprimerAssay)
 }

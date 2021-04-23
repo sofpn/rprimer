@@ -2,7 +2,7 @@
 title: "rprimer"
 author: "Sofia"
 package: rprimer
-output: BiocStyle::html_document
+output: BiocStyle::pdf_document
 bibliography: bibliography.bibtex
 vignette: >
   %\VignetteIndexEntry{Getting started}
@@ -25,7 +25,7 @@ The ideal oligo binds exclusively to a conserved part of the target of interest 
 
 A common approach for amplifying sequence variable regions is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of oligos that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. A preferred design strategy would therefore be to find oligo binding regions with as low degeneracy as possible.
 
-The aim of rprimer is to provide tools for analyzing sequence conservation and designing degenerate primers and probes for sequence variable viruses. A multiple DNA sequence alignment with target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots. 
+The aim of this R package is to provide tools for analyzing sequence conservation and designing degenerate primers and probes for sequence variable viruses. A multiple DNA sequence alignment with target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots. 
 
 In this document, I describe and demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR oligos and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
@@ -314,7 +314,7 @@ plotData(myMixedPrimersMasked)
 
 The next step is to find pairs of forward and reverse primers. Probes will be added to the assays if probes were designed in the previous step. 
 
-The `assays()` function has only two arguments:   
+`assays()` has two arguments:   
 
 * `x`: the oligo dataset from Step 2
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
@@ -365,9 +365,7 @@ plotData(myAssaySelection)
 To illustrate assay design with modified settings, I use the masked dataset from Step 2 (`masked`), where I designed primers to cover position 2000-3000. 
 
 ```{r}
-myMixedAssays  <- assays(myMixedPrimersMasked, 
-                         lengthRange = c(1000, 2000), 
-                         tmDiffPrimers = 2)
+myMixedAssays  <- assays(myMixedPrimersMasked, lengthRange = c(1000, 2000))
 
 plotData(myMixedAssays)
 ```
@@ -413,27 +411,33 @@ paste(myAssayRegion$iupac, collapse = "")
 
 ## Export to file
 
-Before proceeding to wet lab evaluation, the primer and probe candidates must be evaluated for the potential to form primer-dimers and hairpin structures and the potential to cross react with non-targets.
+Before proceeding to wet lab evaluation, it is highly recommended to evaluate the final primer and probe candidates for 1) the potential to form primer-dimers and hairpin structures, and 2), the potential to cross react with non-targets. It is also recommended to analyze folding properties of the target region. 
 
 These tasks are best performed by other software. Below, I show how to export the results to file so that they can be analyzed by other tools.  
 
 **Oligos and assays to fasta format**
 
-`convertToDNAStringSet()` can be used for converting oligos or assays to a `Biostrings::DNAStringSet`-object.  
+`convertToDNAStringSet()` can be used for converting oligos or assays to a `Biostrings::DNAStringSet`-object. 
 
-The `asRC` option regulates whether reverse primers and minus sense probes should be written as reverse complements or not. Defaults to `TRUE`. 
+`convertToDNAStringSet()` has three arguments:   
 
-The `asIUPAC` option regulates whether the oligos should be presented in IUPAC-format or not. Defaults to `TRUE`. If set to `FALSE`, it will instead include all sequence variants of each oligo. 
+* `x`: an oligo or assay dataset (i.e. an output from Step 2 or 3)
+* `asRc`: if oligos should be written as reverse complements or not (for oligos), and if reverse primers and minus sense probes should be written as reverse complements or not (for assays). Defaults to `FALSE`
+* `asIUPAC`: if the oligos should be presented in IUPAC-format or not. Defaults to `TRUE` 
+
+Below, I convert the two first oligos in `myOligos` from Step 1:
 
 ```{r}
-## Convert the first two oligos in myOligos 
 convertToDNAStringSet(myOligos[1:2, ])
-
-## Convert the first assay in myAssays 
-convertToDNAStringSet(myAssays[1, ], asRc = FALSE, asIUPAC = FALSE)
 ```
 
-The sequences can then be exported to fasta format:
+And the first assay in `myAssays` from Step 2:
+
+```{r}
+convertToDNAStringSet(myAssays[1, ], asRc = TRUE, asIUPAC = FALSE)
+```
+
+The sequences can then be exported to fasta format, for example: 
 
 ```r
 toFile <- oligosToDNAStringSet(myOligos)
@@ -463,11 +467,20 @@ filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 ## Import the alignment 
 myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta") 
 
-## Design primers, probes and assays (modify settings if wished) 
+## Design primers, probes and assays (modify settings if needed) 
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
 myOligos <- oligos(myConsensusProfile)
 myAssays <- assays(myOligos)
 
+## Visualize the results 
+plotData(myConsensusProfile)
+plotData(myOligos)
+plotData(myAssays)
+
+## Show tables (in RStudio)
+View(as.data.frame(myConsensusProfile))
+View(as.data.frame(myOligos))
+View(as.data.frame(myAssays))
 ```
 
 # Classes and example data

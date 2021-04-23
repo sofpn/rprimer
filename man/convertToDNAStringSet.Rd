@@ -6,24 +6,24 @@
 \alias{convertToDNAStringSet,RprimerAssay-method}
 \title{Convert to DNA string set (generic)}
 \usage{
-convertToDNAStringSet(x, asRc = TRUE, asIUPAC = TRUE)
+convertToDNAStringSet(x, asRc = FALSE, asIUPAC = TRUE)
 
-\S4method{convertToDNAStringSet}{RprimerOligo}(x, asRc = TRUE, asIUPAC = TRUE)
+\S4method{convertToDNAStringSet}{RprimerOligo}(x, asRc = FALSE, asIUPAC = TRUE)
 
-\S4method{convertToDNAStringSet}{RprimerAssay}(x, asRc = TRUE, asIUPAC = TRUE)
+\S4method{convertToDNAStringSet}{RprimerAssay}(x, asRc = FALSE, asIUPAC = TRUE)
 }
 \arguments{
 \item{x}{An \code{RprimerOligo} or \code{RprimerAssay} object.}
 
 \item{asRc}{For \code{RprimerOligo} objects: if oligos should be
 written as reverse complements.
-For  \code{RprimerAssay} objects: if reverse primers and minus
+For \code{RprimerAssay} objects: if reverse primers and minus
 sense probes should be
-written as reverse complements.
-Defaults to \code{TRUE}.}
+written in reverse complement.
+Defaults to \code{FALSE}.}
 
 \item{asIUPAC}{If sequences should be presented in IUPAC (degenerate) format. Defaults to
-\code{TRUE}. If set to code{FALSE}, all sequence variants
+\code{TRUE}. If set to \code{FALSE}, all sequence variants
 of each oligo will be presented.}
 }
 \value{
@@ -44,8 +44,13 @@ variants of all oligos or assays to a \code{Biostrings::DNAStringSet} object.
 data("exampleRprimerOligo")
 convertToDNAStringSet(exampleRprimerOligo[1:2, ])
 
+convertToDNAStringSet(exampleRprimerOligo[1:2, ], asIUPAC = FALSE)
+
+convertToDNAStringSet(exampleRprimerOligo[1:2, ], asRc = TRUE)
 data("exampleRprimerAssay")
 convertToDNAStringSet(exampleRprimerAssay[1:2, ], asRc = FALSE)
+
+convertToDNAStringSet(exampleRprimerAssay[1:2, ], asIUPAC = FALSE)
 }
 \references{
 H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
