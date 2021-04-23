@@ -30,8 +30,8 @@ of each oligo will be presented.}
 A \code{Biostrings::DNAStringSet} object
 }
 \description{
-\code{convertToDNAStringSet()} can be used for converting all sequence
-variants of all oligos or assays to a \code{Biostrings::DNAStringSet} object.
+\code{convertToDNAStringSet()} converts oligos or assays
+to a \code{Biostrings::DNAStringSet} object.
 }
 \section{Methods (by class)}{
 \itemize{

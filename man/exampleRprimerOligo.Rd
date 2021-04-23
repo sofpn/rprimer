@@ -3,7 +3,7 @@
 \docType{data}
 \name{exampleRprimerOligo}
 \alias{exampleRprimerOligo}
-\title{Oligonucleotides for hepatitis E virus}
+\title{Primers and probes targeted to hepatitis E virus}
 \format{
 An \code{RprimerOligo} object.
 }

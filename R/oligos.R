@@ -6,7 +6,8 @@
 #' @param x An \code{RprimerProfile} object.
 #'
 #' @param maxGapFrequency
-#' Maximum allowed gap frequency (for both primers and probes).
+#' Maximum allowed gap frequency at the primer and probe binding sites in
+#' the target alignment.
 #' A number [0, 1], defaults to \code{0.01}.
 #'
 #' @param lengthPrimer
@@ -31,9 +32,10 @@
 #'
 #' @param minThreeEndCoveragePrimer
 #' Minimum allowed coverage at the 3' end (the last five bases).
-#' A number [0, 1]. A value of 1 means that all bases within the 3' end
+#' A number [0, 1]. Defaults to \code{0.98}.
+#' A value of 1 means that all bases at the 3' end
 #' must cover all sequence
-#' variants in the target alignment. Defaults to \code{0.98}.
+#' variants in the target alignment.
 #'
 #' @param gcRangePrimer
 #' GC-content range for primers.
@@ -80,8 +82,8 @@
 #' [20, 2000], defaults to \code{250}.
 #'
 #' @param concNa
-#' The sodium ion concentration, in M, in the PCR reaction. For calculation of
-#' tm.
+#' The sodium ion concentration in the PCR reaction (in M). For calculation of
+#' tm and delta H.
 #' A numeric vector [0.01, 1], defaults to \code{0.05} (50 mM).
 #'
 #' @section Output:
@@ -197,18 +199,14 @@
 #' where \eqn{N} is the total number of phosphates in the duplex, and [Na+] is the total
 #' concentration of monovalent cations.
 #'
-#' Table values for nearest neighbors can be
-#' found by calling \code{rprimer:::lookup$nn}.
+#' Nearest neighbor table values for \Delta S^o and \Delta H^o are from SantaLucia and Hicks, 2004, and can be
+#' retrieved calling \code{rprimer:::lookup$nn}.
 #'
 #' @section Score:
 #'
 #' All valid oligos are scored based on their identity, coverage,
 #' degeneracy,
-#' average GC content and tm range. These scores are summarized,
-#' and the weight of each individual score is 1. The lowest, and best,
-#' possible score is 0, and the worst possible score is 12.
-#'
-#' The scoring scheme is presented below.
+#' average GC content and tm range. The scoring system is presented below.
 #'
 #' \strong{Identity and coverage}
 #'
@@ -232,8 +230,8 @@
 #'
 #' \strong{Average GC-content}
 #'
-#' The score for the average GC-content is based on how much
-#' it deviates (in absolute value) from 0.5.
+#' This score is based on how much
+#' the average GC-content deviates (in absolute value) from 0.5.
 #'
 #' \tabular{lr}{
 #' Value range \tab Score \cr
@@ -258,6 +256,10 @@
 #' \tab 2 \cr
 #' \eqn{\geq 3} \tab 3
 #' }
+#'
+#' These scores are summarized to a total score
+#' (the weight of each individual score is 1). Thus, the lowest and best
+#' possible score for an oligo is 0, and the worst possible score is 12.
 #'
 #' @return
 #' An \code{RprimerOligo} object. An error message will return

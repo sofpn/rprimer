@@ -66,6 +66,16 @@ test_that(".asIUPAC works", {
     expect_true(is.na(.asIUPAC("X")))
 })
 
+# .dnaBasesOnly ================================================================
+
+test_that(".dnaBasesOnly works", {
+    dnaBases <- .dnaBasesOnly(testmat)[, 1:100]
+    expect_equal(rownames(dnaBases), c("A", "C", "G", "T"))
+    expect_true(
+        all(colSums(dnaBases) > 0.9999999 & colSums(dnaBases < 1.00000001))
+    )
+})
+
 # .iupacConsensus ==============================================================
 
 test_that(".iupacConsensus returns a warning when it should", {

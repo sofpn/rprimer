@@ -3,13 +3,14 @@
 \docType{data}
 \name{exampleRprimerAlignment}
 \alias{exampleRprimerAlignment}
-\title{An alignment of hepatitis E virus sequences}
+\title{An multiple DNA alignment of hepatitis E virus sequences}
 \format{
 A \code{Biostrings::DNAMultipleAlignment} object.
 }
 \source{
 The sequences were collected from NCBI GenBank and the alignment
-was imported to the package using \code{Biostrings::readDNAStringSet()}.
+was imported to the package using \code{Biostrings::readDNAStringSet()}
+(Pages et al., 2020).
 }
 \usage{
 data("exampleRprimerAlignment")

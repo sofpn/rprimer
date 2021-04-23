@@ -29,7 +29,8 @@ oligos(
 \arguments{
 \item{x}{An \code{RprimerProfile} object.}
 
-\item{maxGapFrequency}{Maximum allowed gap frequency (for both primers and probes).
+\item{maxGapFrequency}{Maximum allowed gap frequency at the primer and probe binding sites in
+the target alignment.
 A number [0, 1], defaults to \code{0.01}.}
 
 \item{lengthPrimer}{Primer length. A numeric vector [15, 30],
@@ -49,9 +50,10 @@ of the same nucleotide at the terminal 3' end should be avoided.
 \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.}
 
 \item{minThreeEndCoveragePrimer}{Minimum allowed coverage at the 3' end (the last five bases).
-A number [0, 1]. A value of 1 means that all bases within the 3' end
+A number [0, 1]. Defaults to \code{0.98}.
+A value of 1 means that all bases at the 3' end
 must cover all sequence
-variants in the target alignment. Defaults to \code{0.98}.}
+variants in the target alignment.}
 
 \item{gcRangePrimer}{GC-content range for primers.
 A numeric vector [0, 1], defaults to \code{c(0.40, 0.65)}.}
@@ -86,8 +88,8 @@ A numeric vector [30, 90], defaults to \code{c(55, 70)}.}
 \item{concProbe}{Primer concentration in nM, for tm calculation. A numeric vector
 [20, 2000], defaults to \code{250}.}
 
-\item{concNa}{The sodium ion concentration, in M, in the PCR reaction. For calculation of
-tm.
+\item{concNa}{The sodium ion concentration in the PCR reaction (in M). For calculation of
+tm and delta H.
 A numeric vector [0.01, 1], defaults to \code{0.05} (50 mM).}
 }
 \value{
@@ -218,8 +220,8 @@ described in SantaLucia and Hicks, 2004:
 where \eqn{N} is the total number of phosphates in the duplex, and [Na+] is the total
 concentration of monovalent cations.
 
-Table values for nearest neighbors can be
-found by calling \code{rprimer:::lookup$nn}.
+Nearest neighbor table values for \Delta S^o and \Delta H^o are from SantaLucia and Hicks, 2004, and can be
+retrieved calling \code{rprimer:::lookup$nn}.
 }
 
 \section{Score}{
@@ -227,11 +229,7 @@ found by calling \code{rprimer:::lookup$nn}.
 
 All valid oligos are scored based on their identity, coverage,
 degeneracy,
-average GC content and tm range. These scores are summarized,
-and the weight of each individual score is 1. The lowest, and best,
-possible score is 0, and the worst possible score is 12.
-
-The scoring scheme is presented below.
+average GC content and tm range. The scoring system is presented below.
 
 \strong{Identity and coverage}
 
@@ -255,8 +253,8 @@ More than 4 \tab 3
 
 \strong{Average GC-content}
 
-The score for the average GC-content is based on how much
-it deviates (in absolute value) from 0.5.
+This score is based on how much
+the average GC-content deviates (in absolute value) from 0.5.
 
 \tabular{lr}{
 Value range \tab Score \cr
@@ -281,6 +279,10 @@ Value \tab Score \cr
 \tab 2 \cr
 \eqn{\geq 3} \tab 3
 }
+
+These scores are summarized to a total score
+(the weight of each individual score is 1). Thus, the lowest and best
+possible score for an oligo is 0, and the worst possible score is 12.
 }
 
 \examples{

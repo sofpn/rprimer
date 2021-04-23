@@ -10,7 +10,7 @@
 RprimerOligo(...)
 }
 \arguments{
-\item{...}{A data frame or list to be converted into an \code{RprimerProfile} object.}
+\item{...}{A data frame or list to be converted into an \code{RprimerOligo} object.}
 }
 \value{
 An \code{RprimerOligo} object if validation succeeds, an error
@@ -22,8 +22,9 @@ without any additional slots. It has the same accessors and
 coercion, subsetting, and combining methods as the parent class, but has
 some additional checks for validity.
 
-Constructs an \code{RprimerOligo} object in a similar fashion as the
-\code{S4Vectors::DataFrame} constructor.
+The constructor, \code{RprimerOligo()},
+constructs an \code{RprimerOligo} object in a similar fashion as the
+\code{S4Vectors::DataFrame()} constructor.
 }
 \section{Functions}{
 \itemize{

@@ -10,8 +10,8 @@ Functions and workflow for visualizing sequence conservation
     and designing degenerate primers, probes and (RT)-(q/d)PCR assays from a 
     multiple DNA sequence alignment. The workflow uses commonly adopted PCR
     design guidelines and is especially developed for sequence variable viruses. 
-    The results are presented in data-frame format and as visual dashboards.
-    For more information, please se the package vignette.
+    The results can be presented in data-frame format and visualized as 
+    dashboard-like plots. For more information, please see the package vignette.
 }
 \details{
 The package contains five functions: \code{consensusProfile()},

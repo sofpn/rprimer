@@ -4,10 +4,40 @@
 \name{RprimerProfile-class}
 \alias{RprimerProfile-class}
 \alias{.RprimerProfile}
+\alias{RprimerProfile}
 \title{An S4 class for representation of a consensus profile}
+\usage{
+RprimerProfile(...)
+}
+\arguments{
+\item{...}{A data frame or list to be converted into an \code{RprimerProfile} object.}
+}
+\value{
+An \code{RprimerProfile} object if validation succeeds, an error
+message otherwise.
+}
 \description{
 \code{RprimerProfile} extends the \code{S4Vectors::DataFrame} class,
 without any additional slots. It has the same accessors and
 coercion, subsetting, and combining methods as the parent class, but has
 some additional checks for validity.
+
+The constructor, \code{RprimerProfile()},
+constructs an \code{RprimerProfile} object in a similar fashion as the
+\code{S4Vectors::DataFrame()} constructor.
+}
+\section{Functions}{
+\itemize{
+\item \code{RprimerProfile}: 
+}}
+
+\examples{
+data("exampleRprimerProfile")
+x <- as.data.frame(exampleRprimerProfile)
+RprimerProfile(x)
+}
+\references{
+Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
+Foundation of vector-like and list-like containers in
+Bioconductor. R package version 0.28.0.
 }

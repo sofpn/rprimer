@@ -3,12 +3,9 @@
 \docType{data}
 \name{exampleRprimerProfile}
 \alias{exampleRprimerProfile}
-\title{Consensus profile of an alignment of hepatitis E virus sequences}
+\title{A consensus profile from an alignment of hepatitis E virus sequences}
 \format{
 An \code{RprimerProfile} object.
-}
-\source{
-The sequences were collected from NCBI GenBank.
 }
 \usage{
 data("exampleRprimerProfile")
@@ -17,46 +14,19 @@ data("exampleRprimerProfile")
 The object contains the following information:
 
 \describe{
-  \item{position}{Position in the alignment. Note that masked columns
-  from the original alignment are removed, and
-  hence not taken into account when position is determined.}
+  \item{position}{Position in the alignment.}
   \item{a}{Proportion of A.}
   \item{c}{Proportion of C.}
   \item{g}{Proportion of G.}
   \item{t}{Proportion of T.}
   \item{other}{Proportion of bases other than A, C, G, T.}
-  \item{gaps}{Proportion of gaps (recognized as "-" in the alignment).}
-  \item{majority}{Majority consensus sequence.
-  The most frequently occurring nucleotide.
-  If two or more bases occur with the same frequency,
-  the consensus nucleotide will be randomly selected among these bases.}
-  \item{identity}{Proportion of the most common nucleotide.
-  Gaps (-), as well as bases other than A, C, G and T are excluded from the
-  calculation.}
-  \item{iupac}{
-  The consensus sequence expressed in IUPAC format.
-  Note that the IUPAC consensus sequence only
-  takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
-  present in the alignment will be skipped. If a position only contains
-  degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
-  position.}
-  \item{entropy}{Shannon entropy.
-  Shannon entropy is a measurement of
-  variability.
-  First, for each nucleotide that occurs at a specific position,
-  \code{p*log2(p)}, is calculated, where \code{p} is the proportion of
-  that nucleotide. Then, these values are summarized,
-  and multiplied by \code{-1}.
-  A value of \code{0} indicate no variability and a high value
-  indicate high variability.
-  Gaps (-), as well as bases other than
-  A, C, G and T are excluded from the calculation.}
-  \item{coverage}{The proportion of bases which are included the
-  consensus/ambiguous (IUPAC) base.
-  Will be one if there are no "remaining" bases (and if
-  \code{ambiguityThreshold = 0}).
-  Gaps (-), as well as bases other than A, C, G and T are excluded from the
-  calculation.}
+  \item{gaps}{Proportion of gaps.}
+  \item{majority}{Majority consensus sequence.}
+  \item{identity}{Proportion of the most frequently occurring nucleotide.}
+  \item{iupac}{IUPAC consensus character.}
+  \item{entropy}{Shannon entropy.}
+  \item{coverage}{Proportion of sequences covered by the
+  IUPAC consensus character.}
 }
 }
 \keyword{datasets}

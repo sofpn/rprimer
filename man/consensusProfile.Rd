@@ -15,67 +15,53 @@ higher than the \code{ambiguityThreshold} will be included in
 the IUPAC consensus character.}
 }
 \value{
-An \code{RprimerProfile} object, which contains the following information:
+An \code{RprimerProfile} object.
+}
+\description{
+\code{consensusProfile()} takes a DNA multiple alignment as input and
+returns all the data needed for subsequent primer and probe design.
+The function is a wrapper to
+\code{Biostrings::consensusMatrix()} (Pages et al., 2020).
+}
+\section{Output}{
+
+
+The output contains the following information:
 
 \describe{
-  \item{position}{Position in the alignment.}
+  \item{position}{Position in the alignment.
+  Note that masked columns in the original alignment are removed, and
+  hence not taken into account when the position is determined.}
   \item{a}{Proportion of A.}
   \item{c}{Proportion of C.}
   \item{g}{Proportion of G.}
   \item{t}{Proportion of T.}
   \item{other}{Proportion of bases other than A, C, G, T.}
   \item{gaps}{Proportion of gaps (recognized as "-" in the alignment).}
-  \item{majority}{Majority consensus sequence.}
+  \item{majority}{Majority consensus sequence.
+  Denotes the most frequently occurring nucleotide.
+  If two or more bases occur with the same frequency,
+  the consensus nucleotide will be randomly selected among these.}
   \item{identity}{Proportion of sequences, among all sequences with a
   DNA base (i.e., A, C, G or T), that has the majority consensus base.}
-  \item{iupac}{The consensus sequence expressed in IUPAC format.}
-  \item{entropy}{Shannon entropy.}
+  \item{iupac}{The consensus sequence expressed in IUPAC format.
+  The IUPAC consensus sequence only
+  takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases that are
+  present in the alignment will be skipped. If a position only contains
+  degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
+  position.}
+  \item{entropy}{Shannon entropy.
+  Shannon entropy is a measurement of
+  variability (Shannon, 1951). It is calculated among occurring DNA bases
+  (gaps and ambiguous bases are not included) at each
+  position in the alignment. A value of \code{0} indicate complete
+  conservation and a high value indicate high variability.}
   \item{coverage}{Proportion of sequences in the target alignment,
   among all sequences with a DNA base, that are covered the IUPAC consensus
   character.
   The value will be 1 if there are no "remaining" DNA bases (and/or if
   \code{ambiguityThreshold = 0}).}
 }
-
-Below follows more detailed information about some of the variables.
-}
-\description{
-\code{consensusProfile()} takes a DNA multiple alignment as input and
-returns all the data needed for subsequent primer and probe design.
-}
-\section{Position}{
-
-
-Note that masked columns from the original alignment are removed, and
-hence not taken into account when the position is determined.
-}
-
-\section{Majority consensus sequence}{
-
-
-Denotes the most frequently occurring nucleotide.
-If two or more bases occur with the same frequency,
-the consensus nucleotide will be randomly selected among these.
-}
-
-\section{IUPAC consensus sequence}{
-
-
-Note that the IUPAC consensus sequence only
-takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases that are
-present in the alignment will be skipped. If a position only contains
-degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
-position.
-}
-
-\section{Shannon entropy}{
-
-
-Shannon entropy is a measurement of
-variability (Shannon, 1951). It is calculated among occuring DNA bases
-(gaps and ambiguous bases are not included) at each
-position in the alignment. A value of \code{0} indicate complete
-conservation and a high value indicate high variability.
 }
 
 \examples{
@@ -83,9 +69,6 @@ data("exampleRprimerAlignment")
 consensusProfile(exampleRprimerAlignment)
 }
 \references{
-\code{consensusProfile()} is a wrapper to
-\code{Biostrings::consensusMatrix()}:
-
 Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
 Efficient manipulation of biological strings. R package version
 2.57.2.

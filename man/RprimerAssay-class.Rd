@@ -10,7 +10,7 @@
 RprimerAssay(...)
 }
 \arguments{
-\item{...}{A data frame or list to be converted into an \code{RprimerProfile}
+\item{...}{A data frame or list to be converted into an \code{RprimerAssay}
 object.}
 }
 \value{
@@ -23,8 +23,9 @@ without any additional slots. It has the same accessors and
 coercion, subsetting, and combining methods as the parent class, but has
 some additional checks for validity.
 
-Constructs an \code{RprimerAssay} object in a similar fashion as the
-\code{S4Vectors::DataFrame} constructor.
+The constructor, \code{RprimerAssay()},
+constructs an \code{RprimerAssay} object in a similar fashion as the
+\code{S4Vectors::DataFrame()} constructor.
 }
 \section{Functions}{
 \itemize{

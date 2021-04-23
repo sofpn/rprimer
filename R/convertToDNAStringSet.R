@@ -1,7 +1,7 @@
 #' Convert to DNA string set (generic)
 #'
-#' \code{convertToDNAStringSet()} can be used for converting all sequence
-#' variants of all oligos or assays to a \code{Biostrings::DNAStringSet} object.
+#' \code{convertToDNAStringSet()} converts oligos or assays
+#' to a \code{Biostrings::DNAStringSet} object.
 #'
 #' @param x
 #' An \code{RprimerOligo} or \code{RprimerAssay} object.

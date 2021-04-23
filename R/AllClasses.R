@@ -19,8 +19,9 @@
 
 #' RprimerProfile
 #'
-#' Constructs an \code{RprimerProfile} object in a similar fashion as the
-#' \code{S4Vectors::DataFrame} constructor.
+#' The constructor, \code{RprimerProfile()},
+#' constructs an \code{RprimerProfile} object in a similar fashion as the
+#' \code{S4Vectors::DataFrame()} constructor.
 #'
 #' @param ...
 #' A data frame or list to be converted into an \code{RprimerProfile} object.
@@ -28,6 +29,8 @@
 #' @return
 #' An \code{RprimerProfile} object if validation succeeds, an error
 #' message otherwise.
+#'
+#' @describeIn RprimerProfile-class
 #'
 #' @export
 #'
@@ -88,13 +91,14 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 
 #' RprimerOligo
 #'
-#' Constructs an \code{RprimerOligo} object in a similar fashion as the
-#' \code{S4Vectors::DataFrame} constructor.
+#' The constructor, \code{RprimerOligo()},
+#' constructs an \code{RprimerOligo} object in a similar fashion as the
+#' \code{S4Vectors::DataFrame()} constructor.
 #'
 #' @describeIn RprimerOligo-class
 #'
 #' @param ...
-#' A data frame or list to be converted into an \code{RprimerProfile} object.
+#' A data frame or list to be converted into an \code{RprimerOligo} object.
 #'
 #' @return
 #' An \code{RprimerOligo} object if validation succeeds, an error
@@ -167,13 +171,14 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 
 #' RprimerAssay
 #'
-#' Constructs an \code{RprimerAssay} object in a similar fashion as the
-#' \code{S4Vectors::DataFrame} constructor.
+#' The constructor, \code{RprimerAssay()},
+#' constructs an \code{RprimerAssay} object in a similar fashion as the
+#' \code{S4Vectors::DataFrame()} constructor.
 #'
 #' @describeIn RprimerAssay-class
 #'
 #' @param ...
-#' A data frame or list to be converted into an \code{RprimerProfile}
+#' A data frame or list to be converted into an \code{RprimerAssay}
 #' object.
 #'
 #' @return
