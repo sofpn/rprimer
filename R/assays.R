@@ -96,8 +96,6 @@
 #'
 #' @export
 #'
-#' @seealso oligos
-#'
 #' @examples
 #' data("exampleRprimerOligo")
 #'

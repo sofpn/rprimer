@@ -6,8 +6,9 @@
 #' @param ...
 #' Optional arguments for \code{RprimerProfile} objects. These are:
 #'
-#' \code{type}: Type of plot: "overview", or "nucleotide",
-#' defaults to "overview".
+#' \code{type}: Type of plot: \code{"overview"}, or
+#' \code{"nucleotide"},
+#' defaults to \code{"overview"}.
 #'
 #' \code{highlight}:
 #' If a specific genomic region should be highlighted

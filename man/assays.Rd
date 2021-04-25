@@ -109,6 +109,3 @@ data("exampleRprimerOligo")
 ## Design assays using default settings
 assays(exampleRprimerOligo)
 }
-\seealso{
-oligos
-}

@@ -9,10 +9,11 @@
 #' A \code{Biostrings::DNAMultipleAlignment} object.
 #'
 #' @param ambiguityThreshold
-#' A number [0, 0.2], defaults to \code{0}.
-#' All DNA bases that occurs with a frequency
-#' higher than the \code{ambiguityThreshold} will be included in
-#' the IUPAC consensus character.
+#' "Detection level" for ambiguous bases.
+#' All DNA bases that occur with a relative frequency higher than the
+#' specified value will be included when the IUPAC consensus character
+#' is determined.
+#' Can range from `0 to 0.2, defaults to \code{0}.
 #'
 #' @return
 #' An \code{RprimerProfile} object.
@@ -39,9 +40,9 @@
 #'   DNA base (i.e., A, C, G or T), that has the majority consensus base.}
 #'   \item{iupac}{The consensus sequence expressed in IUPAC format.
 #'   The IUPAC consensus sequence only
-#'   takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases that are
-#'   present in the alignment will be skipped. If a position only contains
-#'   degenerate/invalid bases, the IUPAC consensus will be \code{NA} at that
+#'   takes 'A', 'C', 'G', 'T' and '-' as input. Degenerate bases
+#'   will be skipped. If a position only contains
+#'   degenerate bases, the IUPAC consensus will be \code{NA} at that
 #'   position.}
 #'   \item{entropy}{Shannon entropy.
 #'   Shannon entropy is a measurement of

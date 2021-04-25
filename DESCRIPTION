@@ -7,7 +7,7 @@ Description:
     and designing degenerate primers, probes and (RT)-(q/d)PCR assays from a 
     multiple DNA sequence alignment. The workflow uses commonly adopted PCR
     design guidelines and is especially developed for sequence variable viruses. 
-    All results can be presented in data-frame format and visualized as 
+    The results can be presented in data-frame format and visualized as 
     dashboard-like plots. For more information, please see the package vignette. 
 Authors@R: 
     person(given = "Sofia",

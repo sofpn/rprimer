@@ -137,7 +137,7 @@
 #'
 #' \itemize{
 #' \item{The \strong{ambiguous strategy} (default) generates primers from the
-#' IUPAC consensus sequence, which means that degenerate bases can
+#' IUPAC consensus sequence, which means that ambiguous bases can
 #' occur at any position in the primer.
 #' Probes are always designed using the ambiguous
 #' strategy}
@@ -192,14 +192,14 @@
 #' \eqn{K} is the gas constant (1.9872 cal/mol \emph{K}).
 #'
 #' The following salt correction method is used for \eqn{\Delta S^o}, as
-#' described in SantaLucia and Hicks, 2004:
+#' described in SantaLucia and Hicks (2004):
 #'
 #' \deqn{\Delta S^o [\mathrm{Na^+}] = \Delta S^o [\mathrm{1 M NaCl}] + 0.368 \cdot N / 2 \cdot \log [\mathrm{Na^+}]}
 #'
 #' where \eqn{N} is the total number of phosphates in the duplex, and [Na+] is the total
 #' concentration of monovalent cations.
 #'
-#' Nearest neighbor table values for \Delta S^o and \Delta H^o are from SantaLucia and Hicks, 2004, and can be
+#' Nearest neighbor table values for \eqn{\Delta S^o} and \eqn{\Delta H^o} are from SantaLucia and Hicks, 2004, and can be
 #' retrieved calling \code{rprimer:::lookup$nn}.
 #'
 #' @section Score:
@@ -231,7 +231,7 @@
 #' \strong{Average GC-content}
 #'
 #' This score is based on how much
-#' the average GC-content deviates (in absolute value) from 0.5.
+#' the average GC-content deviates from 0.5 (in absolute value).
 #'
 #' \tabular{lr}{
 #' Value range \tab Score \cr
@@ -257,8 +257,8 @@
 #' \eqn{\geq 3} \tab 3
 #' }
 #'
-#' These scores are summarized to a total score
-#' (the weight of each individual score is 1). Thus, the lowest and best
+#' These scores are summarized to a total score, and
+#' the weight of each individual score is 1. Thus, the lowest and best
 #' possible score for an oligo is 0, and the worst possible score is 12.
 #'
 #' @return
