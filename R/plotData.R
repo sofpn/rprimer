@@ -4,20 +4,24 @@
 #' An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.
 #'
 #' @param ...
-#' Optional arguments for \code{RprimerProfile} objects. These are:
+#' Optional arguments for \code{RprimerProfile} objects.
 #'
-#' \code{type}: Type of plot: \code{"overview"}, or
-#' \code{"nucleotide"},
-#' defaults to \code{"overview"}.
+#' @param type
+#' For \code{Rprimeroligo} objects:
+#' Type of plot: \code{"overview"}, or
+#' \code{"nucleotide"}, defaults to \code{"overview"}.
 #'
-#' \code{highlight}:
-#' If a specific genomic region should be highlighted
-#' (for \code{type = "overview"} plots).
-#' A numeric vector, e.g. \code{c(100, 1000)}, defaults to \code{NULL}.
+#' @param highlight
+#' For \code{Rprimeroligo} objects, and
+#' \code{type = "overview"}:
+#' if a specific genomic region should be highlighted.
+#' A numeric vector, e.g. \code{c(100, 1000)}, defaults to \code{NULL}
+#' (i.e. no highlight).
 #'
-#' \code{rc}:
+#' @param rc
+#' For \code{Rprimeroligo} objects, and \code{type = "nucleotide"}:
 #' If the plotted sequence should be displayed
-#' as reverse complement or not (for \code{type = "nucleotide"} plots).
+#' as reverse complement or not.
 #' \code{TRUE} or {FALSE}, defaults to \code{FALSE}.
 #'
 #' See examples below.
@@ -60,15 +64,26 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 #' plotData(roi, type = "nucleotide", rc = TRUE)
 setMethod("plotData", "RprimerProfile", function(x,
                                                  type = "overview",
-                                                 ...) {
+                                                 highlight = NULL,
+                                                 rc = FALSE
+                                                 ) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
     }
     if (type == "overview") {
-        .plotOverview(x, ...)
+        if (is.null(highlight)) {
+            highlight <- -Inf
+        }
+        if (!is.numeric(highlight)) {
+            stop("'highlight' must be numeric, e.g. c(1, 10).", call. = FALSE)
+        }
+        .plotOverview(x, highlight)
     }
     else if (type == "nucleotide") {
-        .plotNucleotides(x, ...)
+        if (!(is.logical(rc))) {
+            stop("'rc' must be set to TRUE or FALSE.", call. = FALSE)
+        }
+        .plotNucleotides(x, rc)
     }
     else {
         stop("'type' must be either 'overview' or 'nucleotide'", call. = FALSE)
@@ -78,6 +93,8 @@ setMethod("plotData", "RprimerProfile", function(x,
 #' Plot an RprimerOligo-object (method)
 #'
 #' @describeIn plotData
+#'
+#' @aliases plotData
 #'
 #' @importFrom patchwork wrap_plots
 #'
@@ -604,12 +621,6 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .plotOverview <- function(x, highlight = NULL) {
-    if (is.null(highlight)) {
-        highlight <- -Inf
-    }
-    if (!is.numeric(highlight)) {
-        stop("'highlight' must be numeric, e.g. c(1, 10).", call. = FALSE)
-    }
     x <- as.data.frame(x)
     patchwork::wrap_plots(
         list(
@@ -623,9 +634,6 @@ setMethod("plotData", "RprimerAssay", function(x) {
 }
 
 .plotNucleotides <- function(x, rc = FALSE) {
-    if (!(is.logical(rc))) {
-        stop("'rc' must be set to TRUE or FALSE.", call. = FALSE)
-    }
     position <- x$position
     x <- as.data.frame(x)
     select <- c("a", "c", "g", "t", "other")

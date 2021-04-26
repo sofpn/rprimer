@@ -19,11 +19,11 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Reverse transcription (RT) PCR based methods have become the gold standard for detection and quantification of viral nucleic acids in a wide variety of fields, including clinical diagnosis, food safety control and waste-water based epidemiology. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false negative results.
+Reverse transcription (RT) PCR based methods have become the gold standard for detection and quantification of viral nucleic acids in a wide variety of fields, including clinical diagnosis and food safety control. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false negative results.
 
 The ideal oligo binds exclusively to a conserved part of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. However, it is often both difficult and time consuming to identify target regions and oligo combinations that meets all these criteria. Moreover, many viruses, especially RNA viruses who lack replication proofreading mechanism, evolve quickly and thereby pose large sequence diversity across large parts of their genomes. This makes sequence conservation analysis a key step of the oligo design process, since primers or probes that captures only a part of the target variation may cause severe detection and quantification bias.
 
-A common approach for amplifying sequence variable regions is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of oligos that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. Another potential pitfall with high degeneracy is an increased risk of off-target binding. A preferred design strategy would therefore be to find conserved oligo binding regions with as low degeneracy as possible.
+A common approach for amplifying sequence variable regions is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of oligos that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. Another potential pitfall with high degeneracy is an increased risk of non specific amplification due to off-target binding. A preferred design strategy would therefore be to find conserved oligo binding regions with as low degeneracy as possible.
 
 The aim of rprimer is to provide tools for analyzing sequence conservation and designing degenerate primers and probes for sequence variable viruses. A multiple DNA sequence alignment with intended target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots.
 
@@ -99,7 +99,7 @@ Once the alignment is imported, we can generate a consensus profile. At each pos
 * `x`: a `Biostrings::MultipleDNAAlignment` object (see above)
 * `ambiguityThreshold`: "detection level" for an ambiguous base. All DNA bases that occur with a relative frequency higher than the specified value will be included when the IUPAC consensus character is determined. Defaults to `0`, and can range from `0` to `0.2`. 
 
-I now make a consensus profile from `myAlignment`. I set the ambiguity threshold to 5 %: 
+Below, I  make a consensus profile from `myAlignment` with an ambiguity threshold of 5 %: 
 
 ```{r}
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
@@ -213,7 +213,7 @@ The primer and probe candidates can be visualized using `plotData()`:
 plotData(myOligos)
 ```
 
-All valid oligos are scored using a simple system, which is based on average identity, coverage, degeneracy, GC-content and tm range. The value can range from 0 to 12, where 0 is best. Detailed information about the scoring system can be found at the man page (`?oligos`) of the pdf-manual.
+All valid oligos are scored using a simple system based on average identity, coverage, degeneracy, GC-content and tm range. The value can range from 0 to 12, where 0 is best. Detailed information about the scoring system can be found at the man page (`?oligos`) of the pdf-manual.
 
 The best scoring oligos are shown below:
 
@@ -263,7 +263,7 @@ myOligosModified <- oligos(myConsensusProfile,
                            maxDegeneracyProbe = 1)
 ```
 
-Now, I get more primer candidates (due to relaxed constraints) and less probe candidates (due to tighter constraints):
+There are now more primer candidates (due to relaxed constraints) and less probe candidates (due to tighter constraints):
 
 ```{r, fig.align="center", fig.width=12, fig.height=8}
 plotData(myOligosModified)
@@ -326,7 +326,7 @@ The next step is to find pairs of forward and reverse primers. Probes will be ad
 
 An error message will return if no assays are found.
 
-Below, I show how to design assays using default settings using the dataset `myOligos` from Step 1. 
+Below, I show how to design assays using default settings using the dataset `myOligos` from Step 1: 
 
 ```{r}
 myAssays <- assays(myOligos)  
@@ -367,7 +367,7 @@ plotData(myAssaySelection)
 
 **Design with modified settings**
 
-To illustrate assay design with modified settings, I use the masked dataset from Step 2 (`masked`), where I designed primers to cover position 2000-3000. 
+To illustrate assay design with modified settings, I use the masked dataset from Step 2 (`masked`), where I designed primers to cover position 2000-3000: 
 
 ```{r}
 myMixedAssays  <- assays(myMixedPrimersMasked, lengthRange = c(1000, 2000))
@@ -377,7 +377,7 @@ plotData(myMixedAssays)
 
 ## Further handling of the data 
 
-The oligo and assay region(s) can be inspected in more detail by using the consensus profile from Step 1. As an example, I select to take a closer look at the first assay in `myAssaySelection` from Step 3. 
+Oligo and assay binding region(s) can be inspected in more detail by using the consensus profile from Step 1. As an example, I select to take a closer look at the first assay in `myAssaySelection` from Step 3. 
 
 The first step is to retrieve the start and end position of the assay, as follows:
 
@@ -392,7 +392,7 @@ It is now possible to indicate the amplicon region, using the `highlight` argume
 plotData(myConsensusProfile, highlight = c(from, to))
 ```
 
-To get a more detailed view, I can make a subset of the consensus profile, to only contain the amplicon region: 
+To get a more detailed view, we can make a subset of the consensus profile to only contain the amplicon region: 
 
 ```{r}
 myAssayRegion <- myConsensusProfile[

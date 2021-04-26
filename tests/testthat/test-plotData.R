@@ -37,7 +37,9 @@ test_that("plotData returns an error when it should", {
     expect_error(plotData(unclass(exampleRprimerProfile)))
     expect_error(plotData(exampleRprimerProfile, shadeFrom = FALSE))
     expect_error(plotData(exampleRprimerProfile, shadeTo = FALSE))
-    expect_error(plotData(exampleRprimerProfile, rc = "FALSE"))
+    expect_error(plotData(
+        exampleRprimerProfile, type = "nucleotide", rc = "FALSE")
+    )
     expect_error(plotData(exampleRprimerProfile, type = ""))
     expect_error(plotData(unclass(exampleRprimerOligo)))
     expect_error(plotData(unclass(exampleRprimerAssay)))

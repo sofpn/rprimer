@@ -64,30 +64,26 @@
 #'   \item{iupacSequence}{Oligo sequence in IUPAC format
 #'   (i.e. with ambiguous bases).}
 #'   \item{iupaSequenceRc}{The reverse complement of the iupacSequence.}
-#'   \item{identity}{For ambiguous oligos: Average identity of the oligo.
-#'     For mixed oligos: Average identity of the 5' (consensus) part of the
-#'     oligo. The value can range from 0 to 1.}
-#'   \item{coverage}{For ambiguous oligos: Average coverage of the oligo.
-#'     For mixed oligos: Average coverage of the 3' (degenerate) part of the
-#'     oligo. The value can range from 0 to 1.}
+#'   \item{identity}{Average identity of the oligo.}
+#'   \item{coverage}{Average coverage of the oligo.}
 #'   \item{degeneracy}{Number of sequence variants of the oligo.}
-#'   \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.}
+#'   \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.
+#'   }
 #'   \item{gcContentRange}{Range in GC-content of all sequence variants of
 #'     the oligo.}
 #'   \item{tmMean}{Mean tm of all sequence variants of the oligo.}
 #'   \item{tmRange}{Range in tm of all sequence variants of the oligo.}
-#'   of all sequence variants of the oligo.}
-#'   of all sequence variants of the oligo.}
 #'   \item{sequence}{All sequence variants of the oligo.}
 #'   \item{sequenceRc}{Reverse complements of all sequence variants.}
 #'   \item{gcContent}{GC-content of all sequence variants.}
-#'   \item{tm}{Tm of all sequence variants.}
+#'   \item{tm}{Tm of all sequence variants (in Celcius degrees).}
 #'   \item{dH}{delta H of all sequence variants (in cal/mol).}
-#'   \item{dS}{delta S (change in entropy) of all sequence
+#'   \item{dS}{delta S of all sequence
 #'   variants (in cal/K/mol).}
 #'   \item{method}{Design method used to generate the oligo: "ambiguous",
 #'   "mixedFwd" or "mixedRev".}
-#'   \item{score}{Oligo score, the lower the better.}
+#'   \item{score}{Oligo score, the lower the better.
+#'   See "Score" for more details.}
 #'   \item{roiStart}{First position of the input \code{RprimerProfile} object
 #'     (roi = region of interest).}
 #'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}

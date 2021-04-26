@@ -138,9 +138,8 @@
 #' \itemize{
 #' \item{The \strong{ambiguous strategy} (default) generates primers from the
 #' IUPAC consensus sequence, which means that ambiguous bases can
-#' occur at any position in the primer.
-#' Probes are always designed using the ambiguous
-#' strategy}
+#' occur at any position in the primer.}
+#'
 #' \item{The \strong{mixed strategy} generates primers from both the majority
 #' and the IUPAC consensus sequence. These primers consist of a shorter
 #' degenerate part at the 3' end (approx. 1/3 of the primer, targeting a
@@ -162,6 +161,9 @@
 #' recommended to design relatively long primers (at least 25 bases) when using
 #' this strategy}
 #' }
+#'
+#' Probes are always designed using the ambiguous
+#' strategy.
 #'
 #' @section Validity checks:
 #'

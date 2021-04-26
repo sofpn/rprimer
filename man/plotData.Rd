@@ -9,7 +9,7 @@
 \usage{
 plotData(x, ...)
 
-\S4method{plotData}{RprimerProfile}(x, type = "overview", ...)
+\S4method{plotData}{RprimerProfile}(x, type = "overview", highlight = NULL, rc = FALSE)
 
 \S4method{plotData}{RprimerOligo}(x)
 
@@ -18,20 +18,21 @@ plotData(x, ...)
 \arguments{
 \item{x}{An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.}
 
-\item{...}{Optional arguments for \code{RprimerProfile} objects. These are:
+\item{...}{Optional arguments for \code{RprimerProfile} objects.}
 
-\code{type}: Type of plot: \code{"overview"}, or
-\code{"nucleotide"},
-defaults to \code{"overview"}.
+\item{type}{For \code{Rprimeroligo} objects:
+Type of plot: \code{"overview"}, or
+\code{"nucleotide"}, defaults to \code{"overview"}.}
 
-\code{highlight}:
-If a specific genomic region should be highlighted
-(for \code{type = "overview"} plots).
-A numeric vector, e.g. \code{c(100, 1000)}, defaults to \code{NULL}.
+\item{highlight}{For \code{Rprimeroligo} objects, and
+\code{type = "overview"}:
+if a specific genomic region should be highlighted.
+A numeric vector, e.g. \code{c(100, 1000)}, defaults to \code{NULL}
+(i.e. no highlight).}
 
-\code{rc}:
+\item{rc}{For \code{Rprimeroligo} objects, and \code{type = "nucleotide"}:
 If the plotted sequence should be displayed
-as reverse complement or not (for \code{type = "nucleotide"} plots).
+as reverse complement or not.
 \code{TRUE} or {FALSE}, defaults to \code{FALSE}.
 
 See examples below.}
