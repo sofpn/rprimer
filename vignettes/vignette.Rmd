@@ -199,7 +199,7 @@ myOligos[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The man page (`?oligos`) and the pdf-manual contains a detailed description of each variable, but what may not be entirely self-explanatory is that some variables (e.g. `sequence` `gcContent` and `tm`) can hold several values in each row. All values within a specific row can be retrieved by:   
+The man page (`?oligos`) and the pdf-manual contain a detailed description of each variable, but what may not be entirely self-explanatory is that some variables (e.g. `sequence` `gcContent` and `tm`) can hold several values in each row. All values within a specific row can be retrieved by:   
 
 ```{r}
 myOligos$sequence[[1]] ## All sequence variants of the first oligo (i.e., first row) 
@@ -213,7 +213,7 @@ The primer and probe candidates can be visualized using `plotData()`:
 plotData(myOligos)
 ```
 
-All valid oligos are scored using a simple system based on average identity, coverage, degeneracy, GC-content and tm range. The value can range from 0 to 12, where 0 is best. Detailed information about the scoring system can be found at the man page (`?oligos`) of the pdf-manual.
+All valid oligos are scored using a simple system based on average identity, coverage, degeneracy, GC-content and tm range. The value can range from 0 to 12, where 0 is best. Detailed information about the scoring system can be found at the man page (`?oligos`) or in the pdf-manual.
 
 The best scoring oligos are shown below:
 
@@ -298,7 +298,12 @@ myMixedPrimers[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-Importantly, for mixed primers, identity refers to the mean identity of the target alignment at the 5' consensus part of the primer and coverage refers to the mean coverage of the target alignment at the 3' degenerate part of the primer. Values of 1 indicate perfect complementary to all target variants in the input alignment. 
+Regarding identity and coverage values, there is one important difference between ambiguous and mixed primers: 
+
+* For ambiguous primers (and probes), identity refers to the average identity of the oligo binding region and coverage refers to the average coverage of the oligo binding region
+* For mixed primers, identity refers to the average identity within the target alignment at the 5' consensus part of the primer and coverage refers to the average coverage of the target alignment at the 3' degenerate part of the primer
+
+See 'Step 1: `consensusProfile`' for more information on identity and coverage. 
 
 **Masking**
 
@@ -351,7 +356,7 @@ plotData(myAssays)
 
 All candidate assays are located within a conserved stretch of ~70 bases. This is also the target region for the most frequently used RT-qPCR assay for detection of HEV, developed by Jothikumar and colleagues [@jothikumar2006broadly].
 
-There are now over 1000 assays, but the number can be reduced by subsetting the dataset to only contain the assays with the best total oligo scores (see the score variable in the table above). The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12; see Step 2: `oligos`).
+There are now over 1000 assays, but the number can be reduced by subsetting the dataset to only contain the assays with the best total oligo scores (see the score variable in the table above). The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12, see Step 2: `oligos`).
 
 ```{r, fig.width=12, fig.height=6}
 ## Get the minimum score from myAssays
@@ -420,15 +425,24 @@ Before proceeding to wet lab evaluation, it is highly recommended to evaluate th
 
 These tasks are best performed by other software. Below, I show how to export the results to file so that they can be analyzed by other tools.  
 
+**Result tables**
+
+Result tables can be readily saved to .txt or .csv-files, for instance: 
+
+```r
+write.csv(myAssays, file = "myAssays.csv", quote = FALSE, row.names = FALSE) 
+write.table(myAssays, file = "myAssays.txt", quote = FALSE, row.names = FALSE) 
+```
+
 **Oligos and assays to fasta format**
 
-`convertToDNAStringSet()` can be used for converting oligos or assays to a `Biostrings::DNAStringSet`-object. 
+It is also possible to export the oligo sequences in fasta-format. `convertToDNAStringSet()` is used for converting oligos or assays to a `Biostrings::DNAStringSet`-object. 
 
 `convertToDNAStringSet()` has three arguments:   
 
 * `x`: an oligo or assay dataset (i.e. an output from Step 2 or 3)
 * `asRc`: if oligos should be written as reverse complements or not (for oligos), and if reverse primers and minus sense probes should be written as reverse complements or not (for assays). Defaults to `FALSE`
-* `asIUPAC`: if the oligos should be presented in IUPAC-format or not. Defaults to `TRUE` 
+* `asIUPAC`: if the oligos should be presented in IUPAC-format or not. Defaults to `TRUE`. If `FALSE`, all the sequence variants of each oligo will be presented instead. 
 
 Below, I convert the two first oligos in `myOligos` from Step 1:
 
@@ -442,21 +456,12 @@ And the first assay in `myAssays` from Step 2:
 convertToDNAStringSet(myAssays[1, ], asRc = TRUE, asIUPAC = FALSE)
 ```
 
-The sequences can then be exported to fasta format, for example: 
+The sequences can then be saved as fasta format, for example: 
 
 ```r
 toFile <- oligosToDNAStringSet(myOligos)
 Biostrings::writeXStringSet(toFile, file = "myOligos.txt")
 
-```
-
-**Result tables**
-
-Result tables can be saved to .txt or .csv-files, for instance: 
-
-```r
-write.csv(myAssays, file = "myAssays.csv", quote = FALSE, row.names = FALSE) 
-write.table(myAssays, file = "myAssays.txt", quote = FALSE, row.names = FALSE) 
 ```
 
 # Summary 

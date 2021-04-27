@@ -136,7 +136,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' .findMostCommonBase(x[, 1])
 .findMostCommonBase <- function(x) {
     mostCommon <- names(x)[x == max(x)]
-    if (length(mostCommon > 1)) mostCommon <- sample(mostCommon, 1)
+    if (length(mostCommon) > 1) mostCommon <- sample(mostCommon, 1)
     mostCommon
 }
 

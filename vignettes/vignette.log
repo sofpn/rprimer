@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.2.2)  26 APR 2021 09:29
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.2.2)  26 APR 2021 09:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignett
-e.tex
+**C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette.
+tex
 
-(c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-.tex
+(c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette.t
+ex
 LaTeX2e <2020-10-01> patch level 4
 L3 programming layer <2021-01-09> xparse <2020-03-03> (c:/Users/Sofia/AppData/R
 oaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
@@ -1674,15 +1674,15 @@ Package xcolor Warning: Incompatible color definition on input line 331.
 
 Package xcolor Warning: Incompatible color definition on input line 331.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-5-1.pdf, id=136, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-5-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-5-1.pdf  used on inpu
-t line 334.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-5-1.pdf, id=136, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-5-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-5-1.pdf  used on input 
+line 334.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -1706,15 +1706,15 @@ Package xcolor Warning: Incompatible color definition on input line 349.
 
 Package xcolor Warning: Incompatible color definition on input line 349.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-6-1.pdf, id=142, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-6-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-6-1.pdf  used on inpu
-t line 352.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-6-1.pdf, id=142, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-6-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-6-1.pdf  used on input 
+line 352.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package xcolor Warning: Incompatible color definition on input line 354.
@@ -1749,15 +1749,15 @@ Package xcolor Warning: Incompatible color definition on input line 365.
 
 Package xcolor Warning: Incompatible color definition on input line 365.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-7-1.pdf, id=143, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-7-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-7-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-7-1.pdf  used on inpu
-t line 368.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-7-1.pdf, id=143, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-7-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-7-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-7-1.pdf  used on input 
+line 368.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -1767,10 +1767,10 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[5 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vigne
-tte_files/figure-latex/unnamed-chunk-5-1.pdf> <c:/Users/Sofia/AppData/Local/Tem
-p/RtmpCYepFS/preview-3200293272ca.dir/vignette_files/figure-latex/unnamed-chunk
--6-1.pdf>]
+[5 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignett
+e_files/figure-latex/unnamed-chunk-5-1.pdf> <c:/Users/Sofia/AppData/Local/Temp/
+RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-6-1
+.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 371.
 
@@ -2016,8 +2016,8 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[6 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vigne
-tte_files/figure-latex/unnamed-chunk-7-1.pdf>]
+[6 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignett
+e_files/figure-latex/unnamed-chunk-7-1.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 403.
 
@@ -2560,15 +2560,15 @@ Package xcolor Warning: Incompatible color definition on input line 501.
 
 Package xcolor Warning: Incompatible color definition on input line 501.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-11-1.pdf, id=184, 867.24pt x 578.16pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-11-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-11-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-11-1.pdf  used on inp
-ut line 505.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-11-1.pdf, id=184, 867.24pt x 578.16pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-11-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-11-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-11-1.pdf  used on input
+ line 505.
 (pdftex.def)             Requested size: 341.43787pt x 227.62523pt.
 
 Package xcolor Warning: Incompatible color definition on input line 509.
@@ -2602,23 +2602,23 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[8 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vigne
-tte_files/figure-latex/unnamed-chunk-11-1.pdf>]
+[8 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignett
+e_files/figure-latex/unnamed-chunk-11-1.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 526.
 
 
 Package xcolor Warning: Incompatible color definition on input line 526.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-12-1.pdf, id=203, 867.24pt x 578.16pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-12-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-12-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-12-1.pdf  used on inp
-ut line 530.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-12-1.pdf, id=203, 867.24pt x 578.16pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-12-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-12-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-12-1.pdf  used on input
+ line 530.
 (pdftex.def)             Requested size: 341.43787pt x 227.62523pt.
 
 Package xcolor Warning: Incompatible color definition on input line 536.
@@ -2638,15 +2638,15 @@ Package xcolor Warning: Incompatible color definition on input line 552.
 
 Package xcolor Warning: Incompatible color definition on input line 552.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-14-1.pdf, id=204, 578.16pt x 361.35pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-14-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-14-1.pdf  used on inp
-ut line 555.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-14-1.pdf, id=204, 578.16pt x 361.35pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-14-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-14-1.pdf  used on input
+ line 555.
 (pdftex.def)             Requested size: 341.42903pt x 213.39314pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -2656,8 +2656,8 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[9 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vigne
-tte_files/figure-latex/unnamed-chunk-12-1.pdf>]
+[9 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignett
+e_files/figure-latex/unnamed-chunk-12-1.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 557.
 
@@ -2685,15 +2685,15 @@ Package xcolor Warning: Incompatible color definition on input line 563.
 
 Package xcolor Warning: Incompatible color definition on input line 563.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-15-1.pdf, id=222, 578.16pt x 361.35pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-15-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-15-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-15-1.pdf  used on inp
-ut line 566.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-15-1.pdf, id=222, 578.16pt x 361.35pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-15-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-15-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-15-1.pdf  used on input
+ line 566.
 (pdftex.def)             Requested size: 341.42903pt x 213.39314pt.
 
 Package xcolor Warning: Incompatible color definition on input line 572.
@@ -2715,25 +2715,25 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[10 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-14-1.pdf> <c:/Users/Sofia/AppData/Local/T
-emp/RtmpCYepFS/preview-3200293272ca.dir/vignette_files/figure-latex/unnamed-chu
-nk-15-1.pdf>]
+[10 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-14-1.pdf> <c:/Users/Sofia/AppData/Local/Tem
+p/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-1
+5-1.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 588.
 
 
 Package xcolor Warning: Incompatible color definition on input line 588.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-17-1.pdf, id=237, 867.24pt x 578.16pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-17-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-17-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-17-1.pdf  used on inp
-ut line 592.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-17-1.pdf, id=237, 867.24pt x 578.16pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-17-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-17-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-17-1.pdf  used on input
+ line 592.
 (pdftex.def)             Requested size: 341.43787pt x 227.62523pt.
 
 Package xcolor Warning: Incompatible color definition on input line 600.
@@ -2753,15 +2753,15 @@ Package xcolor Warning: Incompatible color definition on input line 618.
 
 Package xcolor Warning: Incompatible color definition on input line 618.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-19-1.pdf, id=238, 867.24pt x 578.16pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-19-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-19-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-19-1.pdf  used on inp
-ut line 622.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-19-1.pdf, id=238, 867.24pt x 578.16pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-19-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-19-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-19-1.pdf  used on input
+ line 622.
 (pdftex.def)             Requested size: 341.43787pt x 227.62523pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -2771,8 +2771,8 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[11 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-17-1.pdf>]
+[11 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-17-1.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 628.
 
@@ -2819,23 +2819,23 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[12 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-19-1.pdf>]
+[12 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-19-1.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 680.
 
 
 Package xcolor Warning: Incompatible color definition on input line 680.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-21-1.pdf, id=274, 578.16pt x 361.35pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-21-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-21-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-21-1.pdf  used on inp
-ut line 683.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-21-1.pdf, id=274, 578.16pt x 361.35pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-21-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-21-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-21-1.pdf  used on input
+ line 683.
 (pdftex.def)             Requested size: 341.42903pt x 213.39314pt.
 
 Package xcolor Warning: Incompatible color definition on input line 686.
@@ -2982,23 +2982,23 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[13 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-21-1.pdf>]
+[13 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-21-1.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 755.
 
 
 Package xcolor Warning: Incompatible color definition on input line 755.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-24-1.pdf, id=296, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-24-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-24-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-24-1.pdf  used on inp
-ut line 758.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-24-1.pdf, id=296, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-24-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-24-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-24-1.pdf  used on input
+ line 758.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package xcolor Warning: Incompatible color definition on input line 762.
@@ -3021,15 +3021,15 @@ Package xcolor Warning: Incompatible color definition on input line 777.
 
 Package xcolor Warning: Incompatible color definition on input line 777.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-25-1.pdf, id=297, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-25-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-25-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-25-1.pdf  used on inp
-ut line 780.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-25-1.pdf, id=297, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-25-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-25-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-25-1.pdf  used on input
+ line 780.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -3039,8 +3039,8 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[14 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-24-1.pdf>]
+[14 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-24-1.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 784.
 
@@ -3056,15 +3056,15 @@ Package xcolor Warning: Incompatible color definition on input line 792.
 
 Package xcolor Warning: Incompatible color definition on input line 792.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-26-1.pdf, id=316, 578.16pt x 361.35pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-26-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-26-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-26-1.pdf  used on inp
-ut line 795.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-26-1.pdf, id=316, 578.16pt x 361.35pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-26-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-26-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-26-1.pdf  used on input
+ line 795.
 (pdftex.def)             Requested size: 341.42903pt x 213.39314pt.
 
 Package xcolor Warning: Incompatible color definition on input line 798.
@@ -3152,25 +3152,24 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[15 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-25-1.pdf> <c:/Users/Sofia/AppData/Local/T
-emp/RtmpCYepFS/preview-3200293272ca.dir/vignette_files/figure-latex/unnamed-chu
-nk-26-1.pdf>]
+[15 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-25-1.pdf> <c:/Users/Sofia/AppData/Local/Tem
+p/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-2
+6-1.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 817.
 
 
 Package xcolor Warning: Incompatible color definition on input line 817.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/fig 3-1.pdf, id=346, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/fig 3-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/fig 3-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/fig 3-1.pdf  used on input line 820
-.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/fig 3-1.pdf, id=346, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/fig 3-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/fig 3-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/fig 3-1.pdf  used on input line 820.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package xcolor Warning: Incompatible color definition on input line 824.
@@ -3190,15 +3189,15 @@ Package xcolor Warning: Incompatible color definition on input line 839.
 
 Package xcolor Warning: Incompatible color definition on input line 839.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-29-1.pdf, id=347, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-29-1.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-29-1.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-29-1.pdf  used on inp
-ut line 843.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-29-1.pdf, id=347, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-29-1.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-29-1.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-29-1.pdf  used on input
+ line 843.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package xcolor Warning: Incompatible color definition on input line 847.
@@ -3209,15 +3208,15 @@ Package xcolor Warning: Incompatible color definition on input line 851.
 
 Package xcolor Warning: Incompatible color definition on input line 851.
 
-<C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vignette
-_files/figure-latex/unnamed-chunk-29-2.pdf, id=348, 867.24pt x 433.62pt>
-File: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vig
-nette_files/figure-latex/unnamed-chunk-29-2.pdf Graphic file (type pdf)
-<use C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-29-2.pdf>
-Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3
-200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-29-2.pdf  used on inp
-ut line 855.
+<C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignette_f
+iles/figure-latex/unnamed-chunk-29-2.pdf, id=348, 867.24pt x 433.62pt>
+File: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vigne
+tte_files/figure-latex/unnamed-chunk-29-2.pdf Graphic file (type pdf)
+<use C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-29-2.pdf>
+Package pdftex.def Info: C:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5
+c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-29-2.pdf  used on input
+ line 855.
 (pdftex.def)             Requested size: 341.43787pt x 170.71892pt.
 
 Package fancyhdr Warning: \headheight is too small (42.67912pt): 
@@ -3227,10 +3226,9 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[16 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/fig 3-1.pdf> <c:/Users/Sofia/AppData/Local/Temp/RtmpCYe
-pFS/preview-3200293272ca.dir/vignette_files/figure-latex/unnamed-chunk-29-1.pdf
->]
+[16 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/fig 3-1.pdf> <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7
+O/preview-5c067ff3d8.dir/vignette_files/figure-latex/unnamed-chunk-29-1.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 861.
 
@@ -3420,8 +3418,8 @@ Package fancyhdr Warning: \headheight is too small (42.67912pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-3.60004pt}.
 
-[17 <c:/Users/Sofia/AppData/Local/Temp/RtmpCYepFS/preview-3200293272ca.dir/vign
-ette_files/figure-latex/unnamed-chunk-29-2.pdf>]
+[17 <c:/Users/Sofia/AppData/Local/Temp/RtmpEZeN7O/preview-5c067ff3d8.dir/vignet
+te_files/figure-latex/unnamed-chunk-29-2.pdf>]
 
 Package xcolor Warning: Incompatible color definition on input line 917.
 
@@ -3764,12 +3762,12 @@ Package rerunfilecheck Info: File `vignette.out' has not changed.
  ) 
 Here is how much of TeX's memory you used:
  14000 strings out of 481265
- 229932 string characters out of 5914485
- 735546 words of memory out of 5000000
+ 229730 string characters out of 5914485
+ 735544 words of memory out of 5000000
  30450 multiletter control sequences out of 15000+600000
  453786 words of font info for 69 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 86i,14n,88p,1267b,451s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 86i,14n,88p,1265b,451s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.e
 nc}{c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.e
 nc} <c:/Users/Sofia/AppData/Roaming/TinyTeX/texmf-var/fonts/pk/ljfour/jknappen/
@@ -3787,7 +3785,7 @@ st/fonts/type1/public/lm/lmss10.pfb><c:/Users/Sofia/AppData/Roaming/TinyTeX/tex
 mf-dist/fonts/type1/public/lm/lmssbo10.pfb><c:/Users/Sofia/AppData/Roaming/Tiny
 TeX/texmf-dist/fonts/type1/public/lm/lmssbx10.pfb><c:/Users/Sofia/AppData/Roami
 ng/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsso10.pfb>
-Output written on vignette.pdf (21 pages, 3096422 bytes).
+Output written on vignette.pdf (21 pages, 3096350 bytes).
 PDF statistics:
  641 PDF objects out of 1000 (max. 8388607)
  399 compressed objects within 4 object streams
