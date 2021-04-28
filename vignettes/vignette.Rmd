@@ -40,7 +40,8 @@ devtools::install_github("sofpn/rprimer")
 ```
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+#
+devtools::load_all(".")
 ```
 ```{r setup, message=FALSE, warning=FALSE}
 library(rprimer)
@@ -298,12 +299,7 @@ myMixedPrimers[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-Regarding identity and coverage values, there is one important difference between ambiguous and mixed primers: 
-
-* For ambiguous primers (and probes), identity refers to the average identity of the oligo binding region and coverage refers to the average coverage of the oligo binding region
-* For mixed primers, identity refers to the average identity within the target alignment at the 5' consensus part of the primer and coverage refers to the average coverage of the target alignment at the 3' degenerate part of the primer
-
-See 'Step 1: `consensusProfile`' for more information on identity and coverage. 
+Importantly, for mixed primers, identity refers to the average identity within the 5' consensus part of the primer binding region and coverage refers to the average coverage of 3' degenerate part of the primer. For ambiguous oligos, both of these values are calculated for the entire oligo. For further information on identity and coverage, see 'Step 1: `consensusProfile`'.
 
 **Masking**
 
