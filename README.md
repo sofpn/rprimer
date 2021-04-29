@@ -44,7 +44,7 @@ The package contains five functions:
 
 The first step is to import an alignment with target sequences of
 interest. This is done by using `readDNAMultipleAlignment()` from the
-Biostrings package..
+Biostrings package.
 
 The file “example\_alignment.txt” contains an alignment of 200 hepatitis
 E virus sequences.

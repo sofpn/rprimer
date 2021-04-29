@@ -235,7 +235,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     basesToInclude <- apply(x, 2, function(y) {
         paste(rownames(x)[y > ambiguityThreshold], collapse = ",")
     })
-    basesToInclude <- unname(basesToInclude)
     consensus <- vapply(
         basesToInclude, .asIUPAC, character(1L),
         USE.NAMES = FALSE
