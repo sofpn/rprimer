@@ -193,4 +193,4 @@ The package vignette contains more information. It is loaded by
 
 ## Citation
 
-To cite rprimer, please use: `citation("rprimer")`.
+To cite this package, please use: `citation("rprimer")`.
