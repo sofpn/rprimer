@@ -120,23 +120,3 @@
     names(tm) <- rownames(x)
     tm
 }
-
-#' Calculate delta G for perfectly matching DNA duplexes
-#'
-#' @param x A matrix with DNA sequences.
-#'
-#' @param temperature
-#' The temperature (in C) at which to calculate delta G for.
-#'
-#' @return The delta G in kcal/M.
-#'
-#' @keywords internal
-#'
-#' @noRd
-.deltaG <- function(x, temperature = 37) {
-    temperature <- temperature + 273.15
-    deltaG <- x[, "sumdH"] - temperature * x[, "sumdS"]
-    deltaG <- deltaG / 1000
-    names(deltaG) <- rownames(x)
-    deltaG
-}

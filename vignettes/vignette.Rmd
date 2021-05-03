@@ -17,17 +17,23 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
+library(kableExtra)
+#devtools::load_all(".")
+library(rprimer)
+```
+
 # Introduction
 
 Reverse transcription (RT) PCR based methods have become the gold standard for detection and quantification of viral nucleic acids in a wide variety of fields, including clinical diagnosis and food safety control. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false negative results.
 
-The ideal oligo binds exclusively to a conserved part of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. However, it is often both difficult and time consuming to identify target regions and oligo combinations that meets all these criteria. Moreover, many viruses, especially RNA viruses who lack replication proofreading mechanism, evolve quickly and thereby pose large sequence diversity across large parts of their genomes. This makes sequence conservation analysis a key step of the oligo design process, since primers or probes that captures only a part of the target variation may cause severe detection and quantification bias.
+The ideal oligo binds exclusively to a conserved part of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. Unfortunately, it is often both difficult and time consuming to identify target regions and oligo combinations that meet these criteria. Moreover, many viruses, especially RNA viruses who lack replication proofreading mechanism, evolve quickly and thereby pose large sequence diversity across large parts of their genomes. This makes sequence conservation analysis a key step of the design process, since primers or probes that captures only a part of the target variation can cause severe detection and quantification bias. 
 
-A common approach for amplifying sequence variable regions is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds or thousands of sequence variants. However, as the degeneracy increases, the fraction of oligos that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. Another potential pitfall with high degeneracy is an increased risk of non specific amplification due to off-target binding. A preferred design strategy is therefore to find conserved oligo binding regions with as low degeneracy as possible.
+A common approach for amplifying sequence variable regions is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds of sequence variants. However, as the degeneracy increases, the fraction of oligos that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose] and at the same time increase the probabilities of off-target binding and mispriming. The most ideal design strategy would therefore be to find oligo binding regions with as low degeneracy as possible.
 
-The aim of rprimer is to provide tools for analyzing sequence conservation and designing degenerate DNA oligos for sequence variable viruses. A multiple DNA sequence alignment with intended target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots.
+rprimer provides tools for analyzing sequence conservation and designing degenerate DNA oligos. A multiple DNA sequence alignment with intended target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots. The package is developed primarily for sequence-variable viruses, but it should be equally useful for other organisms with high sequence variability. 
 
-In this document, I describe and demonstrate how to use the package by designing broadly-reactive RT-(q/d)PCR oligos and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
+In this document, I describe and demonstrate how to use rprimer by designing broadly-reactive RT-(q/d)PCR oligos and assays for detection of hepatitis E virus (HEV), which is a sequence variable RNA-virus and a common foodborne pathogen.  
 
 # Installation
 
@@ -38,14 +44,6 @@ if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
 devtools::install_github("sofpn/rprimer")
 ```
-```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
-library(kableExtra)
-#devtools::load_all(".")
-```
-```{r setup, message=FALSE, warning=FALSE}
-library(rprimer)
-```
-
 # Overview
 
 The package contains five functions:
@@ -60,7 +58,7 @@ The package contains five functions:
 
 ## Collection of target sequences and multiple alignment 
 
-The first step is to identify and align target sequences of interest. The file “example_alignment.txt” is provided with the package and contains an alignment of 200 HEV sequences. The filepath can be retrieved by:  
+The first step is to identify and align target sequences of interest. It is important that the alignment accurately represents the generic variation within the intended target population. The file “example_alignment.txt” is provided with the package and contains an alignment of 200 HEV sequences. The filepath can be retrieved by:  
 
 ```r
 system.file("extdata", "example_alignment.txt", package = "rprimer")
@@ -90,7 +88,7 @@ Once the alignment is imported, we can generate a consensus profile. At each pos
 * The relative frequency of gaps (-)
 * Majority consensus base, which is the most frequently occurring letter among the letters A, C, G, T and - 
 * Identity, which is the relative frequency of sequences, among all sequences with a DNA base (A, C, G, T) or gap (-), that has the majority consensus base 
-* IUPAC consensus character, which includes all DNA bases that occurs at a relative frequency higher than a user-specified "ambiguity threshold". The threshold can range from 0 to 0.2; a value of 0 (default) will catch all the variation, but with the potential downside of generating oligos with high degeneracy, whereas a higher value will capture most of the variation, but with the potential cost of missing less common sequence variants
+* IUPAC consensus character, which includes all DNA bases that occurs at a relative frequency higher than a user-specified ambiguity threshold. The threshold can range from 0 to 0.2; a value of 0 (default) will catch all the variation, but with the potential downside of generating oligos with high degeneracy, whereas a higher value will capture most of the variation, but with the potential downside of missing less common sequence variants
 * Shannon entropy [@shannon1951prediction], which is a measurement of variability. It is calculated among all DNA bases that occurs at the specific position. A value of 0 indicate complete conservation, and a high value indicate high variability
 * Coverage, which describes the proportion of sequences in the target alignment, among all sequences with a DNA base, that are covered by the IUPAC consensus character 
 
