@@ -30,11 +30,12 @@ library(rprimer)
 rprimer provides tools for designing degenerate DNA oligos for sequence
 variable viruses.
 
-The package contains five functions:
+The package contains six functions:
 
   - `consensusProfile()`
   - `oligos()`
   - `assays()`
+  - `checkMatch()`
   - `plotData()`
   - `convertToDNAStringSet()`
 
@@ -171,6 +172,37 @@ plotData(myAssays)
 ```
 
 <img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+
+### Check match
+
+`checkMatch()` checks the proportion of target sequences in the input
+alignment that matches with the generated oligos or assays. As an
+example, we check six randomly selected oligos from `myOligos`:
+
+``` r
+selection <- sample(seq_len(nrow(myOligos)), size = 6)
+
+matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
+```
+
+Results:
+
+| iupacSequence          | n0mm | n1mm | n2mm | n3mm | n4orMoreMm |
+| :--------------------- | ---: | ---: | ---: | ---: | ---------: |
+| TGATTCTCAGCCCTTCGCMMTC | 0.95 | 0.05 | 0.00 |    0 |       0.00 |
+| ATTCTCAGCCCTTCGCMMTC   | 0.95 | 0.05 | 0.00 |    0 |       0.00 |
+| CCCCTATWTTCATCCAACC    | 0.98 | 0.02 | 0.00 |    0 |       0.00 |
+| TGGGGTGACMGGGTTGAT     | 0.95 | 0.05 | 0.01 |    0 |       0.00 |
+| TTCTCAGCCCTTCGCMMTCC   | 0.95 | 0.05 | 0.00 |    0 |       0.00 |
+| TCYGCCYTGGCGAATGCTGT   | 0.92 | 0.08 | 0.00 |    0 |       0.01 |
+
+The match table can be visualized using `plotData()`:
+
+``` r
+plotData(matchTableOligos)
+```
+
+<img src="man/figures/README-unnamed-chunk-18-1.png" width="100%" />
 
 ### Convert to fasta format
 

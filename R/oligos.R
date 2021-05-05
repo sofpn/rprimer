@@ -249,7 +249,7 @@
 #' \strong{Tm range}
 #'
 #' \tabular{lr}{
-#' Value \tab Score \cr
+#' Value range \tab Score \cr
 #' \eqn{[0, 1)}
 #' \tab 0 \cr
 #' \eqn{[1, 2)}

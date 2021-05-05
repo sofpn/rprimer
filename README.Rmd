@@ -41,11 +41,12 @@ library(rprimer)
 
 rprimer provides tools for designing degenerate DNA oligos for sequence variable viruses.
 
-The package contains five functions:
+The package contains six functions:
 
 * `consensusProfile()`
 * `oligos()` 
 * `assays()`
+* `checkMatch()`
 * `plotData()`
 * `convertToDNAStringSet()`
 
@@ -139,6 +140,28 @@ The assays can be visualized using `plotData()`:
 
 ```{r, fig.width=12, fig.height=6}
 plotData(myAssays)
+```
+
+### Check match 
+
+`checkMatch()` checks the proportion of target sequences in the input alignment that matches with the generated oligos or assays. As an example, we check six randomly selected oligos from `myOligos`: 
+
+```{r}
+selection <- sample(seq_len(nrow(myOligos)), size = 6)
+
+matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
+```
+
+Results:
+
+```{r, echo=FALSE}
+knitr::kable(matchTableOligos, digits = 2)
+```
+
+The match table can be visualized using `plotData()`: 
+
+```{r, fig.width=12, fig.height=6}
+plotData(matchTableOligos)
 ```
 
 ### Convert to fasta format 

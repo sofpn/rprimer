@@ -143,6 +143,24 @@ setMethod("plotData", "RprimerAssay", function(x) {
     )
 })
 
+
+#' Plot an RprimerMatchOligo-object (method)
+#'
+#' @describeIn plotData
+#'
+#' @export
+#'
+#' @examples
+#' data("exampleRprimerMatchOligo")
+#' plotData(exampleRprimerMatchOligo)
+setMethod("plotData", "RprimerMatchOligo", function(x) {
+    if (nrow(x) == 0L) {
+        stop("'x' does not contain any observations.", call. = FALSE)
+    }
+    x <- as.data.frame(x)
+    .plotMatchOligos(x)
+})
+
 # Helpers for plotting an RprimerOligo/Assay ===================================
 
 .addEmptyRow <- function(x) {
@@ -665,8 +683,42 @@ setMethod("plotData", "RprimerAssay", function(x) {
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = Position, y = Frequency, fill = Base)
     ) +
-        ggplot2::geom_bar(stat = "identity") +
-        ggplot2::scale_fill_manual(values = basePalette) +
+    ggplot2::geom_bar(stat = "identity") +
+    ggplot2::scale_fill_manual(values = basePalette) +
+    ggplot2::ylab("Proportion") +
+    .themeRprimer(showLegend = TRUE)
+}
+
+# Helpers for plotting an RprimerMatchOligo object =============================
+
+.plotMatchOligos <- function(x) {
+    mismatches <- value <- NULL
+    id <- as.factor(seq_len(nrow(x)))
+    x <- cbind(id, x)
+    x <- suppressMessages({reshape2::melt(x)})
+    names(x)[3] <- "mismatches"
+    mismatchPalette <- grDevices::colorRampPalette(
+        rev(c("#9B6A6C", "#bdc9cc"))
+    )
+    levels(x$mismatches) <- c(
+        "Perfect match", "1 mismatch",
+        paste0(seq(2, length(levels(x$mismatches)) - 2), " mismatches"),
+        paste0(length(levels(x$mismatches)) - 1, " or more mismatches")
+    )
+    ggplot2::ggplot(data = x, ggplot2::aes(
+        fill = mismatches, x = id, y = value)
+    ) +
+        ggplot2::geom_bar(stat = "identity", position = "stack") +
+        ggplot2::ylab("Proportion of target sequences") +
+        ggplot2::xlab("") +
+        ggplot2::scale_x_discrete(
+            limits = rev(levels(factor(x$id))),
+            labels = rev(x$iupacSequence)
+        ) +
+        ggplot2::coord_flip() +
+        ggplot2::scale_fill_manual(
+            values = mismatchPalette(length(levels(x$mismatches)))
+        ) +
         .themeRprimer(showLegend = TRUE)
 }
 

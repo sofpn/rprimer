@@ -18,10 +18,14 @@ exampleRprimerAlignment <- Biostrings::readDNAMultipleAlignment(
 exampleRprimerProfile <- consensusProfile(exampleRprimerAlignment, 0.05)
 exampleRprimerOligo <- oligos(exampleRprimerProfile)
 exampleRprimerAssay <- assays(exampleRprimerOligo)
+exampleRprimerMatchOligo <- checkMatch(
+    exampleRprimerOligo[1:10, ], target = exampleRprimerAlignment
+)
 
 save(exampleRprimerAlignment, file = "exampleRprimerAlignment.RData")
 save(exampleRprimerProfile, file = "exampleRprimerProfile.RData")
 save(exampleRprimerOligo, file = "exampleRprimerOligo.RData")
 save(exampleRprimerAssay, file = "exampleRprimerAssay.RData")
+save(exampleRprimerMatchOligo, file = "exampleRprimerMatchOligo.RData")
 
 tools::resaveRdaFiles(".")

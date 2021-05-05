@@ -6,10 +6,10 @@ Description:
     Functions and workflow for visualizing sequence conservation 
     and designing degenerate primers, probes and (RT)-(q/d)PCR assays from a 
     multiple DNA sequence alignment. The results can be presented in data-frame 
-    format and visualized as dashboard-like plots. 
-    The package is developed primarily for sequence variable viruses, 
-    but it should be equally useful for other organisms with high sequence 
-    variability. For more information, please see the package vignette.
+    format and visualized as dashboard-like plots. The workflow is developed 
+    primarily for sequence variable RNA viruses, but it should be equally useful 
+    for other organisms with high sequence variability. For more information, 
+    please see the package vignette.
 Authors@R: 
     person(given = "Sofia",
            family = "Persson",
@@ -24,10 +24,12 @@ Depends:
 Imports:
     Biostrings,
     ggplot2,
+    IRanges,
     methods,
     patchwork,
     reshape2,
-    S4Vectors
+    S4Vectors,
+    ShortRead
 Suggests: 
     BiocStyle,
     covr,

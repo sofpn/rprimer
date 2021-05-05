@@ -5,6 +5,7 @@
 \alias{plotData,RprimerProfile-method}
 \alias{plotData,RprimerOligo-method}
 \alias{plotData,RprimerAssay-method}
+\alias{plotData,RprimerMatchOligo-method}
 \title{Plot an Rprimer-object (generic)}
 \usage{
 plotData(x, ...)
@@ -14,6 +15,8 @@ plotData(x, ...)
 \S4method{plotData}{RprimerOligo}(x)
 
 \S4method{plotData}{RprimerAssay}(x)
+
+\S4method{plotData}{RprimerMatchOligo}(x)
 }
 \arguments{
 \item{x}{An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.}
@@ -48,6 +51,8 @@ Plot an RprimerProfile-object (method)
 Plot an RprimerOligo-object (method)
 
 Plot an RprimerAssay-object (method)
+
+Plot an RprimerMatchOligo-object (method)
 }
 \section{Methods (by class)}{
 \itemize{
@@ -56,6 +61,8 @@ Plot an RprimerAssay-object (method)
 \item \code{RprimerOligo}: 
 
 \item \code{RprimerAssay}: 
+
+\item \code{RprimerMatchOligo}: 
 }}
 
 \examples{
@@ -90,4 +97,6 @@ selected <- oligos[oligos$start >= 5000, ]
 plotData(selected)
 data("exampleRprimerAssay")
 plotData(exampleRprimerAssay)
+data("exampleRprimerMatchOligo")
+plotData(exampleRprimerMatchOligo)
 }

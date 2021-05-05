@@ -183,3 +183,26 @@
 #'
 #' @usage data("exampleRprimerAssay")
 "exampleRprimerAssay"
+
+#' Proportion of matching sequences to a target
+#'
+#' This dataset describes the proportion of oligo sequences that
+#' matches to a set of HEV target sequences.
+#'
+#' @format An \code{RprimerMatchOligo} object.
+#'
+#' @description
+#' The object contains the following information:
+#'
+#' \describe{
+#'   \item{iupacSequence}{The oligo sequence in IUPAC format}
+#'   \item{n0mm}{Proportion of target sequences with zero mismatches.}
+#'   \item{n1mm}{Proportion of target sequences with one mismatch.}
+#'   \item{n2mm}{Proportion of target sequences with two mismatches.}
+#'   \item{n3mm}{Proportion of target sequences with three mismatches.}
+#'   \item{n4orMoremm}{Proportion of target sequences with four or more
+#'   mismatches.}
+#'  }
+#'
+#' @usage data("exampleRprimerMatchOligo")
+"exampleRprimerMatchOligo"

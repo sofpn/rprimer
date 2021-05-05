@@ -245,3 +245,57 @@ S4Vectors::setValidity2("RprimerAssay", function(object) {
         msg
     }
 })
+
+# RprimerMatchOligo ============================================================
+
+#' An S4 class for representation of match percentages for oligos
+#'
+#' @name RprimerMatchOligo-class
+#'
+#' @description
+#' \code{RprimerMatchOligo} extends the \code{S4Vectors::DataFrame} class,
+#' without any additional slots. It has the same accessors and
+#' coercion, subsetting, and combining methods as the parent class, but has
+#' some additional checks for validity.
+#'
+#' @export
+#'
+#' @import methods
+#'
+#' @importClassesFrom S4Vectors DataFrame
+.RprimerMatchOligo <- setClass("RprimerMatchOligo", contains = "DataFrame")
+
+#' RprimerMatchOligo
+#'
+#' The constructor, \code{RprimerMatchOligo()},
+#' constructs an \code{RprimerMatchOligo} object in a similar fashion as the
+#' \code{S4Vectors::DataFrame()} constructor.
+#'
+#' @describeIn RprimerMatchOligo-class
+#'
+#' @param ...
+#' A data frame or list to be converted into an \code{RprimerMatchOligo}
+#' object.
+#'
+#' @return
+#' An \code{RprimerMatchOligo} object if validation succeeds, an error
+#' message otherwise.
+#'
+#' @export
+#'
+#' @importFrom S4Vectors DataFrame
+#'
+#' @references
+#' Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
+#' Foundation of vector-like and list-like containers in
+#' Bioconductor. R package version 0.28.0.
+#'
+#' @examples
+#' data("exampleRprimerMatchOligo")
+#' x <- as.data.frame(exampleRprimerMatchOligo)
+#' RprimerMatchOligo(x)
+RprimerMatchOligo <- function(...) {
+    df <- DataFrame(..., row.names = NULL, check.names = TRUE)
+    .RprimerMatchOligo(df)
+}
+

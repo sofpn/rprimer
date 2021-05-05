@@ -27,7 +27,7 @@ library(rprimer)
 
 Reverse transcription (RT) PCR based methods have become the gold standard for detection and quantification of viral nucleic acids in a wide variety of fields, including clinical diagnosis and food safety control. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false negative results.
 
-The ideal oligo binds exclusively to a conserved part of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. Unfortunately, it is often both difficult and time consuming to identify target regions and oligo combinations that meet these criteria. Moreover, many viruses, especially RNA viruses who lack replication proofreading mechanism, evolve quickly and thereby pose large sequence diversity across large parts of their genomes. This makes sequence conservation analysis a key step of the design process, since primers or probes that captures only a part of the target variation can cause severe detection and quantification bias. 
+The ideal oligo binds exclusively to a conserved part of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. Unfortunately, it is often both difficult and time consuming to identify target regions and oligo combinations that meet these criteria. Moreover, many viruses, especially RNA viruses who lack replication proofreading mechanism, evolve quickly and thereby pose great sequence diversity across large parts of their genomes. This makes sequence conservation analysis a key step of the design process, since primers or probes that captures only a part of the target variation can cause severe detection and quantification bias. 
 
 A common approach for amplifying sequence variable targets is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. The most ideal design strategy would therefore be to find oligo binding regions with as low degeneracy as possible.
 
@@ -35,7 +35,7 @@ rprimer provides tools for analyzing sequence conservation and designing degener
 
 In this document, I describe and demonstrate how to use rprimer by designing broadly-reactive primers and probes for amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen.  
 
-The package is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability. 
+The workflow is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability. 
 
 # Installation
 
@@ -48,11 +48,12 @@ devtools::install_github("sofpn/rprimer")
 ```
 # Overview
 
-The package contains five functions:
+The package contains six functions:
 
 * `consensusProfile()`
 * `oligos()`  
 * `assays()` 
+* `checkMatch()`
 * `plotData()`
 * `convertToDNAStringSet()`
 
@@ -158,7 +159,7 @@ Probes are always designed using the ambiguous strategy.
 
 The design settings (i.e., the arguments of `oligos()`) are listed below:
 
-* `x`: the consensus profile from Step 1
+* `x`: the consensus profile from [Step 1](#Step1)
 * `maxGapFrequency`: maximum gap frequency (in the alignment) for primers and probes, defaults to `0.01`
 * `lengthPrimer`: primer length, defaults to `18:22`
 * `maxDegeneracyPrimer`: maximum degeneracy for primers, defaults to `4`
@@ -182,7 +183,7 @@ All sequence variants of an oligo must fulfill all specified design constraints 
 
 Oligos with sequence variants containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
 
-An error message will return if no oligos are found. If so, a good idea could be to re-run the process from Step 1 and increase the `ambiguityThreshold` in `consensusProfile()`, and/or relax the design constraints above. 
+An error message will return if no oligos are found. If so, a good idea could be to re-run the process from [Step 1](#Step1) and increase the `ambiguityThreshold` in `consensusProfile()`, and/or relax the design constraints above. 
 
 **Design with default settings**
 
@@ -231,7 +232,7 @@ oligoSelection <- myOligos[myOligos$score == bestOligoScore, ]
 plotData(oligoSelection)
 ```
 
-It is also possible to select a specific oligo and plot the nucleotide distribution of the binding region, by subsetting the consensus profile from Step 1. 
+It is also possible to select a specific oligo and plot the nucleotide distribution of the binding region, by subsetting the consensus profile from [Step 1](#Step1). 
 
 ```{r}
 ## Get the binding region of the first oligo in the selection above (first row): 
@@ -323,14 +324,14 @@ The next step is to find pairs of forward and reverse primers. Probes will be ad
 
 `assays()` has two arguments:   
 
-* `x`: the oligo dataset from Step 2
+* `x`: the oligo dataset from [Step 2](#Step2)
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
 
 **[Här kan man med lätthet matcha primerpar på deras tm, men detta är inte helt optimalt enligt santalucia 2004, dock kanske det ar praktiskt gångbart ändå?]**
 
 An error message will return if no assays are found.
 
-Below, I show how to design assays using default settings using the dataset `myOligos` from Step 1: 
+Below, I show how to design assays using default settings using the dataset `myOligos` from [Step 2](#Step2): 
 
 ```{r}
 myAssays <- assays(myOligos)  
@@ -355,7 +356,7 @@ plotData(myAssays)
 
 All candidate assays are located within a conserved stretch of ~70 bases. This is also the target region for the most frequently used RT-qPCR assay for detection of HEV, developed by Jothikumar and colleagues [@jothikumar2006broadly].
 
-There are now over 1000 assays, but one way of reducing the number is to subset the output dataset to only contain assays with the best total oligo scores (see the score variable in the table above). The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12, see [Step 2: `oligos`](#Step2)).
+There are now over 1000 assays, but one way of reducing the number is to subset the output dataset to only contain assays with the best total oligo scores (see the score variable in the table above). The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12; see [Step 2](#Step2) for more information).
 
 ```{r, fig.width=12, fig.height=6}
 ## Get the minimum score from myAssays
@@ -371,7 +372,7 @@ plotData(myAssaySelection)
 
 **Design with modified settings**
 
-To illustrate assay design with modified settings, I use the masked dataset from Step 2 (`masked`), where I designed primers to cover position 2000-3000: 
+To illustrate assay design with modified settings, I use the masked dataset from [Step 2](#Step2) (`masked`), where I designed primers to cover position 2000-3000: 
 
 ```{r}
 myMixedAssays  <- assays(myMixedPrimersMasked, lengthRange = c(1000, 2000))
@@ -381,13 +382,35 @@ plotData(myMixedAssays)
 
 ## Further handling of the data 
 
+### Check how candidate oligos matches to the input target alignment 
+
+- list args 
+- target alignment must be supplied , exactly the same as used for design
+- can be slow , used the ones with best score 
+- simple check, does not say anything about position of mm 
+
+```{r}
+myOligosMatch <- checkMatch(oligoSelection, target = myAlignment)
+```
+
+```{r, echo=FALSE}
+myOligosMatch[1:10, ] %>%
+  kbl(., digits = 2) %>%
+  kable_material(c("striped", "hover"), position = "right") %>%
+  scroll_box(width = "650px", height = "300px")
+```
+
+```{r, fig.width=12, fig.height=12}
+plotData(myOligosMatch)
+```
+
 ### Computation of delta G at different temperatures 
 
 **[LÄGG TILL DELTA G HAR O VISA HUR MAN KAN MATCHA PAR; SE SANTALUCIA 2004]**
 
 ### Oligo and assay binding regions 
 
-Oligo and assay binding region(s) can be inspected in more detail by using the consensus profile from Step 1. As an example, I select to take a closer look at the first assay in `myAssaySelection` from Step 3. 
+Oligo and assay binding region(s) can be inspected in more detail by using the consensus profile from [Step 1](#Step1). As an example, I select to take a closer look at the first assay in `myAssaySelection` from [Step 3](#Step3). 
 
 The first step is to retrieve the start and end position of the assay, as follows:
 
@@ -426,7 +449,7 @@ paste(myAssayRegion$iupac, collapse = "")
 
 ## Export to file
 
-Before proceeding to wet lab evaluation, it is highly recommended to evaluate the final primer and probe candidates for 1) the potential to form primer-dimers and hairpin structures, and 2), the potential to (not) cross react with non-targets. 
+Before proceeding to wet lab evaluation, it is highly recommended to evaluate the final primer and probe candidates for 1) the potential to form primer dimers and hairpin structures, and 2), the potential to (not) cross react with non-targets. 
 
 These tasks are best performed by other software. Below, I show how to export the results to file so that they can be analyzed by other tools.  
 
@@ -445,17 +468,17 @@ It is also possible to export the oligo sequences in fasta-format. `convertToDNA
 
 `convertToDNAStringSet()` has three arguments:   
 
-* `x`: an oligo or assay dataset (i.e. an output from Step 2 or 3)
+* `x`: an oligo or assay dataset (i.e. an output from [Step 2](#Step2) or [3](#Step3))
 * `asRc`: if oligos should be written as reverse complements or not (for oligos), and if reverse primers and minus sense probes should be written as reverse complements or not (for assays). Defaults to `FALSE`
 * `asIUPAC`: if the oligos should be presented in IUPAC-format or not. Defaults to `TRUE`. If `FALSE`, all the sequence variants of each oligo will be presented instead. 
 
-Below, I convert the two first oligos in `myOligos` from Step 1:
+Below, I convert the two first oligos in `myOligos` from [Step 2](#Step2):
 
 ```{r}
 convertToDNAStringSet(myOligos[1:2, ])
 ```
 
-And the first assay in `myAssays` from Step 2:
+And the first assay in `myAssays` from [Step 2](#Step2):
 
 ```{r}
 convertToDNAStringSet(myAssays[1, ], asRc = TRUE, asIUPAC = FALSE)
@@ -500,7 +523,7 @@ View(as.data.frame(myAssays))
 
 # Classes and example data
 
-The "rprimer" classes (`RprimerProfile`, `RprimerOligo` and `RprimerAssay`) are extensions of the `DataFrame` class from S4Vectors [@PagesS4], and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow`, `ncol`, `head`, `tail`, `rbind`, `cbind` etc. They can be coerced to traditional data frames by using `as.data.frame()`. 
+The "rprimer" classes (`RprimerProfile`, `RprimerOligo`, `RprimerAssay`, `RprimerMatchOligo` and `RprimerMatchAssay`) are extensions of the `DataFrame` class from S4Vectors [@PagesS4], and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow`, `ncol`, `head`, `tail`, `rbind`, `cbind` etc. They can be coerced to traditional data frames by using `as.data.frame()`. 
 
 Example datasets of each class are provided with the package, and are loaded by: 
 
@@ -508,6 +531,8 @@ Example datasets of each class are provided with the package, and are loaded by:
 data("exampleRprimerProfile")
 data("exampleRprimerOligo")
 data("exampleRprimerAssay")
+#data("exampleRprimerMatchOligo")
+#data("exampleRprimerMatchAssay")
 ```
 
 To provide reproducible examples, I have also included an alignment of class `Biostrings::DNAMultipleAlignment`. It is loaded by `data("exampleRprimerAlignment")`.
