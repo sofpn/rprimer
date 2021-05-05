@@ -13,6 +13,19 @@
 #'
 #' ## Write details and limitations
 #'
+#' @section Output:
+#'
+#' \describe{
+#'   \item{iupacSequence}{The oligo sequence in IUPAC format.}
+#'   \item{perfectMatch}{Proportion of target sequences with zero mismatches.}
+#'   \item{oneMismatch}{Proportion of target sequences with one mismatch.}
+#'   \item{twoMismatches}{Proportion of target sequences with two mismatches.}
+#'   \item{threeMismatches}{Proportion of target sequences with
+#'   three mismatches.}
+#'   \item{fourOrMoreMismatches}{Proportion of target sequences with
+#'   four or moremismatches.}
+#'  }
+#'
 #' @return
 #' A table with oligo sequences and proportion of sequences ######################
 #' (An \code{RprimerMatchOligo} or \code{RprimerMatchAssay} object).
@@ -81,8 +94,8 @@ setMethod("checkMatch", "RprimerOligo", function(x, target) {
     match <- .getMatchIndex(x, target, maxMismatch)
     numbers <- vapply(match, length, double(1L), USE.NAMES = FALSE)
     names(numbers) <- c(
-        paste0("n", seq(0, maxMismatch), "mm"),
-        paste0("n", maxMismatch + 1, "orMoreMm")
+        "perfectMatch", "oneMismatch", "twoMismatches",
+        "threeMismatches", "fourOrMoreMismatches"
     )
    proportion <- numbers / length(target)
 }

@@ -187,14 +187,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence          | n0mm | n1mm | n2mm | n3mm | n4orMoreMm |
-| :--------------------- | ---: | ---: | ---: | ---: | ---------: |
-| TGATTCTCAGCCCTTCGCMMTC | 0.95 | 0.05 | 0.00 |    0 |       0.00 |
-| ATTCTCAGCCCTTCGCMMTC   | 0.95 | 0.05 | 0.00 |    0 |       0.00 |
-| CCCCTATWTTCATCCAACC    | 0.98 | 0.02 | 0.00 |    0 |       0.00 |
-| TGGGGTGACMGGGTTGAT     | 0.95 | 0.05 | 0.01 |    0 |       0.00 |
-| TTCTCAGCCCTTCGCMMTCC   | 0.95 | 0.05 | 0.00 |    0 |       0.00 |
-| TCYGCCYTGGCGAATGCTGT   | 0.92 | 0.08 | 0.00 |    0 |       0.01 |
+| iupacSequence          | perfectMatch | oneMismatch | twoMismatches | threeMismatches | fourOrMoreMismatches |
+| :--------------------- | -----------: | ----------: | ------------: | --------------: | -------------------: |
+| TCATCCAACCAACCCCTT     |         0.96 |        0.04 |             0 |               0 |                    0 |
+| GACMGGGTTGATTCTCAGCCCT |         0.93 |        0.07 |             0 |               0 |                    0 |
+| GTGACMGGGTTGATTCTCAGC  |         0.94 |        0.06 |             0 |               0 |                    0 |
+| CTATWTTCATCCAACCAACC   |         0.96 |        0.04 |             0 |               0 |                    0 |
+| CCCCTATWTTCATCCAACC    |         0.98 |        0.02 |             0 |               0 |                    0 |
+| CMGGGTTGATTCTCAGCCC    |         0.94 |        0.06 |             0 |               0 |                    0 |
 
 The match table can be visualized using `plotData()`:
 

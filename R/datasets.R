@@ -195,13 +195,14 @@
 #' The object contains the following information:
 #'
 #' \describe{
-#'   \item{iupacSequence}{The oligo sequence in IUPAC format}
-#'   \item{n0mm}{Proportion of target sequences with zero mismatches.}
-#'   \item{n1mm}{Proportion of target sequences with one mismatch.}
-#'   \item{n2mm}{Proportion of target sequences with two mismatches.}
-#'   \item{n3mm}{Proportion of target sequences with three mismatches.}
-#'   \item{n4orMoremm}{Proportion of target sequences with four or more
-#'   mismatches.}
+#'   \item{iupacSequence}{The oligo sequence in IUPAC format.}
+#'   \item{perfectMatch}{Proportion of target sequences with zero mismatches.}
+#'   \item{oneMismatch}{Proportion of target sequences with one mismatch.}
+#'   \item{twoMismatches}{Proportion of target sequences with two mismatches.}
+#'   \item{threeMismatches}{Proportion of target sequences with
+#'   three mismatches.}
+#'   \item{fourOrMoreMismatches}{Proportion of target sequences with
+#'   four or moremismatches.}
 #'  }
 #'
 #' @usage data("exampleRprimerMatchOligo")
