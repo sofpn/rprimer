@@ -11,7 +11,7 @@
 #' The \code{Biostrings::DNAMultipleAlignment} object used for oligo/assay
 #' design.
 #'
-#' ## Write details and limitations #########################
+#' ## Write details and limitations
 #' - only taerg region selected, seq w amb bases rmoved, no pos
 #'
 #'  the check will performed at all regions within the alignment except

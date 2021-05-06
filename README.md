@@ -187,12 +187,12 @@ Results:
 
 | iupacSequence          | perfectMatch | oneMismatch | twoMismatches | threeMismatches | fourOrMoreMismatches | offTargetMatch |
 | :--------------------- | -----------: | ----------: | ------------: | --------------: | -------------------: | -------------: |
-| TCCCCTATWTTCATCCAACCA  |         0.96 |        0.03 |          0.00 |               0 |                 0.01 |           0.00 |
-| TGGTTTCTGGGGTGACMGG    |         0.98 |        0.01 |          0.00 |               0 |                 0.01 |           0.00 |
-| CCGACAGAATTRATTTCGTC   |         0.95 |        0.04 |          0.01 |               0 |                 0.00 |           0.01 |
-| GGTGACMGGGTTGATTCTCAGC |         0.92 |        0.06 |          0.00 |               0 |                 0.01 |           0.00 |
-| CCCCTATWTTCATCCAACCAA  |         0.96 |        0.03 |          0.00 |               0 |                 0.01 |           0.00 |
-| TGATTCTCAGCCCTTCGCMMT  |         0.94 |        0.05 |          0.00 |               0 |                 0.01 |           0.00 |
+| TTCATCCAACCAACCCCTTYGC |         0.94 |        0.06 |          0.00 |               0 |                    0 |           0.00 |
+| TTGATTCTCAGCCCTTCG     |         0.94 |        0.05 |          0.01 |               0 |                    0 |           0.07 |
+| CGACAGAATTRATTTCGTCGGC |         0.94 |        0.05 |          0.01 |               0 |                    0 |           0.00 |
+| CMGGGTTGATTCTCAGCCCT   |         0.93 |        0.07 |          0.00 |               0 |                    0 |           0.00 |
+| TGATTCTCAGCCCTTCGCM    |         0.95 |        0.05 |          0.00 |               0 |                    0 |           0.00 |
+| CTGGGGTGACMGGGTTGATTC  |         0.95 |        0.05 |          0.01 |               0 |                    0 |           0.00 |
 
 The match table can be visualized using `plotData()`:
 

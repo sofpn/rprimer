@@ -19,8 +19,7 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#
-devtools::load_all(".")
+#devtools::load_all(".")
 library(rprimer)
 ```
 
@@ -34,7 +33,7 @@ A common approach for amplifying sequence variable targets is to use degenerate 
 
 rprimer provides tools for analyzing sequence conservation and designing degenerate DNA oligos. A multiple DNA sequence alignment with intended target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots. 
 
-In this document, I describe and demonstrate how to use rprimer by designing broadly-reactive primers and probes for amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen.  
+In this document, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen.  
 
 The workflow is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability. 
 
@@ -72,7 +71,7 @@ system.file("extdata", "example_alignment.txt", package = "rprimer")
 
 These sequences were collected by searching for “[a-z]”[porgn:__txid1678143] (the taxid of Ortohepevirus A, i.e., HEV) in the nucleotide database of NCBI GenBank, and filtering for sequence lengths > 6000 bp, to retrieve complete and nearly complete genomes. The search had 674 results (as of January 19, 2021). The sequences were downloaded (as complete record, fasta-file) and run through Hepatitis E virus genotyping tool version 0.1 (https://www.rivm.nl/mpf/typingtool/hev/, accessed January 19, 2021) to verify that they were correctly classified as Ortohepevirus A. Sequences that were not classified as Ortohepevirus A were removed, and the remaining ones (n = 642) were reduced to 200 by random selection, to not provide a too large example dataset for the package. These 200 sequences were aligned using the online version of mafft version 7 (https://mafft.cbrc.jp/alignment/server/, accessed January 19, 2021), with Auto settings.
 
-## Data import 
+## Data import {#Data}
 
 The alignment must be imported to R using the `readDNAMultipleAlignment()` function from the Biostrings package [@PagesBios]. The input file can contain from one to several thousands of sequences. 
 
@@ -100,7 +99,7 @@ Once the alignment is imported, we can generate a consensus profile. At each pos
 
 `consensusProfile()` has two arguments: 
 
-* `x`: a `Biostrings::MultipleDNAAlignment` object (see above)
+* `x`: a `Biostrings::MultipleDNAAlignment` object (see [Data import](#Data))
 * `ambiguityThreshold`: "detection level" for an ambiguous base. All DNA bases that occur with a relative frequency higher than the specified value will be included when the IUPAC consensus character is determined. Defaults to `0`, and can range from `0` to `0.2`. 
 
 Below, I  make a consensus profile from `myAlignment` with an ambiguity threshold of 5 %: 
@@ -154,7 +153,7 @@ The next step is to design oligos. Primers must be designed and probes are optio
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence, which means that ambiguous bases can occur at any position in the primer
 
-* The **mixed strategy** generates primers from both the majority and the IUPAC consensus sequence. These primers consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region) and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. This strategy is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2], and aims to allow amplification of highly variable targets with primers of minimal degeneracy. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since 5' end mismatches are generally less detrimental than 3' end mismatches) [@Rose2]. In this way, the generated products will match the 5' ends of all primers perfectly, which allows them to be efficiently amplified in later PCR cycles. To provide a sufficiently high melting temperature (tm) in spite of mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy  
+* The **mixed strategy** generates primers from both the majority and the IUPAC consensus sequence. These primers consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region) and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. This strategy is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2], and aims to allow amplification of highly variable targets using minimally degenerate primers. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since 5' end mismatches are generally less detrimental than 3' end mismatches) [@Rose2]. In this way, the generated products will match the 5' ends of all primers perfectly, which allows them to be efficiently amplified in later PCR cycles. To provide a sufficiently high melting temperature (tm) in spite of mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy  
 
 Probes are always designed using the ambiguous strategy. 
 
@@ -357,7 +356,7 @@ plotData(myAssays)
 
 All candidate assays are located within a conserved stretch of ~70 bases. This is also the target region for the most frequently used RT-qPCR assay for detection of HEV, developed by Jothikumar and colleagues [@jothikumar2006broadly].
 
-There are now over 1000 assays, however, one way of reducing the amount is to subset the output dataset to only contain assays with the best total oligo scores (see the score variable in the table above). The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12; see [Step 2](#Step2) for more information).
+There are now over 1000 assays, but one way of reducing the amount is to subset the output dataset to only contain assays with the best total oligo scores (see the score variable in the table above). The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12; see [Step 2](#Step2) for more information).
 
 ```{r, fig.width=12, fig.height=6}
 ## Get the minimum score from myAssays
@@ -387,12 +386,12 @@ plotData(myMixedAssays)
 
 **[MASTE SKRIVA TESTER OSV..]**
 
-`checkMatch()` checks how well the generated oligos or assays match to the intended binding region as well as all other regions of the input alignment. The function has two arguments: 
+`checkMatch()` checks how well the generated oligos or assays match to the input alignment. The function has two arguments: 
 
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
 
-The output gives information of the proportion of oligos that matches perfectly as well as with 1, 2, 3 or 4 or more mismatches to the intended olgio binding region in the input alignment (i.e., on target match). It also reports the proportion of oligos that matches with no more than 4 mismatches to *all other regions* in the input alignment (off target match). Note, however, that the output does not say anything about the type, position or severity of the mismatches.
+The output gives information of the proportion of oligos that matches perfectly as well as with 1, 2, 3 or 4 or more mismatches to the intended oligo binding region in the input alignment (i.e., on target match). It also reports the proportion of oligos that matches with no more than 4 mismatches to *all other regions* in the input alignment (off target match). However, note that the output does not say anything about the type, position or severity of the mismatches.
 
 Below, I show how to use `checkMatch()` for both oligos and assays. The function is rather slow, especially if there are many target sequences, so a good idea could be to select only a few oligo or assay candidates to investigate. 
 
@@ -494,7 +493,7 @@ It is also possible to export the oligo sequences in fasta-format. `convertToDNA
 
 `convertToDNAStringSet()` has three arguments:   
 
-* `x`: an oligo or assay dataset (i.e. an output from [Step 2](#Step2) or [3](#Step3))
+* `x`: an oligo or assay dataset (i.e., an output from [Step 2](#Step2) or [3](#Step3))
 * `asRc`: if oligos should be written as reverse complements or not (for oligos), and if reverse primers and minus sense probes should be written as reverse complements or not (for assays). Defaults to `FALSE`
 * `asIUPAC`: if the oligos should be presented in IUPAC-format or not. Defaults to `TRUE`. If `FALSE`, all sequence variants of each oligo will be presented instead. 
 
