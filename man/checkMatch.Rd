@@ -3,31 +3,93 @@
 \name{checkMatch}
 \alias{checkMatch}
 \alias{checkMatch,RprimerOligo-method}
-\title{Check how oligos match to a set of target sequences (generic)}
+\alias{checkMatch,RprimerAssay-method}
+\title{Check how oligos match to their target sequences (generic)}
 \usage{
 checkMatch(x, target)
 
 \S4method{checkMatch}{RprimerOligo}(x, target)
+
+\S4method{checkMatch}{RprimerAssay}(x, target)
 }
 \arguments{
 \item{x}{An \code{RprimerOligo} or \code{RprimerAssay} object.}
 
-\item{target}{The \code{Biostrings::DNAMultipleAlignment} object used for generating the
-consensus profile, with intended target sequences.
+\item{target}{The \code{Biostrings::DNAMultipleAlignment} object used for oligo/assay
+design.
 
-## Write details and limitations}
+## Write details and limitations #########################
+- only taerg region selected, seq w amb bases rmoved, no pos
+
+ the check will performed at all regions within the alignment except
+ for the intended binding region (to detect any potential issues with off
+ target binding).
+ performed at the intended binding region (all other regions will be
+ excluded to not generate false ). Here, to avoid false negative results,
+ sequences with ambiguous bases at the oligo binding region are removed.
+
+The function is a wrapper to \code{Biostrings::vcountPDict()}
+(Pages et al., 2020)}
 }
 \value{
-A table with oligo sequences and proportion of sequences ######################
-(An \code{RprimerMatchOligo} or \code{RprimerMatchAssay} object).
+An \code{RprimerMatchOligo} or \code{RprimerMatchAssay} object. See details
+below.
 }
 \description{
-Check how oligos match to a set of target sequences (generic)
+Check how oligos match to their target sequences (generic)
 
 Check match of an RprimerOligo object (method)
+
+Check match of an RprimerAssay object (method)
 }
 \section{Methods (by class)}{
 \itemize{
 \item \code{RprimerOligo}: 
+
+\item \code{RprimerAssay}: 
 }}
 
+\section{Output (for oligos)}{
+
+
+The output contains the following information:
+
+\describe{
+  \item{iupacSequence}{The oligo sequence in IUPAC format.}
+  \item{perfectMatch}{Proportion of target sequences that matches perfectly
+  to the oligo within the intended oligo binding region.}
+  \item{oneMismatch}{Proportion of target sequences with one mismatch to
+  the oligo
+  within the intended oligo binding region.}
+  \item{twoMismatches}{Proportion of target sequences with two mismatches
+  to the oligo
+  within the intended oligo binding region.}
+  \item{threeMismatches}{Proportion of target sequences with
+  three mismatches to the oligo
+  within the intended oligo binding region.}
+  \item{fourOrMoreMismatches}{Proportion of target sequences with
+  four or more mismatches to the oligo
+  within the intended oligo binding region.}
+  \item{offTargetMatch}{Proportion of target sequences that matches
+  to the oligo with
+  no more than four mismatches to all other regions of the target alignment.}
+ }
+}
+
+\examples{
+data("exampleRprimerOligo")
+data("exampleRprimerAlignment")
+x <- exampleRprimerOligo[1:10, ]
+target <- exampleRprimerAlignment
+checkMatch(x, target)
+data("exampleRprimerAssay")
+data("exampleRprimerAlignment")
+x <- exampleRprimerAssay[1:10, ]
+target <- exampleRprimerAlignment
+checkMatch(x, target)
+}
+\references{
+Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
+Efficient manipulation of biological strings. R package version
+2.57.2.
+}

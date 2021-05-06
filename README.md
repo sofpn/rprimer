@@ -9,8 +9,6 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
 
-*This package is in development, and will only work for R \>4.1.*
-
 ## Installation
 
 rprimer can be installed from [GitHub](https://github.com/) with:
@@ -28,7 +26,7 @@ library(rprimer)
 ## Overview
 
 rprimer provides tools for designing degenerate DNA oligos for sequence
-variable viruses.
+variable targets.
 
 The package contains six functions:
 
@@ -187,14 +185,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence          | perfectMatch | oneMismatch | twoMismatches | threeMismatches | fourOrMoreMismatches |
-| :--------------------- | -----------: | ----------: | ------------: | --------------: | -------------------: |
-| TCATCCAACCAACCCCTT     |         0.96 |        0.04 |             0 |               0 |                    0 |
-| GACMGGGTTGATTCTCAGCCCT |         0.93 |        0.07 |             0 |               0 |                    0 |
-| GTGACMGGGTTGATTCTCAGC  |         0.94 |        0.06 |             0 |               0 |                    0 |
-| CTATWTTCATCCAACCAACC   |         0.96 |        0.04 |             0 |               0 |                    0 |
-| CCCCTATWTTCATCCAACC    |         0.98 |        0.02 |             0 |               0 |                    0 |
-| CMGGGTTGATTCTCAGCCC    |         0.94 |        0.06 |             0 |               0 |                    0 |
+| iupacSequence          | perfectMatch | oneMismatch | twoMismatches | threeMismatches | fourOrMoreMismatches | offTargetMatch |
+| :--------------------- | -----------: | ----------: | ------------: | --------------: | -------------------: | -------------: |
+| TCCCCTATWTTCATCCAACCA  |         0.96 |        0.03 |          0.00 |               0 |                 0.01 |           0.00 |
+| TGGTTTCTGGGGTGACMGG    |         0.98 |        0.01 |          0.00 |               0 |                 0.01 |           0.00 |
+| CCGACAGAATTRATTTCGTC   |         0.95 |        0.04 |          0.01 |               0 |                 0.00 |           0.01 |
+| GGTGACMGGGTTGATTCTCAGC |         0.92 |        0.06 |          0.00 |               0 |                 0.01 |           0.00 |
+| CCCCTATWTTCATCCAACCAA  |         0.96 |        0.03 |          0.00 |               0 |                 0.01 |           0.00 |
+| TGATTCTCAGCCCTTCGCMMT  |         0.94 |        0.05 |          0.00 |               0 |                 0.01 |           0.00 |
 
 The match table can be visualized using `plotData()`:
 

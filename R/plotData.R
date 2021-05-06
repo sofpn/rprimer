@@ -694,6 +694,7 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
 .plotMatchOligos <- function(x) {
     mismatches <- value <- NULL
     id <- as.factor(seq_len(nrow(x)))
+    x <- x[!names(x) == "offTargetMatch"]
     x <- cbind(id, x)
     x <- suppressMessages({reshape2::melt(x)})
     names(x)[3] <- "mismatches"

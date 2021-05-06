@@ -196,13 +196,23 @@
 #'
 #' \describe{
 #'   \item{iupacSequence}{The oligo sequence in IUPAC format.}
-#'   \item{perfectMatch}{Proportion of target sequences with zero mismatches.}
-#'   \item{oneMismatch}{Proportion of target sequences with one mismatch.}
-#'   \item{twoMismatches}{Proportion of target sequences with two mismatches.}
+#'   \item{perfectMatch}{Proportion of target sequences that matches perfectly
+#'   to the oligo within the intended oligo binding region.}
+#'   \item{oneMismatch}{Proportion of target sequences with one mismatch to
+#'   the oligo
+#'   within the intended oligo binding region.}
+#'   \item{twoMismatches}{Proportion of target sequences with two mismatches
+#'   to the oligo
+#'   within the intended oligo binding region.}
 #'   \item{threeMismatches}{Proportion of target sequences with
-#'   three mismatches.}
+#'   three mismatches to the oligo
+#'   within the intended oligo binding region.}
 #'   \item{fourOrMoreMismatches}{Proportion of target sequences with
-#'   four or moremismatches.}
+#'   four or more mismatches to the oligo
+#'   within the intended oligo binding region.}
+#'   \item{offTargetMatch}{Proportion of target sequences that matches
+#'   to the oligo with
+#'   no more than four mismatches to all other regions of the target alignment.}
 #'  }
 #'
 #' @usage data("exampleRprimerMatchOligo")

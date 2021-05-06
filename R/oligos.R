@@ -148,8 +148,9 @@
 #' 2/3 of the primer),
 #' which instead of having ambiguous bases contains the most probable
 #' nucleotide at each position.
-#' This strategy is inspired by the Consensus-Degenerate Hybrid
-#' Oligonucleotide Primer (CODEHOP) principle (Rose et al., 1998).
+#' This strategy is based on the Consensus-Degenerate Hybrid
+#' Oligonucleotide Primer (CODEHOP) principle (Rose et al., 1998), and aims to
+#' to allow amplification of highly variable targets with minimal degeneracy.
 #' The idea is that the degenerate 3' end part will bind specifically to
 #' the target sequence in the initial PCR cycles, and promote amplification
 #' in spite of eventual mismatches at the 5' consensus part

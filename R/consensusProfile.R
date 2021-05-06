@@ -58,7 +58,6 @@
 #' }
 #'
 #' @references
-#'
 #' Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
 #' Efficient manipulation of biological strings. R package version
 #' 2.57.2.

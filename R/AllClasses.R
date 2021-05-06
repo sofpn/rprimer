@@ -299,3 +299,24 @@ RprimerMatchOligo <- function(...) {
     .RprimerMatchOligo(df)
 }
 
+S4Vectors::setValidity2("RprimerMatchOligo", function(object) {
+    msg <- NULL
+    colnames <- c(
+        "perfectMatch", "oneMismatch", "twoMismatches",
+        "threeMismatches", "fourOrMoreMismatches",
+        "offTargetMatch"
+    )
+
+   if (!all(colnames %in% names(object))) {
+        msg <- c(
+           msg, "The object must contain the following columns:
+            perfectMatch, oneMismatch, twoMismatches,
+            threeMismatches, fourOrMoreMismatches, offTargetMatch"
+        )
+    }
+    if (is.null(msg)) {
+        TRUE
+    } else {
+        msg
+    }
+})
