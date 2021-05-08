@@ -58,9 +58,8 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
     )
     if (!all(colnames %in% names(object))) {
         msg <- c(
-            msg, "The object must contain the following columns:
-            position, a, c, g, t, other, gaps, majority, identity,
-            iupac, entropy and coverage."
+            msg, "This type of subsetting is not allowed for an
+            RprimerProfile object."
         )
     }
     if (is.null(msg)) {
@@ -134,13 +133,8 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
     )
     if (!all(colnames %in% names(object))) {
         msg <- c(
-            msg, "The object must contain the following columns:
-            type, fwd, rev, start, end, length, iupacSequence,
-            iupacSequenceRc, identity,
-            coverage, degeneracy, gcContentMean, gcContentRange, tmMean,
-            tmRange,
-            sequence, sequenceRc, gcContent, tm, dH, dS, method, score
-            roiStart, roiEnd"
+            msg, "This type of subsetting is not allowed for an
+            RprimerOligo object."
         )
     }
     if (is.null(msg)) {
@@ -224,19 +218,8 @@ S4Vectors::setValidity2("RprimerAssay", function(object) {
 
     if (!all(colnames %in% names(object))) {
         msg <- c(
-            msg, "The object must contain the following columns:
-            start, end, ampliconLength,
-            totalDegeneracy, score, startFwd, endFwd,
-            lengthFwd, iupacSequenceFwd, identityFwd,
-            coverageFwd, degeneracyFwd, gcContentMeanFwd,
-            gcContentRangeFwd, tmMeanFwd, tmRangeFwd, sequenceFwd,
-            gcContentFwd, tmFwd,
-            methodFwd, startRev, endRev,
-            lengthRev, iupacSequenceRev, identityRev,
-            coverageRev, degeneracyRev, gcContentMeanRev,
-            gcContentRangeRev, tmMeanRev, tmRangeRev, sequenceRev,
-            gcContentRev, tmRev, methodRev,
-            roiStart, roiEnd"
+            msg, "This type of subsetting is not allowed for an
+            RprimerAssay object."
         )
     }
     if (is.null(msg)) {
@@ -248,7 +231,7 @@ S4Vectors::setValidity2("RprimerAssay", function(object) {
 
 # RprimerMatchOligo ============================================================
 
-#' An S4 class for representation of match percentages for oligos
+#' An S4 class for representation of match proportions of oligos
 #'
 #' @name RprimerMatchOligo-class
 #'
@@ -308,11 +291,10 @@ S4Vectors::setValidity2("RprimerMatchOligo", function(object) {
     )
 
    if (!all(colnames %in% names(object))) {
-        msg <- c(
-           msg, "The object must contain the following columns:
-            perfectMatch, oneMismatch, twoMismatches,
-            threeMismatches, fourOrMoreMismatches, offTargetMatch"
-        )
+       msg <- c(
+           msg, "This type of subsetting is not allowed for an
+            RprimerMatchOligo object."
+       )
     }
     if (is.null(msg)) {
         TRUE
@@ -320,3 +302,77 @@ S4Vectors::setValidity2("RprimerMatchOligo", function(object) {
         msg
     }
 })
+
+# RprimerMatchAssay ============================================================
+
+#' An S4 class for representation of match percentages for assays
+#'
+#' @name RprimerMatchOligo-class
+#'
+#' @description
+#' \code{RprimerMatchOligo} extends the \code{S4Vectors::DataFrame} class,
+#' without any additional slots. It has the same accessors and
+#' coercion, subsetting, and combining methods as the parent class, but has
+#' some additional checks for validity.
+#'
+#' @export
+#'
+#' @import methods
+#'
+#' @importClassesFrom S4Vectors DataFrame
+.RprimerMatchAssay <- setClass("RprimerMatchAssay", contains = "DataFrame")
+
+#' RprimerMatchAssay
+#'
+#' The constructor, \code{RprimerMatchAssay()},
+#' constructs an \code{RprimerMatchAssay} object in a similar fashion as the
+#' \code{S4Vectors::DataFrame()} constructor.
+#'
+#' @describeIn RprimerMatchAssay-class
+#'
+#' @param ...
+#' A data frame or list to be converted into an \code{RprimerMatchAssay}
+#' object.
+#'
+#' @return
+#' An \code{RprimerMatchAssay} object if validation succeeds, an error
+#' message otherwise.
+#'
+#' @export
+#'
+#' @importFrom S4Vectors DataFrame
+#'
+#' @references
+#' Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
+#' Foundation of vector-like and list-like containers in
+#' Bioconductor. R package version 0.28.0.
+#'
+#' @examples
+#' data("exampleRprimerMatchAssay")
+#' x <- as.data.frame(exampleRprimerMatchAssay)
+#' RprimerMatchAssay(x)
+RprimerMatchAssay <- function(...) {
+    df <- DataFrame(..., row.names = NULL, check.names = TRUE)
+    .RprimerMatchAssay(df)
+}
+
+#S4Vectors::setValidity2("RprimerMatchAssay", function(object) {
+#    msg <- NULL
+#    colnames <- c(
+#        "perfectMatch", "oneMismatch", "twoMismatches",
+#        "threeMismatches", "fourOrMoreMismatches",
+#        "offTargetMatch"
+#    )
+
+#    if (!all(colnames %in% names(object))) {
+#        msg <- c(
+#            msg, "This type of subsetting is not allowed for an
+#            RprimerMatchAssay object."
+#        )
+#    }
+#    if (is.null(msg)) {
+#        TRUE
+#    } else {
+#        msg
+#    }
+#})

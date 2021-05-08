@@ -1,7 +1,3 @@
-## Kolla med iranges.............. "identify oligo target"
-## tester
-## assay
-
 #' Check how oligos match to their target sequences (generic)
 #'
 #' @param x
@@ -72,7 +68,7 @@ setGeneric("checkMatch", function(x, target) standardGeneric("checkMatch"))
 #' @examples
 #' data("exampleRprimerOligo")
 #' data("exampleRprimerAlignment")
-#' x <- exampleRprimerOligo[1:10, ]
+#' x <- exampleRprimerOligo[1:2, ]
 #' target <- exampleRprimerAlignment
 #' checkMatch(x, target)
 setMethod("checkMatch", "RprimerOligo", function(x, target) {
@@ -92,18 +88,29 @@ setMethod("checkMatch", "RprimerOligo", function(x, target) {
 #' @examples
 #' data("exampleRprimerAssay")
 #' data("exampleRprimerAlignment")
-#' x <- exampleRprimerAssay[1:10, ]
+#' x <- exampleRprimerAssay[1:2, ]
 #' target <- exampleRprimerAlignment
 #' checkMatch(x, target)
 setMethod("checkMatch", "RprimerAssay", function(x, target) {
     if (!methods::is(target, "DNAMultipleAlignment")) {
         stop("'target' must be a DNAMultipleAlignment object.", call. = FALSE)
     }
-    #match <- .checkMatchAssay(x, target)
-    #RprimerMatchAssay(match)
+    match <- .checkMatchAssay(x, target)
+    RprimerMatchAssay(match)
 })
 
 # Helpers ======================================================================
+
+
+.identifyBindingRegion <- function(x, target) {
+    x <- Biostrings::DNAStringSet(x[[1]])
+    target <- Biostrings::DNAStringSet(target)
+    match <- Biostrings::vmatchPattern(x, target, max.mismatch = 5)
+    match <- as.data.frame(match)
+    start <- sort(table(match$start), decreasing = TRUE)[[1]]
+    end <- sort(table(match$end), decreasing = TRUE)[[1]]
+    c("start" = start, "end" = end)
+}
 
 .extractRange <- function(from, to, target, excludeAmbiguous = TRUE, ...) {
     selection <- target
@@ -174,5 +181,54 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
         "iupacSequence", "perfectMatch", "oneMismatch", "twoMismatches",
         "threeMismatches", "fourOrMoreMismatches", "offTargetMatch"
     )
+    all
+}
+
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAssay")
+#' x <- eampleRprimerAssay[1:4, ]
+#' .convertAssay(x)
+.convertAssay <- function(x) {
+    x <- as.data.frame(x)
+    fwd <- x[, grepl("Fwd", names(x))]
+    names(fwd) <- gsub("Fwd", "", names(fwd))
+    rev <- x[, grepl("Rev", names(x))]
+    names(rev) <- gsub("Rev", "", names(rev))
+    rev$sequence <- lapply(rev$sequence, function(x) {
+        x <- Biostrings::DNAStringSet(x)
+        x <- Biostrings::reverseComplement(x)
+        as.character(x)
+    })
+    pr <- x[, grepl("Pr", names(x))]
+    names(pr) <- gsub("Pr", "", names(pr))
+    list("fwd" = fwd, "rev" = rev, "pr" = pr)
+}
+
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' data("exampleRprimerAssay")
+#' x <- exampleRprimerAssay[1:2, ]
+#' target <- exampleRprimerAlignment
+#' .checkMatchAssay(x, target)
+.checkMatchAssay <- function(x, target) {
+    oligos <- .convertAssay(x)
+    fwd <- .checkMatchOligos(oligos$fwd, target)
+    names(fwd) <- paste0(names(fwd), "Fwd")
+    rev <- .checkMatchOligos(oligos$rev, target)
+    names(rev) <- paste0(names(rev), "Rev")
+    all <- cbind(fwd, rev)
+    if (any(grepl("Pr$", names(x)))) {
+        pr <- .checkMatchOligos(oligos$pr, target)
+        names(pr) <- paste0(names(pr), "Pr")
+        all <- cbind(all, pr)
+    }
     all
 }

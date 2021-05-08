@@ -143,7 +143,6 @@ setMethod("plotData", "RprimerAssay", function(x) {
     )
 })
 
-
 #' Plot an RprimerMatchOligo-object (method)
 #'
 #' @describeIn plotData
@@ -158,8 +157,26 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
         stop("'x' does not contain any observations.", call. = FALSE)
     }
     x <- as.data.frame(x)
-    .plotMatchOligos(x)
+    .plotMatchOligo(x)
 })
+
+#' Plot an RprimerMatchAssay-object (method)
+#'
+#' @describeIn plotData
+#'
+#' @export
+#'
+#' @examples
+#' data("exampleRprimerMatchAssay")
+#' plotData(exampleRprimerMatchAssay)
+setMethod("plotData", "RprimerMatchAssay", function(x) {
+    if (nrow(x) == 0L) {
+        stop("'x' does not contain any observations.", call. = FALSE)
+    }
+    x <- as.data.frame(x)
+    .plotMatchAssay(x)
+})
+
 
 # Helpers for plotting an RprimerOligo/Assay ===================================
 
@@ -691,7 +708,7 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
 
 # Helpers for plotting an RprimerMatchOligo object =============================
 
-.plotMatchOligos <- function(x) {
+.plotMatchOligo <- function(x) {
     mismatches <- value <- NULL
     id <- as.factor(seq_len(nrow(x)))
     x <- x[!names(x) == "offTargetMatch"]
@@ -722,6 +739,9 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
         ) +
         .themeRprimer(showLegend = TRUE)
 }
+
+# Helpers for plotting an RprimerMatchAssay object =============================
+
 
 # Plot theme ===================================================================
 
