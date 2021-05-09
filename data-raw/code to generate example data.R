@@ -32,5 +32,4 @@ save(exampleRprimerAssay, file = "exampleRprimerAssay.RData")
 save(exampleRprimerMatchOligo, file = "exampleRprimerMatchOligo.RData")
 save(exampleRprimerMatchAssay, file = "exampleRprimerMatchAssay.RData")
 
-
 tools::resaveRdaFiles(".")

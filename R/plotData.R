@@ -14,9 +14,10 @@
 #' @param highlight
 #' For \code{Rprimeroligo} objects, and
 #' \code{type = "overview"}:
-#' if a specific genomic region should be highlighted.
-#' A numeric vector, e.g. \code{c(100, 1000)}, defaults to \code{NULL}
-#' (i.e. no highlight).
+#' if a specific region should be highlighted.
+#' A numeric vector indicating the start and end position,
+#' e.g. \code{c(100, 1000)}, defaults to \code{NULL}
+#' (i.e., no highlight).
 #'
 #' @param rc
 #' For \code{Rprimeroligo} objects, and \code{type = "nucleotide"}:
@@ -538,6 +539,14 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
 
 # Helpers for plotting an RprimerProfile =======================================
 
+.identifyMask <- function(x) {
+    x <- as.data.frame(x)
+    x <- x[c("a", "c", "g", "t", "other", "gaps")]
+    x <- as.matrix(x)
+    masked <- apply(x, 1, function(y) all(is.na(y)))
+    which(masked)
+}
+
 #' Calculate running average
 #'
 #' @param x A numeric vector.
@@ -545,7 +554,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
 #' @param size
 #' The number of observations in each average.
 #' If \code{NULL}, the size will be set to the nearest positive, nonzero
-#' integer to \code{length(x)/100}.
+#' integer to \code{length(x) / 100}.
 #'
 #' @return A data frame with position and running average of \code{x}.
 #'
@@ -555,9 +564,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
 .runningAverage <- function(x, size = NULL) {
     if (is.null(size)) {
         size <- round(length(x) / 100)
-        if (size == 0) {
-            size <- 1
-        }
+        if (size == 0) size <- 1
     }
     sums <- c(0, cumsum(x))
     from <- seq_len(length(sums) - size)
@@ -571,7 +578,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
     data.frame(position, average)
 }
 
-.identityPlot <- function(x, highlight = NULL) {
+.identityPlot <- function(x, highlight = NULL, mask) {
     position <- identity <- average <- NULL
     averages <- .runningAverage(x$identity)
     xadj <- unique(x$position - seq_along(x$position))
@@ -585,13 +592,14 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
             data = averages, color = "#1B1C22",
             ggplot2::aes(x = position, y = average)
         ) +
+        .maskRegion(mask + xadj) +
         ggplot2::ylim(0, 1) +
         ggplot2::ylab("Identity") +
         ggplot2::xlab("") +
         .themeRprimer(showXAxis = FALSE)
 }
 
-.entropyPlot <- function(x, highlight = NULL) {
+.entropyPlot <- function(x, highlight = NULL, mask) {
     position <- entropy <- average <- NULL
     averages <- .runningAverage(x$entropy)
     xadj <- unique(x$position - seq_along(x$position))
@@ -605,14 +613,16 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
             data = averages,  color = "#1B1C22",
             ggplot2::aes(x = position, y = average)
         ) +
+        .maskRegion(mask + xadj) +
         ggplot2::ylab("Entropy") +
         ggplot2::xlab("") +
         .themeRprimer(showXAxis = FALSE)
 }
 
-.gcPlot <- function(x, highlight = NULL) {
+.gcPlot <- function(x, highlight = NULL, mask) {
     position <- average <- NULL
     gc <- ifelse(x$majority == "C" | x$majority == "G", 1, 0)
+    gc[is.na(gc)] <- 0
     averages <- .runningAverage(gc)
     xadj <- unique(x$position - seq_along(x$position))
     averages$position <- averages$position + xadj
@@ -628,41 +638,49 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
             data = averages, color = "#1B1C22",
             ggplot2::aes(x = position, y = average)
         ) +
+        .maskRegion(mask + xadj) +
         ggplot2::xlab("") +
         ggplot2::ylab("GC-content") +
         ggplot2::ylim(0, 1) +
         .themeRprimer(showXAxis = FALSE)
 }
 
-.gapPlot <- function(x, highlight = NULL) {
+.gapPlot <- function(x, highlight = NULL, mask) {
     position <- gaps <- NULL
+    xadj <- unique(x$position - seq_along(x$position))
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = position, y = gaps)
     ) +
         .highlightRegion(highlight) +
         ggplot2::geom_point(alpha = 1 / 3, shape = 1, color = "#93A8AC") +
+        .maskRegion(mask + xadj) +
         ggplot2::ylim(0, 1) +
         ggplot2::xlab("Position") +
         ggplot2::ylab("Gaps") +
         .themeRprimer()
 }
 
+.maskRegion <- function(x) {
+    ggplot2::geom_vline(xintercept = x,  color = "grey80")
+}
+
 .highlightRegion <- function(highlight = NULL) {
     ggplot2::annotate(
         "rect",
         xmin = min(highlight), xmax = max(highlight), ymin = -Inf, ymax = Inf,
-        color = "white", alpha = 0.2, fill = "grey20"
+        color = "white", alpha = 0.4, fill = "#9B6A6C"
     )
 }
 
 .plotOverview <- function(x, highlight = NULL) {
     x <- as.data.frame(x)
+    mask <- .identifyMask(x)
     patchwork::wrap_plots(
         list(
-            .identityPlot(x, highlight),
-            .entropyPlot(x, highlight),
-            .gcPlot(x, highlight),
-            .gapPlot(x, highlight)
+            .identityPlot(x, highlight, mask),
+            .entropyPlot(x, highlight, mask),
+            .gcPlot(x, highlight, mask),
+            .gapPlot(x, highlight, mask)
         ),
         ncol = 1
     )

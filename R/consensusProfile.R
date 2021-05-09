@@ -23,9 +23,7 @@
 #' The output contains the following information:
 #'
 #' \describe{
-#'   \item{position}{Position in the alignment.
-#'   Note that masked columns in the original alignment are removed, and
-#'   hence not taken into account when the position is determined.}
+#'   \item{position}{Position in the alignment.}
 #'   \item{a}{Proportion of A.}
 #'   \item{c}{Proportion of C.}
 #'   \item{g}{Proportion of G.}
@@ -115,7 +113,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' .consensusMatrix(exampleRprimerAlignment)
 .consensusMatrix <- function(x) {
     x <- Biostrings::consensusMatrix(x, as.prob = TRUE)
-    x <- x[, colSums(!is.na(x)) > 0, drop = FALSE] ## Removes masked columns
     colnames(x) <- seq_len(ncol(x))
     bases <- c("A", "C", "G", "T", "-")
     other <- colSums(x[!rownames(x) %in% bases, , drop = FALSE])
@@ -238,14 +235,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
         basesToInclude, .asIUPAC, character(1L),
         USE.NAMES = FALSE
     )
-    if (any(is.na(consensus))) {
-        warning(
-            "The consensus sequence contains 'NA' at at least one position.
-        Perharps an ambiguos base was the most common base
-        at these positions.",
-            call. = FALSE
-        )
-    }
     consensus
 }
 

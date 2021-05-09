@@ -101,17 +101,6 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
 
 # Helpers ======================================================================
 
-
-.identifyBindingRegion <- function(x, target) {
-    x <- Biostrings::DNAStringSet(x[[1]])
-    target <- Biostrings::DNAStringSet(target)
-    match <- Biostrings::vmatchPattern(x, target, max.mismatch = 5)
-    match <- as.data.frame(match)
-    start <- sort(table(match$start), decreasing = TRUE)[[1]]
-    end <- sort(table(match$end), decreasing = TRUE)[[1]]
-    c("start" = start, "end" = end)
-}
-
 .extractRange <- function(from, to, target, excludeAmbiguous = TRUE, ...) {
     selection <- target
     Biostrings::colmask(selection, ...) <- IRanges::IRanges(

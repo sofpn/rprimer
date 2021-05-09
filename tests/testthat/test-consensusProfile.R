@@ -30,7 +30,6 @@ test_that("consensusProfile works with a colmask", {
     Biostrings::colmask(testdata, invert = TRUE) <- 500:550
     prof <- consensusProfile(testdata)
     expect_s4_class(prof, "RprimerProfile")
-    expect_equal(prof$position, 1:51)
 })
 
 # .consensusMatrix =============================================================
@@ -77,11 +76,6 @@ test_that(".dnaBasesOnly works", {
 })
 
 # .iupacConsensus ==============================================================
-
-test_that(".iupacConsensus returns a warning when it should", {
-    testmat <- .consensusMatrix(testdata)[2:6, ]
-    expect_warning(.iupacConsensus(testmat, ambiguityThreshold = 0.2))
-})
 
 test_that(".iupacConsensus works", {
     selection <- testmat[, 200:220]

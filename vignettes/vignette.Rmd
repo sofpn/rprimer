@@ -26,13 +26,13 @@ library(rprimer)
 
 # Introduction
 
-Reverse transcription (RT) PCR based methods have become the gold standard for detection and quantification of viral nucleic acids in a wide variety of fields, including clinical diagnosis and food safety control. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false negative results.
+Reverse transcription (RT) PCR based methods are the gold standard for detection and quantification of viral nucleic acids in a wide variety of fields, including clinical diagnosis and food safety control. Successful RT-PCR analysis depends on several factors, but oligo (primer and probe) design is arguably the most critical part of assay development [@Bustin]. Poorly designed primers may reduce the efficiency of the RT or PCR and poorly designed probes may not hybridize properly with the target, which both can lead to underestimation of the target concentration or false negative results.
 
 The ideal oligo binds exclusively to a conserved part of the target of interest and does not fold or form stable interactions (primer dimers) with other oligos. Unfortunately, it is often both difficult and time consuming to identify target regions and oligo combinations that meet these criteria. Moreover, many viruses, especially RNA viruses who lack replication proofreading mechanism, evolve quickly and thereby pose great sequence diversity across large parts of their genomes. This makes sequence conservation analysis a key step of the design process, since primers or probes that captures only a part of the target variation can cause severe detection and quantification bias. 
 
 A common approach for amplifying sequence variable targets is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. The most ideal design strategy would therefore be to find oligo binding regions with as low degeneracy as possible.
 
-rprimer provides tools for analyzing sequence conservation and designing degenerate DNA oligos. A multiple DNA sequence alignment with intended target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots. 
+rprimer provides tools for analyzing sequence conservation and designing degenerate DNA oligos. A multiple DNA sequence alignment with intended target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard like plots. 
 
 In this document, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen.  
 
@@ -76,12 +76,21 @@ These sequences were collected by searching for “[a-z]”[porgn:__txid1678143]
 
 The alignment must be imported to R using the `readDNAMultipleAlignment()` function from the Biostrings package [@PagesBios]. The input file can contain from one to several thousands of sequences. 
 
-Below, I import the file "example_alignmnent.txt":  
+Below, I import the file "example_alignment.txt":  
 
 ```{r}
 filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 
 myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta")
+```
+
+For some applications, such as genotyping, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. `colMask()` from Biostrings [@PagesBios] can be used for this task: {#Mask}
+
+```{r}
+## Mask everything but position 3000 to 4000 and 5000 to 6000
+myMaskedAlignment <- myAlignment
+
+Biostrings::colmask(myMaskedAlignment, invert = TRUE) <- c(3000:4000, 5000:6000)
 ```
 
 ## Design
@@ -98,12 +107,12 @@ Once the alignment is imported, a consensus profile can be generated. At each po
 * Shannon entropy, which is a measurement of variability  [@shannon1951prediction]. It is calculated among all DNA bases that occurs at the specific position. A value of 0 indicate complete conservation among these bases, and a high value indicate high variability
 * Coverage, which describes the proportion of sequences in the target alignment, among all sequences with a DNA base, that are covered by the IUPAC consensus character 
 
+The consensus profile contains all the information needed for the subsequent design process.
+
 `consensusProfile()` has two arguments: 
 
 * `x`: a `Biostrings::MultipleDNAAlignment` object (see [Data import](#Data))
-* `ambiguityThreshold`: "detection level" for an ambiguous base. All DNA bases that occur with a relative frequency higher than the specified value will be included when the IUPAC consensus character is determined. Defaults to `0`, and can range from `0` to `0.2`. 
-
-Below, I  make a consensus profile from `myAlignment` with an ambiguity threshold of 5 %: 
+* `ambiguityThreshold`: "detection level" for an ambiguous base. All DNA bases that occur with a relative frequency higher than the specified value will be included in the IUPAC consensus character. Defaults to `0`, can range from `0` to `0.2`
 
 ```{r}
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
@@ -118,7 +127,7 @@ myConsensusProfile[100:110, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The results can be visualized using `plotData()`:
+The results be visualized by using `plotData()`:
 
 ```{r, fig.width=12, fig.height=6}
 plotData(myConsensusProfile)
@@ -126,7 +135,7 @@ plotData(myConsensusProfile)
 
 The dots represent the value at each position and the black lines represent centered running averages. High identity and low entropy values (in combination with low gap values) indicate high sequence conservation.
 
-It is possible to explore the data in more detail by zooming into a specific region of interest:
+The data can be explored in more detail by zooming into a specific region of interest:
 
 ```{r, fig.width=12, fig.height=6}
 ## Select position 1000 to 1500 in the consensus profile 
@@ -137,15 +146,23 @@ selection <- myConsensusProfile[
 plotData(selection)
 ```
 
-It is also possible to look closer at the nucleotide distribution, by specifying `type = nucleotide`: 
+The nucleotide distribution can be shown by specifying `type = nucleotide`: 
 
 ```{r, fig.width=12, fig.height=6}
 ## Select position 1000 to 1020 in the consensus profile 
 ntSelection <- myConsensusProfile[
   myConsensusProfile$position >= 1000 & myConsensusProfile$position <= 1020, 
-  ]
+]
 
 plotData(ntSelection, type = "nucleotide")
+```
+
+An alignment with masked columns (see `myMaskedAlignment` from the [previous step](#Data) is represented as follows: 
+
+```{r, fig.width=12, fig.height=6, warn=FALSE}
+myMaskedConsensusProfile <- consensusProfile(myMaskedAlignment, ambiguityThreshold = 0.05)
+
+plotData(myMaskedConsensusProfile)
 ```
 
 ### Step 2: `oligos` {#Step2}
@@ -188,8 +205,6 @@ An error message will return if no oligos are found. If so, a good idea could be
 
 **Design with default settings**
 
-In the first example, I show how to design oligos using the default settings as described above.
-
 ``` {r}
 myOligos <- oligos(myConsensusProfile)
 ```
@@ -217,9 +232,62 @@ The primer and probe candidates can be visualized using `plotData()`:
 plotData(myOligos)
 ```
 
+**Design with modified settings**
+
+Below, I show how to modify some of the design constraints. 
+
+```{r}
+myOligosModified <- oligos(myConsensusProfile, 
+                           maxDegeneracyPrimer = 32, 
+                           tmRangePrimer = c(50, 70),
+                           lengthPrimer = 16:24, 
+                           maxDegeneracyProbe = 1)
+```
+
+There are now more primer candidates (due to relaxed constraints) and less probe candidates (due to tighter constraints).
+
+```{r, fig.align="center", fig.width=12, fig.height=8}
+plotData(myOligosModified)
+```
+
+**Mixed primers**
+
+Below, I show how to design mixed primers. In this case, I select to not design probes. 
+
+```{r, fig.align="center", fig.width=12, fig.height=8}
+myMixedPrimers <- oligos(myConsensusProfile, 
+                         designStrategyPrimer = "mixed", 
+                         probe = FALSE)
+
+plotData(myMixedPrimers)
+```
+
+Results (first ten rows):
+
+```{r, echo=FALSE}
+myMixedPrimers[1:10, ] %>%
+  kbl(., digits = 2) %>%
+  kable_material(c("striped", "hover"), position = "right") %>%
+  scroll_box(width = "650px", height = "300px")
+```
+
+Importantly, for mixed primers, identity refers to the average identity within the 5' consensus part of the primer binding region and coverage refers to the average coverage of 3' degenerate part of the primer. For ambiguous oligos, both of these values are calculated for the entire oligo. For a detailed explanation of identity and coverage, see [Step 1](#Step1).
+
+As a comparison, I do the same for the dataset where [I masked all positions but 3000 to 4000 and 5000 to 6000](#Mask).
+
+```{r, fig.align="center", fig.width=12, fig.height=8, warn=FALSE}
+myMaskedMixedPrimers <- oligos(myMaskedConsensusProfile, 
+                               designStrategyPrimer = "mixed", 
+                               probe = FALSE)
+
+plotData(myMaskedMixedPrimers)
+```
+
+**Scoring and subsetting**
+
 All valid oligos are scored based on their average identity, coverage, degeneracy, GC-content and tm range. The value can range from 0 to 12, where 0 is considered best. Detailed information about the scoring system can be found in the manual (`?oligos`).
 
-The best scoring oligos are shown below:
+The best scoring oligos can be retrieved as follows: 
 
 ```{r, fig.align="center", fig.width=12, fig.height=8}
 ## Get the minimum score from myOligos 
@@ -255,82 +323,14 @@ Or as reverse complement, by specifying `rc = TRUE`:
 plotData(bindingRegion, type = "nucleotide", rc = TRUE)
 ```
 
-**Design with modified settings**
-
-In the next example, I show how to modify some of the design constraints: 
-
-```{r}
-myOligosModified <- oligos(myConsensusProfile, 
-                           maxDegeneracyPrimer = 32, 
-                           tmRangePrimer = c(50, 70),
-                           lengthPrimer = 16:24, 
-                           maxDegeneracyProbe = 1)
-```
-
-There are now more primer candidates (due to relaxed constraints) and less probe candidates (due to tighter constraints):
-
-```{r, fig.align="center", fig.width=12, fig.height=8}
-plotData(myOligosModified)
-```
-
-**Select a region of interest**
-
-Below, I show how to select a particular region of interest of the genome (position 1000 to 4000):
-
-```{r}
-roi <- myConsensusProfile[
-  myConsensusProfile$position >= 1000 & myConsensusProfile$position <= 4000, 
-  ]
-```
-
-**Design using the mixed strategy**
-
-I now design mixed primers for the region of interest above, and select to not design probes:
-
-```{r, fig.align="center", fig.width=12, fig.height=8}
-myMixedPrimers <- oligos(roi, 
-                         designStrategyPrimer = "mixed", 
-                         probe = FALSE)
-
-plotData(myMixedPrimers)
-```
-
-Results (first ten rows):
-
-```{r, echo=FALSE}
-myMixedPrimers[1:10, ] %>%
-  kbl(., digits = 2) %>%
-  kable_material(c("striped", "hover"), position = "right") %>%
-  scroll_box(width = "650px", height = "300px")
-```
-
-Importantly, for mixed primers, identity refers to the average identity within the 5' consensus part of the primer binding region and coverage refers to the average coverage of 3' degenerate part of the primer. For ambiguous oligos, both of these values are calculated for the entire oligo. For a detailed explanation of identity and coverage, see [Step 1](#Step1).
-
-**Masking**
-
-For sequencing applications such as genotyping, there is often an interest in amplifying a specific region of the genome. In such cases, the primer dataset can be masked to not contain forward primers after the start position and to not contain reverse primers after the end position of the intended amplicon.
-
-Below, I show how to create a subset of `myMixedPrimers`, where all primers between position 2000-3000 are removed: 
-
-```{r}
-myMixedPrimersMasked <- myMixedPrimers[
-  (myMixedPrimers$fwd & myMixedPrimers$end < 2000) |
-    (myMixedPrimers$rev & myMixedPrimers$start > 3000),
-]
-
-plotData(myMixedPrimersMasked)
-```
-
 ### Step 3: `assays` {#Step3}
 
-The next step is to find pairs of forward and reverse primers, and eventually, combine them with probes. Probes will be added if the input dataset contains probes. 
-
-`assays()` has two arguments:   
+The final step is to find pairs of forward and reverse primers, and eventually, to combine them with probes. Probes will be added if the input dataset contains them. 
+`assays()` has three arguments:   
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
-
-**[Här kan man med lätthet matcha primerpar på deras tm, men detta är inte helt optimalt enligt santalucia 2004, dock kanske det ar praktiskt gångbart ändå?]**
+* `tmDifferencePrimers`: the maximum allowed difference in tm between the primer pair. Defaults to `NULL`, which means that primers will be paired regardless of their tm. **[A NOTE ON TM DIFF]**
 
 An error message will return if no assays are found.
 
@@ -349,7 +349,7 @@ myAssays[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The output contains many columns, but it can be viewed by using `View(as.data.frame(myAssays))`, if you are working in RStudio. 
+The output contains many columns, but can be viewed as a whole by using `View(as.data.frame(myAssays))`, if you are working in RStudio. 
 
 Again, the results can be visualized using `plotData()`: 
 
@@ -371,16 +371,6 @@ myAssaySelection <- myAssays[myAssays$score == bestAssayScore, ]
 
 ## Plot these assays 
 plotData(myAssaySelection)
-```
-
-**Design with modified settings**
-
-To illustrate assay design with modified settings, I use the masked dataset from [Step 2](#Step2) (`masked`), where I designed primers to cover position 2000-3000: 
-
-```{r}
-myMixedAssays  <- assays(myMixedPrimersMasked, lengthRange = c(1000, 2000))
-
-plotData(myMixedAssays)
 ```
 
 ## Further handling of the data 
@@ -406,7 +396,7 @@ oligoSelectionMatch <- checkMatch(oligoSelection, target = myAlignment)
 oligoSelectionMatch[1:10, ] %>%
   kbl(., digits = 2) %>%
   kable_material(c("striped", "hover"), position = "right") %>%
-  scroll_box(width = "650px", height = "300px")
+  scroll_box(width = "650px")
 ```
 
 The output (on target matches) can be visualized using `plotData()`: 
@@ -427,7 +417,7 @@ assaySelectionMatch <- checkMatch(assaySelection, target = myAlignment)
 assaySelectionMatch %>%
   kbl(., digits = 2) %>%
   kable_material(c("striped", "hover"), position = "right") %>%
-  scroll_box(width = "650px", height = "300px")
+  scroll_box(width = "650px")
 ```
 
 The output (on target matches) can be visualized using `plotData()`: 
@@ -452,7 +442,7 @@ The columns named iupacSequence in `assaySelectionMatch` can be removed when pas
 assaySelection %>%
   kbl(., digits = 2) %>%
   kable_material(c("striped", "hover"), position = "right") %>%
-  scroll_box(width = "650px", height = "300px")
+  scroll_box(width = "650px")
 ```
 
 ### Oligo and assay binding regions 
@@ -601,9 +591,13 @@ The source code is available at https://github.com/sofpn/rprimer.
 
 To cite this package, please use: `citation("rprimer")`.
 
+# Acknowledgements 
+
+My sincere thanks goes to Sebastian Kapell, for providing valuable suggestions on how to improve this package.
+
 # Session info 
 
-The otput from `sessionInfo()` when generating this document is shown below. 
+The output from `sessionInfo()` from the system I generated this document on is shown below. 
 
 ```{r}
 sessionInfo()
