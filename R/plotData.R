@@ -760,6 +760,10 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
 
 # Helpers for plotting an RprimerMatchAssay object =============================
 
+.plotMatchAssay <- function(x) {
+    NULL
+}
+
 
 # Plot theme ===================================================================
 

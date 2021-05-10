@@ -128,6 +128,10 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     res[c(length(res), 1:(length(res) - 1))]
 }
 
+.getSequenceNames <- function(x, target) { ##############################################
+
+}
+
 .getMatchIndexOffTarget <- function(x, target) {
     result <- Biostrings::vcountPDict(x, target, max.mismatch = 4)
     which(colSums(result) > 0)

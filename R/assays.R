@@ -9,6 +9,11 @@
 #' Amplicon length range, a numeric vector [40, 5000], defaults to
 #' \code{c(65, 120)}.
 #'
+#' @param tmDifferencePrimers
+#' Maximum allowed difference between the mean tm of the forward and reverse
+#' primer (in Celcius degrees, as an absolute value). Defaults to \code{NULL},
+#' which means that primers will be paired regardless of their tm.
+#'
 #' @return
 #' An \code{RprimerAssay} object.
 #' An error message will return if no assays are found.
@@ -101,12 +106,15 @@
 #'
 #' ## Design assays using default settings
 #' assays(exampleRprimerOligo)
-assays <- function(x, lengthRange = c(65, 120)) {
+assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     if (!methods::is(x, "RprimerOligo")) {
         stop("'x' must be an RprimerOligo object.")
     }
     if (!(min(lengthRange) >= 40 && max(lengthRange) <= 5000)) {
         stop("'lengthRange' must be from 40 to 5000.", call. = FALSE)
+    }
+    if (!is.null(tmDifferencePrimers) && !is.numeric(tmDifferencePrimers)) {
+        stop("'tmDifferencePrimers must be either 'NULL' or a number.")
     }
     x <- as.data.frame(x)
     assays <- .combinePrimers(x[x$type == "primer", ], lengthRange)
@@ -158,7 +166,9 @@ assays <- function(x, lengthRange = c(65, 120)) {
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
 #' .combinePrimers(x)
-.combinePrimers <- function(x, lengthRange = c(65, 120)) {
+.combinePrimers <- function(x,
+                            lengthRange = c(65, 120),
+                            tmDifferencePrimers = NULL) {
     assays <- .pairPrimers(x)
     ampliconLength <- assays$endRev - assays$startFwd + 1
     start <- assays$startFwd
@@ -171,6 +181,11 @@ assays <- function(x, lengthRange = c(65, 120)) {
     )
     assays <- assays[assays$ampliconLength >= min(lengthRange), , drop = FALSE]
     assays <- assays[assays$ampliconLength <= max(lengthRange), , drop = FALSE]
+    if (!is.null(tmDifferencePrimers)) {
+        tmDifferencePrimers <- abs(tmDifferencePrimers)
+        tmDifference <- abs(assays$tmMeanFwd - assays$tmMeanRev)
+        assays <- assays[tmDifference <= tmDifferencePrimers, , drop = FALSE]
+    }
     if (nrow(assays) == 0L) {
         stop("No assays were found.", call. = FALSE)
     }

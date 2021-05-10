@@ -32,9 +32,9 @@ The ideal oligo binds exclusively to a conserved part of the target of interest 
 
 A common approach for amplifying sequence variable targets is to use degenerate oligos. A degenerate oligo has one or more positions with several possible bases, and the degeneracy refers to the number of unique sequence variants it encompasses. The ambiguous bases are specified by a code system determined by IUPAC. For instance, the IUPAC consensus base K can be either G or T, and N can be A, C, G or T. For some applications, it is not uncommon to use primers with up to several hundreds of sequence variants. However, as the degeneracy increases, the fraction of primers that match perfectly to the target sequence and the synthesized products decreases, which risks to reduce the amplification efficiency [@Rose]. The most ideal design strategy would therefore be to find oligo binding regions with as low degeneracy as possible.
 
-rprimer provides tools for analyzing sequence conservation and designing degenerate DNA oligos. A multiple DNA sequence alignment with intended target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard like plots. 
+rprimer provides tools for analyzing sequence conservation and designing degenerate DNA oligos. A multiple DNA sequence alignment with intended target sequences is used as input and the outputs consist of data frames (tabular data) and dashboard-like plots. 
 
-In this document, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen.  
+In this document, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen.
 
 The workflow is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability. 
 
@@ -84,7 +84,7 @@ filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta")
 ```
 
-For some applications, such as genotyping, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. `colMask()` from Biostrings [@PagesBios] can be used for this task: {#Mask}
+For some applications, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. `colMask()` from Biostrings [@PagesBios] can be used for this task.
 
 ```{r}
 ## Mask everything but position 3000 to 4000 and 5000 to 6000
@@ -157,7 +157,7 @@ ntSelection <- myConsensusProfile[
 plotData(ntSelection, type = "nucleotide")
 ```
 
-An alignment with masked columns (see `myMaskedAlignment` from the [previous step](#Data) is represented as follows: 
+An alignment with [masked columns](#Data) will be represented as follows:
 
 ```{r, fig.width=12, fig.height=6, warn=FALSE}
 myMaskedConsensusProfile <- consensusProfile(myMaskedAlignment, ambiguityThreshold = 0.05)
@@ -171,7 +171,7 @@ The next step is to design oligos. Primers must be designed and probes are optio
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence, which means that ambiguous bases can occur at any position in the primer
 
-* The **mixed strategy** generates primers from both the majority and the IUPAC consensus sequence. These primers consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region) and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. This strategy is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2], and aims to allow amplification of highly variable targets using minimally degenerate primers. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since 5' end mismatches are generally less detrimental than 3' end mismatches) [@Rose2]. In this way, the generated products will match the 5' ends of all primers perfectly, which allows them to be efficiently amplified in later PCR cycles. To provide a sufficiently high melting temperature (tm) in spite of mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy  
+* The **mixed strategy** generates primers from both the majority and the IUPAC consensus sequence. These primers consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region) and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. This strategy is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2], and aims to allow amplification of highly variable targets using minimally degenerate primers. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since 5' end mismatches are generally less detrimental than 3' end mismatches) [@Rose2]. In this way, the generated products will match the 5' ends of all primers perfectly, which allows them to be efficiently amplified in later PCR cycles. To provide a sufficiently high melting temperature (tm) in spite of mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy 
 
 Probes are always designed using the ambiguous strategy. 
 
@@ -191,15 +191,17 @@ The design settings (i.e., the arguments of `oligos()`) are:
 * `probe`: if probes should be designed, defaults to `TRUE`
 * `lengthProbe`: defaults to `18:22`
 * `maxDegeneracyProbe`: defaults to `4`
-* `avoidFiveEndGProbe`: if probes with a G at the terminal 5' end should be avoided (to prevent quenching of the 5' flourophore of hydrolysis probes), defaults to `TRUE` 
+* `avoidFiveEndGProbe`: if probes with a G at the terminal 5' end should be avoided (to prevent quenching of the 5' flourophore of hydrolysis probes), defaults to `TRUE`
 * `gcRangeProbe`: defaults to `c(0.40, 0.65)`
 * `tmRangeProbe`: defaults to `c(55, 70)`
 * `concProbe`: defaults to `250`
-* `concNa`: sodium ion concentration (in M) in the PCR reaction, defaults to `0.05` (50 mM) (for delta S and tm calculation)
+* `concNa`: sodium ion concentration in the PCR reaction (in M), defaults to `0.05` (50 mM) (for delta S and tm calculation)
 
 All sequence variants of an oligo must fulfill all specified design constraints to be considered as a potential candidate. 
 
 Oligos with sequence variants containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
+
+**[3 end complementarity]**
 
 An error message will return if no oligos are found. If so, a good idea could be to re-run the process from [Step 1](#Step1) and increase the `ambiguityThreshold` in `consensusProfile()`, and/or relax the design constraints above. 
 
@@ -254,18 +256,50 @@ plotData(myOligosModified)
 
 Below, I show how to design mixed primers. In this case, I select to not design probes. 
 
-```{r, fig.align="center", fig.width=12, fig.height=8}
+```{r}
 myMixedPrimers <- oligos(myConsensusProfile, 
                          designStrategyPrimer = "mixed", 
                          probe = FALSE)
+```
 
+```{r, fig.align="center", fig.width=12, fig.height=8, warn=FALSE}
 plotData(myMixedPrimers)
 ```
 
-Results (first ten rows):
+As a comparison, I do the same for the dataset where I [masked](#Data) all positions but 3000 to 4000 and 5000 to 6000.
+
+```{r}
+myMaskedMixedPrimers <- oligos(myMaskedConsensusProfile, 
+                               designStrategyPrimer = "mixed", 
+                               probe = FALSE)
+```
+
+```{r, fig.align="center", fig.width=12, fig.height=8, warn=FALSE}
+plotData(myMaskedMixedPrimers)
+```
+
+It is also possible to mask the primer dataset directly, by subsetting. Below, I show how to mask the `myMixedPrimers` dataset to only contain forward primers between position 3000 and 4000 and reverse primers between position 5000 and 6000. 
+
+```{r}
+fwdBindingRegion <- myMixedPrimers$fwd & 
+  myMixedPrimers$start >= 3000 &
+  myMixedPrimers$end <= 4000
+
+revBindingRegion <- myMixedPrimers$rev & 
+  myMixedPrimers$start >= 5000 &
+  myMixedPrimers$end <= 6000
+
+myMaskedMixedPrimers <- myMixedPrimers[fwdBindingRegion | revBindingRegion, ]
+```
+
+```{r, fig.align="center", fig.width=12, fig.height=8, warn=FALSE}
+plotData(myMaskedMixedPrimers)
+```
+
+Result output (first ten rows):
 
 ```{r, echo=FALSE}
-myMixedPrimers[1:10, ] %>%
+myMaskedMixedPrimers[1:10, ] %>%
   kbl(., digits = 2) %>%
   kable_material(c("striped", "hover"), position = "right") %>%
   scroll_box(width = "650px", height = "300px")
@@ -273,17 +307,7 @@ myMixedPrimers[1:10, ] %>%
 
 Importantly, for mixed primers, identity refers to the average identity within the 5' consensus part of the primer binding region and coverage refers to the average coverage of 3' degenerate part of the primer. For ambiguous oligos, both of these values are calculated for the entire oligo. For a detailed explanation of identity and coverage, see [Step 1](#Step1).
 
-As a comparison, I do the same for the dataset where [I masked all positions but 3000 to 4000 and 5000 to 6000](#Mask).
-
-```{r, fig.align="center", fig.width=12, fig.height=8, warn=FALSE}
-myMaskedMixedPrimers <- oligos(myMaskedConsensusProfile, 
-                               designStrategyPrimer = "mixed", 
-                               probe = FALSE)
-
-plotData(myMaskedMixedPrimers)
-```
-
-**Scoring and subsetting**
+**Scoring system**
 
 All valid oligos are scored based on their average identity, coverage, degeneracy, GC-content and tm range. The value can range from 0 to 12, where 0 is considered best. Detailed information about the scoring system can be found in the manual (`?oligos`).
 
@@ -300,6 +324,8 @@ oligoSelection <- myOligos[myOligos$score == bestOligoScore, ]
 ## Plot these oligos 
 plotData(oligoSelection)
 ```
+
+**Oligo binding regions**
 
 It is also possible to select a specific oligo and plot the nucleotide distribution of the binding region, by subsetting the consensus profile from [Step 1](#Step1). 
 
@@ -325,12 +351,13 @@ plotData(bindingRegion, type = "nucleotide", rc = TRUE)
 
 ### Step 3: `assays` {#Step3}
 
-The final step is to find pairs of forward and reverse primers, and eventually, to combine them with probes. Probes will be added if the input dataset contains them. 
+The final step is to find pairs of forward and reverse primers, and eventually, to combine them with probes. Probes will be added if the input dataset contains probes. 
+
 `assays()` has three arguments:   
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
-* `tmDifferencePrimers`: the maximum allowed difference in tm between the primer pair. Defaults to `NULL`, which means that primers will be paired regardless of their tm. **[A NOTE ON TM DIFF]**
+* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm.^[Please note that the strategy of matching primer tm is somewhat flawed. What in reality is of interest is the amount of primer bound at the annealing temperature (ta); a PCR is most efficient if the two primers hybridize to the target at the same extent at the ta. See  [@santalucia2004thermodynamics] for details on how to calculate the amount of hybridized primer at different temperatures.]
 
 An error message will return if no assays are found.
 
@@ -396,7 +423,7 @@ oligoSelectionMatch <- checkMatch(oligoSelection, target = myAlignment)
 oligoSelectionMatch[1:10, ] %>%
   kbl(., digits = 2) %>%
   kable_material(c("striped", "hover"), position = "right") %>%
-  scroll_box(width = "650px")
+  scroll_box(width = "650px", height = "300px")
 ```
 
 The output (on target matches) can be visualized using `plotData()`: 
@@ -462,7 +489,7 @@ It is now possible to indicate the amplicon region, using the `highlight` argume
 plotData(myConsensusProfile, highlight = c(from, to))
 ```
 
-To get a more detailed view, we can make a subset of the consensus profile to only contain the amplicon region: 
+To get a more detailed view, you can make a subset of the consensus profile to only contain the amplicon region: 
 
 ```{r}
 myAssayRegion <- myConsensusProfile[
@@ -593,11 +620,9 @@ To cite this package, please use: `citation("rprimer")`.
 
 # Acknowledgements 
 
-My sincere thanks goes to Sebastian Kapell, for providing valuable suggestions on how to improve this package.
+Sincere thanks to Sebastian Kapell, for reading and providing valuable comments on this document.
 
 # Session info 
-
-The output from `sessionInfo()` from the system I generated this document on is shown below. 
 
 ```{r}
 sessionInfo()
