@@ -6,6 +6,7 @@
 \alias{plotData,RprimerOligo-method}
 \alias{plotData,RprimerAssay-method}
 \alias{plotData,RprimerMatchOligo-method}
+\alias{plotData,RprimerMatchAssay-method}
 \title{Plot an Rprimer-object (generic)}
 \usage{
 plotData(x, ...)
@@ -17,6 +18,8 @@ plotData(x, ...)
 \S4method{plotData}{RprimerAssay}(x)
 
 \S4method{plotData}{RprimerMatchOligo}(x)
+
+\S4method{plotData}{RprimerMatchAssay}(x)
 }
 \arguments{
 \item{x}{An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.}
@@ -29,9 +32,10 @@ Type of plot: \code{"overview"}, or
 
 \item{highlight}{For \code{Rprimeroligo} objects, and
 \code{type = "overview"}:
-if a specific genomic region should be highlighted.
-A numeric vector, e.g. \code{c(100, 1000)}, defaults to \code{NULL}
-(i.e. no highlight).}
+if a specific region should be highlighted.
+A numeric vector indicating the start and end position,
+e.g. \code{c(100, 1000)}, defaults to \code{NULL}
+(i.e., no highlight).}
 
 \item{rc}{For \code{Rprimeroligo} objects, and \code{type = "nucleotide"}:
 If the plotted sequence should be displayed
@@ -53,6 +57,8 @@ Plot an RprimerOligo-object (method)
 Plot an RprimerAssay-object (method)
 
 Plot an RprimerMatchOligo-object (method)
+
+Plot an RprimerMatchAssay-object (method)
 }
 \section{Methods (by class)}{
 \itemize{
@@ -63,6 +69,8 @@ Plot an RprimerMatchOligo-object (method)
 \item \code{RprimerAssay}: 
 
 \item \code{RprimerMatchOligo}: 
+
+\item \code{RprimerMatchAssay}: 
 }}
 
 \examples{
@@ -99,4 +107,6 @@ data("exampleRprimerAssay")
 plotData(exampleRprimerAssay)
 data("exampleRprimerMatchOligo")
 plotData(exampleRprimerMatchOligo)
+data("exampleRprimerMatchAssay")
+plotData(exampleRprimerMatchAssay)
 }

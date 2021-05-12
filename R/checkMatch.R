@@ -113,7 +113,6 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     selection
 }
 
-
 .getMatchIndex <- function(x, target) {
     res <- lapply(seq(0, 3), function(i) {
         result <- Biostrings::vcountPDict(
@@ -128,8 +127,9 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     res[c(length(res), 1:(length(res) - 1))]
 }
 
-.getSequenceNames <- function(x, target) { ##############################################
-
+.getSequenceNames <- function(x, target) {
+    names(target) <- sub(" .*", "", names(target))
+    lapply(x, function(i) names(target)[i])
 }
 
 .getMatchIndexOffTarget <- function(x, target) {
@@ -139,13 +139,33 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
 
 .getMatchProportion <- function(x, target) {
     matching <- .getMatchIndex(x, target)
-    matching <- vapply(matching, length, double(1L), USE.NAMES = FALSE)
-    matching /  length(target)
+    sequenceNames <- .getSequenceNames(matching, target)
+    matching <- lapply(matching, function(x) length (x) / length(target))
+    matching <- do.call("cbind.data.frame", matching)
+    sequenceNames <- as.data.frame(t(do.call("cbind", list(sequenceNames))))
+    matching <- cbind(matching, sequenceNames)
+    matching <- matching[c(1, 6, 2, 7, 3, 8, 4, 9, 5, 10)]
+    names(matching) <- c(
+        "perfectMatch", "idPerfectMatch",
+        "oneMismatch", "idOneMismatch",
+        "twoMismatches", "idTwoMmismatches",
+        "threeMismatches", "idThreeMmismatches",
+        "fourOrMoreMismatches", "idFourOrMoreMmismatches"
+    )
+    matching
 }
 
 .getMatchProportionOffTarget <- function(x, target) {
     matching <- .getMatchIndexOffTarget(x, target)
-    length(matching) /  length(target)
+    sequenceNames <- .getSequenceNames(list(matching), target)
+    matching <- length(matching) /  length(target)
+    matching <- do.call("cbind.data.frame", list(matching))
+    sequenceNames <- as.data.frame(t(do.call("cbind", list(sequenceNames))))
+    matching <- cbind(matching, sequenceNames)
+    names(matching) <- c(
+        "offTargetMatch", "idOffTargetMatch"
+    )
+    matching
 }
 
 .checkMatchOligos <- function(x, target) {
@@ -157,8 +177,6 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
         .getMatchProportion(check, target)
     })
     onTarget <- do.call("rbind", onTarget)
-    onTarget <- as.data.frame(onTarget)
-
     offTarget <- lapply(seq_len(nrow(x)), function(i) {
         target <- .extractRange(
             x$start[[i]], x$end[[i]], target,
@@ -168,13 +186,7 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
         .getMatchProportionOffTarget(check, target)
     })
     offTarget <- do.call("rbind", offTarget)
-    offTarget <- as.data.frame(offTarget)
-    all <- cbind( x$iupacSequence, onTarget, offTarget)
-    names(all) <- c(
-        "iupacSequence", "perfectMatch", "oneMismatch", "twoMismatches",
-        "threeMismatches", "fourOrMoreMismatches", "offTargetMatch"
-    )
-    all
+    cbind("iupacSequence" = x$iupacSequence, onTarget, offTarget)
 }
 
 #' @keywords internal

@@ -158,7 +158,8 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
         stop("'x' does not contain any observations.", call. = FALSE)
     }
     x <- as.data.frame(x)
-    .plotMatchOligo(x)
+    .plotMatch(x)
+
 })
 
 #' Plot an RprimerMatchAssay-object (method)
@@ -177,7 +178,6 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
     x <- as.data.frame(x)
     .plotMatchAssay(x)
 })
-
 
 # Helpers for plotting an RprimerOligo/Assay ===================================
 
@@ -726,42 +726,83 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
 
 # Helpers for plotting an RprimerMatchOligo object =============================
 
-.plotMatchOligo <- function(x) {
+.plotMatch <- function(x, showLegend = TRUE, type = "oligo") {
     mismatches <- value <- NULL
     id <- as.factor(seq_len(nrow(x)))
-    x <- x[!names(x) == "offTargetMatch"]
+    x <- x[!(grepl("id", names(x)))]
     x <- cbind(id, x)
     x <- suppressMessages({reshape2::melt(x)})
     names(x)[3] <- "mismatches"
-    mismatchPalette <- grDevices::colorRampPalette(
-        rev(c("#9B6A6C", "#bdc9cc"))
-    )
     levels(x$mismatches) <- c(
-        "Perfect match", "1 mismatch",
-        paste0(seq(2, length(levels(x$mismatches)) - 2), " mismatches"),
-        paste0(length(levels(x$mismatches)) - 1, " or more mismatches")
+        "0 mismatches", "1 mismatch",
+        paste0(seq(2, length(levels(x$mismatches)) - 3), " mismatches"),
+        paste0(length(levels(x$mismatches)) - 2, " or more mismatches"),
+        "Off target matches"
     )
-    ggplot2::ggplot(data = x, ggplot2::aes(
-        fill = mismatches, x = id, y = value)
-    ) +
-        ggplot2::geom_bar(stat = "identity", position = "stack") +
-        ggplot2::ylab("Proportion of target sequences") +
+    if (type == "oligo") {
+        yLabels <- x$iupacSequence
+        } else {
+            yLabels <- paste0("assay ", id, ", ", type)
+        }
+    onTarget <- x[x$mismatches != "Off target matches", ]
+    offTarget <-  x[x$mismatches == "Off target matches", ]
+    ggplot2::ggplot(data = x, ggplot2::aes(x = id)) +
+        ggplot2::geom_bar(
+            data = onTarget,
+            ggplot2::aes(x = id, y = value, fill = mismatches),
+            stat = "identity", position = "stack"
+        ) +
+        ggplot2::geom_bar(
+            data = offTarget,
+            ggplot2::aes(x = id, y = value, fill = mismatches),
+            stat = "identity", position = "stack", width = 0.1
+        ) +
+        ggplot2::ylab("Proportion") +
         ggplot2::xlab("") +
         ggplot2::scale_x_discrete(
             limits = rev(levels(factor(x$id))),
-            labels = rev(x$iupacSequence)
+            labels = rev(yLabels)
         ) +
         ggplot2::coord_flip() +
         ggplot2::scale_fill_manual(
-            values = mismatchPalette(length(levels(x$mismatches)))
+            values = c(
+                "#BDC9CC", "#B4B1B4", "#AC999C",
+                "#A38183", "#9B6A6C", "#424B54"
+            )
         ) +
-        .themeRprimer(showLegend = TRUE)
+        .themeRprimer(showLegend = showLegend)
 }
 
 # Helpers for plotting an RprimerMatchAssay object =============================
 
 .plotMatchAssay <- function(x) {
-    NULL
+    fwd <- x[grepl("Fwd$", names(x))]
+    names(fwd) <- gsub("Fwd", "", names(fwd))
+    rev <- x[grepl("Rev$", names(x))]
+    names(rev) <- gsub("Rev", "", names(rev))
+    if (any(grepl("Pr$", names(x)))) {
+        pr <- x[grepl("Pr$", names(x))]
+        names(pr) <- gsub("Pr", "", names(pr))
+        patchwork::wrap_plots(
+            list(
+                .plotMatch(fwd, showLegend = FALSE, type = "fwd"),
+                .plotMatch(pr, type = "pr", showLegend = FALSE),
+                .plotMatch(rev, type = "rev")
+            ),
+            ncol = 3
+        )
+    } else {
+        patchwork::wrap_plots(
+            list(
+                .plotMatch(fwd, showLegend = FALSE, type = "fwd"),
+                .plotMatch(rev, type = "rev")
+            ),
+            ncol = 2
+        )
+    }
+
+
+
 }
 
 

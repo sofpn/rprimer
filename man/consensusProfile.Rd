@@ -30,9 +30,7 @@ The function is a wrapper to
 The output contains the following information:
 
 \describe{
-  \item{position}{Position in the alignment.
-  Note that masked columns in the original alignment are removed, and
-  hence not taken into account when the position is determined.}
+  \item{position}{Position in the alignment.}
   \item{a}{Proportion of A.}
   \item{c}{Proportion of C.}
   \item{g}{Proportion of G.}

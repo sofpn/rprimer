@@ -1,12 +1,13 @@
 
-# match assay - inkludera sekvensnamn i rapporten ?
-# match assay plot
-# även offtarget match i plotten
+# match instr + dok obj + validering
+# match tester
+
+# byt ref i vignette
 
 # 3end comp
 
 # for primrs only
-.detectComplementarity <- function(x, size = 4) {
+.detectComplementarity <- function(x, size = 5) {
     endFwd <- NULL
     endRev <- NULL
 }

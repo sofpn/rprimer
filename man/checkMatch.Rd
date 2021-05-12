@@ -18,7 +18,7 @@ checkMatch(x, target)
 \item{target}{The \code{Biostrings::DNAMultipleAlignment} object used for oligo/assay
 design.
 
-## Write details and limitations #########################
+## Write details and limitations
 - only taerg region selected, seq w amb bases rmoved, no pos
 
  the check will performed at all regions within the alignment except
@@ -79,12 +79,12 @@ The output contains the following information:
 \examples{
 data("exampleRprimerOligo")
 data("exampleRprimerAlignment")
-x <- exampleRprimerOligo[1:10, ]
+x <- exampleRprimerOligo[1:2, ]
 target <- exampleRprimerAlignment
 checkMatch(x, target)
 data("exampleRprimerAssay")
 data("exampleRprimerAlignment")
-x <- exampleRprimerAssay[1:10, ]
+x <- exampleRprimerAssay[1:2, ]
 target <- exampleRprimerAlignment
 checkMatch(x, target)
 }

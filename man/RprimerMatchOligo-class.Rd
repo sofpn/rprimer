@@ -5,7 +5,8 @@
 \alias{RprimerMatchOligo-class}
 \alias{.RprimerMatchOligo}
 \alias{RprimerMatchOligo}
-\title{An S4 class for representation of match percentages for oligos}
+\alias{.RprimerMatchAssay}
+\title{An S4 class for representation of match proportions of oligos}
 \usage{
 RprimerMatchOligo(...)
 }
@@ -26,6 +27,11 @@ some additional checks for validity.
 The constructor, \code{RprimerMatchOligo()},
 constructs an \code{RprimerMatchOligo} object in a similar fashion as the
 \code{S4Vectors::DataFrame()} constructor.
+
+\code{RprimerMatchOligo} extends the \code{S4Vectors::DataFrame} class,
+without any additional slots. It has the same accessors and
+coercion, subsetting, and combining methods as the parent class, but has
+some additional checks for validity.
 }
 \section{Functions}{
 \itemize{

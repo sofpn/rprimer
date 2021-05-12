@@ -4,13 +4,17 @@
 \alias{assays}
 \title{Design (RT)-PCR assays}
 \usage{
-assays(x, lengthRange = c(65, 120))
+assays(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL)
 }
 \arguments{
 \item{x}{An \code{RprimerOligo} object, with or without probes.}
 
 \item{lengthRange}{Amplicon length range, a numeric vector [40, 5000], defaults to
 \code{c(65, 120)}.}
+
+\item{tmDifferencePrimers}{Maximum allowed difference between the mean tm of the forward and reverse
+primer (in Celcius degrees, as an absolute value). Defaults to \code{NULL},
+which means that primers will be paired regardless of their tm.}
 }
 \value{
 An \code{RprimerAssay} object.
