@@ -28,14 +28,13 @@ library(rprimer)
 rprimer provides tools for designing degenerate DNA oligos for sequence
 variable targets.
 
-The package contains six functions:
+The package contains five functions:
 
   - `consensusProfile()`
   - `oligos()`
   - `assays()`
   - `checkMatch()`
   - `plotData()`
-  - `convertToDNAStringSet()`
 
 ## Workflow
 
@@ -185,14 +184,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMmismatches | threeMismatches | idThreeMmismatches | fourOrMoreMismatches | idFourOrMoreMmismatches | offTargetMatch | idOffTargetMatch |
-| :-------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :--------------- | --------------: | :----------------- | -------------------: | :---------------------- | -------------: | :--------------- |
-| GTTTCTGGGGTGACMGGGTTG |         0.96 | M73218.1….     |        0.04 | AB222183….    |          0.01 | JQ953665.1       |               0 |                    |                    0 |                         |           0.00 |                  |
-| CMGGGTTGATTCTCAGCCCT  |         0.93 | M73218.1….     |        0.07 | AB222183….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.00 |                  |
-| ACMGGGTTGATTCTCAGC    |         0.94 | M73218.1….     |        0.06 | AB222183….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.01 | AB780450….       |
-| CCTATWTTCATCCAACCAACC |         0.96 | M73218.1….     |        0.04 | AY575857….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.00 |                  |
-| TATWTTCATCCAACCAACCCC |         0.95 | M73218.1….     |        0.05 | FJ457024….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.00 |                  |
-| GATTCTCAGCCCTTCGCMMT  |         0.95 | M73218.1….     |        0.05 | AB222183….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.02 | HQ389544….       |
+| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMmismatches | threeMismatches | idThreeMmismatches | fourOrMoreMismatches | idFourOrMoreMmismatches | offTargetMatch | idOffTargetMatch |
+| :--------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :--------------- | --------------: | :----------------- | -------------------: | :---------------------- | -------------: | :--------------- |
+| ATWTTCATCCAACCAACCCCTT |         0.95 | M73218.1….     |        0.05 | FJ457024….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.00 |                  |
+| GTTGATTCTCAGCCCTTCG    |         0.92 | M73218.1….     |        0.07 | AY575857….    |          0.01 | AB222183.1       |               0 |                    |                    0 |                         |           0.06 | MH450021….       |
+| GACMGGGTTGATTCTCAG     |         0.94 | M73218.1….     |        0.06 | AB222183….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.02 | KU176131….       |
+| CCCTATWTTCATCCAACCAAC  |         0.96 | M73218.1….     |        0.04 | AY575857….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.00 |                  |
+| GGTTGATTCTCAGCCCTTCG   |         0.92 | M73218.1….     |        0.07 | AY575857….    |          0.01 | AB222183.1       |               0 |                    |                    0 |                         |           0.00 |                  |
+| TTCATCCAACCAACCCCTT    |         0.96 | M73218.1….     |        0.04 | FJ457024….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.00 |                  |
 
 The match table can be visualized using `plotData()`:
 
@@ -201,20 +200,6 @@ plotData(matchTableOligos)
 ```
 
 <img src="man/figures/README-unnamed-chunk-18-1.png" width="100%" />
-
-### Convert to fasta format
-
-`convertToDNAStringSet()` converts oligos and assays to a
-`Biostrings::DNAStringSet`-object, which can be exported to a fasta
-file.
-
-``` r
-## Convert the first two assays in myAssays 
-myAssaysConverted <- convertToDNAStringSet(myAssays[1:2, ])
-
-## Save as fasta-format
-Biostrings::writeXStringSet(myAssaysConverted, file = "myAssays.txt")
-```
 
 ## More information
 

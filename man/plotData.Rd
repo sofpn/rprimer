@@ -74,6 +74,8 @@ Plot an RprimerMatchAssay object (method)
 }}
 
 \examples{
+#### Plot an RprimerProfile object
+
 data("exampleRprimerProfile")
 prof <- exampleRprimerProfile
 
@@ -94,6 +96,9 @@ plotData(roi, type = "nucleotide")
 
 ## Plot the nucleotide distribution of the roi, as reverse complement
 plotData(roi, type = "nucleotide", rc = TRUE)
+
+### Plot an RprimerOligo object
+
 data("exampleRprimerOligo")
 oligos <- exampleRprimerOligo
 
@@ -103,10 +108,20 @@ plotData(oligos)
 ## Select a subset of the oligos, and plot
 selected <- oligos[oligos$start >= 5000, ]
 plotData(selected)
+
+### Plot an RprimerAssay object
+
 data("exampleRprimerAssay")
 plotData(exampleRprimerAssay)
+
+### Plot an RprimerMatchOligo object
+
 data("exampleRprimerMatchOligo")
 plotData(exampleRprimerMatchOligo)
+
+### Plot an RprimerMatchAssay object
+
 data("exampleRprimerMatchAssay")
 plotData(exampleRprimerMatchAssay)
+
 }

@@ -1,7 +1,6 @@
 #' @details
-#' The package contains six functions: \code{consensusProfile()},
-#' \code{oligos()}, \code{assays()}, \code{checkMatch()}, \code{plotData()} and
-#' \code{convertToDNAStringSet()}
+#' The package contains five functions: \code{consensusProfile()},
+#' \code{oligos()}, \code{assays()}, \code{checkMatch()} and \code{plotData()}
 #'
 #' @keywords internal
 "_PACKAGE"

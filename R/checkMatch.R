@@ -243,7 +243,7 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
         setdiff(res[[i]], res[[i + 1]])
     })
     res[[length(res) + 1]] <- setdiff(seq_along(target), unlist(res))
-    res[c(length(res), 1:(length(res) - 1))]
+    res[c(length(res), seq_len(length(res) - 1))]
 }
 
 .getSequenceNames <- function(x, target) {

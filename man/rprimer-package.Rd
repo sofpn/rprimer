@@ -9,15 +9,14 @@
 Functions and workflow for visualizing sequence conservation 
     and designing degenerate primers, probes and (RT)-(q/d)PCR assays from a 
     multiple DNA sequence alignment. The results can be presented in data frame 
-    format and visualized as dashboard-like plots. The workflow is developed 
+    format and visualized as dashboard like plots. The workflow is developed 
     primarily for sequence variable RNA viruses, but it should be equally useful 
     for other organisms with high sequence variability. For more information, 
     please see the package vignette.
 }
 \details{
-The package contains six functions: \code{consensusProfile()},
-\code{oligos()}, \code{assays()}, \code{checkMatch()}, \code{plotData()} and
-\code{convertToDNAStringSet()}
+The package contains five functions: \code{consensusProfile()},
+\code{oligos()}, \code{assays()}, \code{checkMatch()} and \code{plotData()}
 }
 \seealso{
 Useful links:

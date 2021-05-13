@@ -43,6 +43,8 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 #' @export
 #'
 #' @examples
+#' #### Plot an RprimerProfile object
+#'
 #' data("exampleRprimerProfile")
 #' prof <- exampleRprimerProfile
 #'
@@ -63,6 +65,7 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 #'
 #' ## Plot the nucleotide distribution of the roi, as reverse complement
 #' plotData(roi, type = "nucleotide", rc = TRUE)
+#'
 setMethod("plotData", "RprimerProfile", function(x,
                                                  type = "overview",
                                                  highlight = NULL,
@@ -102,6 +105,8 @@ setMethod("plotData", "RprimerProfile", function(x,
 #' @export
 #'
 #' @examples
+#' ### Plot an RprimerOligo object
+#'
 #' data("exampleRprimerOligo")
 #' oligos <- exampleRprimerOligo
 #'
@@ -111,6 +116,7 @@ setMethod("plotData", "RprimerProfile", function(x,
 #' ## Select a subset of the oligos, and plot
 #' selected <- oligos[oligos$start >= 5000, ]
 #' plotData(selected)
+#'
 setMethod("plotData", "RprimerOligo", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -131,8 +137,11 @@ setMethod("plotData", "RprimerOligo", function(x) {
 #' @export
 #'
 #' @examples
+#' ### Plot an RprimerAssay object
+#'
 #' data("exampleRprimerAssay")
 #' plotData(exampleRprimerAssay)
+#'
 setMethod("plotData", "RprimerAssay", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -151,8 +160,11 @@ setMethod("plotData", "RprimerAssay", function(x) {
 #' @export
 #'
 #' @examples
+#' ### Plot an RprimerMatchOligo object
+#'
 #' data("exampleRprimerMatchOligo")
 #' plotData(exampleRprimerMatchOligo)
+#'
 setMethod("plotData", "RprimerMatchOligo", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -169,8 +181,11 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
 #' @export
 #'
 #' @examples
+#' ### Plot an RprimerMatchAssay object
+#'
 #' data("exampleRprimerMatchAssay")
 #' plotData(exampleRprimerMatchAssay)
+#'
 setMethod("plotData", "RprimerMatchAssay", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
