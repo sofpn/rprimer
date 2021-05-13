@@ -215,7 +215,6 @@ S4Vectors::setValidity2("RprimerAssay", function(object) {
         "gcContentRev", "tmRev", "methodRev",
         "roiStart", "roiEnd"
     )
-
     if (!all(colnames %in% names(object))) {
         msg <- c(
             msg, "This type of subsetting is not allowed for an
@@ -289,7 +288,6 @@ S4Vectors::setValidity2("RprimerMatchOligo", function(object) {
         "threeMismatches", "fourOrMoreMismatches",
         "offTargetMatch"
     )
-
    if (!all(colnames %in% names(object))) {
        msg <- c(
            msg, "This type of subsetting is not allowed for an
@@ -307,10 +305,10 @@ S4Vectors::setValidity2("RprimerMatchOligo", function(object) {
 
 #' An S4 class for representation of match percentages for assays
 #'
-#' @name RprimerMatchOligo-class
+#' @name RprimerMatchAssay-class
 #'
 #' @description
-#' \code{RprimerMatchOligo} extends the \code{S4Vectors::DataFrame} class,
+#' \code{RprimerMatchAssay} extends the \code{S4Vectors::DataFrame} class,
 #' without any additional slots. It has the same accessors and
 #' coercion, subsetting, and combining methods as the parent class, but has
 #' some additional checks for validity.
@@ -356,23 +354,25 @@ RprimerMatchAssay <- function(...) {
     .RprimerMatchAssay(df)
 }
 
-#S4Vectors::setValidity2("RprimerMatchAssay", function(object) {
-#    msg <- NULL
-#    colnames <- c(
-#        "perfectMatch", "oneMismatch", "twoMismatches",
-#        "threeMismatches", "fourOrMoreMismatches",
-#        "offTargetMatch"
-#    )
-
-#    if (!all(colnames %in% names(object))) {
-#        msg <- c(
-#            msg, "This type of subsetting is not allowed for an
-#            RprimerMatchAssay object."
-#        )
-#    }
-#    if (is.null(msg)) {
-#        TRUE
-#    } else {
-#        msg
-#    }
-#})
+S4Vectors::setValidity2("RprimerMatchAssay", function(object) {
+    msg <- NULL
+    colnames <- c(
+        "perfectMatchFwd", "oneMismatchFwd", "twoMismatchesFwd",
+        "threeMismatchesFwd", "fourOrMoreMismatchesFwd",
+        "offTargetMatchFwd",
+        "perfectMatchRev", "oneMismatchRev", "twoMismatchesRev",
+        "threeMismatchesRev", "fourOrMoreMismatchesRev",
+        "offTargetMatchRev"
+    )
+    if (!all(colnames %in% names(object))) {
+        msg <- c(
+            msg, "This type of subsetting is not allowed for an
+            RprimerMatchAssay object."
+        )
+    }
+    if (is.null(msg)) {
+        TRUE
+    } else {
+        msg
+    }
+})

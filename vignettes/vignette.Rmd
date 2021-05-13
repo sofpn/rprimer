@@ -19,8 +19,7 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#
-devtools::load_all(".")
+#devtools::load_all(".")
 library(rprimer)
 ```
 
@@ -146,7 +145,7 @@ selection <- myConsensusProfile[
 plotData(selection)
 ```
 
-The nucleotide distribution can be shown by specifying `type = nucleotide`: 
+The nucleotide distribution can be displayed by specifying `type = nucleotide`: 
 
 ```{r, fig.width=12, fig.height=6}
 ## Select position 1000 to 1020 in the consensus profile 
@@ -171,7 +170,7 @@ The next step is to design oligos. Primers must be designed and probes are optio
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence, which means that ambiguous bases can occur at any position in the primer
 
-* The **mixed strategy** generates primers from both the majority and the IUPAC consensus sequence. These primers consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region) and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. This strategy is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2], and aims to allow amplification of highly variable targets using primers with minimal degeneracy. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since 5' end mismatches are generally less detrimental than 3' end mismatches) [@Rose2]. In this way, the generated products will match the 5' ends of all primers perfectly, which allows them to be efficiently amplified in later PCR cycles. To provide a sufficiently high melting temperature (tm) in spite of mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy 
+* The **mixed strategy** generates primers from both the majority and the IUPAC consensus sequence. These primers consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region) and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. This strategy is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2] and aims to allow amplification of highly variable targets using primers with minimal degeneracy. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since 5' end mismatches are generally less detrimental than 3' end mismatches) [@Rose2]. In this way, the generated products will match the 5' ends of all primers perfectly, which allows them to be efficiently amplified in later PCR cycles. To provide a sufficiently high melting temperature (tm) in spite of eventual 5' end mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy 
 
 Probes are always designed using the ambiguous strategy. 
 
@@ -278,7 +277,7 @@ myMaskedMixedPrimers <- oligos(myMaskedConsensusProfile,
 plotData(myMaskedMixedPrimers)
 ```
 
-It is also possible to mask the primer dataset directly, by subsetting. Below, I show how to mask the `myMixedPrimers` dataset to only contain forward primers between position 3000 and 4000 and reverse primers between position 5000 and 6000. 
+It is also possible to mask the primer dataset directly, by using subsetting methods. Below, I show how to mask the `myMixedPrimers` dataset to only contain forward primers between position 3000 and 4000 and reverse primers between position 5000 and 6000. 
 
 ```{r}
 fwdBindingRegion <- myMixedPrimers$fwd & 
@@ -305,7 +304,7 @@ myMaskedMixedPrimers[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-Importantly, for mixed primers, identity refers to the average identity within the 5' consensus part of the primer binding region and coverage refers to the average coverage of 3' degenerate part of the primer. For ambiguous oligos, both of these values are calculated for the entire oligo. For a detailed explanation of identity and coverage, see [Step 1](#Step1).
+An important point for mixed primers is that the identity in this case refers to the average identity within the 5' consensus part of the primer binding region and coverage refers to the average coverage of 3' degenerate part of the primer. For ambiguous oligos, both of these values are calculated for the entire oligo. For a detailed explanation of identity and coverage, see [Step 1](#Step1).
 
 **Scoring system**
 
@@ -327,7 +326,7 @@ plotData(oligoSelection)
 
 **Oligo binding regions**
 
-It is also possible to select a specific oligo and plot the nucleotide distribution of the binding region, by subsetting the consensus profile from [Step 1](#Step1). 
+It is also possible to select a specific oligo and plot the nucleotide distribution within the binding region, by subsetting the consensus profile from [Step 1](#Step1). 
 
 ```{r}
 ## Get the binding region of the first oligo in the selection above (first row): 
@@ -357,7 +356,7 @@ The final step is to find pairs of forward and reverse primers, and eventually, 
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
-* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm.^[Please note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta. See  [@santalucia2004thermodynamics] for details on how to calculate the amount of hybridized primer at different temperatures.]
+* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm.^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta. See  [@santalucia2004thermodynamics] for details on how to calculate the amount of hybridized primer at different temperatures.]
 
 An error message will return if no assays are found.
 
@@ -419,7 +418,7 @@ It is now possible to indicate the amplicon region, using the `highlight` argume
 plotData(myConsensusProfile, highlight = c(from, to))
 ```
 
-To get a more detailed view, you can make a subset of the consensus profile to only contain the amplicon region: 
+To get a more detailed view, it is also possible to make a subset of the consensus profile to only contain the amplicon region: 
 
 ```{r}
 myAssayRegion <- myConsensusProfile[
@@ -448,7 +447,7 @@ As a final step, it is often valuable to investigate how well the generated olig
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
 
-The output gives information on both the proportion and names of target sequences that match perfectly as well as with 1, 2, 3 or 4 or more mismatches to the oligo within the intended oligo binding region (i.e., on target match). It also reports the proportion of target sequences that matches to the oligo with no more than 4 mismatches within *all other regions* in the alignment (i.e., off target match). However, note that the output does not say anything about the type, position or severity of the mismatches.
+The output gives information on both the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo within the intended oligo binding region (i.e., on target match). It also reports the proportion of target sequences that matches to the oligo with no more than four mismatches within *all other regions* in the alignment (i.e., off target match). However, note that the output does not say anything about the type, position or severity of the mismatches.
 
 Below, I show how to use `checkMatch()` for both oligos and assays. The function is rather slow, especially if there are many target sequences, so a good idea could be to select only a few oligo or assay candidates to investigate. 
 
@@ -469,7 +468,7 @@ As with many of the other outputs, some variables can hold several values in eac
 
 ```{r}
 ## Get the id of all sequences that matches perfectly with the first oligo in the input dataset
-oligoSelectionMatch$perfectMatch[[1]] 
+oligoSelectionMatch$idPerfectMatch[[1]] 
 ```
 
 The output can be visualized using `plotData()`: 
@@ -477,6 +476,8 @@ The output can be visualized using `plotData()`:
 ```{r, fig.width=12, fig.height=8}
 plotData(oligoSelectionMatch)
 ```
+
+Recall that off target match refers to the proportion of target sequences that matches with no more than four mismatches to all other regions than the intended oligo binding region. 
 
 **Assays** 
 
@@ -523,11 +524,11 @@ assaySelection %>%
 
 Before proceeding to wet lab evaluation, it is highly recommended to evaluate the final primer and probe candidates for 1) the potential to form primer dimers and hairpin structures, and 2), the potential to (not) cross react with non-targets. 
 
-These tasks are best performed by other software. Below, I show how to export the results to file so that they can be analyzed by other tools.  
+These tasks are best performed by other software. Below, I show how to export the results to file so that they can be readily analyzed by other tools.  
 
 **Result tables**
 
-Result tables can be readily saved to .txt or .csv-files, for instance: 
+Result tables can be saved directly to .txt or .csv-files, for instance: 
 
 ```r
 write.csv(myAssays, file = "myAssays.csv", quote = FALSE, row.names = FALSE) 
@@ -536,7 +537,7 @@ write.table(myAssays, file = "myAssays.txt", quote = FALSE, row.names = FALSE)
 
 **Oligos and assays to fasta format**
 
-It is also possible to export the oligo sequences in fasta-format. `convertToDNAStringSet()` is used for converting oligos or assays to a `Biostrings::DNAStringSet`-object. 
+It is also possible to export the oligo sequences in fasta-format. `convertToDNAStringSet()` is used for converting oligos or assays to a `Biostrings::DNAStringSet`-object.  
 
 `convertToDNAStringSet()` has three arguments:   
 
@@ -628,7 +629,7 @@ To cite this package, please use: `citation("rprimer")`.
 
 # Session info 
 
-This document was produced under the following conditions:
+This vignette was generated under the following conditions:
 
 ```{r}
 sessionInfo()

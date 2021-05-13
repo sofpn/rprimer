@@ -1,4 +1,4 @@
-#' Plot an Rprimer-object (generic)
+#' Plot an Rprimer object (generic)
 #'
 #' @param x
 #' An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.
@@ -34,7 +34,7 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 
 # Methods ======================================================================
 
-#' Plot an RprimerProfile-object (method)
+#' Plot an RprimerProfile object (method)
 #'
 #' @describeIn plotData
 #'
@@ -91,7 +91,7 @@ setMethod("plotData", "RprimerProfile", function(x,
     }
 })
 
-#' Plot an RprimerOligo-object (method)
+#' Plot an RprimerOligo object (method)
 #'
 #' @describeIn plotData
 #'
@@ -122,7 +122,7 @@ setMethod("plotData", "RprimerOligo", function(x) {
     )
 })
 
-#' Plot an RprimerAssay-object (method)
+#' Plot an RprimerAssay object (method)
 #'
 #' @describeIn plotData
 #'
@@ -144,7 +144,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
     )
 })
 
-#' Plot an RprimerMatchOligo-object (method)
+#' Plot an RprimerMatchOligo object (method)
 #'
 #' @describeIn plotData
 #'
@@ -162,7 +162,7 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
 
 })
 
-#' Plot an RprimerMatchAssay-object (method)
+#' Plot an RprimerMatchAssay object (method)
 #'
 #' @describeIn plotData
 #'

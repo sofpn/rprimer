@@ -185,14 +185,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence          | perfectMatch | oneMismatch | twoMismatches | threeMismatches | fourOrMoreMismatches | offTargetMatch |
-| :--------------------- | -----------: | ----------: | ------------: | --------------: | -------------------: | -------------: |
-| TTCATCCAACCAACCCCTTYGC |         0.94 |        0.06 |          0.00 |               0 |                    0 |           0.00 |
-| TTGATTCTCAGCCCTTCG     |         0.94 |        0.05 |          0.01 |               0 |                    0 |           0.07 |
-| CGACAGAATTRATTTCGTCGGC |         0.94 |        0.05 |          0.01 |               0 |                    0 |           0.00 |
-| CMGGGTTGATTCTCAGCCCT   |         0.93 |        0.07 |          0.00 |               0 |                    0 |           0.00 |
-| TGATTCTCAGCCCTTCGCM    |         0.95 |        0.05 |          0.00 |               0 |                    0 |           0.00 |
-| CTGGGGTGACMGGGTTGATTC  |         0.95 |        0.05 |          0.01 |               0 |                    0 |           0.00 |
+| iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMmismatches | threeMismatches | idThreeMmismatches | fourOrMoreMismatches | idFourOrMoreMmismatches | offTargetMatch | idOffTargetMatch |
+| :-------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :--------------- | --------------: | :----------------- | -------------------: | :---------------------- | -------------: | :--------------- |
+| GTTTCTGGGGTGACMGGGTTG |         0.96 | M73218.1….     |        0.04 | AB222183….    |          0.01 | JQ953665.1       |               0 |                    |                    0 |                         |           0.00 |                  |
+| CMGGGTTGATTCTCAGCCCT  |         0.93 | M73218.1….     |        0.07 | AB222183….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.00 |                  |
+| ACMGGGTTGATTCTCAGC    |         0.94 | M73218.1….     |        0.06 | AB222183….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.01 | AB780450….       |
+| CCTATWTTCATCCAACCAACC |         0.96 | M73218.1….     |        0.04 | AY575857….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.00 |                  |
+| TATWTTCATCCAACCAACCCC |         0.95 | M73218.1….     |        0.05 | FJ457024….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.00 |                  |
+| GATTCTCAGCCCTTCGCMMT  |         0.95 | M73218.1….     |        0.05 | AB222183….    |          0.00 |                  |               0 |                    |                    0 |                         |           0.02 | HQ389544….       |
 
 The match table can be visualized using `plotData()`:
 

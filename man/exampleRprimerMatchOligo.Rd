@@ -3,7 +3,7 @@
 \docType{data}
 \name{exampleRprimerMatchOligo}
 \alias{exampleRprimerMatchOligo}
-\title{Proportion of matching sequences to a target}
+\title{Proportion of sequences that matches to oligos}
 \format{
 An \code{RprimerMatchOligo} object.
 }
@@ -16,26 +16,37 @@ The object contains the following information:
 \describe{
   \item{iupacSequence}{The oligo sequence in IUPAC format.}
   \item{perfectMatch}{Proportion of target sequences that matches perfectly
-  to the oligo within the intended oligo binding region.}
+  to the oligo within the intended binding region.}
+  \item{idPerfectMatch}{Names of all sequences that matches perfectly.}
   \item{oneMismatch}{Proportion of target sequences with one mismatch to
   the oligo
-  within the intended oligo binding region.}
+  within the intended binding region.}
+  \item{idOneMismatch}{Names of all sequences that matches with one
+  mismatch.}
   \item{twoMismatches}{Proportion of target sequences with two mismatches
   to the oligo
-  within the intended oligo binding region.}
+  within the intended binding region.}
+  \item{idTwoMismatches}{Names of all sequences that matches with two
+  mismatches.}
   \item{threeMismatches}{Proportion of target sequences with
   three mismatches to the oligo
-  within the intended oligo binding region.}
+  within the intended binding region.}
+  \item{idThreeMismatches}{Names of all sequences that matches with three
+  mismatches.}
   \item{fourOrMoreMismatches}{Proportion of target sequences with
   four or more mismatches to the oligo
-  within the intended oligo binding region.}
+  within the intended binding region.}
+  \item{idFourOrMoreMismatches}{Names of all sequences that matches with four
+  or more mismatches.}
   \item{offTargetMatch}{Proportion of target sequences that matches
   to the oligo with
-  no more than four mismatches to all other regions of the target alignment.}
+  no more than four mismatches to all other regions within the alignment.}
+  \item{idOffTargetMatch}{Names of all sequences that matches with
+  no more than four mismatches to all other regions within the alignment.}
  }
 }
 \details{
-This dataset describes the proportion of oligo sequences that
-matches to a set of HEV target sequences.
+This dataset describes the proportion of HEV target sequences that
+matches to a set of oligos.
 }
 \keyword{datasets}

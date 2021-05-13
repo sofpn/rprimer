@@ -7,7 +7,7 @@
 \alias{plotData,RprimerAssay-method}
 \alias{plotData,RprimerMatchOligo-method}
 \alias{plotData,RprimerMatchAssay-method}
-\title{Plot an Rprimer-object (generic)}
+\title{Plot an Rprimer object (generic)}
 \usage{
 plotData(x, ...)
 
@@ -48,17 +48,17 @@ See examples below.}
 A plot.
 }
 \description{
-Plot an Rprimer-object (generic)
+Plot an Rprimer object (generic)
 
-Plot an RprimerProfile-object (method)
+Plot an RprimerProfile object (method)
 
-Plot an RprimerOligo-object (method)
+Plot an RprimerOligo object (method)
 
-Plot an RprimerAssay-object (method)
+Plot an RprimerAssay object (method)
 
-Plot an RprimerMatchOligo-object (method)
+Plot an RprimerMatchOligo object (method)
 
-Plot an RprimerMatchAssay-object (method)
+Plot an RprimerMatchAssay object (method)
 }
 \section{Methods (by class)}{
 \itemize{
