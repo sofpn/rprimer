@@ -454,20 +454,7 @@ oligos <- function(x,
 
 # Helpers ======================================================================
 
-#' Arrange a vector into a matrix of "n-mers"
-#'
-#' \code{.nmers()} divides a vector into a matrix with \code{n} columns.
-#' It is used to generate all possible oligos of a specific length
-#' from a DNA sequence.
-#'
-#' @param x A vector.
-#'
-#' @param n Length of each "mer".
-#'
-#' @return A matrix with \code{n} columns. The first row will contain
-#' \code{x[1:n]}, the second \code{x[2:(n + 1)]}, and so on.
-#' In this way, the matrix will contain all possible consecutive
-#' sequences of \code{x} of length \code{n}.
+#' @noRd
 #'
 #' @examples
 #' .nmers(c("A", "G", "T", "T", "C", "G"), n = 4)
@@ -478,14 +465,7 @@ oligos <- function(x,
     do.call("rbind", nmers)
 }
 
-#' Count the degeneracy of a DNA sequence
-#'
-#' \code{.countDegeneracy()} finds the number of unique variants of
-#' a DNA sequence with (or without) degenerate bases.
-#'
-#' @param x A DNA sequence (a character vector).
-#'
-#' @return The number of sequence variants of x.
+#' @noRd
 #'
 #' @examples
 #' .countDegeneracy(c("A", "R", "T", "T", "N", "G"))
@@ -494,22 +474,7 @@ oligos <- function(x,
     prod(nNucleotides)
 }
 
-#' Split two matrices, and paste them together
-#'
-#' @param first
-#' The matrix that should appear first.
-#'
-#' @param last
-#' The matrix that should appear last.
-#'
-#' @param rev
-#' If reverse primers should be produced. \code{TRUE} or {FALSE}.
-#'
-#' @param combine
-#' If the two matrices should be pasted together in one. Defaults to \code
-#' {TRUE}. Otherwise a list with two matrices will return.
-#'
-#' @return A matrix.
+#' @noRd
 #'
 #' @examples
 #' .splitAndPaste(t(matrix(rep(1, 10))), t(matrix(rep(2, 10))))
@@ -533,6 +498,8 @@ oligos <- function(x,
     }
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' .generateOligos(exampleRprimerProfile, lengthOligo = 18)
@@ -576,6 +543,8 @@ oligos <- function(x,
     oligos
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- .generateOligos(exampleRprimerProfile)
@@ -602,6 +571,8 @@ oligos <- function(x,
     oligos
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- .generateOligos(exampleRprimerProfile)
@@ -626,6 +597,8 @@ oligos <- function(x,
     oligos[order]
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- .generateOligos(exampleRprimerProfile)
@@ -636,6 +609,8 @@ oligos <- function(x,
     ))
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- .generateOligos(exampleRprimerProfile)
@@ -654,6 +629,8 @@ oligos <- function(x,
     x
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- .generateOligos(exampleRprimerProfile)
@@ -669,6 +646,8 @@ oligos <- function(x,
     out
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- .generateOligos(exampleRprimerProfile)
@@ -691,6 +670,8 @@ oligos <- function(x,
     }
 }
 
+#' @noRd
+#'
 #' @examples
 #' .expandDegenerates(c("A", "R", "T", "T", "N", "G"))
 .expandDegenerates <- function(x) {
@@ -704,13 +685,7 @@ oligos <- function(x,
     all
 }
 
-#' Turn a list of oligos into a matrix with oligos
-#'
-#' \code{.makeOligoMatrix()} takes a list of oligos as input,
-#' where each element contains a
-#' character matrix with all sequence variants of an oligo,
-#' and returns a single matrix, where the "oligo ID" of each sequence
-#' variant is identified by its rowname.
+#' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
@@ -726,11 +701,7 @@ oligos <- function(x,
     x
 }
 
-#' Find the reverse complement of a DNA sequence
-#' @param x A matrix with DNA sequence(s).
-#'
-#' @return The reverse complement of \code{x}, a matrix with the same
-#' dimension as \code{x}, and with the same rownames.
+#' @noRd
 #'
 #' @examples
 #' .reverseComplement(matrix(c("A", "R", "T", "T", "N", "G")))
@@ -740,24 +711,7 @@ oligos <- function(x,
     rc
 }
 
-#' Identify oligos with a GC-clamp
-#'
-#' \code{.detectGcClamp()} detects the presence of a GC-clamp.
-#' A GC-clamp is identified as two to three G or C:s at
-#' the 3' end (within the last five bases).
-#'
-#' Helper function to \code{.getAllVariants()}.
-#'
-#' @param x
-#' A numeric matrix, where each row corresponds to a specific oligo.
-#' In this matrix, 1 corresponds to G or C, and 0 corresponds to A or T.
-#'
-#' @param rev
-#' If the check should be done in reverse direction.
-#'
-#' @return
-#' A logical vector, where \code{TRUE} indicates the
-#' presence of a GC-clamp.
+#' @noRd
 #'
 #' @examples
 #' seq <- matrix(c(1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0))
@@ -773,18 +727,7 @@ oligos <- function(x,
     }
 }
 
-#' Identify oligos with runs of the same nucleotide at the 3' end
-#'
-#' \code{.detectThreeEndRuns()} checks if the same nucleotide is repeated at
-#' at least 3 times at the terminal 3' end of an oligo (e.g. "AAA")
-#'
-#' @param x
-#' A matrix with DNA sequences.
-#'
-#' @param rev
-#' If the check should be done in reverse direction.
-#'
-#' @return A logical vector.
+#' @noRd
 #'
 #' @examples
 #' seq <- matrix(c("A", "C", "G", "G", "T", "T", "A", "A"))
@@ -800,17 +743,7 @@ oligos <- function(x,
     })
 }
 
-#' Detect mono- and di-nucleotide repeats
-#'
-#' \code{.detectRepeats()} checks whether an oligo has more than four
-#' consecutive "runs" of the same base (e.g. "AAAAA"),
-#' or more than three consecutive
-#' "runs"  of the same di-nucleotide (e.g. "ATATATAT").
-#'
-#' @param x A vector with DNA sequences.
-#'
-#' @return A logical vector, where \code{TRUE} indicates the presence of
-#' invalid di- or mononucleotide repeats.
+#' @noRd
 #'
 #' @examples
 #' .detectRepeats(c("ACTTTTCT", "ACTTTTTCT", "ATCTCTCTCA"))
@@ -822,14 +755,7 @@ oligos <- function(x,
     }, logical(1L))
 }
 
-#' Get all variants of oligos with degenerate bases
-#'
-#' \code{.getAllVariants()} returns all sequence variants of each oligo,
-#' both in sense and anti-sense
-#' (reverse complement) direction. It calculates GC-content and
-#' melting temperature, and provides information on the presence of a GC-clamp,
-#' terminal 3' end runs, mono- and di-nucleotide repeats
-#' and terminal five end G:s.
+#' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
@@ -876,7 +802,7 @@ oligos <- function(x,
     lapply(all, function(x) unname(split(unname(x), f = as.integer(names(x)))))
 }
 
-#' Calculate mean values and ranges for GC-content and Tm
+#' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
@@ -901,7 +827,7 @@ oligos <- function(x,
     cbind(means, ranges)
 }
 
-#' Turn a list with oligos into a data frame
+#' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
@@ -915,6 +841,8 @@ oligos <- function(x,
     do.call("cbind.data.frame", x)
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' .designOligos(exampleRprimerProfile)
@@ -952,7 +880,7 @@ oligos <- function(x,
     do.call("rbind", allOligos)
 }
 
-#' Check if vectors in a list are within a specified range
+#' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
@@ -962,7 +890,7 @@ oligos <- function(x,
     lapply(x, function(y) y >= min(range) & y <= max(range))
 }
 
-#' Convert a data frame with lists to a list of matrices
+#' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
@@ -994,8 +922,6 @@ oligos <- function(x,
 #' and row means represent the proportion of the desired design criteria that
 #' are fulfilled by specific sequence variants.
 #'
-#' Helper function to \code{.filterPrimers()} and \code{filterProbes()}.
-#'
 #' @param x A list with logical matrices.
 #'
 #' @param rowThreshold
@@ -1004,6 +930,8 @@ oligos <- function(x,
 #' @param colThreshold Minimum accepted value for column means.
 #'
 #' @return A logical vector.
+#'
+#' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
@@ -1027,6 +955,8 @@ oligos <- function(x,
     valid
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- .designOligos(exampleRprimerProfile)
@@ -1059,6 +989,8 @@ oligos <- function(x,
     x[x$okFwd | x$okRev, , drop = FALSE]
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- .designOligos(exampleRprimerProfile)
@@ -1109,6 +1041,7 @@ oligos <- function(x,
     cbind(type, x)
 }
 
+#' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
@@ -1137,6 +1070,8 @@ oligos <- function(x,
     x[x$fwd | x$rev, , drop = FALSE]
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- .designOligos(exampleRprimerProfile)
@@ -1173,6 +1108,8 @@ oligos <- function(x,
     cbind(type, x)
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- head(exampleRprimerOligo$identity)
@@ -1186,6 +1123,8 @@ oligos <- function(x,
     score
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- head(exampleRprimerOligo$degeneracy)
@@ -1199,6 +1138,8 @@ oligos <- function(x,
     score
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- head(exampleRprimerOligo$gcContentMean)
@@ -1213,6 +1154,8 @@ oligos <- function(x,
     score
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- head(exampleRprimerOligo$tmRange)
@@ -1226,6 +1169,8 @@ oligos <- function(x,
     score
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- head(exampleRprimerOligo)
@@ -1242,6 +1187,8 @@ oligos <- function(x,
     cbind(x, score)
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- .scoreOligos(.filterPrimers(.designOligos(exampleRprimerProfile)))

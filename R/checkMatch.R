@@ -237,6 +237,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
 
 # Helpers ======================================================================
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' .maskRange(from = 1, to = 10, exampleRprimerAlignment, invert = TRUE)
@@ -248,6 +250,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     Biostrings::DNAStringSet(selection)
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' data("exampleRprimerOligo")
@@ -269,6 +273,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     res[c(length(res), seq_len(length(res) - 1))]
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' target <- Biostrings::DNAStringSet(exampleRprimerAlignment)
@@ -278,6 +284,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     lapply(x, function(i) names(target)[i])
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' data("exampleRprimerOligo")
@@ -290,6 +298,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     which(colSums(result) > 0)
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' data("exampleRprimerOligo")
@@ -315,6 +325,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     matching
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' data("exampleRprimerOligo")
@@ -333,6 +345,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     matching
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' data("exampleRprimerOligo")
@@ -359,6 +373,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     cbind("iupacSequence" = x$iupacSequence, onTarget, offTarget)
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAssay")
 #' x <- eampleRprimerAssay[1:4, ]
@@ -379,6 +395,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     list("fwd" = fwd, "rev" = rev, "pr" = pr)
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' data("exampleRprimerAssay")

@@ -130,6 +130,8 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
 
 # Helpers =====================================================================
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
@@ -148,6 +150,8 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     cbind(fwd, rev)
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
@@ -178,6 +182,8 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     assays
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
@@ -191,6 +197,8 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     })
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
@@ -217,6 +225,8 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     x
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
@@ -227,6 +237,7 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     .extractProbes(x, probeCandidates)
 }
 
+#' @noRd
 .beautifyPrimers <- function(x) {
     drop <- c(
         "typeFwd", "fwdFwd", "revFwd", "typeRev", "fwdRev", "revRev",
@@ -245,6 +256,7 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     x
 }
 
+#' @noRd
 .beautifyProbes <- function(x) {
     drop <- c("typePr", "scorePr", "roiStartPr", "roiEndPr")
     x <- x[!(names(x) %in% drop)]

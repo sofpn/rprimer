@@ -1,8 +1,6 @@
-#' Split a DNA sequence into nearest neighbors
-#'
-#' @param x A vector with a DNA sequence.
-#'
-#' @return A vector with the nearest neighbors of \code{x}.
+# Helpers ======================================================================
+
+#' @noRd
 #'
 #' @examples
 #' .nn(c("A", "G", "C", "T"))
@@ -14,7 +12,7 @@
     }, character(1L))
 }
 
-#' Calculate stack values for dH or dS of nearest neighbors
+#' @noRd
 #'
 #' @examples
 #' x <- t(matrix(.nn(c("A", "C", "G"))))
@@ -26,7 +24,7 @@
     stack
 }
 
-#' Calculate initiation values for dH or dS of nearest neighbors
+#' @noRd
 #'
 #' @examples
 #' x <- t(matrix(.nn(c("A", "C", "G"))))
@@ -39,6 +37,8 @@
     initiation + penaltyFirst + penaltyLast
 }
 
+#' @noRd
+#'
 #' @examples
 #' .tmParameters(t(matrix(c("A", "G", "T", "T", "C", "G", "G", "T", "C", "G"))))
 .tmParameters <- function(x, concNa = 0.05) {
@@ -57,6 +57,8 @@
     m
 }
 
+#' @noRd
+#'
 #' @examples
 #' x <- .tmParameters(t(matrix(c("A", "G", "T", "T", "C", "G", "G", "T", "C"))))
 #' .tm(x)

@@ -98,6 +98,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 
 # Helpers ======================================================================
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' .consensusMatrix(exampleRprimerAlignment)
@@ -110,6 +112,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     rbind(x, other)
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -120,6 +124,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     mostCommon
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -129,21 +135,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     unname(consensus)
 }
 
-#' Convert DNA nucleotides into the corresponding IUPAC base
-#'
-#' \code{.asIUPAC()} takes several DNA nucleotides as input,
-#' and returns the degenerate base in IUPAC format.
-#'
-#' @param x
-#' A character vector of length one, containing DNA
-#' nucleotides (valid bases are A, C, G, T, - and .). Each base must
-#' be separated by a comma (,), e.g. 'A,C,G'.
-#' Characters other than A, C, G, T, and - will be ignored. However, when
-#' the input only consist of invalid bases,
-#' or if the bases are not separated by ',',
-#' \code{.asIUPAC()} will return NA.
-#'
-#' @return The corresponding IUPAC base.
+#' @noRd
 #'
 #' @examples
 #' .asIUPAC("A,G,C")
@@ -157,6 +149,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     unname(lookup$iupac[x])
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -167,6 +161,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     apply(s, 2, function(x) x / sum(x))
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -183,6 +179,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     consensus
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -195,6 +193,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     identity
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -207,6 +207,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     unname(entropy)
 }
 
+#' @noRd
+#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
