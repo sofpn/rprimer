@@ -76,7 +76,7 @@ filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta")
 ```
 
-For some applications, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. `colMask()` from Biostrings [@PagesBios] can be used for this task.
+For some applications, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. `colMask()` from Biostrings [@PagesBios] can be used for this task:
 
 ```{r}
 ## Mask everything but position 3000 to 4000 and 5000 to 6000
@@ -89,7 +89,7 @@ Biostrings::colmask(myMaskedAlignment, invert = TRUE) <- c(3000:4000, 5000:6000)
 
 ### Step 1: `consensusProfile` {#Step1}
 
-Once the alignment is imported, a consensus profile can be generated. At each position, information is collected about: 
+Once the alignment is imported, a consensus profile can be generated. At each position, the following information is collected: 
 
 * The relative frequency of the letters A, C, G, T and “other”
 * The relative frequency of gaps (-)
@@ -212,7 +212,7 @@ myOligos[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The manual (`?oligos`) contains a detailed description of each variable, but what may not be entirely self-explanatory is that some variables (e.g. `sequence` `gcContent` and `tm`) can hold several values in each row. All values within a specific row can be retrieved by:   
+The manual (`?oligos`) contains a detailed description of each variable, but what may not be entirely self-explanatory is that some variables (e.g. `sequence` `gcContent` and `tm`) can hold several values in each entry (i.e., each entry is a list). All values within a specific row can be retrieved by:   
 
 ```{r}
 myOligos$sequence[[1]] ## All sequence variants of the first oligo (i.e., first row) 
@@ -258,7 +258,7 @@ myMixedPrimers <- oligos(myConsensusProfile,
 plotData(myMixedPrimers)
 ```
 
-As a comparison, I do the same for the dataset where I [masked](#Data) all positions but 3000 to 4000 and 5000 to 6000.
+As a comparison, I do the same for the dataset where I [masked](#Data) all positions but 3000 to 4000 and 5000 to 6000:
 
 ```{r}
 myMaskedMixedPrimers <- oligos(myMaskedConsensusProfile, 
@@ -270,7 +270,7 @@ myMaskedMixedPrimers <- oligos(myMaskedConsensusProfile,
 plotData(myMaskedMixedPrimers)
 ```
 
-It is also possible to mask the primer dataset directly, by using subsetting methods. Below, I show how to mask the `myMixedPrimers` dataset to only contain forward primers between position 3000 and 4000 and reverse primers between position 5000 and 6000. 
+It is also possible to mask the primer dataset directly, by using subsetting methods. Below, I show how to mask the `myMixedPrimers` dataset to only contain forward primers between position 3000 and 4000 and reverse primers between position 5000 and 6000: 
 
 ```{r}
 fwdBindingRegion <- myMixedPrimers$fwd & 
@@ -297,7 +297,7 @@ myMaskedMixedPrimers[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-An important point for mixed primers is that the identity in this case refers to the average identity within the 5' consensus part of the primer binding region and coverage refers to the average coverage of 3' degenerate part of the primer. For ambiguous oligos, both of these values are calculated for the entire oligo. For a detailed explanation of identity and coverage, see [Step 1](#Step1).
+An important point for mixed primers is that the identity in this case refers to the average identity within the 5' consensus part of the primer binding region and coverage refers to the average coverage of 3' degenerate part of the primer. For ambiguous oligos, both of these values are calculated for the oligo as a whole. For a detailed explanation of identity and coverage, see [Step 1](#Step1).
 
 **Scoring system**
 
@@ -319,7 +319,7 @@ plotData(oligoSelection)
 
 **Oligo binding regions**
 
-It is also possible to select a specific oligo and plot the nucleotide distribution within the binding region, by subsetting the consensus profile from [Step 1](#Step1). 
+It is possible to select a specific oligo and plot the nucleotide distribution within the binding region, by subsetting the consensus profile from [Step 1](#Step1):
 
 ```{r}
 ## Get the binding region of the first oligo in the selection above (first row): 
@@ -343,13 +343,13 @@ plotData(bindingRegion, type = "nucleotide", rc = TRUE)
 
 ### Step 3: `assays` {#Step3}
 
-The final step is to find pairs of forward and reverse primers, and eventually, to combine them with probes. Probes will be added if the input dataset contains probes. 
+The final step is to find pairs of forward and reverse primers, and eventually, to combine them with probes. Probes will be added if the input dataset contains them. 
 
 `assays()` has three arguments:   
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
-* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm.^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta. See  [@santalucia2004thermodynamics] for details on how to calculate the amount of hybridized primer at different temperatures.]
+* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm.^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta [@santalucia2007physical]. The result outputs from `oligos()` and `assays()` contain the change in both entropy (delta S, salt corrected) and enthalpy (delta H) when an oligo and a perfectly matching target sequence goes from random coil to duplex state, and these data can be used for calculating the proportion of hybridized primer at different temperatures; see [@santalucia2007physical].
 
 An error message will return if no assays are found.
 
@@ -398,7 +398,7 @@ plotData(myAssaySelection)
 
 Oligo and assay binding region(s) can be inspected in more detail by using the consensus profile from [Step 1](#Step1). As an example, I select to take a closer look at the first assay in `myAssaySelection` from [Step 3](#Step3).
 
-The first step is to retrieve the start and end position of the assay, as follows:
+The start and end position of an assay can be retrieved as follows:
 
 ```{r}
 from <- myAssaySelection[1, ]$start
@@ -435,7 +435,7 @@ paste(myAssayRegion$iupac, collapse = "")
 
 ### Check match 
 
-As a final step, it is often valuable to investigate how well the generated oligos or assays match with each individual target sequence in the input alignment. `checkMatch()` can be used for this purpose. The function has two arguments: 
+As a final step, it is often valuable to investigate how well the generated oligos or assays match with each individual target sequence in the input alignment. `checkMatch()` can be used for this purpose. The function is a wrapper to `Biostrings::vcountPDict()` [@PagesBios], and has two arguments: 
 
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
@@ -449,6 +449,8 @@ Below, I show how to use `checkMatch()` for both oligos and assays. The function
 ```{r}
 oligoSelectionMatch <- checkMatch(oligoSelection, target = myAlignment)
 ```
+
+Output: 
 
 ```{r, echo=FALSE}
 oligoSelectionMatch[1:10, ] %>%
@@ -481,6 +483,8 @@ assaySelection <- myAssays[myAssays$score == min(myAssays$score), ]
 assaySelectionMatch <- checkMatch(assaySelection, target = myAlignment)
 ```
 
+Output:
+
 ```{r, echo=FALSE}
 assaySelectionMatch %>%
   kbl(., digits = 2) %>%
@@ -496,15 +500,19 @@ plotData(assaySelectionMatch)
 
 It is also possible to add the match information to the input oligo or assay by using `cbind()`. 
 
-The columns named iupacSequence in `assaySelectionMatch` can be removed when pasting the two objects together, to avoid duplication.
+The columns named iupacSequence in `assaySelectionMatch` can be removed when pasting the two objects together, to avoid duplication:
 
 ```{r}
+## Remove columns with 'iupacSequence' in their names in the match dataset
 toAdd <- assaySelectionMatch[
   !grepl("iupacSequence", names(assaySelectionMatch))
 ]
 
+## Combine the assay dataset with the match dataset  
 assaySelection <- cbind(assaySelection, toAdd)
 ```
+
+Output:
 
 ```{r, echo=FALSE}
 assaySelection %>%
@@ -521,7 +529,7 @@ These tasks are best performed by other software. Below, I show how to export th
 
 **Result tables**
 
-Result tables can be saved directly to .txt or .csv-files, for instance: 
+All result tables can be saved directly to .txt or .csv-files, for instance: 
 
 ```r
 write.csv(myAssays, file = "myAssays.csv", quote = FALSE, row.names = FALSE) 
@@ -530,7 +538,7 @@ write.table(myAssays, file = "myAssays.txt", quote = FALSE, row.names = FALSE)
 
 **Oligos and assays to fasta format**
 
-It is also possible to export the oligo sequences in fasta-format. To do this, the oligo or assay(s) of interest must first be converted to a `Biostrings::DNAStringSet` object, as  follows:
+It is also possible to export the oligo sequences in fasta-format. To do this, the oligo or assay(s) of interest must first be cocered to a `Biostrings::DNAStringSet` object, as  follows:
 
 ```{r}
 ## Convert the first two oligos 
@@ -542,9 +550,9 @@ as(myOligos[1:2, ], "DNAStringSet")
 as(myAssays[1:2, ], "DNAStringSet")
 ```
 
-Note that all sequences will be written in 3' to 5' direction. 
+Note that all sequences will be written in 3' to 5' direction, and that all sequence variants of each oligo will be printed.  
 
-The sequences can then be saved as fasta format, for example: 
+The sequences can now be saved as fasta format, for example: 
 
 ```r
 toFile <- as(myOligos, "DNAStringSet")
@@ -583,7 +591,7 @@ View(as.data.frame(myAssays))
 
 # Classes and example data
 
-The "rprimer" classes (`RprimerProfile`, `RprimerOligo`, `RprimerAssay`, `RprimerMatchOligo` and `RprimerMatchAssay`) are extensions of the `DataFrame` class from S4Vectors [@PagesS4], and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow`, `ncol`, `head`, `tail`, `rbind`, `cbind` etc. They can be coerced to traditional data frames by using `as.data.frame()`. 
+The "rprimer" classes (`RprimerProfile`, `RprimerOligo`, `RprimerAssay`, `RprimerMatchOligo` and `RprimerMatchAssay`) extends the `DataFrame` class from S4Vectors [@PagesS4], and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow()`, `ncol()`, `head()`, `tail()`, `rbind()`, `cbind()` etc. They can be coerced to traditional data frames by using `as.data.frame()``. 
 
 Example datasets of each class are provided with the package, and are loaded by: 
 

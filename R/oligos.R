@@ -1,7 +1,8 @@
 #' Design primers and probes
 #'
 #' \code{oligos()} designs oligos (primers and probes)
-#' from an \code{RprimerProfile} object.
+#' from an \code{RprimerProfile} object. Primers must be designed and probes
+#' are optional.
 #'
 #' @param x An \code{RprimerProfile} object.
 #'
@@ -83,7 +84,7 @@
 #'
 #' @param concNa
 #' The sodium ion concentration in the PCR reaction (in M). For calculation of
-#' tm and delta H.
+#' tm and delta S.
 #' A numeric vector [0.01, 1], defaults to \code{0.05} (50 mM).
 #'
 #' @section Output:
@@ -124,8 +125,7 @@
 #'   variants (in cal/K/mol).}
 #'   \item{method}{Design method used to generate the oligo: "ambiguous",
 #'   "mixedFwd" or "mixedRev".}
-#'   \item{score}{Oligo score, the lower the better.
-#'   See "Score" for more details.}
+#'   \item{score}{Oligo score, the lower the better.}
 #'   \item{roiStart}{First position of the input \code{RprimerProfile} object
 #'     (roi = region of interest).}
 #'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
@@ -296,10 +296,10 @@
 #' oligos(roi, probe = FALSE)
 #'
 #' ## Allow higher degeneracy
-#' oligos(roi,
-#'     maxDegeneracyPrimer = 32,
-#'     probe = FALSE
-#' )
+#' oligos(roi, maxDegeneracyPrimer = 32, probe = FALSE)
+#'
+#' ## Use the mixed strategy for primers
+#' oligos(roi, designStrategyPrimer = "mixed", probe = FALSE)
 oligos <- function(x,
                    maxGapFrequency = 0.01,
                    lengthPrimer = 18:22,

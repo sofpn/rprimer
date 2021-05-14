@@ -6,9 +6,7 @@
 #'
 #' @description
 #' \code{RprimerProfile} extends the \code{S4Vectors::DataFrame} class,
-#' without any additional slots. It has the same accessors and
-#' coercion, subsetting, and combining methods as the parent class, but has
-#' some additional checks for validity.
+#' without any additional slots.
 #'
 #' @export
 #'
@@ -77,9 +75,7 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 #'
 #' @description
 #' \code{RprimerOligo} extends the \code{S4Vectors::DataFrame} class,
-#' without any additional slots. It has the same accessors and
-#' coercion, subsetting, and combining methods as the parent class, but has
-#' some additional checks for validity.
+#' without any additional slots.
 #'
 #' @export
 #'

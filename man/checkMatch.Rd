@@ -15,32 +15,33 @@ checkMatch(x, target)
 \arguments{
 \item{x}{An \code{RprimerOligo} or \code{RprimerAssay} object.}
 
-\item{target}{The \code{Biostrings::DNAMultipleAlignment} object used for oligo/assay
-design.
-
-## Write details and limitations
-- only taerg region selected, seq w amb bases rmoved, no pos
-
- the check will performed at all regions within the alignment except
- for the intended binding region (to detect any potential issues with off
- target binding).
- performed at the intended binding region (all other regions will be
- excluded to not generate false ). Here, to avoid false negative results,
- sequences with ambiguous bases at the oligo binding region are removed.
-
-The function is a wrapper to \code{Biostrings::vcountPDict()}
-(Pages et al., 2020)}
+\item{target}{An alignment with intended target sequences, i.e., the
+\code{Biostrings::DNAMultipleAlignment} object that was used
+for designing the oligos/assays.}
 }
 \value{
 An \code{RprimerMatchOligo} or \code{RprimerMatchAssay} object. See details
 below.
 }
 \description{
-Check how oligos match to their target sequences (generic)
+\code{checkMatch()} checks how well the oligos within an \code{RprimerOligo}
+or \code{RprimerAssay} object match with their intended target sequences.
+}
+\details{
+Details:
+The output gives information on both the proportion and names of target
+sequences that match perfectly as well as with one, two, three or four or
+more mismatches to the oligo within the intended oligo binding region
+(i.e., on target match).
+It also reports the proportion of target sequences that matches to the
+oligo with no more than four mismatches within all other regions in
+the alignment (i.e., off target match).
 
-Check match of an RprimerOligo object (method)
+Note that the output does not say anything about the type,
+position or severity of the mismatches.
 
-Check match of an RprimerAssay object (method)
+The function is a wrapper to \code{Biostrings::vcountPDict()}
+(Pages et al., 2020)
 }
 \section{Methods (by class)}{
 \itemize{
@@ -199,16 +200,26 @@ The output contains the following information:
 }
 
 \examples{
+### RprimerOligo objects
+
 data("exampleRprimerOligo")
 data("exampleRprimerAlignment")
+
 x <- exampleRprimerOligo[1:2, ]
 target <- exampleRprimerAlignment
+
 checkMatch(x, target)
+
+### RprimerAssay objects
+
 data("exampleRprimerAssay")
 data("exampleRprimerAlignment")
+
 x <- exampleRprimerAssay[1:2, ]
 target <- exampleRprimerAlignment
+
 checkMatch(x, target)
+
 }
 \references{
 Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:

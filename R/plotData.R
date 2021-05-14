@@ -757,7 +757,10 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
     if (type == "oligo") {
         yLabels <- x$iupacSequence
         } else {
-            yLabels <- paste0("assay ", id, ", ", type)
+            yLabels <- paste0(
+                "assay ", id, ", ", type,
+                " (length: ", nchar(x$iupacSequence), ")"
+            )
         }
     onTarget <- x[x$mismatches != "Off target matches", ]
     offTarget <-  x[x$mismatches == "Off target matches", ]
@@ -815,11 +818,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
             ncol = 2
         )
     }
-
-
-
 }
-
 
 # Plot theme ===================================================================
 

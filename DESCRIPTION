@@ -28,8 +28,7 @@ Imports:
     methods,
     patchwork,
     reshape2,
-    S4Vectors,
-    ShortRead
+    S4Vectors
 Suggests: 
     BiocStyle,
     covr,

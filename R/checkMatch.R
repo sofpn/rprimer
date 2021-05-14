@@ -1,21 +1,27 @@
 #' Check how oligos match to their target sequences (generic)
 #'
+#' \code{checkMatch()} checks how well the oligos within an \code{RprimerOligo}
+#' or \code{RprimerAssay} object match with their intended target sequences.
+#'
 #' @param x
 #' An \code{RprimerOligo} or \code{RprimerAssay} object.
 #'
 #' @param target
-#' The \code{Biostrings::DNAMultipleAlignment} object used for oligo/assay
-#' design.
+#' An alignment with intended target sequences, i.e., the
+#' \code{Biostrings::DNAMultipleAlignment} object that was used
+#' for designing the oligos/assays.
 #'
-#' ## Write details and limitations
-#' - only taerg region selected, seq w amb bases rmoved, no pos
+#' @details Details:
+#' The output gives information on both the proportion and names of target
+#' sequences that match perfectly as well as with one, two, three or four or
+#' more mismatches to the oligo within the intended oligo binding region
+#' (i.e., on target match).
+#' It also reports the proportion of target sequences that matches to the
+#' oligo with no more than four mismatches within all other regions in
+#' the alignment (i.e., off target match).
 #'
-#'  the check will performed at all regions within the alignment except
-#'  for the intended binding region (to detect any potential issues with off
-#'  target binding).
-#'  performed at the intended binding region (all other regions will be
-#'  excluded to not generate false ). Here, to avoid false negative results,
-#'  sequences with ambiguous bases at the oligo binding region are removed.
+#' Note that the output does not say anything about the type,
+#' position or severity of the mismatches.
 #'
 #' The function is a wrapper to \code{Biostrings::vcountPDict()}
 #' (Pages et al., 2020)
@@ -76,18 +82,22 @@ setGeneric("checkMatch", function(x, target) standardGeneric("checkMatch"))
 #'   no more than four mismatches to all other regions within the alignment.}
 #'  }
 #'
-#'
 #' @examples
+#' ### RprimerOligo objects
+#'
 #' data("exampleRprimerOligo")
 #' data("exampleRprimerAlignment")
+#'
 #' x <- exampleRprimerOligo[1:2, ]
 #' target <- exampleRprimerAlignment
+#'
 #' checkMatch(x, target)
+#'
 setMethod("checkMatch", "RprimerOligo", function(x, target) {
     if (!methods::is(target, "DNAMultipleAlignment")) {
         stop("'target' must be a DNAMultipleAlignment object.", call. = FALSE)
     }
-    match <- .checkMatchOligos(x, target)
+    match <- .checkMatchOligo(x, target)
     RprimerMatchOligo(match)
 })
 
@@ -207,11 +217,16 @@ setMethod("checkMatch", "RprimerOligo", function(x, target) {
 #' @export
 #'
 #' @examples
+#' ### RprimerAssay objects
+#'
 #' data("exampleRprimerAssay")
 #' data("exampleRprimerAlignment")
+#'
 #' x <- exampleRprimerAssay[1:2, ]
 #' target <- exampleRprimerAlignment
+#'
 #' checkMatch(x, target)
+#'
 setMethod("checkMatch", "RprimerAssay", function(x, target) {
     if (!methods::is(target, "DNAMultipleAlignment")) {
         stop("'target' must be a DNAMultipleAlignment object.", call. = FALSE)
@@ -222,16 +237,32 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
 
 # Helpers ======================================================================
 
-.extractRange <- function(from, to, target, excludeAmbiguous = TRUE, ...) {
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' .maskRange(from = 1, to = 10, exampleRprimerAlignment, invert = TRUE)
+.maskRange <- function(from, to, target, ...) {
     selection <- target
     Biostrings::colmask(selection, ...) <- IRanges::IRanges(
         start = from, end = to
     )
-    selection <- Biostrings::DNAStringSet(selection)
-    if (excludeAmbiguous) selection <- ShortRead::clean(selection)
-    selection
+    Biostrings::DNAStringSet(selection)
 }
 
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' data("exampleRprimerOligo")
+#' x <- exampleRprimerOligo$sequence[[1]]
+#' x <- Biostrings::DNAStringSet(x)
+#' target <- Biostrings::DNAStringSet(exampleRprimerAlignment)
+#' .getMatchIndex(x, target)
 .getMatchIndex <- function(x, target) {
     res <- lapply(seq(0, 3), function(i) {
         result <- Biostrings::vcountPDict(
@@ -246,16 +277,46 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     res[c(length(res), seq_len(length(res) - 1))]
 }
 
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' target <- Biostrings::DNAStringSet(exampleRprimerAlignment)
+#' .getSequenceNames(1:2, target)
 .getSequenceNames <- function(x, target) {
     names(target) <- sub(" .*", "", names(target))
     lapply(x, function(i) names(target)[i])
 }
 
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' data("exampleRprimerOligo")
+#' target <- Biostrings::DNAStringSet(exampleRprimerAlignment)
+#' x <- exampleRprimerOligo$sequence[[1]]
+#' x <- Biostrings::DNAStringSet(x)
+#' .getMatchIndexOffTarget(x, target)
 .getMatchIndexOffTarget <- function(x, target) {
     result <- Biostrings::vcountPDict(x, target, max.mismatch = 4)
     which(colSums(result) > 0)
 }
 
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' data("exampleRprimerOligo")
+#' target <- Biostrings::DNAStringSet(exampleRprimerAlignment)
+#' x <- exampleRprimerOligo$sequence[[1]]
+#' x <- Biostrings::DNAStringSet(x)
+#' .getMatchProportion(x, target)
 .getMatchProportion <- function(x, target) {
     matching <- .getMatchIndex(x, target)
     sequenceNames <- .getSequenceNames(matching, target)
@@ -274,6 +335,17 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     matching
 }
 
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' data("exampleRprimerOligo")
+#' target <- Biostrings::DNAStringSet(exampleRprimerAlignment)
+#' x <- exampleRprimerOligo$sequence[[1]]
+#' x <- Biostrings::DNAStringSet(x)
+#' .getMatchProportionOffTarget(x, target)
 .getMatchProportionOffTarget <- function(x, target) {
     matching <- .getMatchIndexOffTarget(x, target)
     sequenceNames <- .getSequenceNames(list(matching), target)
@@ -285,9 +357,19 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     matching
 }
 
-.checkMatchOligos <- function(x, target) {
+#' @keywords internal
+#'
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerAlignment")
+#' data("exampleRprimerOligo")
+#' x <- exampleRprimerOligo[1:2, ]
+#' target <- exampleRprimerAlignment
+#' .checkMatchOligo(x, target)
+.checkMatchOligo <- function(x, target) {
     onTarget <- lapply(seq_len(nrow(x)), function(i) {
-        target <- .extractRange(
+        target <- .maskRange(
             x$start[[i]], x$end[[i]], target, invert = TRUE
         )
         check <- Biostrings::DNAStringSet(x$sequence[[i]])
@@ -295,9 +377,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     })
     onTarget <- do.call("rbind", onTarget)
     offTarget <- lapply(seq_len(nrow(x)), function(i) {
-        target <- .extractRange(
-            x$start[[i]], x$end[[i]], target,
-            excludeAmbiguous = FALSE, invert = FALSE
+        target <- .maskRange(
+            x$start[[i]], x$end[[i]], target, invert = FALSE
         )
         check <- Biostrings::DNAStringSet(x$sequence[[i]])
         .getMatchProportionOffTarget(check, target)
@@ -342,13 +423,13 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
 #' .checkMatchAssay(x, target)
 .checkMatchAssay <- function(x, target) {
     oligos <- .convertAssay(x)
-    fwd <- .checkMatchOligos(oligos$fwd, target)
+    fwd <- .checkMatchOligo(oligos$fwd, target)
     names(fwd) <- paste0(names(fwd), "Fwd")
-    rev <- .checkMatchOligos(oligos$rev, target)
+    rev <- .checkMatchOligo(oligos$rev, target)
     names(rev) <- paste0(names(rev), "Rev")
     all <- cbind(fwd, rev)
     if (any(grepl("Pr$", names(x)))) {
-        pr <- .checkMatchOligos(oligos$pr, target)
+        pr <- .checkMatchOligo(oligos$pr, target)
         names(pr) <- paste0(names(pr), "Pr")
         all <- cbind(all, pr)
     }

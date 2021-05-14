@@ -21,7 +21,7 @@ An \code{RprimerAssay} object.
 An error message will return if no assays are found.
 }
 \description{
-\code{assays()} combines forward, reverse primers
+\code{assays()} combines forward primers, reverse primers
 and probes to (RT)-PCR assays from an \code{RprimerOligo} object.
 }
 \section{Output}{
