@@ -4,9 +4,8 @@
 #'
 #' @return A vector with the nearest neighbors of \code{x}.
 #'
-#' @keywords internal
-#'
-#' @noRd
+#' @examples
+#' .nn(c("A", "G", "C", "T"))
 .nn <- function(x) {
     from <- (seq_along(x) - 1)[-1]
     to <- seq_along(x)[-1]
@@ -16,19 +15,6 @@
 }
 
 #' Calculate stack values for dH or dS of nearest neighbors
-#'
-#' @param x A matrix with nearest-neighbor pairs
-#' of DNA sequences.
-#'
-#' @param table The lookup table that should be used.
-#' Either 'dH' (entropy), 'dS' (enthalpy) or 'dG' (free energy)
-#'
-#' @return The corresponding values for dH, dS or dG (in cal/M).
-#' A numeric matrix.
-#'
-#' @keywords internal
-#'
-#' @noRd
 #'
 #' @examples
 #' x <- t(matrix(.nn(c("A", "C", "G"))))
@@ -42,19 +28,6 @@
 
 #' Calculate initiation values for dH or dS of nearest neighbors
 #'
-#' @param x A matrix with nearest-neighbor pairs
-#' of DNA sequences.
-#'
-#' @param table The lookup table that should be used.
-#' Either 'dH' (entropy), 'dS' (enthalpy) or 'dG' (free energy)
-#'
-#' @return The corresponding values for dH, dS or dG (in cal/M).
-#' A numeric vector.
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' x <- t(matrix(.nn(c("A", "C", "G"))))
 #' .initiate(x)
@@ -66,23 +39,6 @@
     initiation + penaltyFirst + penaltyLast
 }
 
-#' Get delta H and delta S values for Tm calculation
-#'
-#' \code{.tmParameters()} calculates and sums delta H and delta S for one or
-#' more perfectly matching DNA duplexes (oligo-target duplexes),
-#' using the nearest neighbor method. It also returns the number
-#' of phosphates and the sodium ion concentration. For Tm calculation.
-#'
-#' @param x A matrix with DNA sequences.
-#'
-#' @param concNa Sodium ion concentration in M.
-#'
-#' @return A numeric matrix.
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' .tmParameters(t(matrix(c("A", "G", "T", "T", "C", "G", "G", "T", "C", "G"))))
 .tmParameters <- function(x, concNa = 0.05) {
@@ -101,16 +57,6 @@
     m
 }
 
-#' Calculate melting temperature
-#'
-#' @param x A named vector with tm parameters.
-#'
-#' @param concOligo Oligo concentration in nM.
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' x <- .tmParameters(t(matrix(c("A", "G", "T", "T", "C", "G", "G", "T", "C"))))
 #' .tm(x)

@@ -98,16 +98,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 
 # Helpers ======================================================================
 
-#' Get consensus matrix
-#'
-#' @param x A \code{Biostrings::DNAMultipleAlignment} object.
-#'
-#' @return A consensus matrix.
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' .consensusMatrix(exampleRprimerAlignment)
@@ -120,12 +110,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     rbind(x, other)
 }
 
-#' Find the most common base in a named vector
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -136,16 +120,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     mostCommon
 }
 
-#' Majority consensus sequence
-#'
-#' @param x A consensus matrix.
-#'
-#' @return The majority consensus sequence (a character vector).
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -171,10 +145,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #'
 #' @return The corresponding IUPAC base.
 #'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' .asIUPAC("A,G,C")
 .asIUPAC <- function(x) {
@@ -187,16 +157,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     unname(lookup$iupac[x])
 }
 
-#' Subset a consensus matrix
-#'
-#' @param x A consensus matrix.
-#'
-#' @return A consensus bases with DNA bases (A, C, G, T) only.
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -207,21 +167,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     apply(s, 2, function(x) x / sum(x))
 }
 
-#' IUPAC consensus sequence
-#'
-#' @param x A consensus matrix.
-#'
-#' @param ambiguityThreshold
-#' At each position, all nucleotides with a proportion
-#' higher than the threshold will be included in
-#' the IUPAC consensus sequence.
-#'
-#' @return The consensus sequence (a character vector).
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -238,16 +183,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     consensus
 }
 
-#' Nucleotide identity
-#'
-#' @param x A consensus matrix.
-#'
-#' @return The nucleotide identity (a numeric vector).
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -260,16 +195,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     identity
 }
 
-#' Shannon entropy
-#'
-#' @param x A consensus matrix.
-#'
-#' @return The Shannon entropy (a numeric vector).
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)
@@ -282,21 +207,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     unname(entropy)
 }
 
-#' Coverage
-#'
-#' \code{.coverage()} calculates the proportion of bases
-#' that are covered within the ambiguous (IUPAC) bases. Gaps and ambiguous
-#' bases are not included in the calculation.
-#'
-#' @param x A consensus matrix.
-#'
-#' @return The coverage (a numeric vector). A value of 1 means that
-#' all bases are covered within the ambiguous base.
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerAlignment")
 #' x <- .consensusMatrix(exampleRprimerAlignment)

@@ -572,10 +572,6 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
 #' integer to \code{length(x) / 100}.
 #'
 #' @return A data frame with position and running average of \code{x}.
-#'
-#' @keywords internal
-#'
-#' @noRd
 .runningAverage <- function(x, size = NULL) {
     if (is.null(size)) {
         size <- round(length(x) / 100)
@@ -637,7 +633,8 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
 .gcPlot <- function(x, highlight = NULL, mask) {
     position <- average <- NULL
     gc <- ifelse(x$majority == "C" | x$majority == "G", 1, 0)
-    gc[is.na(gc)] <- 0
+    gc[x$majority == "-"] <- 0.5
+    gc[is.na(gc)] <- 0.5
     averages <- .runningAverage(gc)
     xadj <- unique(x$position - seq_along(x$position))
     averages$position <- averages$position + xadj

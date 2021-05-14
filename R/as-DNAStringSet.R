@@ -10,7 +10,6 @@
 #' @import methods
 setAs("RprimerOligo", "DNAStringSet", function(from) .toDNAStringSetOligo(from))
 
-
 #' Coerce an RprimerAssay object to a DNAStringset object
 #'
 #' @details

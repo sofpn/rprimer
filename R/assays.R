@@ -130,12 +130,6 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
 
 # Helpers =====================================================================
 
-#' Find all possible primer pairs
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
@@ -154,14 +148,6 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     cbind(fwd, rev)
 }
 
-#' Combine primers to assays
-#'
-#' @inheritParams assays
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
@@ -192,12 +178,6 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     assays
 }
 
-#' Find all possible probe candidates to all primer pairs
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
@@ -211,12 +191,6 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     })
 }
 
-#' Combine primers and probes
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
@@ -243,12 +217,6 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     x
 }
 
-#' Add probes to primer pairs.
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
