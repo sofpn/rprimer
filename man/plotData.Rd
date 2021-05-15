@@ -30,9 +30,8 @@ plotData(x, ...)
 Type of plot: \code{"overview"}, or
 \code{"nucleotide"}, defaults to \code{"overview"}.}
 
-\item{highlight}{For \code{Rprimeroligo} objects, and
-\code{type = "overview"}:
-if a specific region should be highlighted.
+\item{highlight}{For \code{Rprimeroligo} objects:
+if a specific region within an overview plot should be highlighted.
 A numeric vector indicating the start and end position,
 e.g. \code{c(100, 1000)}, defaults to \code{NULL}
 (i.e., no highlight).}

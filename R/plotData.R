@@ -12,9 +12,8 @@
 #' \code{"nucleotide"}, defaults to \code{"overview"}.
 #'
 #' @param highlight
-#' For \code{Rprimeroligo} objects, and
-#' \code{type = "overview"}:
-#' if a specific region should be highlighted.
+#' For \code{Rprimeroligo} objects:
+#' if a specific region within an overview plot should be highlighted.
 #' A numeric vector indicating the start and end position,
 #' e.g. \code{c(100, 1000)}, defaults to \code{NULL}
 #' (i.e., no highlight).
@@ -572,6 +571,8 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
 #' integer to \code{length(x) / 100}.
 #'
 #' @return A data frame with position and running average of \code{x}.
+#'
+#' @noRd
 .runningAverage <- function(x, size = NULL) {
     if (is.null(size)) {
         size <- round(length(x) / 100)

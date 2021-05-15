@@ -26,9 +26,6 @@ below.
 \description{
 \code{checkMatch()} checks how well the oligos within an \code{RprimerOligo}
 or \code{RprimerAssay} object match with their intended target sequences.
-}
-\details{
-Details:
 The output gives information on both the proportion and names of target
 sequences that match perfectly as well as with one, two, three or four or
 more mismatches to the oligo within the intended oligo binding region
@@ -36,12 +33,15 @@ more mismatches to the oligo within the intended oligo binding region
 It also reports the proportion of target sequences that matches to the
 oligo with no more than four mismatches within all other regions in
 the alignment (i.e., off target match).
-
+Ambiguous bases and gaps in the
+target sequences will be presented as mismatches.
+}
+\details{
 Note that the output does not say anything about the type,
 position or severity of the mismatches.
 
 The function is a wrapper to \code{Biostrings::vcountPDict()}
-(Pages et al., 2020)
+(Pages et al., 2020).
 }
 \section{Methods (by class)}{
 \itemize{

@@ -177,14 +177,14 @@ test_that(".mixOligos works", {
     test <- .mixOligos(x)
     testRev <- .mixOligos(x, rev = TRUE)
 
-    # test that mixed oligos are correct in fwd direction
+    ## test that mixed oligos are correct in fwd direction
     expect_equal(x$majoritySequence[, 1:12], test$iupacSequence[, 1:12])
     expect_equal(x$iupacSequence[, 13:18], test$iupacSequence[, 13:18])
     expect_equal(rowMeans(x$identityCoverage[[1]]), test$identity)
     expect_equal(rowMeans(x$identityCoverage[[2]]), test$coverage)
     expect_equal(unique(test$method), "mixedFwd")
 
-    # test that mixed oligos are correct in rev direction
+    ## test that mixed oligos are correct in rev direction
     expect_equal(x$majoritySequence[, 7:18], testRev$iupacSequence[, 7:18])
     expect_equal(x$iupacSequence[, 1:6], testRev$iupacSequence[, 1:6])
     expect_equal(rowMeans(x$coverageIdentity[[1]]), testRev$coverage)

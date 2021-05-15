@@ -2,6 +2,20 @@
 #'
 #' \code{checkMatch()} checks how well the oligos within an \code{RprimerOligo}
 #' or \code{RprimerAssay} object match with their intended target sequences.
+#' The output gives information on both the proportion and names of target
+#' sequences that match perfectly as well as with one, two, three or four or
+#' more mismatches to the oligo within the intended oligo binding region
+#' (i.e., on target match).
+#' It also reports the proportion of target sequences that matches to the
+#' oligo with no more than four mismatches within all other regions in
+#' the alignment (i.e., off target match).
+#' Ambiguous bases and gaps in the
+#' target sequences will be identified as mismatches.
+#' The function is a wrapper to \code{Biostrings::vcountPDict()}
+#' (Pages et al., 2020).
+#'
+#' Note that the output does not say anything about the type,
+#' position or severity of the mismatches.
 #'
 #' @param x
 #' An \code{RprimerOligo} or \code{RprimerAssay} object.
@@ -10,21 +24,6 @@
 #' An alignment with intended target sequences, i.e., the
 #' \code{Biostrings::DNAMultipleAlignment} object that was used
 #' for designing the oligos/assays.
-#'
-#' @details Details:
-#' The output gives information on both the proportion and names of target
-#' sequences that match perfectly as well as with one, two, three or four or
-#' more mismatches to the oligo within the intended oligo binding region
-#' (i.e., on target match).
-#' It also reports the proportion of target sequences that matches to the
-#' oligo with no more than four mismatches within all other regions in
-#' the alignment (i.e., off target match).
-#'
-#' Note that the output does not say anything about the type,
-#' position or severity of the mismatches.
-#'
-#' The function is a wrapper to \code{Biostrings::vcountPDict()}
-#' (Pages et al., 2020)
 #'
 #' @return
 #' An \code{RprimerMatchOligo} or \code{RprimerMatchAssay} object. See details
@@ -293,8 +292,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
 #' x <- exampleRprimerOligo$sequence[[1]]
 #' x <- Biostrings::DNAStringSet(x)
 #' .getMatchIndexOffTarget(x, target)
-.getMatchIndexOffTarget <- function(x, target) {
-    result <- Biostrings::vcountPDict(x, target, max.mismatch = 4)
+.getMatchIndexOffTarget <- function(x, target, max.mismatch = 4) {
+    result <- Biostrings::vcountPDict(x, target, max.mismatch = max.mismatch)
     which(colSums(result) > 0)
 }
 
