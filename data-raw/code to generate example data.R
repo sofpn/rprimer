@@ -10,19 +10,21 @@ exampleRprimerAlignment <- Biostrings::readDNAMultipleAlignment(
     format = "fasta"
 )
 
-#exampleRprimerAlignment <- Biostrings::maskGaps(
+# exampleRprimerAlignment <- Biostrings::maskGaps(
 #    exampleRprimerAlignment,
 #    min.fraction = 0.5, min.block.width = 1
-#)
+# )
 
 exampleRprimerProfile <- consensusProfile(exampleRprimerAlignment, 0.05)
 exampleRprimerOligo <- oligos(exampleRprimerProfile)
 exampleRprimerAssay <- assays(exampleRprimerOligo)
 exampleRprimerMatchOligo <- checkMatch(
-    exampleRprimerOligo[1:10, ], target = exampleRprimerAlignment
+    exampleRprimerOligo[1:10, ],
+    target = exampleRprimerAlignment
 )
 exampleRprimerMatchAssay <- checkMatch(
-    exampleRprimerAssay[1:5, ], target = exampleRprimerAlignment
+    exampleRprimerAssay[1:5, ],
+    target = exampleRprimerAlignment
 )
 
 save(exampleRprimerAlignment, file = "exampleRprimerAlignment.RData")

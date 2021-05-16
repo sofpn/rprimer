@@ -184,17 +184,25 @@ Probes are always designed using the ambiguous
 strategy.
 }
 
-\section{Validity checks}{
+\section{Validity check}{
 
 
 For an oligo to be considered as valid, all sequence variants must fulfill
 all the specified design constraints.
+}
+
+\section{Low complexity and primer dimer check}{
+
 
 Oligos with sequence variants containing
 more than four consecutive runs
 of the same
 nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
 of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
+
+A simplified homo-dimer check is performed for all primer candidates.
+A primer will be excluded from consideration if the last four (or more)
+bases at the 3´ end are complementary to some part of the primer itself.
 }
 
 \section{Tm}{

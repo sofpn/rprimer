@@ -64,12 +64,10 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 #'
 #' ## Plot the nucleotide distribution of the roi, as reverse complement
 #' plotData(roi, type = "nucleotide", rc = TRUE)
-#'
 setMethod("plotData", "RprimerProfile", function(x,
                                                  type = "overview",
                                                  highlight = NULL,
-                                                 rc = FALSE
-                                                 ) {
+                                                 rc = FALSE) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
     }
@@ -115,7 +113,6 @@ setMethod("plotData", "RprimerProfile", function(x,
 #' ## Select a subset of the oligos, and plot
 #' selected <- oligos[oligos$start >= 5000, ]
 #' plotData(selected)
-#'
 setMethod("plotData", "RprimerOligo", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -140,7 +137,6 @@ setMethod("plotData", "RprimerOligo", function(x) {
 #'
 #' data("exampleRprimerAssay")
 #' plotData(exampleRprimerAssay)
-#'
 setMethod("plotData", "RprimerAssay", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -163,14 +159,12 @@ setMethod("plotData", "RprimerAssay", function(x) {
 #'
 #' data("exampleRprimerMatchOligo")
 #' plotData(exampleRprimerMatchOligo)
-#'
 setMethod("plotData", "RprimerMatchOligo", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
     }
     x <- as.data.frame(x)
     .plotMatch(x)
-
 })
 
 #' Plot an RprimerMatchAssay object (method)
@@ -184,7 +178,6 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
 #'
 #' data("exampleRprimerMatchAssay")
 #' plotData(exampleRprimerMatchAssay)
-#'
 setMethod("plotData", "RprimerMatchAssay", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -674,7 +667,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
 }
 
 .maskRegion <- function(x) {
-    ggplot2::geom_vline(xintercept = x,  color = "grey80")
+    ggplot2::geom_vline(xintercept = x, color = "grey80")
 }
 
 .highlightRegion <- function(highlight = NULL) {
@@ -731,10 +724,10 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
     ggplot2::ggplot(
         data = x, ggplot2::aes(x = Position, y = Frequency, fill = Base)
     ) +
-    ggplot2::geom_bar(stat = "identity") +
-    ggplot2::scale_fill_manual(values = basePalette) +
-    ggplot2::ylab("Proportion") +
-    .themeRprimer(showLegend = TRUE)
+        ggplot2::geom_bar(stat = "identity") +
+        ggplot2::scale_fill_manual(values = basePalette) +
+        ggplot2::ylab("Proportion") +
+        .themeRprimer(showLegend = TRUE)
 }
 
 # Helpers for plotting an RprimerMatchOligo object =============================
@@ -744,7 +737,9 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
     id <- as.factor(seq_len(nrow(x)))
     x <- x[!(grepl("id", names(x)))]
     x <- cbind(id, x)
-    x <- suppressMessages({reshape2::melt(x)})
+    x <- suppressMessages({
+        reshape2::melt(x)
+    })
     names(x)[3] <- "mismatches"
     levels(x$mismatches) <- c(
         "0 mismatches", "1 mismatch",
@@ -754,14 +749,14 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
     )
     if (type == "oligo") {
         yLabels <- x$iupacSequence
-        } else {
-            yLabels <- paste0(
-                "assay ", id, ", ", type,
-                " (length: ", nchar(x$iupacSequence), ")"
-            )
-        }
+    } else {
+        yLabels <- paste0(
+            "assay ", id, ", ", type,
+            " (length: ", nchar(x$iupacSequence), ")"
+        )
+    }
     onTarget <- x[x$mismatches != "Off target matches", ]
-    offTarget <-  x[x$mismatches == "Off target matches", ]
+    offTarget <- x[x$mismatches == "Off target matches", ]
     ggplot2::ggplot(data = x, ggplot2::aes(x = id)) +
         ggplot2::geom_bar(
             data = onTarget,

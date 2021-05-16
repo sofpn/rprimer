@@ -18,6 +18,12 @@
 #' An \code{RprimerAssay} object.
 #' An error message will return if no assays are found.
 #'
+#' @section Primer dimer check:
+#' A simplified hetero-dimer check is performed for all assay candidates.
+#' An assay will be excluded from consideration if four (or more) bases
+#' of the 3' end of one primer are complementary to some part of the other
+#' primer (note that homo-dimers are checked during the oligo design step).
+#'
 #' @section Output:
 #'
 #' The output contains the following information:
@@ -128,7 +134,7 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     RprimerAssay(assays)
 }
 
-# Helpers =====================================================================
+# Helpers ======================================================================
 
 #' @noRd
 #'
@@ -140,7 +146,8 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     fwd <- x[x$fwd, ]
     rev <- x[x$rev, ]
     pairs <- expand.grid(
-        fwd$iupacSequence, rev$iupacSequenceRc, stringsAsFactors = FALSE
+        fwd$iupacSequence, rev$iupacSequenceRc,
+        stringsAsFactors = FALSE
     )
     names(pairs) <- c("fwd", "rev")
     fwd <- x[match(pairs$fwd, x$iupacSequence), ]
@@ -176,6 +183,14 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
         tmDifference <- abs(assays$tmMeanFwd - assays$tmMeanRev)
         assays <- assays[tmDifference <= tmDifferencePrimers, , drop = FALSE]
     }
+    threeEndComplementaryFwd <- .detectThreeEndComplementarity(
+        assays$iupacSequenceFwd, assays$iupacSequenceRev
+    )
+    assays <- assays[!threeEndComplementaryFwd, , drop = FALSE]
+    threeEndComplementaryRev <- .detectThreeEndComplementarity(
+        assays$iupacSequenceRev, assays$iupacSequenceRcFwd
+    )
+    assays <- assays[!threeEndComplementaryRev, , drop = FALSE]
     if (nrow(assays) == 0L) {
         stop("No assays were found.", call. = FALSE)
     }
@@ -207,7 +222,7 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
 .extractProbes <- function(x, probes) {
     nProbes <- vapply(probes, nrow, integer(1), USE.NAMES = FALSE)
     select <- lapply(seq_along(nProbes), function(x) {
-            rep(x, nProbes[[x]])
+        rep(x, nProbes[[x]])
     })
     select <- unlist(select)
     x <- x[select, , drop = FALSE]
@@ -250,7 +265,7 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     ] <- c("iupacSequenceRev", "sequenceRev")
     names(x)[
         names(x) %in% c("roiStartRev", "roiEndRev")
-    ]<- c("roiStart", "roiEnd")
+    ] <- c("roiStart", "roiEnd")
     x <- x[order(x$start), ]
     rownames(x) <- NULL
     x

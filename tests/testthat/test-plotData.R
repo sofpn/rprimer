@@ -29,7 +29,8 @@ test_that("plotData works", {
     expect_true(ggplot2::is.ggplot(p))
     expect_error(plotData(exampleRprimerProfile, rc = "t", type = "nucleotide"))
     expect_error(plotData(exampleRprimerProfile, type = "nt"))
-    p <- ggplot2::ggplot() + .themeRprimer(showXAxis = FALSE, showYAxis = FALSE)
+    p <- ggplot2::ggplot() +
+        .themeRprimer(showXAxis = FALSE, showYAxis = FALSE)
     expect_true(ggplot2::is.ggplot(p))
 })
 
@@ -38,8 +39,9 @@ test_that("plotData returns an error when it should", {
     expect_error(plotData(exampleRprimerProfile, shadeFrom = FALSE))
     expect_error(plotData(exampleRprimerProfile, shadeTo = FALSE))
     expect_error(plotData(
-        exampleRprimerProfile, type = "nucleotide", rc = "FALSE")
-    )
+        exampleRprimerProfile,
+        type = "nucleotide", rc = "FALSE"
+    ))
     expect_error(plotData(exampleRprimerProfile, type = ""))
     expect_error(plotData(unclass(exampleRprimerOligo)))
     expect_error(plotData(unclass(exampleRprimerAssay)))

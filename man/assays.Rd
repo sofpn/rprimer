@@ -24,6 +24,14 @@ An error message will return if no assays are found.
 \code{assays()} combines forward primers, reverse primers
 and probes to (RT)-PCR assays from an \code{RprimerOligo} object.
 }
+\section{Primer dimer check}{
+
+A simplified hetero-dimer check is performed for all assay candidates.
+An assay will be excluded from consideration if four (or more) bases
+of the 3' end of one primer are complementary to some part of the other
+primer (note that homo-dimers are checked during the oligo design step).
+}
+
 \section{Output}{
 
 

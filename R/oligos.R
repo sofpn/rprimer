@@ -166,16 +166,22 @@
 #' Probes are always designed using the ambiguous
 #' strategy.
 #'
-#' @section Validity checks:
+#' @section Validity check:
 #'
 #' For an oligo to be considered as valid, all sequence variants must fulfill
 #' all the specified design constraints.
+#'
+#' @section Low complexity and primer dimer check:
 #'
 #' Oligos with sequence variants containing
 #' more than four consecutive runs
 #' of the same
 #' nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
 #' of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
+#'
+#' A simplified homo-dimer check is performed for all primer candidates.
+#' A primer will be excluded from consideration if the last four (or more)
+#' bases at the 3´ end are complementary to some part of the primer itself.
 #'
 #' @section Tm:
 #'
@@ -797,8 +803,8 @@ oligos <- function(x,
     all$dS <- tmParam[, "sumdS"]
     names(all$dS) <- rownames(tmParam)
     all$sequence <- apply(all$sequence, 1, paste, collapse = "")
-    all$repeats <- .detectRepeats(all$sequence)
     all$sequenceRc <- apply(all$sequenceRc, 1, paste, collapse = "")
+    all$repeats <- .detectRepeats(all$sequence)
     lapply(all, function(x) unname(split(unname(x), f = as.integer(names(x)))))
 }
 
@@ -992,6 +998,24 @@ oligos <- function(x,
 #' @noRd
 #'
 #' @examples
+#' data("exampleRprimerOligo")
+#' x <- exampleRprimerOligo[1:2, ]
+#' .detectThreeEndComplementarity(x$iupacSequence, x$iupacSequenceRc)
+.detectThreeEndComplementarity <- function(x, target, size = 4) {
+    end <- vapply(x, function(y) {
+        y <- unlist(strsplit(y, split = ""))
+        y <- y[seq(length(y) - size + 1, length(y))]
+        paste(y, collapse = "")
+    }, character(1L), USE.NAMES = FALSE)
+    match <- vapply(seq_along(target), function(i) {
+        grepl(end[[i]], target[[i]])
+    }, logical(1L), USE.NAMES = FALSE)
+    match
+}
+
+#' @noRd
+#'
+#' @examples
 #' data("exampleRprimerProfile")
 #' x <- .designOligos(exampleRprimerProfile)
 #' .filterPrimers(x)
@@ -1029,6 +1053,10 @@ oligos <- function(x,
     x$rev[x$method == "mixedFwd" & x$rev] <- FALSE
     x$fwd[x$method == "mixedRev" & x$fwd] <- FALSE
     x <- x[x$fwd | x$rev, , drop = FALSE]
+    threeEndComplementary <- .detectThreeEndComplementarity(
+        x$iupacSequence, x$iupacSequenceRc
+    )
+    x <- x[!threeEndComplementary, , drop = FALSE]
     remove <- c(
         "gcInRange", "tmInRange", "endCoverageFwd", "endCoverageRev",
         "okFwd", "okRev", "tmProbeMean", "tmProbeRange", "tmProbe"

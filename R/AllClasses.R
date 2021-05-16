@@ -284,11 +284,11 @@ S4Vectors::setValidity2("RprimerMatchOligo", function(object) {
         "threeMismatches", "fourOrMoreMismatches",
         "offTargetMatch"
     )
-   if (!all(colnames %in% names(object))) {
-       msg <- c(
-           msg, "This type of subsetting is not allowed for an
+    if (!all(colnames %in% names(object))) {
+        msg <- c(
+            msg, "This type of subsetting is not allowed for an
             RprimerMatchOligo object."
-       )
+        )
     }
     if (is.null(msg)) {
         TRUE

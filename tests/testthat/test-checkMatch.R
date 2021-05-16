@@ -40,7 +40,7 @@ test_that(".getMatchIndex works", {
         "MM2" = "AAAATT",
         "MM3" = "AAATTT",
         "MM4" = "AATTTT"
-        )
+    )
     target <- Biostrings::DNAStringSet(target)
     x <- Biostrings::DNAStringSet("AAAAAA") ## Oligo
     result <- .getMatchIndex(x, target)

@@ -34,14 +34,13 @@ It also reports the proportion of target sequences that matches to the
 oligo with no more than four mismatches within all other regions in
 the alignment (i.e., off target match).
 Ambiguous bases and gaps in the
-target sequences will be presented as mismatches.
+target sequences will be identified as mismatches.
+The function is a wrapper to \code{Biostrings::vcountPDict()}
+(Pages et al., 2020).
 }
 \details{
 Note that the output does not say anything about the type,
 position or severity of the mismatches.
-
-The function is a wrapper to \code{Biostrings::vcountPDict()}
-(Pages et al., 2020).
 }
 \section{Methods (by class)}{
 \itemize{
@@ -209,7 +208,6 @@ x <- exampleRprimerOligo[1:2, ]
 target <- exampleRprimerAlignment
 
 checkMatch(x, target)
-
 ### RprimerAssay objects
 
 data("exampleRprimerAssay")
@@ -219,7 +217,6 @@ x <- exampleRprimerAssay[1:2, ]
 target <- exampleRprimerAlignment
 
 checkMatch(x, target)
-
 }
 \references{
 Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:

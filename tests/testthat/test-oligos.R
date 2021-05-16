@@ -496,25 +496,10 @@ test_that(".checkAllPrimer variants works", {
 
 # .filterPrimers ===============================================================
 
-# test_that(".filterPrimers works", {
-#    x <- .designOligos(exampleRprimerProfile)
-#    test <- .filterPrimers(x)
-
-# })
+# .detectThreeEndComplementarity ===============================================
 
 # .checkAllProbeVariants =======================================================
 
 # .filterProbes ================================================================
 
-# test_that(".filterProbes works", {
-
-# })
-
 # .beautifyOligos ==============================================================
-
-test_that(".beautifyOligos works", {
-    x <- .filterPrimers(.designOligos(x))
-    x <- .scoreOligos(x)
-    test <- .beautifyOligos(x)
-    expect_true(is.data.frame(test))
-})

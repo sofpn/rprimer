@@ -25,8 +25,8 @@ test_that(".initiate works", {
     expect_equal(.initiate(x1), initiation + at_penalty)
     expect_equal(.initiate(x2), initiation + at_penalty)
     expect_equal(.initiate(x3), initiation)
-    expect_equal(.initiate(x4), initiation + 2*at_penalty)
-    expect_equal(.initiate(x5), initiation + 2*at_penalty)
+    expect_equal(.initiate(x4), initiation + 2 * at_penalty)
+    expect_equal(.initiate(x5), initiation + 2 * at_penalty)
 })
 
 # .tmParameters ================================================================
@@ -44,7 +44,7 @@ test_that(".tmParameters works", {
 test_that(".tm works", {
     x <- .tmParameters(t(matrix(
         c("A", "G", "T", "T", "C", "G", "G", "T", "C")
-        )))
+    )))
     test1 <- .tm(x, 250)
     expect_true(is.numeric(test1))
     test2 <- .tm(x, 500)
@@ -57,9 +57,9 @@ test_that(".tm works", {
 
 # .deltaG ======================================================================
 
-#test_that(".deltaG works", {
+# test_that(".deltaG works", {
 #    ## Confirm that the calculation agrees with the examples in
-    ## SantaLucia and Hicks 2004
+## SantaLucia and Hicks 2004
 #    m <- t(matrix(unlist(strsplit("CGTTGA", split = ""))))
 #    x <- .tmParameters(m, concNa = 1)
 #    test <- .deltaG(x)
@@ -68,4 +68,4 @@ test_that(".tm works", {
 #    test <- .deltaG(x)
 #    expect_equal(round(test, 2), -4.12)
 
-#})
+# })

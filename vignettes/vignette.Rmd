@@ -25,9 +25,7 @@ library(rprimer)
 
 # Introduction
 
-rprimer provides tools for analyzing sequence conservation 
-and designing degenerate primers, probes and (RT)-(q/d)PCR assays from a 
-multiple DNA sequence alignment. The package is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability.  
+rprimer provides tools for analyzing sequence conservation and designing degenerate DNA oligos (primers and probes) from a multiple DNA sequence alignment. The package is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability.  
 
 In this vignette, I describe and demonstrate how to use rprimer by designing broadly reactive primers and probes for amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen.
 
@@ -193,7 +191,7 @@ All sequence variants of an oligo must fulfill all specified design constraints 
 
 Oligos with sequence variants containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
 
-**[3 end complementarity]**
+A simplified homo-dimer check is performed for all primer candidates. A primer will be excluded from consideration if the last four (or more) bases at the 3´ end are complementary to some part of at least one sequence variant of the same primer. 
 
 An error message will return if no oligos are found. If so, a good idea could be to re-run the process from [Step 1](#Step1) and increase the `ambiguityThreshold` in `consensusProfile()`, and/or relax the design constraints above. 
 
@@ -349,7 +347,9 @@ The final step is to find pairs of forward and reverse primers, and eventually, 
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
-* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm.^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta [@santalucia2007physical]. The result outputs from `oligos()` and `assays()` contain the change in both entropy (delta S, salt corrected) and enthalpy (delta H) when an oligo and a perfectly matching target sequence goes from random coil to duplex state, and these data can be used for calculating the proportion of hybridized primer at different temperatures; see [@santalucia2007physical].
+* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta [@santalucia2007physical]. The result outputs from `oligos()` and `assays()` contain the change in both entropy (delta S, salt corrected) and enthalpy (delta H) when an oligo and a perfectly matching target sequence goes from random coil to duplex state, and these data can be used for calculating the proportion of hybridized primer at different temperatures; see [@santalucia2007physical]].
+
+A simplified hetero-dimer check is performed for all assay candidates. An assay will be excluded from consideration if four (or more) bases of the 3' end of one primer are complementary some part of at least one sequence variant of the other primer (note that primer homo-dimers are checked in (#Step2)).
 
 An error message will return if no assays are found.
 
@@ -523,7 +523,7 @@ assaySelection %>%
 
 ## Export to file
 
-Before proceeding to wet lab evaluation, it is highly recommended to evaluate the final primer and probe candidates for 1) the potential to form primer dimers and hairpin structures, and 2), the potential to (not) cross react with non-targets. 
+Before proceeding to wet lab evaluation, it is highly recommended to evaluate the final primer and probe candidates for 1) more details on the potential to form primer dimers and hairpin structures (e.g. hybridization properties using delta G calculations), and 2), the potential to (not) cross react with non-targets. 
 
 These tasks are best performed by other software. Below, I show how to export the results to file so that they can be readily analyzed by other tools.  
 

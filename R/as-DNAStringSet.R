@@ -28,7 +28,8 @@ setAs("RprimerAssay", "DNAStringSet", function(from) .toDNAStringSetAssay(from))
     unlist(lapply(seq_along(x), function(i) {
         names(x[[i]]) <- paste0(
             type, "_", i, additionalInfo, "_variant_", seq_along(x[[i]])
-        ); x[[i]]
+        )
+        x[[i]]
     }))
 }
 

@@ -91,7 +91,6 @@ setGeneric("checkMatch", function(x, target) standardGeneric("checkMatch"))
 #' target <- exampleRprimerAlignment
 #'
 #' checkMatch(x, target)
-#'
 setMethod("checkMatch", "RprimerOligo", function(x, target) {
     if (!methods::is(target, "DNAMultipleAlignment")) {
         stop("'target' must be a DNAMultipleAlignment object.", call. = FALSE)
@@ -225,7 +224,6 @@ setMethod("checkMatch", "RprimerOligo", function(x, target) {
 #' target <- exampleRprimerAlignment
 #'
 #' checkMatch(x, target)
-#'
 setMethod("checkMatch", "RprimerAssay", function(x, target) {
     if (!methods::is(target, "DNAMultipleAlignment")) {
         stop("'target' must be a DNAMultipleAlignment object.", call. = FALSE)
@@ -261,7 +259,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
 .getMatchIndex <- function(x, target) {
     res <- lapply(seq(0, 3), function(i) {
         result <- Biostrings::vcountPDict(
-            x, target, max.mismatch = i
+            x, target,
+            max.mismatch = i
         )
         which(colSums(result) == 0)
     })
@@ -309,7 +308,7 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
 .getMatchProportion <- function(x, target) {
     matching <- .getMatchIndex(x, target)
     sequenceNames <- .getSequenceNames(matching, target)
-    matching <- lapply(matching, function(x) length (x) / length(target))
+    matching <- lapply(matching, function(x) length(x) / length(target))
     matching <- do.call("cbind.data.frame", matching)
     sequenceNames <- as.data.frame(t(do.call("cbind", list(sequenceNames))))
     matching <- cbind(matching, sequenceNames)
@@ -336,7 +335,7 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
 .getMatchProportionOffTarget <- function(x, target) {
     matching <- .getMatchIndexOffTarget(x, target)
     sequenceNames <- .getSequenceNames(list(matching), target)
-    matching <- length(matching) /  length(target)
+    matching <- length(matching) / length(target)
     matching <- do.call("cbind.data.frame", list(matching))
     sequenceNames <- as.data.frame(t(do.call("cbind", list(sequenceNames))))
     matching <- cbind(matching, sequenceNames)
@@ -355,7 +354,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
 .checkMatchOligo <- function(x, target) {
     onTarget <- lapply(seq_len(nrow(x)), function(i) {
         target <- .maskRange(
-            x$start[[i]], x$end[[i]], target, invert = TRUE
+            x$start[[i]], x$end[[i]], target,
+            invert = TRUE
         )
         check <- Biostrings::DNAStringSet(x$sequence[[i]])
         .getMatchProportion(check, target)
@@ -363,7 +363,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     onTarget <- do.call("rbind", onTarget)
     offTarget <- lapply(seq_len(nrow(x)), function(i) {
         target <- .maskRange(
-            x$start[[i]], x$end[[i]], target, invert = FALSE
+            x$start[[i]], x$end[[i]], target,
+            invert = FALSE
         )
         check <- Biostrings::DNAStringSet(x$sequence[[i]])
         .getMatchProportionOffTarget(check, target)
