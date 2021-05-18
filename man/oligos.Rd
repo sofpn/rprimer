@@ -15,6 +15,7 @@ oligos(
   gcRangePrimer = c(0.4, 0.65),
   tmRangePrimer = c(50, 65),
   concPrimer = 500,
+  minThreeEndDimerWindowPrimer = NULL,
   designStrategyPrimer = "ambiguous",
   probe = TRUE,
   lengthProbe = 18:22,
@@ -63,6 +64,18 @@ A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
 
 \item{concPrimer}{Primer concentration in nM, for Tm calculation. A number
 [20, 2000], defaults to \code{500}.}
+
+\item{minThreeEndDimerWindowPrimer}{The
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+A simplified homo-dimer check is performed for all primer candidates.
+A primer will be excluded from consideration if the last four (or more)
+bases at the 3´ end are complementary to some part of the primer itself.
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
+a number [3, 6], defaults to \code{NULL},
+which means that no dimer check will be performed.}
 
 \item{designStrategyPrimer}{\code{"ambiguous"} or \code{"mixed"}. Defaults to \code{"ambiguous"}.}
 
@@ -191,7 +204,7 @@ For an oligo to be considered as valid, all sequence variants must fulfill
 all the specified design constraints.
 }
 
-\section{Low complexity and primer dimer check}{
+\section{Low complexity}{
 
 
 Oligos with sequence variants containing
@@ -199,10 +212,6 @@ more than four consecutive runs
 of the same
 nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
 of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
-
-A simplified homo-dimer check is performed for all primer candidates.
-A primer will be excluded from consideration if the last four (or more)
-bases at the 3´ end are complementary to some part of the primer itself.
 }
 
 \section{Tm}{

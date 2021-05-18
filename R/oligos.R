@@ -50,6 +50,19 @@
 #' Primer concentration in nM, for Tm calculation. A number
 #' [20, 2000], defaults to \code{500}.
 #'
+#' @param minThreeEndDimerWindowPrimer
+#' The
+#'
+#' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#'
+#' A simplified homo-dimer check is performed for all primer candidates.
+#' A primer will be excluded from consideration if the last four (or more)
+#' bases at the 3´ end are complementary to some part of the primer itself.
+#'
+#' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
+#' a number [3, 6], defaults to \code{NULL},
+#' which means that no dimer check will be performed.
+#'
 #' @param designStrategyPrimer
 #' \code{"ambiguous"} or \code{"mixed"}. Defaults to \code{"ambiguous"}.
 #'
@@ -171,17 +184,13 @@
 #' For an oligo to be considered as valid, all sequence variants must fulfill
 #' all the specified design constraints.
 #'
-#' @section Low complexity and primer dimer check:
+#' @section Low complexity:
 #'
 #' Oligos with sequence variants containing
 #' more than four consecutive runs
 #' of the same
 #' nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
 #' of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
-#'
-#' A simplified homo-dimer check is performed for all primer candidates.
-#' A primer will be excluded from consideration if the last four (or more)
-#' bases at the 3´ end are complementary to some part of the primer itself.
 #'
 #' @section Tm:
 #'
@@ -316,6 +325,7 @@ oligos <- function(x,
                    gcRangePrimer = c(0.40, 0.65),
                    tmRangePrimer = c(50, 65),
                    concPrimer = 500,
+                   minThreeEndDimerWindowPrimer = NULL,
                    designStrategyPrimer = "ambiguous",
                    probe = TRUE,
                    lengthProbe = 18:22,
@@ -360,6 +370,15 @@ oligos <- function(x,
     }
     if (!(concPrimer >= 20 && concPrimer <= 2000)) {
         stop("'concPrimer' must be from 20 to 2000.", call. = FALSE)
+    }
+    if (!(
+        is.null(minThreeEndDimerWindowPrimer) ||
+        (minThreeEndDimerWindowPrimer >= 3 && minThreeEndDimerWindowPrimer <= 6)
+    )) {
+        stop(
+            "'minThreeEndDimerWindowPrimer' must be either 'NULL' or from 3 to 6.",
+            call. = FALSE
+        )
     }
     if (!(
         designStrategyPrimer == "ambiguous" || designStrategyPrimer == "mixed")
@@ -428,6 +447,7 @@ oligos <- function(x,
         minThreeEndCoveragePrimer,
         gcRangePrimer,
         tmRangePrimer,
+        minThreeEndDimerWindowPrimer,
         designStrategyPrimer,
         rowThreshold = 1,
         colThreshold = 1
@@ -1027,6 +1047,7 @@ oligos <- function(x,
                            minThreeEndCoveragePrimer = 0.98,
                            gcRangePrimer = c(0.45, 0.55),
                            tmRangePrimer = c(55, 65),
+                           minThreeEndDimerWindowPrimer = NULL,
                            designStrategyPrimer = "ambiguous",
                            colThreshold = 0.75,
                            rowThreshold = 0.75) {
@@ -1053,10 +1074,13 @@ oligos <- function(x,
     x$rev[x$method == "mixedFwd" & x$rev] <- FALSE
     x$fwd[x$method == "mixedRev" & x$fwd] <- FALSE
     x <- x[x$fwd | x$rev, , drop = FALSE]
-    threeEndComplementary <- .detectThreeEndComplementarity(
-        x$iupacSequence, x$iupacSequenceRc
-    )
-    x <- x[!threeEndComplementary, , drop = FALSE]
+    if (!is.null(minThreeEndDimerWindowPrimer)) {
+        threeEndComplementary <- .detectThreeEndComplementarity(
+            x$iupacSequence, x$iupacSequenceRc,
+            size = minThreeEndDimerWindowPrimer
+        )
+        x <- x[!threeEndComplementary, , drop = FALSE]
+    }
     remove <- c(
         "gcInRange", "tmInRange", "endCoverageFwd", "endCoverageRev",
         "okFwd", "okRev", "tmProbeMean", "tmProbeRange", "tmProbe"

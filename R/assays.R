@@ -14,15 +14,19 @@
 #' primer (in Celcius degrees, as an absolute value). Defaults to \code{NULL},
 #' which means that primers will be paired regardless of their tm.
 #'
-#' @return
-#' An \code{RprimerAssay} object.
-#' An error message will return if no assays are found.
-#'
-#' @section Primer dimer check:
+#' @param minThreeEndDimerWindowPrimer XXXXXXXXXXXXXXXXXXXXXXXXxxxxxxx
 #' A simplified hetero-dimer check is performed for all assay candidates.
 #' An assay will be excluded from consideration if four (or more) bases
 #' of the 3' end of one primer are complementary to some part of the other
 #' primer (note that homo-dimers are checked during the oligo design step).
+#'
+#' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
+#' A number from [3, 6], defaults to \code{NULL},
+#' which means that no dimer check will be performed.
+#'
+#' @return
+#' An \code{RprimerAssay} object.
+#' An error message will return if no assays are found.
 #'
 #' @section Output:
 #'
@@ -112,7 +116,10 @@
 #'
 #' ## Design assays using default settings
 #' assays(exampleRprimerOligo)
-assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
+assays <- function(x,
+                   lengthRange = c(65, 120),
+                   tmDifferencePrimers = NULL,
+                   minThreeEndDimerWindowPrimer = NULL) {
     if (!methods::is(x, "RprimerOligo")) {
         stop("'x' must be an RprimerOligo object.")
     }
@@ -121,6 +128,15 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
     }
     if (!is.null(tmDifferencePrimers) && !is.numeric(tmDifferencePrimers)) {
         stop("'tmDifferencePrimers must be either 'NULL' or a number.")
+    }
+    if (!(
+        is.null(minThreeEndDimerWindowPrimer) ||
+        (minThreeEndDimerWindowPrimer >= 3 && minThreeEndDimerWindowPrimer <= 6)
+    )) {
+        stop(
+            "'minThreeEndDimerWindowPrimer' must be either 'NULL' or from 3 to 6.",
+            call. = FALSE
+        )
     }
     x <- as.data.frame(x)
     assays <- .combinePrimers(x[x$type == "primer", ], lengthRange)
@@ -165,7 +181,8 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
 #' .combinePrimers(x)
 .combinePrimers <- function(x,
                             lengthRange = c(65, 120),
-                            tmDifferencePrimers = NULL) {
+                            tmDifferencePrimers = NULL,
+                            minThreeEndDimerWindowPrimer = NULL) {
     assays <- .pairPrimers(x)
     ampliconLength <- assays$endRev - assays$startFwd + 1
     start <- assays$startFwd
@@ -183,14 +200,18 @@ assays <- function(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL) {
         tmDifference <- abs(assays$tmMeanFwd - assays$tmMeanRev)
         assays <- assays[tmDifference <= tmDifferencePrimers, , drop = FALSE]
     }
-    threeEndComplementaryFwd <- .detectThreeEndComplementarity(
-        assays$iupacSequenceFwd, assays$iupacSequenceRev
-    )
-    assays <- assays[!threeEndComplementaryFwd, , drop = FALSE]
-    threeEndComplementaryRev <- .detectThreeEndComplementarity(
-        assays$iupacSequenceRev, assays$iupacSequenceRcFwd
-    )
-    assays <- assays[!threeEndComplementaryRev, , drop = FALSE]
+    if (!is.null(minThreeEndDimerWindowPrimer)) {
+        threeEndComplementaryFwd <- .detectThreeEndComplementarity(
+            assays$iupacSequenceFwd, assays$iupacSequenceRev,
+            size = minThreeEndDimerWindowPrimer
+        )
+        assays <- assays[!threeEndComplementaryFwd, , drop = FALSE]
+        threeEndComplementaryRev <- .detectThreeEndComplementarity(
+            assays$iupacSequenceRev, assays$iupacSequenceRcFwd,
+            size = minThreeEndDimerWindowPrimer
+        )
+        assays <- assays[!threeEndComplementaryRev, , drop = FALSE]
+    }
     if (nrow(assays) == 0L) {
         stop("No assays were found.", call. = FALSE)
     }

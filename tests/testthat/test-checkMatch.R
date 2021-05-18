@@ -27,10 +27,6 @@ test_that("checkMatch works", {
 
 # .maskRange ===================================================================
 
-test_that(".maskRange works", {
-    toTest <- .maskRange(100, 110, exampleRprimerAlignment, invert = TRUE)
-})
-
 # .getMatchIndex ===============================================================
 
 test_that(".getMatchIndex works", {
