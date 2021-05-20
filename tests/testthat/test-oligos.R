@@ -19,10 +19,6 @@ test_that("oligos returns an error when it should", {
     expect_error(oligos(x, gcRangePrimer = c(0, 1.1)))
     expect_error(oligos(x, tmRangePrimer = c(19, 90)))
     expect_error(oligos(x, tmRangePrimer = c(20, 91)))
-    expect_error(oligos(x, minThreeEndCoveragePrimer = 1.1))
-    expect_error(oligos(x, minThreeEndCoveragePrimer = -0.1))
-    expect_error(oligos(x, threeEndDimerWindowPrimer = 2))
-    expect_error(oligos(x, threeEndDimerWindowPrimer = 7))
     expect_error(oligos(x, concPrimer = 19))
     expect_error(oligos(x, concPrimer = 2001))
     expect_error(oligos(x, designStrategyPrimer = ""))
@@ -162,14 +158,6 @@ test_that(".generateOligos works", {
     expect_equal(
         test$coverage[4], mean(x$coverage[test$start[4]:test$end[4]])
     )
-    expect_equal(
-        test$endCoverageFwd[4],
-        min(x$coverage[(test$end[4] - 4):test$end[4]])
-    )
-    expect_equal(
-        test$endCoverageRev[4],
-        min(x$coverage[test$start[4]:(test$start[4] + 4)])
-    )
 })
 
 # .mixOligos ===================================================================
@@ -201,8 +189,6 @@ test_that(".generateMixedOligos work", {
     test <- .generateMixedOligos(x)
     expect_equal(x$start, test$start)
     expect_equal(x$end, test$end)
-    expect_equal(x$endCoverageFwd, test$endCoverageFwd)
-    expect_equal(x$endCoverageRev, test$endCoverageRev)
     expect_equal(x$gapFrequency, test$gapFrequency)
 })
 
@@ -497,8 +483,6 @@ test_that(".checkAllPrimer variants works", {
 })
 
 # .filterPrimers ===============================================================
-
-# .detectThreeEndComplementarity ===============================================
 
 # .checkAllProbeVariants =======================================================
 

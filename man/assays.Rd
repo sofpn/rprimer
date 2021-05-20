@@ -4,12 +4,7 @@
 \alias{assays}
 \title{Design (RT)-PCR assays}
 \usage{
-assays(
-  x,
-  lengthRange = c(65, 120),
-  tmDifferencePrimers = NULL,
-  minThreeEndDimerWindowPrimer = NULL
-)
+assays(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL)
 }
 \arguments{
 \item{x}{An \code{RprimerOligo} object, with or without probes.}
@@ -20,16 +15,6 @@ assays(
 \item{tmDifferencePrimers}{Maximum allowed difference between the mean tm of the forward and reverse
 primer (in Celcius degrees, as an absolute value). Defaults to \code{NULL},
 which means that primers will be paired regardless of their tm.}
-
-\item{minThreeEndDimerWindowPrimer}{XXXXXXXXXXXXXXXXXXXXXXXXxxxxxxx
-A simplified hetero-dimer check is performed for all assay candidates.
-An assay will be excluded from consideration if four (or more) bases
-of the 3' end of one primer are complementary to some part of the other
-primer (note that homo-dimers are checked during the oligo design step).
-
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
-A number from [3, 6], defaults to \code{NULL},
-which means that no dimer check will be performed.}
 }
 \value{
 An \code{RprimerAssay} object.

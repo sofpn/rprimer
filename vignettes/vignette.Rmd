@@ -19,7 +19,8 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+#
+devtools::load_all(".")
 library(rprimer)
 ```
 
@@ -173,11 +174,9 @@ The design settings (i.e., the arguments of `oligos()`) are:
 * `maxDegeneracyPrimer`: maximum degeneracy for primers, defaults to `4`
 * `gcClampPrimer`: if primers should have a GC clamp, defaults to `TRUE`. A GC clamp is defined as the presence of two to three G or C:s within the last five bases (3' end) of the oligo. The presence of a GC clamp is thought to promote specific binding of the 3' end
 * `avoidThreeEndRunsPrimer`: if primers with more than two runs of the same nucleotide at the terminal 3' end should be avoided (to reduce the risk of mispriming), defaults to `TRUE`
-* `minThreeEndCoveragePrimer`: minimum allowed coverage at the 3' end (the last five bases) of the primer. Defaults to `0.98`. A value of `1` means that all bases of the 3' end are complementary to all sequence variants in the target alignment
 * `gcRangePrimer`: GC-content range of primers, defaults to `c(0.40, 0.65)`
 * `tmRangePrimer`: melting temperature range for primers (in Celcius degrees), defaults to `c(55, 65)`. Melting temperatures are calculated for perfectly matching oligo-target duplexes using the nearest neighbor method [@SantaLuciaUnified], using formula, salt correction method and table values as described in [@santalucia2004thermodynamics]. See the manual (`?oligos`) for more information 
 * `concPrimer`: primer concentration in nM, defaults to `500` (for tm calculation)
-* `threeEndDimerWindowPrimer`: , defaults to `NULL` **XXXXXXXXXXXXXXXXXXXXXXXXXXXXX**
 * `designStrategyPrimer`: design strategy for primers, `"ambiguous"` or `"mixed"`, defaults to `"ambiguous"` 
 * `probe`: if probes should be designed, defaults to `TRUE`
 * `lengthProbe`: defaults to `18:22`
@@ -346,10 +345,7 @@ The final step is to find pairs of forward and reverse primers, and eventually, 
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `lengthRange`: amplicon length range, defaults to `c(65, 120)`
-* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta [@santalucia2007physical]. The result outputs from `oligos()` and `assays()` contain the change in both entropy (delta S, salt corrected) and enthalpy (delta H) when an oligo and a perfectly matching target sequence goes from random coil to duplex state. These data can be used for calculating the proportion of hybridized primer at different temperatures; see [@santalucia2007physical]].
-* `minThreeEndDimerWindowPrimer`: *XXXXXXXXXXXXXXXXXXXXXXXXXXX*
-A simplified hetero-dimer check is performed for all assay candidates. An assay will be excluded from consideration if four (or more) bases of the 3' end of one primer are complementary some part of at least one sequence variant of the other primer (note that primer homo-dimers are checked in (#Step2)).
-*XXXXXXXXXXXXXXXXXX*
+* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta, see  [@santalucia2007physical] for how to calculate the proportion of hybridized primer at different temperatures.
 
 An error message will return if no assays are found.
 
@@ -523,7 +519,7 @@ assaySelection %>%
 
 ## Export to file
 
-Before proceeding to wet lab evaluation, it is highly recommended to evaluate the final primer and probe candidates for 1) more details on the potential to form primer dimers and hairpin structures (e.g. hybridization properties using delta G calculations), and 2), the potential to (not) cross react with non-targets. 
+Before proceeding to wet lab evaluation, it is recommended to evaluate the final primer and probe candidates for 1) more details on the potential to form primer dimers and hairpin structures, and 2), the potential to (not) cross react with non-targets. 
 
 These tasks are best performed by other software. Below, I show how to export the results to file so that they can be readily analyzed by other tools.  
 

@@ -31,13 +31,6 @@
 #' of the same nucleotide at the terminal 3' end should be avoided.
 #' \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.
 #'
-#' @param minThreeEndCoveragePrimer
-#' Minimum allowed coverage at the 3' end (the last five bases).
-#' A number [0, 1]. Defaults to \code{0.98}.
-#' A value of 1 means that all bases at the 3' end
-#' must cover all sequence
-#' variants in the target alignment.
-#'
 #' @param gcRangePrimer
 #' GC-content range for primers.
 #' A numeric vector [0, 1], defaults to \code{c(0.40, 0.65)}.
@@ -49,19 +42,6 @@
 #' @param concPrimer
 #' Primer concentration in nM, for Tm calculation. A number
 #' [20, 2000], defaults to \code{500}.
-#'
-#' @param minThreeEndDimerWindowPrimer
-#' The
-#'
-#' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-#'
-#' A simplified homo-dimer check is performed for all primer candidates.
-#' A primer will be excluded from consideration if the last four (or more)
-#' bases at the 3´ end are complementary to some part of the primer itself.
-#'
-#' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
-#' a number [3, 6], defaults to \code{NULL},
-#' which means that no dimer check will be performed.
 #'
 #' @param designStrategyPrimer
 #' \code{"ambiguous"} or \code{"mixed"}. Defaults to \code{"ambiguous"}.
@@ -321,11 +301,9 @@ oligos <- function(x,
                    maxDegeneracyPrimer = 4,
                    gcClampPrimer = TRUE,
                    avoidThreeEndRunsPrimer = TRUE,
-                   minThreeEndCoveragePrimer = 0.98,
                    gcRangePrimer = c(0.40, 0.65),
                    tmRangePrimer = c(50, 65),
                    concPrimer = 500,
-                   minThreeEndDimerWindowPrimer = NULL,
                    designStrategyPrimer = "ambiguous",
                    probe = TRUE,
                    lengthProbe = 18:22,
@@ -353,9 +331,6 @@ oligos <- function(x,
     if (!is.logical(avoidThreeEndRunsPrimer)) {
         stop("'avoidThreeEndRunsPrimer' must be TRUE or FALSE", call. = FALSE)
     }
-    if (!(minThreeEndCoveragePrimer >= 0 && minThreeEndCoveragePrimer <= 1)) {
-        stop("'minThreeEndCoveragePrimer' must be from 0 to 1", call. = FALSE)
-    }
     if (!(min(gcRangePrimer) >= 0 && max(gcRangePrimer) <= 1)) {
         stop(
             "'gcRangePrimer' must be from 0 to 1, e.g. c(0.45, 0.65).",
@@ -370,15 +345,6 @@ oligos <- function(x,
     }
     if (!(concPrimer >= 20 && concPrimer <= 2000)) {
         stop("'concPrimer' must be from 20 to 2000.", call. = FALSE)
-    }
-    if (!(
-        is.null(minThreeEndDimerWindowPrimer) ||
-        (minThreeEndDimerWindowPrimer >= 3 && minThreeEndDimerWindowPrimer <= 6)
-    )) {
-        stop(
-            "'minThreeEndDimerWindowPrimer' must be either 'NULL' or from 3 to 6.",
-            call. = FALSE
-        )
     }
     if (!(
         designStrategyPrimer == "ambiguous" || designStrategyPrimer == "mixed")
@@ -444,10 +410,8 @@ oligos <- function(x,
         maxDegeneracyPrimer,
         gcClampPrimer,
         avoidThreeEndRunsPrimer,
-        minThreeEndCoveragePrimer,
         gcRangePrimer,
         tmRangePrimer,
-        minThreeEndDimerWindowPrimer,
         designStrategyPrimer,
         rowThreshold = 1,
         colThreshold = 1
@@ -550,13 +514,6 @@ oligos <- function(x,
         oligos$coverage, oligos$identity,
         rev = TRUE, combine = FALSE
     )
-    oligos$endCoverageFwd <- apply(
-        oligos$coverage[
-            , (ncol(oligos$coverage) - 5):ncol(oligos$coverage)
-        ],
-        1, min
-    )
-    oligos$endCoverageRev <- apply(oligos$coverage[, seq_len(5)], 1, min)
     oligos$identity <- rowMeans(oligos$identity)
     oligos$coverage <- rowMeans(oligos$coverage)
     oligos$method <- rep("ambiguous", nrow(oligos$iupacSequence))
@@ -610,14 +567,11 @@ oligos <- function(x,
     oligos$end <- x$end
     oligos$length <- x$length
     oligos$gapFrequency <- x$gapFrequency
-    oligos$endCoverageFwd <- x$endCoverageFwd
-    oligos$endCoverageRev <- x$endCoverageRev
     oligos$roiStart <- x$roiStart
     oligos$roiEnd <- x$roiEnd
     order <- c(
         "iupacSequence", "start", "end", "length", "degeneracy", "gapFrequency",
-        "identity", "coverage",
-        "endCoverageFwd", "endCoverageRev", "method", "roiStart",
+        "identity", "coverage", "method", "roiStart",
         "roiEnd"
     )
     oligos[order]
@@ -1018,24 +972,6 @@ oligos <- function(x,
 #' @noRd
 #'
 #' @examples
-#' data("exampleRprimerOligo")
-#' x <- exampleRprimerOligo[1:2, ]
-#' .detectThreeEndComplementarity(x$iupacSequence, x$iupacSequenceRc)
-.detectThreeEndComplementarity <- function(x, target, size = 4) {
-    end <- vapply(x, function(y) {
-        y <- unlist(strsplit(y, split = ""))
-        y <- y[seq(length(y) - size + 1, length(y))]
-        paste(y, collapse = "")
-    }, character(1L), USE.NAMES = FALSE)
-    match <- vapply(seq_along(target), function(i) {
-        grepl(end[[i]], target[[i]])
-    }, logical(1L), USE.NAMES = FALSE)
-    match
-}
-
-#' @noRd
-#'
-#' @examples
 #' data("exampleRprimerProfile")
 #' x <- .designOligos(exampleRprimerProfile)
 #' .filterPrimers(x)
@@ -1044,20 +980,13 @@ oligos <- function(x,
                            maxDegeneracyPrimer = 4,
                            gcClampPrimer = TRUE,
                            avoidThreeEndRunsPrimer = TRUE,
-                           minThreeEndCoveragePrimer = 0.98,
                            gcRangePrimer = c(0.45, 0.55),
                            tmRangePrimer = c(55, 65),
-                           minThreeEndDimerWindowPrimer = NULL,
                            designStrategyPrimer = "ambiguous",
                            colThreshold = 0.75,
                            rowThreshold = 0.75) {
     x <- x[x$length %in% lengthPrimer, , drop = FALSE]
     x <- x[x$degeneracy <= maxDegeneracyPrimer, , drop = FALSE]
-    x <- x[
-        x$endCoverageFwd >= minThreeEndCoveragePrimer |
-            x$endCoverageFwd >= minThreeEndCoveragePrimer, ,
-        drop = FALSE
-    ]
     gcInRange <- .isWithinRange(x$gcContent, gcRangePrimer)
     tmInRange <- .isWithinRange(x$tmPrimer, tmRangePrimer)
     x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
@@ -1068,21 +997,14 @@ oligos <- function(x,
         rowThreshold,
         colThreshold
     )
-    fwd <- x$endCoverageFwd >= minThreeEndCoveragePrimer & x$okFwd
-    rev <- x$endCoverageRev >= minThreeEndCoveragePrimer & x$okRev
+    fwd <- x$okFwd
+    rev <- x$okRev
     x <- cbind(x, fwd, rev)
     x$rev[x$method == "mixedFwd" & x$rev] <- FALSE
     x$fwd[x$method == "mixedRev" & x$fwd] <- FALSE
     x <- x[x$fwd | x$rev, , drop = FALSE]
-    if (!is.null(minThreeEndDimerWindowPrimer)) {
-        threeEndComplementary <- .detectThreeEndComplementarity(
-            x$iupacSequence, x$iupacSequenceRc,
-            size = minThreeEndDimerWindowPrimer
-        )
-        x <- x[!threeEndComplementary, , drop = FALSE]
-    }
     remove <- c(
-        "gcInRange", "tmInRange", "endCoverageFwd", "endCoverageRev",
+        "gcInRange", "tmInRange",
         "okFwd", "okRev", "tmProbeMean", "tmProbeRange", "tmProbe"
     )
     x <- x[!names(x) %in% remove]
@@ -1150,7 +1072,7 @@ oligos <- function(x,
     )
     remove <- c(
         "gcInRange", "tmInRange", "tmPrimerMean",
-        "endCoverageFwd", "endCoverageRev", "tmPrimerRange", "tmPrimer"
+        "tmPrimerRange", "tmPrimer"
     )
     x <- x[!names(x) %in% remove]
     oldnames <- c("tmProbeMean", "tmProbeRange", "tmProbe")

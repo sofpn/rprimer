@@ -141,7 +141,7 @@ plotData(myAssays)
 
 ### Check match 
 
-`checkMatch()` checks the proportion of target sequences in the input alignment that matches with the generated oligos or assays. As an example, we check six randomly selected oligos from `myOligos`: 
+`checkMatch()` shows the proportion and names of the target sequences in the input alignment that match with the generated oligos or assays. As an example, we check six randomly selected oligos from `myOligos`: 
 
 ```{r}
 selection <- sample(seq_len(nrow(myOligos)), size = 6)
