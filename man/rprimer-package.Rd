@@ -12,7 +12,7 @@ Functions and workflow for visualizing sequence conservation
     format and visualized as dashboard like plots. The workflow is developed 
     primarily for sequence variable RNA viruses, but it should be equally useful 
     for other organisms with high sequence variability. For more information, 
-    please see the package vignette.
+    see the package vignette.
 }
 \details{
 The package contains five functions: \code{consensusProfile()},

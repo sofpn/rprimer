@@ -1,8 +1,7 @@
 #' Design primers and probes
 #'
 #' \code{oligos()} designs oligos (primers and probes)
-#' from an \code{RprimerProfile} object. Primers must be designed and probes
-#' are optional.
+#' from an \code{RprimerProfile} object.
 #'
 #' @param x An \code{RprimerProfile} object.
 #'
@@ -36,7 +35,7 @@
 #' A numeric vector [0, 1], defaults to \code{c(0.40, 0.65)}.
 #'
 #' @param tmRangePrimer
-#' Tm range for primers.
+#' Tm range for primers (in Celcius degrees).
 #' A numeric vector [30, 90], defaults to \code{c(55, 65)}.
 #'
 #' @param concPrimer
@@ -44,7 +43,8 @@
 #' [20, 2000], defaults to \code{500}.
 #'
 #' @param designStrategyPrimer
-#' \code{"ambiguous"} or \code{"mixed"}. Defaults to \code{"ambiguous"}.
+#' \code{"ambiguous"} or \code{"mixed"}. Defaults to \code{"ambiguous"}
+#' (see details below).
 #'
 #' @param probe
 #' If probes should be designed. \code{TRUE} or \code{FALSE},
@@ -64,11 +64,11 @@
 #' defaults to \code{TRUE}.
 #'
 #' @param gcRangeProbe
-#' GC-content range for probes (proportion). A numeric vector [0, 1],
+#' GC-content range for probes. A numeric vector [0, 1],
 #' defaults to \code{c(0.40, 0.65)}.
 #'
 #' @param tmRangeProbe
-#' Tm range for probes.
+#' Tm range for probes (in Celcius degrees).
 #' A numeric vector [30, 90], defaults to \code{c(55, 70)}.
 #'
 #' @param concProbe
@@ -77,12 +77,11 @@
 #'
 #' @param concNa
 #' The sodium ion concentration in the PCR reaction (in M). For calculation of
-#' tm and delta S.
+#' tm and delta G.
 #' A numeric vector [0.01, 1], defaults to \code{0.05} (50 mM).
 #'
-#' @section Output:
-#'
-#' The output contains the following information:
+#' @return
+#' An \code{RprimerOligo} object, which contains the following information:
 #'
 #' \describe{
 #'   \item{type}{Whether the oligo is a primer or probe.}
@@ -107,15 +106,19 @@
 #'   }
 #'   \item{gcContentRange}{Range in GC-content of all sequence variants of
 #'     the oligo.}
-#'   \item{tmMean}{Mean tm of all sequence variants of the oligo.}
-#'   \item{tmRange}{Range in tm of all sequence variants of the oligo.}
+#'   \item{tmMean}{Mean tm of all sequence variants of the oligo
+#'   (in Celcius degrees).}
+#'   \item{tmRange}{Range in tm of all sequence variants of the oligo
+#'   (in Celcius degrees).}
+#'   \item{deltaGMean}{Mean delta G of all sequence variants of the oligo
+#'   (in kcal/mol).}
+#'   \item{deltaGRange}{Range in delta G of all sequence variants of the oligo
+#'   (in kcal/mol).}
 #'   \item{sequence}{All sequence variants of the oligo.}
 #'   \item{sequenceRc}{Reverse complements of all sequence variants.}
 #'   \item{gcContent}{GC-content of all sequence variants.}
 #'   \item{tm}{Tm of all sequence variants (in Celcius degrees).}
-#'   \item{dH}{delta H of all sequence variants (in cal/mol).}
-#'   \item{dS}{delta S of all sequence
-#'   variants (in cal/K/mol).}
+#'   \item{deltaG}{Delta G of all sequence variants (in kcal/mol).}
 #'   \item{method}{Design method used to generate the oligo: "ambiguous",
 #'   "mixedFwd" or "mixedRev".}
 #'   \item{score}{Oligo score, the lower the better.}
@@ -124,7 +127,62 @@
 #'   \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
 #' }
 #'
-#' @section Design strategy for primers:
+#' An error message will return if no oligos are found. If so, a good idea
+#' could be to re-run the design process with relaxed constraints.
+#'
+#' @details
+#'
+#' \strong{Valid oligos}
+#'
+#' For an oligo to be considered as valid, all sequence variants must fulfill
+#' all the specified design constraints.
+#'
+#' Furthermore, oligos with at least one sequence variant containing
+#' more than four consecutive runs
+#' of the same
+#' nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
+#' of the same di-nucleotide (e.g. "TATATATA") will be excluded
+#' from consideration.
+#'
+#' \strong{Calculation of tm and delta G}
+#'
+#' Melting temperatures
+#' are calculated for perfectly matching
+#' DNA duplexes using the
+#' nearest-neighbor
+#' method (SantaLucia and Hicks, 2004), by using the following equation:
+#'
+#' \deqn{Tm = (\Delta H ^o \cdot 1000) / (\Delta S ^o + R \cdot \log [\mathrm{oligo}]) - 273.15}
+#'
+#' where \eqn{\Delta H ^o} is
+#' the change in enthalpy (in cal/mol) and \eqn{\Delta S ^o} is the
+#' change in entropy (in cal/K/mol) when an
+#' oligo and a perfectly matching target sequence goes from random coil to
+#' duplex formation.
+#' \eqn{K} is the gas constant (1.9872 cal/mol \emph{K}).
+#'
+#' Delta G is calculated at 37 Celcius degrees, for when an oligo and a
+#' perfectly matching target
+#' sequence goes from random coil to duplex state, by using  the following
+#' equation:
+#'
+#' \deqn{\Delta G ^o _T = (\Delta H ^o \cdot 1000 - T \cdot \Delta S ^o) / 1000}
+#
+#' For both tm and delta G, the following salt correction method is used
+#' for \eqn{\Delta S^o}, as
+#' described in SantaLucia and Hicks (2004):
+#'
+#' \deqn{\Delta S^o [\mathrm{Na^+}] = \Delta S^o [\mathrm{1 M NaCl}] + 0.368 \cdot N / 2 \cdot \log [\mathrm{Na^+}]}
+#'
+#' where \eqn{N} is the total number of phosphates in the duplex, and [Na+] is
+#' the total
+#' concentration of monovalent cations.
+#'
+#' Nearest neighbor table values for \eqn{\Delta S^o} and \eqn{\Delta H^o} are
+#' from SantaLucia and Hicks, 2004, and can be
+#' retrieved calling \code{rprimer:::lookup$nn}.
+#'
+#' \strong{Primer design strategies}
 #'
 #' Primers can be generated by using one of the two following strategies:
 #'
@@ -156,51 +214,9 @@
 #' this strategy}
 #' }
 #'
-#' Probes are always designed using the ambiguous
-#' strategy.
+#' Probes are always designed using the ambiguous strategy.
 #'
-#' @section Validity check:
-#'
-#' For an oligo to be considered as valid, all sequence variants must fulfill
-#' all the specified design constraints.
-#'
-#' @section Low complexity:
-#'
-#' Oligos with sequence variants containing
-#' more than four consecutive runs
-#' of the same
-#' nucleotide (e.g. "AAAAA") and/or more than three consecutive runs
-#' of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
-#'
-#' @section Tm:
-#'
-#' Melting temperatures
-#' are calculated for perfectly matching
-#' DNA duplexes using the
-#' nearest-neighbor
-#' method (SantaLucia and Hicks, 2004), by using the following equation:
-#'
-#' \deqn{Tm = (\Delta H ^o \cdot 1000) / (\Delta S ^o + R \cdot \log [\mathrm{oligo}]) - 273.15}
-#'
-#' where \eqn{\Delta H ^o} is
-#' the change in enthalpy (in cal/mol) and \eqn{\Delta S ^o} is the
-#' change in entropy (in cal/K/mol) when an
-#' oligo and a perfectly matching target sequence goes from random coil to
-#' duplex formation.
-#' \eqn{K} is the gas constant (1.9872 cal/mol \emph{K}).
-#'
-#' The following salt correction method is used for \eqn{\Delta S^o}, as
-#' described in SantaLucia and Hicks (2004):
-#'
-#' \deqn{\Delta S^o [\mathrm{Na^+}] = \Delta S^o [\mathrm{1 M NaCl}] + 0.368 \cdot N / 2 \cdot \log [\mathrm{Na^+}]}
-#'
-#' where \eqn{N} is the total number of phosphates in the duplex, and [Na+] is the total
-#' concentration of monovalent cations.
-#'
-#' Nearest neighbor table values for \eqn{\Delta S^o} and \eqn{\Delta H^o} are from SantaLucia and Hicks, 2004, and can be
-#' retrieved calling \code{rprimer:::lookup$nn}.
-#'
-#' @section Score:
+#' \strong{Scoring system for oligos}
 #'
 #' All valid oligos are scored based on their identity, coverage,
 #' degeneracy,
@@ -258,10 +274,6 @@
 #' These scores are summarized to a total score, and
 #' the weight of each individual score is 1. Thus, the lowest and best
 #' possible score for an oligo is 0, and the worst possible score is 12.
-#'
-#' @return
-#' An \code{RprimerOligo} object. An error message will return
-#' if no oligos are found.
 #'
 #' @references
 #' Rose, TM., Schultz ER., Henikoff JG., Pietrokovski S.,
@@ -772,10 +784,7 @@ oligos <- function(x,
     tmParam <- .tmParameters(all$sequence, concNa)
     all$tmPrimer <- .tm(tmParam, concPrimer)
     all$tmProbe <- .tm(tmParam, concProbe)
-    all$dH <- tmParam[, "sumdH"]
-    names(all$dH) <- rownames(tmParam)
-    all$dS <- tmParam[, "sumdS"]
-    names(all$dS) <- rownames(tmParam)
+    all$deltaG <- .deltaG(tmParam)
     all$sequence <- apply(all$sequence, 1, paste, collapse = "")
     all$sequenceRc <- apply(all$sequenceRc, 1, paste, collapse = "")
     all$repeats <- .detectRepeats(all$sequence)
@@ -789,7 +798,7 @@ oligos <- function(x,
 #' x <- .getAllVariants(.filterOligos(.generateOligos(exampleRprimerProfile)))
 #' .getMeanAndRange(x)
 .getMeanAndRange <- function(x) {
-    x <- x[c("gcContent", "tmPrimer", "tmProbe")]
+    x <- x[c("gcContent", "tmPrimer", "tmProbe", "deltaG")]
     means <- lapply(x, function(y) {
         vapply(y, function(z) {
             sum(z) / length(z)
@@ -1172,8 +1181,8 @@ oligos <- function(x,
         "type", "fwd", "rev", "start", "end", "length",
         "iupacSequence", "iupacSequenceRc", "identity",
         "coverage", "degeneracy", "gcContentMean", "gcContentRange",
-        "tmMean", "tmRange", "sequence",
-        "sequenceRc", "gcContent", "tm", "dH", "dS", "method", "score",
+        "tmMean", "tmRange", "deltaGMean", "deltaGRange", "sequence",
+        "sequenceRc", "gcContent", "tm", "deltaG", "method", "score",
         "roiStart", "roiEnd"
     )
     x <- x[keep]

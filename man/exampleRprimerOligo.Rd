@@ -11,52 +11,6 @@ An \code{RprimerOligo} object.
 data("exampleRprimerOligo")
 }
 \description{
-The object contains the following information:
-
-\describe{
-  \item{type}{Whether the oligo is a primer or probe.}
-  \item{fwd}{\code{TRUE} if the oligo is valid in forward direction,
-    \code{FALSE} otherwise.}
-  \item{rev}{\code{TRUE} if the oligo is valid in reverse direction,
-    \code{FALSE} otherwise.}
-  \item{start}{Start position of the oligo.}
-  \item{end}{End positon of the oligo.}
-  \item{length}{Oligo length.}
-  \item{iupacSequence}{Oligo sequence in IUPAC format
-  (i.e. with ambiguous bases).}
-  \item{iupaSequenceRc}{The reverse complement of the iupacSequence.}
-  \item{identity}{Average identity of the oligo.}
-  \item{coverage}{Average coverage of the oligo.}
-  \item{degeneracy}{Number of sequence variants of the oligo.}
-  \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.
-  }
-  \item{gcContentRange}{Range in GC-content of all sequence variants of
-    the oligo.}
-  \item{tmMean}{Mean tm of all sequence variants of the oligo.}
-  \item{tmRange}{Range in tm of all sequence variants of the oligo.}
-  \item{sequence}{All sequence variants of the oligo.}
-  \item{sequenceRc}{Reverse complements of all sequence variants.}
-  \item{gcContent}{GC-content of all sequence variants.}
-  \item{tm}{Tm of all sequence variants (in Celcius degrees).}
-  \item{dH}{delta H of all sequence variants (in cal/mol).}
-  \item{dS}{delta S of all sequence
-  variants (in cal/K/mol).}
-  \item{method}{Design method used to generate the oligo: "ambiguous",
-  "mixedFwd" or "mixedRev".}
-  \item{score}{Oligo score, the lower the better.
-  See "Score" for more details.}
-  \item{roiStart}{First position of the input \code{RprimerProfile} object
-    (roi = region of interest).}
-  \item{roiEnd}{Last position of the input \code{RprimerProfile} object.}
-}
-
-Tm was calculated for perfectly matching oligo-target duplexes at a
-sodium ion
-concentration of 0.05 M, a primer
-concentration of 500 nM and a probe concentration of 250 nM.
-
-Delta H was calculated for perfectly matching oligo-target duplexes at a
-sodium ion
-concentration of 0.05 M.
+Primers and probes targeted to hepatitis E virus
 }
 \keyword{datasets}

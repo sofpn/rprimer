@@ -123,8 +123,8 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
         "type", "fwd", "rev", "start", "end", "length", "iupacSequence",
         "iupacSequenceRc", "identity",
         "coverage", "degeneracy", "gcContentMean", "gcContentRange", "tmMean",
-        "tmRange",
-        "sequence", "sequenceRc", "gcContent", "tm", "dH", "dS", "method",
+        "tmRange", "deltaGMean", "deltaGRange",
+        "sequence", "sequenceRc", "gcContent", "tm", "deltaG", "method",
         "score", "roiStart", "roiEnd"
     )
     if (!all(colnames %in% names(object))) {
@@ -195,20 +195,20 @@ RprimerAssay <- function(...) {
 
 S4Vectors::setValidity2("RprimerAssay", function(object) {
     msg <- NULL
+    oligoColnames <- c(
+        "start", "end",
+        "length", "iupacSequence", "identity",
+        "coverage", "degeneracy", "gcContentMean",
+        "gcContentRange", "tmMean", "tmRange",
+        "sequence",
+        "gcContent", "tm", "deltaG",
+        "method"
+    )
     colnames <- c(
         "start", "end", "ampliconLength",
-        "totalDegeneracy", "score", "startFwd", "endFwd",
-        "lengthFwd", "iupacSequenceFwd", "identityFwd",
-        "coverageFwd", "degeneracyFwd", "gcContentMeanFwd",
-        "gcContentRangeFwd", "tmMeanFwd", "tmRangeFwd",
-        "sequenceFwd",
-        "gcContentFwd", "tmFwd",
-        "methodFwd", "startRev", "endRev",
-        "lengthRev", "iupacSequenceRev", "identityRev",
-        "coverageRev", "degeneracyRev", "gcContentMeanRev",
-        "gcContentRangeRev", "tmMeanRev", "tmRangeRev",
-        "sequenceRev",
-        "gcContentRev", "tmRev", "methodRev",
+        "totalDegeneracy", "score",
+        paste0(oligoColnames, "Fwd"),
+        paste0(oligoColnames, "Rev"),
         "roiStart", "roiEnd"
     )
     if (!all(colnames %in% names(object))) {
@@ -352,13 +352,14 @@ RprimerMatchAssay <- function(...) {
 
 S4Vectors::setValidity2("RprimerMatchAssay", function(object) {
     msg <- NULL
+    oligoColnames <- c(
+        "perfectMatch", "oneMismatch", "twoMismatches",
+        "threeMismatches", "fourOrMoreMismatches",
+        "offTargetMatch"
+    )
     colnames <- c(
-        "perfectMatchFwd", "oneMismatchFwd", "twoMismatchesFwd",
-        "threeMismatchesFwd", "fourOrMoreMismatchesFwd",
-        "offTargetMatchFwd",
-        "perfectMatchRev", "oneMismatchRev", "twoMismatchesRev",
-        "threeMismatchesRev", "fourOrMoreMismatchesRev",
-        "offTargetMatchRev"
+        paste0(oligoColnames, "Fwd"),
+        paste0(oligoColnames, "Rev")
     )
     if (!all(colnames %in% names(object))) {
         msg <- c(

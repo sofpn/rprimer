@@ -16,18 +16,7 @@ is determined.
 Can range from `0 to 0.2, defaults to \code{0}.}
 }
 \value{
-An \code{RprimerProfile} object.
-}
-\description{
-\code{consensusProfile()} takes a DNA multiple alignment as input and
-returns all the data needed for subsequent primer and probe design.
-The function is a wrapper to
-\code{Biostrings::consensusMatrix()} (Pages et al., 2020).
-}
-\section{Output}{
-
-
-The output contains the following information:
+An \code{RprimerProfile} object, which contains the following information:
 
 \describe{
   \item{position}{Position in the alignment.}
@@ -62,10 +51,17 @@ The output contains the following information:
   \code{ambiguityThreshold = 0}).}
 }
 }
-
+\description{
+\code{consensusProfile()} takes a DNA multiple alignment as input and
+returns all the data needed for subsequent primer and probe design.
+The function is a wrapper to
+\code{Biostrings::consensusMatrix()} (Pages et al., 2020).
+}
 \examples{
 data("exampleRprimerAlignment")
 consensusProfile(exampleRprimerAlignment)
+
+consensusProfile(exampleRprimerAlignment, ambiguityThreshold = 0.05)
 }
 \references{
 Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:

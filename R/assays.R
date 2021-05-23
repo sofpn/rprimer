@@ -3,7 +3,8 @@
 #' \code{assays()} combines forward primers, reverse primers
 #' and probes to (RT)-PCR assays from an \code{RprimerOligo} object.
 #'
-#' @param x An \code{RprimerOligo} object, with or without probes.
+#' @param x
+#' An \code{RprimerOligo} object, which can be with or without probes.
 #'
 #' @param lengthRange
 #' Amplicon length range, a numeric vector [40, 5000], defaults to
@@ -15,12 +16,7 @@
 #' which means that primers will be paired regardless of their tm.
 #'
 #' @return
-#' An \code{RprimerAssay} object.
-#' An error message will return if no assays are found.
-#'
-#' @section Output:
-#'
-#' The output contains the following information:
+#' An \code{RprimerAssay} object, which contains the following information:
 #'
 #' \describe{
 #'   \item{start}{Position where the assay starts.}
@@ -32,42 +28,72 @@
 #'   with only primers,
 #'   and 36 for assays with probes.
 #'   See \code{?oligos} for more information about the scoring system.}
-#'   \item{startFwd}{Position where the forward primer starts.}
-#'   \item{endFwd}{Position where the forward primer ends.}
+#'   \item{startFwd}{Start position of the forward primer.}
+#'   \item{endFwd}{End positon of the forward primer.}
 #'   \item{lengthFwd}{Length of the forward primer.}
-#'   \item{iupacSequenceFwd}{IUPAC sequence of the forward primer.}
-#'   \item{coverageFwd}{Average coverage of the forward primer.}
-#'   \item{degeneracyFwd}{Number of variants of the forward primer.}
-#'   \item{gcContentMeanFwd}{Mean GC-content of the forward primer.}
-#'   \item{gcContentRangeFwd}{Range in GC-content of the forward primer.}
-#'   \item{tmMeanFwd}{Mean tm of the forward primer.}
-#'   \item{tmRangeFwd}{Range in tm of the forward primer.}
-#'   \item{sequenceFwd}{Sequence of the forward primer, all sequence variants.}
-#'   \item{gcContentFwd}{GC-content of the forward primer,
-#'   all sequence variants.}
-#'   \item{tmFwd}{Tm of the forward primer, all sequence variants.}
-#'   \item{dHFwd}{delta H of the forward
-#'   primer (in cal/mol), all sequence variants.}
-#'   \item{dSFwd}{delta S of the forward primer (in cal/K/mol),
-#'   all sequence variants.}
-#'   \item{startRev}{Position where the reverse primer starts.}
-#'   \item{endRev}{Position where the reverse primer ends.}
+#'   \item{iupacSequenceFwd}{Forward primer sequence in IUPAC format
+#'   (i.e. with ambiguous bases).}
+#'   \item{identityFwd}{For ambiguous primers: Average identity of the
+#'   forward primer. For mixed primers: Average identity of the 5' (consensus)
+#'   part of the forward primer. The value can range from 0 to 1.}
+#'   \item{coverageFwd}{For ambiguous primers: Average coverage of the
+#'   forward primer. For mixed primers: Average coverage of the 3' (degenerate)
+#'   part of the forward primer. The value can range from 0 to 1.}
+#'   \item{degeneracyFwd}{Number of sequence variants of the forward primer.}
+#'   \item{gcContentMeanFwd}{Mean GC-content of all sequence variants of the
+#'   forward primer.}
+#'   \item{gcContentRangeFwd}{Range in GC-content of all sequence variants of
+#'     the forward primer.}
+#'   \item{tmMeanFwd}{Mean tm of all sequence variants of the forward primer
+#'   (in Celcius degrees).}
+#'   \item{tmRangeFwd}{Range in tm of all sequence variants of the forward
+#'   primer (in Celcius degrees).}
+#'   \item{deltaGMeanFwd}{Mean delta G of all sequence variants of the
+#'   forward primer (in kcal/mol).}
+#'   \item{deltaGRangeFwd}{Range in delta G of all sequence variants of the
+#'   forward primer (in kcal/mol).}
+#'   \item{sequenceFwd}{All sequence variants of the forward primer.}
+#'   \item{gcContentFwd}{GC-content of all sequence variants of the forward
+#'   primer.}
+#'   \item{tmFwd}{Tm of all sequence variants of the forward primer
+#'   (in Celcius degrees).}
+#'   \item{deltaGFwd}{Delta G of all sequence variants
+#'   of the forward primer (in kcal/mol).}
+#'   \item{methodFwd}{Design method used to generate the forward
+#'   primer: "ambiguous" or "mixedFwd.}
+#'   \item{startRev}{Start position of the reverse primer.}
+#'   \item{endRev}{End positon of the reverse primer.}
 #'   \item{lengthRev}{Length of the reverse primer.}
-#'   \item{iupacSequenceRev}{IUPAC sequence of the reverse primer.}
-#'   \item{coverageRev}{Average coverage of the reverse primer.}
-#'   \item{degeneracyRev}{Number of variants of the reverse primer.}
-#'   \item{gcContentMeanRev}{Mean GC-content of the reverse primer.}
-#'   \item{gcContentRangeRev}{Range in GC-content of the reverse primer.}
-#'   \item{tmMeanRev}{Mean tm of the reverse primer.}
-#'   \item{tmRangeRev}{Range in tm of the reverse primer.}
-#'   \item{sequenceRev}{Sequence of the reverse primer, all sequence variants.}
-#'   \item{gcContentRev}{GC-content of the reverse primer,
-#'   all sequence variants.}
-#'   \item{tmRev}{Tm of the reverse primer, all sequence variants.}
-#'   \item{dHRev}{delta H of the reverse
-#'   primer (in cal/mol), all sequence variants.}
-#'   \item{dSRev}{delta S of the reverse primer (in cal/K/mol),
-#'   all sequence variants.}
+#'   \item{iupacSequenceRev}{Reverse primer sequence in IUPAC format
+#'   (i.e. with ambiguous bases).}
+#'   \item{identityRev}{For ambiguous primers: Average identity of the
+#'   reverse primer. For mixed primers: Average identity of the 5' (consensus)
+#'   part of the reverse primer. The value can range from 0 to 1.}
+#'   \item{coverageRev}{For ambiguous primers: Average coverage of the
+#'   reverse primer. For mixed primers: Average coverage of the 3' (degenerate)
+#'   part of the reverse primer. The value can range from 0 to 1.}
+#'   \item{degeneracyRev}{Number of sequence variants of the reverse primer.}
+#'   \item{gcContentMeanRev}{Mean GC-content of all sequence variants of the
+#'   reverse primer.}
+#'   \item{gcContentRangeRev}{Range in GC-content of all sequence variants of
+#'     the reverse primer.}
+#'   \item{tmMeanRev}{Mean tm of all sequence variants of the reverse primer
+#'   (in Celcius degrees).}
+#'   \item{tmRangeRev}{Range in tm of all sequence variants of the reverse
+#'   primer (in Celcius degrees).}
+#'   \item{deltaGMeanRev}{Mean delta G of all sequence variants of the
+#'   reverse primer (in kcal/mol).}
+#'   \item{deltaGRangeRev}{Range in delta G of all sequence variants of the
+#'   reverse primer (in kcal/mol).}
+#'   \item{sequenceRev}{All sequence variants of the reverse primer.}
+#'   \item{gcContentRev}{GC-content of all sequence variants of the reverse
+#'   primer.}
+#'   \item{tmRev}{Tm of all sequence variants of the reverse primer
+#'   (in Celcius degrees).}
+#'   \item{deltaGRev}{Delta G of all sequence variants
+#'   of the reverse primer (in kcal/mol).}
+#'   \item{methodRev}{Design method used to generate the forward
+#'   primer: "ambiguous" or "mixedRev.}
 #'   \item{roiStart}{Start position of the input consensus profile
 #'   used for oligo design.}
 #'   \item{roiEnd}{End position of the input consensus profile used
@@ -78,26 +104,44 @@
 #' the following columns are also included:
 #'
 #' \describe{
-#'   \item{plusPr}{If the probe is valid in positive sense.}
-#'   \item{minusPr}{If the probe is valid in negative sense.}
-#'   \item{startPr}{Position where the probe starts.}
-#'   \item{endPr}{Position where the probe ends.}
+#'   \item{startPr}{Start position of the probe.}
+#'   \item{endPr}{End positon of the probe.}
 #'   \item{lengthPr}{Length of the probe.}
-#'   \item{iupacSequencePr}{IUPAC sequence of the probe.}
-#'   \item{coveragePr}{Average coverage of the probe.}
-#'   \item{degeneracyPr}{Number of variants of the probe.}
-#'   \item{gcContentMeanPr}{Mean GC-content of the probe.}
-#'   \item{gcContentRangePr}{Range in GC-content of the probe.}
-#'   \item{tmMeanPr}{Mean tm of the probe.}
-#'   \item{tmRangePr}{Range in tm of the probe.}
-#'   \item{sequencePr}{Sequence of the probe, all sequence variants.}
-#'   \item{gcContentPr}{GC-content of the probe, all sequene variants.}
-#'   \item{tmPr}{Tm of the probe, all sequence variants.}
-#'   \item{dHPr}{delta H of the forward
-#'   primer (in cal/mol), all sequence variants.}
-#'   \item{dSPr}{delta S of the forward primer (in cal/K/mol),
-#'   all sequence variants.}
+#'   \item{iupacSequencePr}{Probe sequence in plus sense, in IUPAC format.}
+#'   \item{iupacSequenceRcPr}{Probe sequence in minus sense,
+#'   in IUPAC format.}
+#'   \item{identityPr}{For ambiguous primers: Average identity of the
+#'   probe. For mixed primers: Average identity of the 5' (consensus)
+#'   part of the probe. The value can range from 0 to 1.}
+#'   \item{coveragePr}{For ambiguous primers: Average coverage of the
+#'   probe. For mixed primers: Average coverage of the 3' (degenerate)
+#'   part of the probe. The value can range from 0 to 1.}
+#'   \item{degeneracyPr}{Number of sequence variants of the probe.}
+#'   \item{gcContentMeanPr}{Mean GC-content of all sequence variants of the
+#'   probe.}
+#'   \item{gcContentRangePr}{Range in GC-content of all sequence variants of
+#'     the probe.}
+#'   \item{tmMeanPr}{Mean tm of all sequence variants of the probe
+#'   (in Celcius degrees).}
+#'   \item{tmRangePr}{Range in tm of all sequence variants of the forward
+#'   primer (in Celcius degrees).}
+#'   \item{deltaGMeanPr}{Mean delta G of all sequence variants of the
+#'   probe (in kcal/mol).}
+#'   \item{deltaGRangePr}{Range in delta G of all sequence variants of the
+#'   probe (in kcal/mol).}
+#'   \item{sequencePr}{All sequence variants of the probe, in plus sense.}
+#'   \item{sequenceRcPr}{All sequence variants of the probe, in minus sense.}
+#'   \item{gcContentPr}{GC-content of all sequence variants of the probe.}
+#'   \item{tmPr}{Tm of all sequence variants of the probe
+#'   (in Celcius degrees).}
+#'   \item{deltaGPr}{Delta G of all sequence variants
+#'   of the probe (in kcal/mol).}
+#'   \item{methodPr}{Design method used to generate the probe.}
+#'   \item{plusPr}{If the probe is valid in plus sense.}
+#'   \item{minusPr}{If the probe is valid in minus sense.}
 #' }
+#'
+#' An error message will return if no assays are found.
 #'
 #' @export
 #'
@@ -106,6 +150,9 @@
 #'
 #' ## Design assays using default settings
 #' assays(exampleRprimerOligo)
+#'
+#' ## Modify the length range
+#' assays(exampleRprimerOligo, lengthRange = c(1000, 2000))
 assays <- function(x,
                    lengthRange = c(65, 120),
                    tmDifferencePrimers = NULL) {

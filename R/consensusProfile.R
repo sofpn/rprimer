@@ -16,11 +16,7 @@
 #' Can range from `0 to 0.2, defaults to \code{0}.
 #'
 #' @return
-#' An \code{RprimerProfile} object.
-#'
-#' @section Output:
-#'
-#' The output contains the following information:
+#' An \code{RprimerProfile} object, which contains the following information:
 #'
 #' \describe{
 #'   \item{position}{Position in the alignment.}
@@ -68,6 +64,8 @@
 #' @examples
 #' data("exampleRprimerAlignment")
 #' consensusProfile(exampleRprimerAlignment)
+#'
+#' consensusProfile(exampleRprimerAlignment, ambiguityThreshold = 0.05)
 consensusProfile <- function(x, ambiguityThreshold = 0) {
     if (!methods::is(x, "DNAMultipleAlignment")) {
         stop("'x' must be a DNAMultipleAlignment object.", call. = FALSE)

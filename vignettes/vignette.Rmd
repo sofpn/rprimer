@@ -19,8 +19,7 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#
-devtools::load_all(".")
+#devtools::load_all(".")
 library(rprimer)
 ```
 
@@ -84,7 +83,7 @@ myMaskedAlignment <- myAlignment
 Biostrings::colmask(myMaskedAlignment, invert = TRUE) <- c(3000:4000, 5000:6000)
 ```
 
-## Design
+## Design process
 
 ### Step 1: `consensusProfile` {#Step1}
 
@@ -162,7 +161,7 @@ The next step is to design oligos. Primers must be designed and probes are optio
 
 * The **ambiguous strategy** (default) generates primers from the IUPAC consensus sequence, which means that ambiguous bases can occur at any position in the primer
 
-* The **mixed strategy** generates primers from both the majority and the IUPAC consensus sequence. These primers consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region) and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. This strategy is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2]. It aims to allow amplification of highly variable targets using primers with minimal degeneracy. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since 5' end mismatches are generally less detrimental than 3' end mismatches) [@Rose2]. In this way, the generated products will match the 5' ends of all primers perfectly, which allows them to be efficiently amplified in later PCR cycles. To provide a sufficiently high melting temperature (tm) in spite of eventual 5' end mismatches, it is recommended to design relatively long primers (> 25 bases) when using this strategy 
+* The **mixed strategy** generates primers from both the majority and the IUPAC consensus sequence. These primers consist of a shorter degenerate part at the 3' end (~1/3 of the primer, targeting a conserved region) and a longer consensus part at the 5' end (~2/3 of the primer), which instead of having ambiguous bases contains the most probable nucleotide at each position. This strategy is based on the Consensus-Degenerate Hybrid Oligonucleotide Primer (CODEHOP) principle [@Rose2]. It aims to allow amplification of highly variable targets using primers with minimal degeneracy. The idea is that the degenerate 3' end part will bind specifically to the target sequence in the initial PCR cycles, and promote amplification in spite of eventual mismatches at the 5' consensus part (since 5' end mismatches are generally less detrimental than 3' end mismatches) [@Rose2]. In this way, the generated products will match the 5' ends of all primers perfectly, which allows them to be efficiently amplified in later PCR cycles. To provide a sufficiently high melting temperature (tm) in spite of eventual 5' end mismatches, it is recommended to design relatively long primers (at least 25 bases) when using this strategy 
 
 Probes are always designed using the ambiguous strategy. 
 
@@ -185,11 +184,11 @@ The design settings (i.e., the arguments of `oligos()`) are:
 * `gcRangeProbe`: defaults to `c(0.40, 0.65)`
 * `tmRangeProbe`: defaults to `c(55, 70)`
 * `concProbe`: defaults to `250`
-* `concNa`: sodium ion concentration in the PCR reaction (in M), defaults to `0.05` (50 mM) (for delta S and tm calculation)
+* `concNa`: sodium ion concentration in the PCR reaction (in M), defaults to `0.05` (50 mM) (for calculation of tm and delta G)
 
 All sequence variants of an oligo must fulfill all specified design constraints to be considered as a potential candidate. 
 
-Oligos with sequence variants containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
+Oligos with at least one sequence variant containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") will be excluded from consideration.
 
 An error message will return if no oligos are found. If so, a good idea could be to re-run the process from [Step 1](#Step1) and increase the `ambiguityThreshold` in `consensusProfile()`, and/or relax the design constraints above. 
 
@@ -208,7 +207,7 @@ myOligos[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The manual (`?oligos`) contains a detailed description of each variable, but what may not be entirely self-explanatory is that some variables (e.g. `sequence` `gcContent` and `tm`) can hold several values in each entry (i.e., each entry is a list). All values within a specific row can be retrieved by:   
+The manual (`?oligos`) contains a detailed description of each variable, but what may not be entirely self-explanatory is that some variables (e.g. `sequence` `gcContent` and `tm`) can hold several values in each entry. All values within a specific row can be retrieved by:   
 
 ```{r}
 myOligos$sequence[[1]] ## All sequence variants of the first oligo (i.e., first row) 
@@ -431,7 +430,7 @@ paste(myAssayRegion$iupac, collapse = "")
 
 ### Check match 
 
-As a final step, it is often valuable to investigate how well the generated oligos or assays match with each individual target sequence in the input alignment. `checkMatch()` can be used for this purpose. The function is a wrapper to `Biostrings::vcountPDict()` [@PagesBios], and has two arguments: 
+It is often valuable to investigate how well the generated oligos or assays match with each individual target sequence in the input alignment. `checkMatch()` can be used for this purpose. The function is a wrapper to `Biostrings::vcountPDict()` [@PagesBios], and has two arguments: 
 
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
@@ -519,7 +518,7 @@ assaySelection %>%
 
 ## Export to file
 
-Before proceeding to wet lab evaluation, it is recommended to evaluate the final primer and probe candidates for 1) more details on the potential to form primer dimers and hairpin structures, and 2), the potential to (not) cross react with non-targets. 
+Before proceeding to wet lab evaluation, it is recommended to evaluate the final primer and probe candidates for 1) the potential to form primer dimers and hairpin structures, and 2), the potential to (not) cross react with non-targets. 
 
 These tasks are best performed by other software. Below, I show how to export the results to file so that they can be readily analyzed by other tools.  
 

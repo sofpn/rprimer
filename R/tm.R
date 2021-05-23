@@ -68,3 +68,15 @@
     names(tm) <- rownames(x)
     tm
 }
+
+#' @noRd
+#'
+#' @examples
+#' x <- .tmParameters(t(matrix(c("A", "G", "T", "T", "C", "G", "G", "T", "C"))))
+#' .deltaG(x)
+.deltaG <- function(x, temperature = 37) {
+    temperature <- temperature + 273.15
+    dG <- (x[, "sumdH"] * 1000 - temperature * x[, "sumdS"]) / 100
+    names(dG) <- rownames(x)
+    dG
+}

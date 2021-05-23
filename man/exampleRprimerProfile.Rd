@@ -11,22 +11,6 @@ An \code{RprimerProfile} object.
 data("exampleRprimerProfile")
 }
 \description{
-The object contains the following information:
-
-\describe{
-  \item{position}{Position in the alignment.}
-  \item{a}{Proportion of A.}
-  \item{c}{Proportion of C.}
-  \item{g}{Proportion of G.}
-  \item{t}{Proportion of T.}
-  \item{other}{Proportion of bases other than A, C, G, T.}
-  \item{gaps}{Proportion of gaps.}
-  \item{majority}{Majority consensus sequence.}
-  \item{identity}{Proportion of the most frequently occurring nucleotide.}
-  \item{iupac}{IUPAC consensus character.}
-  \item{entropy}{Shannon entropy.}
-  \item{coverage}{Proportion of sequences covered by the
-  IUPAC consensus character.}
-}
+A consensus profile from an alignment of hepatitis E virus sequences
 }
 \keyword{datasets}
