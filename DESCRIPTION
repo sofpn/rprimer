@@ -9,7 +9,7 @@ Description:
     format and visualized as dashboard like plots. The workflow is developed 
     primarily for sequence variable RNA viruses, but it should be equally useful 
     for other organisms with high sequence variability. For more information, 
-    see the package vignette.
+    please see the package vignette.
 Authors@R: 
     person(given = "Sofia",
            family = "Persson",

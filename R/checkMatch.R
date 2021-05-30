@@ -1,4 +1,4 @@
-#' Check how oligos match to their target sequences (generic)
+#' Check how oligos and assays match to target sequences
 #'
 #' \code{checkMatch()} checks how well the oligos within an \code{RprimerOligo}
 #' or \code{RprimerAssay} object match with their intended target sequences.
@@ -8,7 +8,7 @@
 #' (i.e., on target match).
 #' It also reports the proportion of target sequences that matches to the
 #' oligo with no more than four mismatches within all other regions in
-#' the alignment (i.e., off target match).
+#' the alignment (off target match).
 #' Ambiguous bases and gaps in the
 #' target sequences will be identified as mismatches.
 #' The function is a wrapper to \code{Biostrings::vcountPDict()}
@@ -21,33 +21,16 @@
 #' An \code{RprimerOligo} or \code{RprimerAssay} object.
 #'
 #' @param target
-#' An alignment with intended target sequences, i.e., the
-#' \code{Biostrings::DNAMultipleAlignment} object that was used
-#' for designing the oligos/assays.
+#' A \code{Biostrings::DNAMultipleAlignment} alignment with
+#' intended target sequences. Note that it must be
+#' same alignment that was used for generating the oligos/assays in \code{x}.
 #'
 #' @return
-#' An \code{RprimerMatchOligo} or \code{RprimerMatchAssay} object. See details
-#' below.
+#' An \code{RprimerMatchOligo} or \code{RprimerMatchAssay} object, depending
+#' on whether an \code{RprimerOligo} or \code{RprimerAssay} object was used
+#' as input.
 #'
-#' @export
-#'
-#' @references
-#' Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
-#' Efficient manipulation of biological strings. R package version
-#' 2.57.2.
-setGeneric("checkMatch", function(x, target) standardGeneric("checkMatch"))
-
-# Methods ======================================================================
-
-#' Check match of an RprimerOligo object (method)
-#'
-#' @describeIn checkMatch
-#'
-#' @export
-#'
-#' @section Output (for oligos):
-#'
-#' The output contains the following information:
+#' \code{RprimerMatchOligo} objects contain the following information:
 #'
 #' \describe{
 #'   \item{iupacSequence}{The oligo sequence in IUPAC format.}
@@ -81,31 +64,7 @@ setGeneric("checkMatch", function(x, target) standardGeneric("checkMatch"))
 #'   no more than four mismatches to all other regions within the alignment.}
 #'  }
 #'
-#' @examples
-#' ### RprimerOligo objects
-#'
-#' data("exampleRprimerOligo")
-#' data("exampleRprimerAlignment")
-#'
-#' x <- exampleRprimerOligo[1:2, ]
-#' target <- exampleRprimerAlignment
-#'
-#' checkMatch(x, target)
-setMethod("checkMatch", "RprimerOligo", function(x, target) {
-    if (!methods::is(target, "DNAMultipleAlignment")) {
-        stop("'target' must be a DNAMultipleAlignment object.", call. = FALSE)
-    }
-    match <- .checkMatchOligo(x, target)
-    RprimerMatchOligo(match)
-})
-
-#' Check match of an RprimerAssay object (method)
-#'
-#' @describeIn checkMatch
-#'
-#' @section Output (for assays):
-#'
-#' The output contains the following information:
+#'  \code{RprimerMatchAssat} objects contain the following information:
 #'
 #' \describe{
 #'   \item{iupacSequenceFwd}{The forward primer sequence in IUPAC format.}
@@ -176,8 +135,8 @@ setMethod("checkMatch", "RprimerOligo", function(x, target) {
 #'   the target alignment.}
 #'   \item{iupacSequencePr}{The probe sequence in IUPAC format.}
 #'
-#'   If the input assay contains probes, the following information
-#'   is also added:
+#' If the input assay contains probes, the following information
+#' is also added:
 #'
 #'   \item{perfectMatchPr}{Proportion of target sequences that matches perfectly
 #'   with the probe withing the intended binding region.}
@@ -214,8 +173,44 @@ setMethod("checkMatch", "RprimerOligo", function(x, target) {
 #'
 #' @export
 #'
+#' @references
+#' Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
+#' Efficient manipulation of biological strings. R package version
+#' 2.57.2.
+setGeneric("checkMatch", function(x, target) standardGeneric("checkMatch"))
+
+# Methods ======================================================================
+
+#' @describeIn checkMatch
+#'
+#' @export
 #' @examples
-#' ### RprimerAssay objects
+#' #### RprimerOligo objects
+#'
+#' data("exampleRprimerOligo")
+#' data("exampleRprimerAlignment")
+#'
+#' x <- exampleRprimerOligo[1:2, ]
+#' target <- exampleRprimerAlignment
+#'
+#' checkMatch(x, target)
+#'
+setMethod("checkMatch", "RprimerOligo", function(x, target) {
+    if (!methods::is(target, "DNAMultipleAlignment")) {
+        stop("'target' must be a DNAMultipleAlignment object.", call. = FALSE)
+    }
+    match <- .checkMatchOligo(x, target)
+    RprimerMatchOligo(match)
+})
+
+#' Check match of an RprimerAssay object (method)
+#'
+#' @describeIn checkMatch
+#'
+#' @export
+#'
+#' @examples
+#' #### RprimerAssay objects
 #'
 #' data("exampleRprimerAssay")
 #' data("exampleRprimerAlignment")
@@ -224,6 +219,7 @@ setMethod("checkMatch", "RprimerOligo", function(x, target) {
 #' target <- exampleRprimerAlignment
 #'
 #' checkMatch(x, target)
+#'
 setMethod("checkMatch", "RprimerAssay", function(x, target) {
     if (!methods::is(target, "DNAMultipleAlignment")) {
         stop("'target' must be a DNAMultipleAlignment object.", call. = FALSE)

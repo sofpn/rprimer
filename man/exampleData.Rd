@@ -5,7 +5,7 @@
 \alias{exampleRprimerOligo}
 \title{Primers and probes targeted to hepatitis E virus}
 \format{
-An \code{RprimerOligo} object.
+An example of an \code{RprimerOligo} object.
 }
 \usage{
 data("exampleRprimerOligo")
@@ -13,4 +13,9 @@ data("exampleRprimerOligo")
 \description{
 Primers and probes targeted to hepatitis E virus
 }
+\section{Functions}{
+\itemize{
+\item \code{exampleRprimerOligo}: 
+}}
+
 \keyword{datasets}

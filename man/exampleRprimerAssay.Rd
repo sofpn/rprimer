@@ -5,7 +5,7 @@
 \alias{exampleRprimerAssay}
 \title{PCR assays targeted to hepatitis E virus}
 \format{
-An \code{RprimerAssay} object.
+An example of an \code{RprimerAssay} object.
 }
 \usage{
 data("exampleRprimerAssay")

@@ -20,39 +20,11 @@ checkMatch(x, target)
 for designing the oligos/assays.}
 }
 \value{
-An \code{RprimerMatchOligo} or \code{RprimerMatchAssay} object. See details
-below.
-}
-\description{
-\code{checkMatch()} checks how well the oligos within an \code{RprimerOligo}
-or \code{RprimerAssay} object match with their intended target sequences.
-The output gives information on both the proportion and names of target
-sequences that match perfectly as well as with one, two, three or four or
-more mismatches to the oligo within the intended oligo binding region
-(i.e., on target match).
-It also reports the proportion of target sequences that matches to the
-oligo with no more than four mismatches within all other regions in
-the alignment (i.e., off target match).
-Ambiguous bases and gaps in the
-target sequences will be identified as mismatches.
-The function is a wrapper to \code{Biostrings::vcountPDict()}
-(Pages et al., 2020).
-}
-\details{
-Note that the output does not say anything about the type,
-position or severity of the mismatches.
-}
-\section{Methods (by class)}{
-\itemize{
-\item \code{RprimerOligo}: 
+An \code{RprimerMatchOligo} or \code{RprimerMatchAssay} object, depending
+on whether an \code{RprimerOligo} or \code{RprimerAssay} object was used
+as input.
 
-\item \code{RprimerAssay}: 
-}}
-
-\section{Output (for oligos)}{
-
-
-The output contains the following information:
+\code{RprimerMatchOligo} objects contain the following information:
 
 \describe{
   \item{iupacSequence}{The oligo sequence in IUPAC format.}
@@ -85,12 +57,8 @@ The output contains the following information:
   \item{idOffTargetMatch}{Names of all sequences that matches with
   no more than four mismatches to all other regions within the alignment.}
  }
-}
 
-\section{Output (for assays)}{
-
-
-The output contains the following information:
+ \code{RprimerMatchAssat} objects contain the following information:
 
 \describe{
   \item{iupacSequenceFwd}{The forward primer sequence in IUPAC format.}
@@ -161,8 +129,8 @@ The output contains the following information:
   the target alignment.}
   \item{iupacSequencePr}{The probe sequence in IUPAC format.}
 
-  If the input assay contains probes, the following information
-  is also added:
+If the input assay contains probes, the following information
+is also added:
 
   \item{perfectMatchPr}{Proportion of target sequences that matches perfectly
   with the probe withing the intended binding region.}
@@ -197,9 +165,34 @@ The output contains the following information:
   the target alignment.}
  }
 }
+\description{
+\code{checkMatch()} checks how well the oligos within an \code{RprimerOligo}
+or \code{RprimerAssay} object match with their intended target sequences.
+The output gives information on both the proportion and names of target
+sequences that match perfectly as well as with one, two, three or four or
+more mismatches to the oligo within the intended oligo binding region
+(i.e., on target match).
+It also reports the proportion of target sequences that matches to the
+oligo with no more than four mismatches within all other regions in
+the alignment (off target match).
+Ambiguous bases and gaps in the
+target sequences will be identified as mismatches.
+The function is a wrapper to \code{Biostrings::vcountPDict()}
+(Pages et al., 2020).
+}
+\details{
+Note that the output does not say anything about the type,
+position or severity of the mismatches.
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{RprimerOligo}: 
+
+\item \code{RprimerAssay}: 
+}}
 
 \examples{
-### RprimerOligo objects
+#### RprimerOligo objects
 
 data("exampleRprimerOligo")
 data("exampleRprimerAlignment")
@@ -208,7 +201,8 @@ x <- exampleRprimerOligo[1:2, ]
 target <- exampleRprimerAlignment
 
 checkMatch(x, target)
-### RprimerAssay objects
+
+#### RprimerAssay objects
 
 data("exampleRprimerAssay")
 data("exampleRprimerAlignment")
@@ -217,6 +211,7 @@ x <- exampleRprimerAssay[1:2, ]
 target <- exampleRprimerAlignment
 
 checkMatch(x, target)
+
 }
 \references{
 Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:

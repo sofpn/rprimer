@@ -1,8 +1,6 @@
 #' An multiple DNA alignment of hepatitis E virus sequences
 #'
-#' An alignment with 200 hepatitis E virus sequences (see the file
-#' "documentation_example_alignment.txt" within the inst/script folder
-#' for more details).
+#' An alignment with 200 hepatitis E virus sequences.
 #'
 #' @format A \code{Biostrings::DNAMultipleAlignment} object.
 #'
@@ -11,7 +9,9 @@
 #' @source
 #' The sequences were collected from NCBI GenBank and the alignment
 #' was imported to the package using \code{Biostrings::readDNAStringSet()}
-#' (Pages et al., 2020).
+#' (Pages et al., 2020). See the file
+#' "documentation_example_alignment.txt" within the inst/script folder
+#' for more details on how it was generated.
 #'
 #' @references
 #' H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
@@ -21,21 +21,23 @@
 
 #' A consensus profile from an alignment of hepatitis E virus sequences
 #'
-#' @format An \code{RprimerProfile} object.
+#' @format An example of an \code{RprimerProfile} object.
 #'
 #' @usage data("exampleRprimerProfile")
 "exampleRprimerProfile"
 
 #' Primers and probes targeted to hepatitis E virus
 #'
-#' @format An \code{RprimerOligo} object.
+#' @format An example of an \code{RprimerOligo} object.
+#'
+#' @describeIn exampleData
 #'
 #' @usage data("exampleRprimerOligo")
 "exampleRprimerOligo"
 
 #' PCR assays targeted to hepatitis E virus
 #'
-#' @format An \code{RprimerAssay} object.
+#' @format An example of an \code{RprimerAssay} object.
 #'
 #' @usage data("exampleRprimerAssay")
 "exampleRprimerAssay"
@@ -45,7 +47,7 @@
 #' This dataset describes the proportion of HEV target sequences that
 #' matches to a set of oligos.
 #'
-#' @format An \code{RprimerMatchOligo} object.
+#' @format An example of an \code{RprimerMatchOligo} object.
 #'
 #' @usage data("exampleRprimerMatchOligo")
 "exampleRprimerMatchOligo"
@@ -56,7 +58,7 @@
 #' This dataset describes the proportion of HEV target sequences that
 #' matches to a set of assays.
 #'
-#' @format An \code{RprimerMatchAssay} object.
+#' @format An example of an \code{RprimerMatchAssay} object.
 #'
 #' @usage data("exampleRprimerMatchAssay")
 "exampleRprimerMatchAssay"

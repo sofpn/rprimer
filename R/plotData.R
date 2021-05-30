@@ -1,4 +1,6 @@
-#' Plot an Rprimer object (generic)
+#' Plot an Rprimer object
+#'
+#' \code{plotData} can be used to visualize all the Rprimer objects.
 #'
 #' @param x
 #' An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.
@@ -33,8 +35,6 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 
 # Methods ======================================================================
 
-#' Plot an RprimerProfile object (method)
-#'
 #' @describeIn plotData
 #'
 #' @importFrom patchwork wrap_plots
@@ -47,7 +47,7 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 #' data("exampleRprimerProfile")
 #' prof <- exampleRprimerProfile
 #'
-#' ## Plot an overwiev
+#' ## Plot an overview
 #' plotData(prof)
 #'
 #' ## Highlight a specific area
@@ -64,6 +64,7 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 #'
 #' ## Plot the nucleotide distribution of the roi, as reverse complement
 #' plotData(roi, type = "nucleotide", rc = TRUE)
+#'
 setMethod("plotData", "RprimerProfile", function(x,
                                                  type = "overview",
                                                  highlight = NULL,
@@ -91,8 +92,6 @@ setMethod("plotData", "RprimerProfile", function(x,
     }
 })
 
-#' Plot an RprimerOligo object (method)
-#'
 #' @describeIn plotData
 #'
 #' @aliases plotData
@@ -113,6 +112,7 @@ setMethod("plotData", "RprimerProfile", function(x,
 #' ## Select a subset of the oligos, and plot
 #' selected <- oligos[oligos$start >= 5000, ]
 #' plotData(selected)
+#'
 setMethod("plotData", "RprimerOligo", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -124,8 +124,6 @@ setMethod("plotData", "RprimerOligo", function(x) {
     )
 })
 
-#' Plot an RprimerAssay object (method)
-#'
 #' @describeIn plotData
 #'
 #' @importFrom patchwork wrap_plots
@@ -137,6 +135,7 @@ setMethod("plotData", "RprimerOligo", function(x) {
 #'
 #' data("exampleRprimerAssay")
 #' plotData(exampleRprimerAssay)
+#'
 setMethod("plotData", "RprimerAssay", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -148,8 +147,6 @@ setMethod("plotData", "RprimerAssay", function(x) {
     )
 })
 
-#' Plot an RprimerMatchOligo object (method)
-#'
 #' @describeIn plotData
 #'
 #' @export
@@ -159,6 +156,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
 #'
 #' data("exampleRprimerMatchOligo")
 #' plotData(exampleRprimerMatchOligo)
+#'
 setMethod("plotData", "RprimerMatchOligo", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -167,8 +165,6 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
     .plotMatch(x)
 })
 
-#' Plot an RprimerMatchAssay object (method)
-#'
 #' @describeIn plotData
 #'
 #' @export
@@ -178,6 +174,7 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
 #'
 #' data("exampleRprimerMatchAssay")
 #' plotData(exampleRprimerMatchAssay)
+#'
 setMethod("plotData", "RprimerMatchAssay", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)

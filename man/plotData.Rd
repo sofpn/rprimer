@@ -7,7 +7,7 @@
 \alias{plotData,RprimerAssay-method}
 \alias{plotData,RprimerMatchOligo-method}
 \alias{plotData,RprimerMatchAssay-method}
-\title{Plot an Rprimer object (generic)}
+\title{Plot an Rprimer object}
 \usage{
 plotData(x, ...)
 
@@ -47,17 +47,7 @@ See examples below.}
 A plot.
 }
 \description{
-Plot an Rprimer object (generic)
-
-Plot an RprimerProfile object (method)
-
-Plot an RprimerOligo object (method)
-
-Plot an RprimerAssay object (method)
-
-Plot an RprimerMatchOligo object (method)
-
-Plot an RprimerMatchAssay object (method)
+\code{plotData} can be used to visualize all the Rprimer objects.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -78,7 +68,7 @@ Plot an RprimerMatchAssay object (method)
 data("exampleRprimerProfile")
 prof <- exampleRprimerProfile
 
-## Plot an overwiev
+## Plot an overview
 plotData(prof)
 
 ## Highlight a specific area
@@ -95,6 +85,7 @@ plotData(roi, type = "nucleotide")
 
 ## Plot the nucleotide distribution of the roi, as reverse complement
 plotData(roi, type = "nucleotide", rc = TRUE)
+
 ### Plot an RprimerOligo object
 
 data("exampleRprimerOligo")
@@ -106,16 +97,20 @@ plotData(oligos)
 ## Select a subset of the oligos, and plot
 selected <- oligos[oligos$start >= 5000, ]
 plotData(selected)
+
 ### Plot an RprimerAssay object
 
 data("exampleRprimerAssay")
 plotData(exampleRprimerAssay)
+
 ### Plot an RprimerMatchOligo object
 
 data("exampleRprimerMatchOligo")
 plotData(exampleRprimerMatchOligo)
+
 ### Plot an RprimerMatchAssay object
 
 data("exampleRprimerMatchAssay")
 plotData(exampleRprimerMatchAssay)
+
 }

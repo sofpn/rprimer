@@ -5,7 +5,7 @@
 \alias{exampleRprimerMatchAssay}
 \title{Proportion of sequences that matches to assays}
 \format{
-An \code{RprimerMatchAssay} object.
+An example of an \code{RprimerMatchAssay} object.
 }
 \usage{
 data("exampleRprimerMatchAssay")

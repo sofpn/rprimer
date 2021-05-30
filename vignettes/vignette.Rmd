@@ -19,7 +19,8 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+#
+devtools::load_all(".")
 library(rprimer)
 ```
 
@@ -27,7 +28,7 @@ library(rprimer)
 
 rprimer provides tools for analyzing sequence conservation and designing degenerate DNA oligos (primers and probes) from a multiple DNA sequence alignment. The package is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability.  
 
-In this vignette, I describe and demonstrate how to use rprimer by designing broadly reactive primers and probes for amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen.
+In this vignette, I describe and demonstrate how to use rprimer by designing broadly reactive primers and probes for PCR based amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen. 
 
 # Installation
 
@@ -74,7 +75,7 @@ filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta")
 ```
 
-For some applications, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. `colMask()` from Biostrings [@PagesBios] can be used for this task:
+For some applications, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. This can be accomplished by using `colMask()` from Biostrings [@PagesBios]:
 
 ```{r}
 ## Mask everything but position 3000 to 4000 and 5000 to 6000
@@ -430,7 +431,7 @@ paste(myAssayRegion$iupac, collapse = "")
 
 ### Check match 
 
-It is often valuable to investigate how well the generated oligos or assays match with each individual target sequence in the input alignment. `checkMatch()` can be used for this purpose. The function is a wrapper to `Biostrings::vcountPDict()` [@PagesBios], and has two arguments: 
+It is often valuable to investigate how well the generated oligos or assays match with each individual target sequence in the input alignment. `checkMatch()` can be used for this purpose. The function is a wrapper to `Biostrings::vcountPDict()` [@PagesBios] and has two arguments: 
 
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)

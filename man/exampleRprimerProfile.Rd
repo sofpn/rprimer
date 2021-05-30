@@ -5,7 +5,7 @@
 \alias{exampleRprimerProfile}
 \title{A consensus profile from an alignment of hepatitis E virus sequences}
 \format{
-An \code{RprimerProfile} object.
+An example of an \code{RprimerProfile} object.
 }
 \usage{
 data("exampleRprimerProfile")

@@ -137,7 +137,7 @@ the following columns are also included:
   (in Celcius degrees).}
   \item{deltaGPr}{Delta G of all sequence variants
   of the probe (in kcal/mol).}
-  \item{methodPr}{Design method used to generate the probe}
+  \item{methodPr}{Design method used to generate the probe.}
   \item{plusPr}{If the probe is valid in plus sense.}
   \item{minusPr}{If the probe is valid in minus sense.}
 }

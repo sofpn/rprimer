@@ -10,15 +10,15 @@ A \code{Biostrings::DNAMultipleAlignment} object.
 \source{
 The sequences were collected from NCBI GenBank and the alignment
 was imported to the package using \code{Biostrings::readDNAStringSet()}
-(Pages et al., 2020).
+(Pages et al., 2020). See the file
+"documentation_example_alignment.txt" within the inst/script folder
+for more details on how it was generated.
 }
 \usage{
 data("exampleRprimerAlignment")
 }
 \description{
-An alignment with 200 hepatitis E virus sequences (see the file
-"documentation_example_alignment.txt" within the inst/script folder
-for more details).
+An alignment with 200 hepatitis E virus sequences.
 }
 \references{
 H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:

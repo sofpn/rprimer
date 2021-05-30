@@ -5,7 +5,7 @@
 \alias{exampleRprimerMatchOligo}
 \title{Proportion of sequences that matches to oligos}
 \format{
-An \code{RprimerMatchOligo} object.
+An example of an \code{RprimerMatchOligo} object.
 }
 \usage{
 data("exampleRprimerMatchOligo")
