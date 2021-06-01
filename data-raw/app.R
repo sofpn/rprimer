@@ -1,12 +1,34 @@
 library(shiny)
 library(shinydashboard)
 library(shinycssloaders)
+library(htmlwidgets)
 devtools::load_all("C:/Users/Sofia/Desktop/rprimer")
 
 data("exampleRprimerAlignment")
 
 plotWidth = 800
 plotHeight = 600
+
+# Custom functions =============================================================
+
+roundDbls <- function(x) {
+    x <- as.data.frame(x)
+    y <- lapply(seq_len(ncol(x)), function(i) {
+        out <- if (is.double(x[, i])) {
+            round(x[, i], 2)
+        } else if (is.list(x[, i])) {
+            if (is.double(x[, i][[1]])) {
+                list(round(x[, i][[1]], 2))
+            } else {
+                list(x[, i][[1]])
+            }
+        } else {
+            x[, i]
+        }
+    })
+    names(y) <- names(x)
+    data.frame(do.call("cbind", y))
+}
 
 # Conditional panels ===========================================================
 
@@ -25,6 +47,46 @@ useExample <- conditionalPanel(
     h5("Hepatitis E virus example data")
 )
 
+useProbe <- conditionalPanel(
+    condition = "input.probe == true",
+    sliderInput(
+        "lengthProbe",
+        h5("Length"),
+        value = c(18, 22), min = 15, max = 40,
+        width = 200
+    ),
+    numericInput(
+        "maxDegeneracyProbe",
+        h5("Maximum degeneracy"),
+        value = 4, min = 1, max = 64,
+        width = 200
+    ),
+    checkboxInput(
+        "avoidFiveEndGProbe",
+        h5("Avoid 5' end G"),
+        value = TRUE,
+        width = 200
+    ),
+    sliderInput(
+        "gcRangeProbe",
+        h5("GC content range"),
+        value = c(0.4, 0.65), min = 0, max = 1,
+        width = 200
+    ),
+    sliderInput(
+        "tmRangeProbe",
+        h5("Melting temperature range"),
+        value = c(50, 70), min = 20, max = 90,
+        width = 200
+    ),
+    numericInput(
+        "concProbe",
+        h5("Concentration (nM)"),
+        value = 250, min = 20, max = 2000,
+        width = 200
+    )
+)
+
 # UI ===========================================================================
 
 ui <- dashboardPage(
@@ -32,9 +94,9 @@ ui <- dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             menuItem("Target alignment", tabName = "import"),
-            menuItem("Consensus profile", tabName = "consensus"),
-            menuItem("Oligos", tabName = "oligos"),
-            menuItem("Assays", tabName = "assays")
+            menuItem("1.  Consensus profile", tabName = "consensus"),
+            menuItem("2.  Oligos", tabName = "oligos"),
+            menuItem("3.  Assays", tabName = "assays")
         )
     ),
     dashboardBody(
@@ -53,9 +115,10 @@ ui <- dashboardPage(
                     ),
                     selected = "Upload file"
                 ),
+                hr(),
                 upload,
                 useExample,
-                hr(),
+                hr(), ## UI output sequence names
                 htmlOutput("html1"),
                 htmlOutput("html2")
             )
@@ -68,7 +131,7 @@ ui <- dashboardPage(
             fluidRow(
             box(width = 12, title = "Consensus profile",
                 hr(),
-                column(width = 3,
+                column(width = 2,
                 h4("Settings"),
                 br(),
                 numericInput(
@@ -76,16 +139,16 @@ ui <- dashboardPage(
                     value = 0.05, min = 0, max = 0.2, width = 200
                 ),
                 br(),
-                h5("Region of interest"),
+                uiOutput("roi"),
                 uiOutput("roiFrom"),
                 uiOutput("roiTo"),
                 br(),
-                actionButton("getConsensusProfile", "Get consensus profile")
+                uiOutput("getConsensusProfile")
                 ),
-                column(width = 9,
+                column(width = 10,
                 h4("Output"),
                 br(),
-                h5("Show region"),
+                uiOutput("showRegion"),
                 column(width = 6,
                 uiOutput("zoomFrom")
                 ),
@@ -93,8 +156,10 @@ ui <- dashboardPage(
                 uiOutput("zoomTo")
                 ),
                 br(),
-                tabBox(title = "", width = 12,
+                tabBox(title = "",
+                       width = 12,
                        tabPanel(title = "Plot",
+                                br(),
                                 withSpinner(plotOutput(
                                     "plot1",
                                     height = plotHeight,
@@ -110,6 +175,7 @@ ui <- dashboardPage(
                                 ), color = NA)
                        ),
                        tabPanel(title = "Table",
+                                br(),
                                 downloadLink("download1", "Download"),
                                 br(),
                                 br(),
@@ -124,12 +190,147 @@ ui <- dashboardPage(
         #### Oligos ####
 
         tabItem(tabName = "oligos",
-            box(width = 12, title = "Oligos",
-                h5("Design settings"),
-                actionButton("getOligos", "Design oligos"),
-                hr(),
-                plotOutput("plot3", height = plotHeight, width = plotWidth)
-            )
+                fluidRow(
+                    box(width = 12, title = "Oligos",
+                        hr(),
+                        column(width = 2,
+                               h4("Settings"),
+                               br(),
+                               h4("Primers"),
+                               hr(),
+                               sliderInput(
+                                   "lengthPrimer",
+                                   h5("Length"),
+                                   value = c(18, 22), min = 15, max = 40,
+                                   width = 200
+                               ),
+                               numericInput(
+                                   "maxDegeneracyPrimer",
+                                   h5("Maximum degeneracy"),
+                                   value = 4, min = 1, max = 64,
+                                   width = 200
+                               ),
+                               checkboxInput(
+                                   "avoidThreeEndRunsPrimer",
+                                   h5("Avoid 3' end runs"),
+                                   value = TRUE,
+                                   width = 200
+                               ),
+                               checkboxInput(
+                                   "gcClampPrimer",
+                                   h5("Use GC clamp"),
+                                   value = TRUE,
+                                   width = 200
+                               ),
+                               sliderInput(
+                                   "gcRangePrimer",
+                                   h5("GC content range"),
+                                   value = c(0.4, 0.65), min = 0, max = 1,
+                                   width = 200
+                               ),
+                               sliderInput(
+                                   "tmRangePrimer",
+                                   h5("Melting temperature range"),
+                                   value = c(50, 65), min = 20, max = 90,
+                                   width = 200
+                               ),
+                               numericInput(
+                                   "concPrimer",
+                                   h5("Concentration (nM)"),
+                                   value = 500, min = 20, max = 2000,
+                                   width = 200
+                               ),
+                               radioButtons(
+                                   "designStrategyPrimer",
+                                   h5("Design strategy"),
+                                   choices = c("ambiguous", "mixed"),
+                                   selected = "ambiguous"
+                               ),
+                               br(),
+                               h4("Probes"),
+                               hr(),
+                               checkboxInput(
+                                   "probe",
+                                   h5("Design probes"),
+                                   value = FALSE,
+                                   width = 200
+                               ),
+                               useProbe,
+                               br(),
+                               h4("General"),
+                               hr(),
+                               numericInput(
+                                   "maxGapFrequency",
+                                   h5("Maximum gap frequency"),
+                                   value = 0.01, min = 0, max = 0.2,
+                                   width = 200
+                               ),
+                               numericInput(
+                                   "concNa",
+                                   h5("Sodium ion concentration (M)"),
+                                   value = 0.05, min = 0, max = 1,
+                                   width = 200
+                               ),
+                               hr(),
+                               uiOutput("getOligos")
+                        ),
+                        column(width = 10,
+                               h4("Output"),
+                               br(),
+                               uiOutput("showRegionOligos"),
+                               column(width = 6,
+                                      uiOutput("zoomFromOligos")
+                               ),
+                               column(width = 6,
+                                      uiOutput("zoomToOligos")
+                               ),
+                               br(),
+                               tabBox(title = "", width = 12,
+                                      tabPanel(title = "Plot",
+                                               br(),
+                                               withSpinner(plotOutput(
+                                                   "plot3",
+                                                   height = plotHeight,
+                                                   width = "100%"
+                                               ), color = "grey")
+                                      ),
+                                      tabPanel(title = "Table and selection",
+                                               br(),
+                                               uiOutput("allOligos"),
+                                               br(),
+                                               downloadLink(
+                                                   "download2", "Download"
+                                               ),
+                                               br(),
+                                               br(),
+                                               DT::dataTableOutput("table2"),
+                                               hr(),
+                                               br(),
+                                               uiOutput("selectedOligo"),
+                                               br(),
+                                               downloadLink(
+                                                   "download3", "Download"
+                                               ),
+                                               br(),
+                                               br(),
+                                               DT::dataTableOutput("table3"),
+                                               br(),
+                                               uiOutput("matchReport"),
+                                               br(),
+                                               withSpinner(plotOutput(
+                                                   "plot4",
+                                                   height = plotHeight / 4,
+                                                   width = "100%"
+                                               ), color = "grey"),
+                                               br(),
+                                               DT::dataTableOutput("table4"),
+                                               br(),
+                                               htmlOutput("html3")
+                                      )
+                               )
+                        )
+                    )
+                )
         ),
 
         #### Assays ####
@@ -138,8 +339,8 @@ ui <- dashboardPage(
             box(width = 12, title = "Assays",
                 h5("Design settings"),
                 actionButton("getAssays", "Design assays"),
-                hr(),
-                plotOutput("plot4", height = plotHeight, width = plotWidth)
+                hr()
+                #plotOutput("plot4", height = plotHeight, width = plotWidth)
             )
         )
 
@@ -183,7 +384,41 @@ server <- function(input, output) {
 
     oligoCandidates <- eventReactive(input$getOligos, {
         req(consensus())
-        oligos(consensus())
+        oligos(consensus(),
+               maxGapFrequency = input$maxGapFrequency,
+               lengthPrimer = input$lengthPrimer,
+               maxDegeneracyPrimer = input$maxDegeneracyPrimer,
+               avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
+               gcRangePrimer = input$gcRangePrimer,
+               tmRangePrimer = input$tmRangePrimer,
+               concPrimer = input$concPrimer,
+               designStrategyPrimer = input$designStrategyPrimer,
+               probe = input$probe,
+               lengthProbe = input$lengthProbe,
+               maxDegeneracyProbe = input$maxDegeneracyProbe,
+               avoidFiveEndGProbe = input$avoidFiveEndGProbe,
+               gcRangeProbe = input$gcRangeProbe,
+               tmRangeProbe = input$tmRangeProbe,
+               concNa = input$concNa
+               )
+    })
+
+    oligoSelection <- reactive({
+        oligoCandidates()[
+            oligoCandidates()$start >= as.numeric(input$zoomFromOligos) &
+                oligoCandidates()$end <= as.numeric(input$zoomToOligos),
+        ] #### If nrow 0 #####################
+    })
+
+    selectedOligo <- reactive({
+        req(oligoCandidates())
+        oligoCandidates()[input$table2_rows_selected, ]
+    })
+
+    selectedOligoMatch <- reactive({
+        req(selectedOligo())
+        req(aln())
+        checkMatch(selectedOligo(), aln())
     })
 
     assayCandidates <- eventReactive(input$getAssays, {
@@ -193,11 +428,21 @@ server <- function(input, output) {
 
     #### Render UI ####
 
+    output$getConsensusProfile <- renderUI({
+        req(aln())
+        actionButton("getConsensusProfile", "Get consensus profile")
+    })
+
+    output$roi <- renderUI({
+        req(aln())
+        h5("Region of interest")
+    })
 
     output$roiFrom <- renderUI({
         req(aln())
         numericInput(
-            "roiFrom", h5("From"), min = 1, max = ncol(aln()) - 1, value = 1,
+            "roiFrom", h5("From"),
+            min = 1, max = ncol(aln()) - 1, value = 1,
             width = 200
         )
     })
@@ -208,6 +453,11 @@ server <- function(input, output) {
             "roiTo", h5("To"), min = 2, max = ncol(aln()), value = ncol(aln()),
             width = 200
         )
+    })
+
+    output$showRegion <- renderUI({
+        req(consensus())
+        h5("Show region")
     })
 
     output$zoomFrom <- renderUI({
@@ -230,6 +480,48 @@ server <- function(input, output) {
         )
     })
 
+    output$getOligos <- renderUI({
+        req(consensus())
+        actionButton("getOligos", "Get oligos")
+    })
+
+    output$showRegionOligos <- renderUI({
+        req(oligoCandidates())
+        h5("Show region")
+    })
+
+    output$zoomFromOligos <- renderUI({
+        req(oligoCandidates())
+        numericInput("zoomFromOligos", h5("From"),
+            min = oligoCandidates()$roiStart[[1]],
+            max = oligoCandidates()$roiEnd[[1]],
+            value = oligoCandidates()$roiStart[[1]]
+        )
+    })
+
+    output$zoomToOligos <- renderUI({
+        req(oligoCandidates())
+        numericInput("zoomToOligos", h5("To"),
+            min = oligoCandidates()$roiStart[[1]],
+            max = oligoCandidates()$roiEnd[[1]],
+            value = oligoCandidates()$roiEnd[[1]]
+        )
+    })
+
+    output$allOligos <- renderUI({
+        req(!is.null(oligoCandidates()))
+        h4("All oligos")
+    })
+
+    output$selectedOligo <- renderUI({
+        req(selectedOligo())
+        h4("Selection")
+    })
+
+    output$matchReport <- renderUI({
+        req(selectedOligoMatch())
+        h4("Selection, match report")
+    })
 
     #### Html ####
 
@@ -242,6 +534,11 @@ server <- function(input, output) {
         req(aln())
         paste("Alignment length:", ncol(aln()))
     })
+
+    output$html3 <- renderText(({
+        req(selectedOligoMatch())
+        paste("Perfect match:", selectedOligoMatch()$idPerfectMatch)
+    }))
 
     #### Plots ####
 
@@ -260,24 +557,62 @@ server <- function(input, output) {
     })
 
     output$plot3 <- renderPlot({
-        req(oligoCandidates())
-        plotData(oligoCandidates())
+        req(oligoSelection())
+        plotData(oligoSelection())
     })
 
     output$plot4 <- renderPlot({
-        req(assayCandidates())
-        plotData(assayCandidates())
+        req(selectedOligoMatch())
+        plotData(selectedOligoMatch())
     })
 
     #### Tables ####
 
     output$table1 <- DT::renderDataTable({
         req(consensusSelection())
-        as.data.frame(consensusSelection())
+        roundDbls(as.data.frame(consensusSelection()))
     }, options = list(
+        info = FALSE,
+        searching = FALSE, paging = FALSE,
+        scrollX = TRUE, autoWidth = FALSE,
+        ordering = FALSE, scrollY = "400"
+        ), rownames = FALSE, selection  = "none"
+    )
+
+    output$table2 <- DT::renderDataTable({
+        req(oligoSelection())
+        roundDbls(as.data.frame(oligoSelection()))
+    }, options = list(
+        info = FALSE,
         searching = FALSE, paging = FALSE,
         scrollX = TRUE, autoWidth = TRUE,
-        ordering = FALSE, scrollY = "600"), rownames = FALSE
+        ordering = FALSE, scrollY = "400"
+       ), rownames = FALSE,
+    selection = list(mode = "single", selected = 1)
+    )
+
+    output$table3 <- DT::renderDataTable({
+        req(selectedOligo())
+        roundDbls(as.data.frame(selectedOligo()))
+    }, options = list(
+        info = FALSE,
+        searching = FALSE, paging = FALSE,
+        scrollX = TRUE, autoWidth = TRUE,
+        ordering = FALSE
+    ), rownames = FALSE, selection  = "none"
+    )
+
+    output$table4 <-  DT::renderDataTable({
+        req(selectedOligoMatch())
+        x <- as.data.frame(selectedOligoMatch())
+        x <- x[!grepl("id", names(x))]
+        roundDbls(x)
+    }, options = list(
+        info = FALSE,
+        searching = FALSE, paging = FALSE,
+        scrollX = TRUE, autoWidth = FALSE,
+        ordering = FALSE
+    ), rownames = FALSE, selection  = "none"
     )
 
     #### Download links ####
@@ -288,6 +623,22 @@ server <- function(input, output) {
         },
         content <- function(file) {
             write.csv(as.data.frame(consensusSelection()), file)
+        })
+
+    output$download2 <- downloadHandler(
+        filename <- function() {
+            paste0("oligos-", Sys.Date(), ".csv")
+        },
+        content <- function(file) {
+            write.csv(as.data.frame(oligoSelection()), file)
+        })
+
+    output$download3 <- downloadHandler(
+        filename <- function() {
+            paste0("selected_oligo-", Sys.Date(), ".csv")
+        },
+        content <- function(file) {
+            write.csv(as.data.frame(selectedOligo()), file)
         })
 
 
