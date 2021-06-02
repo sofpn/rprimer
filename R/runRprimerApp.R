@@ -1,9 +1,12 @@
 #' Run the rprimer package as a shiny application
 #'
+#' @return
+#' A Shiny web application
+#'
 #' @export
 #'
 #' @examples
-#' runRprimerApp()
+#' \donttest{runRprimerApp()}
 runRprimerApp <- function() {
     appDir <- system.file("shiny-app", "app.R", package = "rprimer")
     if (appDir == "") {

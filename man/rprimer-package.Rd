@@ -6,13 +6,13 @@
 \alias{rprimer-package}
 \title{rprimer: Design Degenerate Oligos from a Multiple DNA Sequence Alignment}
 \description{
-Functions and workflow for visualizing sequence conservation 
-    and designing degenerate primers, probes and (RT)-(q/d)PCR assays from a 
-    multiple DNA sequence alignment. The results can be presented in data frame 
-    format and visualized as dashboard like plots. The workflow is developed 
-    primarily for sequence variable RNA viruses, but it should be equally useful 
-    for other organisms with high sequence variability. For more information, 
-    see the package vignette.
+Functions, workflow and a Shiny application for visualizing sequence 
+    conservation and designing degenerate primers, probes and (RT)-(q/d)PCR 
+    assays from a multiple DNA sequence alignment. The results can be presented 
+    in data frame format and visualized as dashboard like plots. The workflow is 
+    developed primarily for sequence variable RNA viruses, but it should be 
+    equally useful for other organisms with high sequence variability.
+    For more information, please see the package vignette.
 }
 \details{
 The package contains five functions: \code{consensusProfile()},

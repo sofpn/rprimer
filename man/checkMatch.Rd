@@ -4,7 +4,7 @@
 \alias{checkMatch}
 \alias{checkMatch,RprimerOligo-method}
 \alias{checkMatch,RprimerAssay-method}
-\title{Check how oligos match to their target sequences (generic)}
+\title{Check how oligos and assays match to target sequences}
 \usage{
 checkMatch(x, target)
 
@@ -15,9 +15,9 @@ checkMatch(x, target)
 \arguments{
 \item{x}{An \code{RprimerOligo} or \code{RprimerAssay} object.}
 
-\item{target}{An alignment with intended target sequences, i.e., the
-\code{Biostrings::DNAMultipleAlignment} object that was used
-for designing the oligos/assays.}
+\item{target}{A \code{Biostrings::DNAMultipleAlignment} alignment with
+intended target sequences. Note that it must be
+same alignment that was used for generating the oligos/assays in \code{x}.}
 }
 \value{
 An \code{RprimerMatchOligo} or \code{RprimerMatchAssay} object, depending

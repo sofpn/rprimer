@@ -19,8 +19,7 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#
-devtools::load_all(".")
+#devtools::load_all(".")
 library(rprimer)
 ```
 
@@ -41,7 +40,7 @@ devtools::install_github("sofpn/rprimer")
 ```
 # Overview
 
-The package contains five functions:
+The package contains five functions, which are interconnected in a workflow:
 
 * `consensusProfile()`
 * `oligos()`  
@@ -49,7 +48,9 @@ The package contains five functions:
 * `checkMatch()`
 * `plotData()`
 
-These functions are interconnected in a workflow. The workflow can be run either directly from the R console or through a Shiny application. The application is loaded by typing `runRprimerApp()` in the R console. It can also be found online at: **LANK**
+# Shiny application
+
+The package is also available as a Shiny application, which is loaded by typing `runRprimerApp()` in the R console. It is also available online at [sofpn.shinyapps.io/rprimer](https;//sofpn.shinyapps.io/rprimer). 
 
 # Workflow
 
