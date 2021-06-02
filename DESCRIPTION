@@ -28,7 +28,10 @@ Imports:
     methods,
     patchwork,
     reshape2,
-    S4Vectors
+    S4Vectors,
+    shiny,
+    shinydashboard,
+    shinycssloaders
 Suggests: 
     BiocStyle,
     covr,

@@ -36,6 +36,11 @@ The package contains five functions:
   - `checkMatch()`
   - `plotData()`
 
+These functions are interconnected in a workflow. The workflow can be
+run either directly from the R console or through a Shiny application.
+The application is loaded by typing `runRprimerApp()` in the R console.
+It can also be found online at: **LANK**
+
 ## Workflow
 
 ### Import alignment
@@ -184,14 +189,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMmismatches | threeMismatches | idThreeMmismatches | fourOrMoreMismatches | idFourOrMoreMmismatches | offTargetMatch | idOffTargetMatch |
-| :--------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :--------------- | --------------: | :----------------- | -------------------: | :---------------------- | -------------: | :--------------- |
-| GTGACMGGGTTGATTCTCAGC  |         0.93 | M73218.1….     |        0.06 | AB222183….    |          0.00 |                  |               0 |                    |                 0.01 | MN614142….              |              0 |                  |
-| CMGGGTTGATTCTCAGCCCTT  |         0.92 | M73218.1….     |        0.06 | AB222183….    |          0.00 |                  |               0 |                    |                 0.01 | MN614142….              |              0 |                  |
-| TGACMGGGTTGATTCTCAG    |         0.93 | M73218.1….     |        0.06 | AB222183….    |          0.00 |                  |               0 |                    |                 0.01 | MN614142….              |              0 |                  |
-| CMGGGTTGATTCTCAGCCCTTC |         0.92 | M73218.1….     |        0.07 | AY575857….    |          0.00 | AB222183.1       |               0 |                    |                 0.01 | MN614142….              |              0 |                  |
-| TTGATTCTCAGCCCTTCGCM   |         0.93 | M73218.1….     |        0.05 | AY575857….    |          0.01 | JF443725….       |               0 |                    |                 0.01 | MN614142….              |              0 |                  |
-| GTYGTCTCRGCCAATGGCGA   |         0.96 | M73218.1….     |        0.04 | AB630970….    |          0.00 |                  |               0 |                    |                 0.00 |                         |              0 |                  |
+| iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMmismatches | threeMismatches | idThreeMmismatches | fourOrMoreMismatches | idFourOrMoreMmismatches | offTargetMatch | idOffTargetMatch |
+| :-------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :--------------- | --------------: | :----------------- | -------------------: | :---------------------- | -------------: | :--------------- |
+| CAGAATTRATTTCGTCGGCY  |         0.93 | M73218.1….     |        0.06 | AY575857….    |             0 |                  |            0.01 | MH410175….         |                 0.00 |                         |           0.00 |                  |
+| CATCCAACCAACCCCTTY    |         0.94 | M73218.1….     |        0.05 | FJ457024….    |             0 |                  |            0.00 |                    |                 0.01 | MN614142….              |           0.06 | JF443725….       |
+| WTTCATCCAACCAACCCCTTY |         0.93 | M73218.1….     |        0.06 | FJ457024….    |             0 |                  |            0.00 |                    |                 0.01 | MN614142….              |           0.00 |                  |
+| CRGTGGTTTCTGGGGTGAC   |         0.96 | M73218.1….     |        0.03 | BD378055….    |             0 |                  |            0.00 |                    |                 0.01 | MN614142….              |           0.00 | AB290312.1       |
+| CRGTGGTTTCTGGGGTGA    |         0.96 | M73218.1….     |        0.03 | BD378055….    |             0 |                  |            0.00 |                    |                 0.01 | MN614142….              |           0.04 | AB290312….       |
+| GGGTTGATTCTCAGCCCTT   |         0.92 | M73218.1….     |        0.06 | AB222183….    |             0 |                  |            0.00 |                    |                 0.01 | MN614142….              |           0.00 |                  |
 
 The match table can be visualized using `plotData()`:
 

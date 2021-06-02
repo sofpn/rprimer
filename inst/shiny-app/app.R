@@ -1,7 +1,6 @@
 library(shiny)
 library(shinydashboard)
 library(shinycssloaders)
-library(htmlwidgets)
 devtools::load_all("C:/Users/Sofia/Desktop/rprimer")
 
 data("exampleRprimerAlignment")
@@ -28,6 +27,13 @@ roundDbls <- function(x) {
     })
     names(y) <- names(x)
     data.frame(do.call("cbind", y))
+}
+
+removeListColumns <- function(x) {
+    lists <- vapply(seq_len(ncol(x)), function(i) {
+        is.list(x[, i])
+    }, logical(1L))
+    x[, !lists]
 }
 
 # Conditional panels ===========================================================
@@ -135,7 +141,8 @@ ui <- dashboardPage(
                 h4("Settings"),
                 br(),
                 numericInput(
-                    "ambiguityThreshold", h5("Threshold for an ambiguous base"),
+                    "ambiguityThreshold",
+                    h5("Threshold for an ambiguous base"),
                     value = 0.05, min = 0, max = 0.2, width = 200
                 ),
                 br(),
@@ -150,11 +157,13 @@ ui <- dashboardPage(
                 br(),
                 uiOutput("showRegion"),
                 column(width = 6,
-                uiOutput("zoomFrom")
-                ),
+                       column(width = 6,
+                uiOutput("zoomFrom")),
                 column(width = 6,
-                uiOutput("zoomTo")
+                uiOutput("zoomTo"))
                 ),
+                column(width = 6),
+                br(),
                 br(),
                 tabBox(title = "",
                        width = 12,
@@ -279,10 +288,17 @@ ui <- dashboardPage(
                                br(),
                                uiOutput("showRegionOligos"),
                                column(width = 6,
-                                      uiOutput("zoomFromOligos")
+                               column(width = 6,
+                                      uiOutput("fwdRegionFrom"),
+                                      uiOutput("revRegionFrom"),
+                                      uiOutput("prRegionFrom")
+
                                ),
                                column(width = 6,
-                                      uiOutput("zoomToOligos")
+                                      uiOutput("fwdRegionTo"),
+                                      uiOutput("revRegionTo"),
+                                      uiOutput("prRegionTo"),
+                               )
                                ),
                                br(),
                                tabBox(title = "", width = 12,
@@ -308,20 +324,20 @@ ui <- dashboardPage(
                                                br(),
                                                uiOutput("selectedOligo"),
                                                br(),
-                                               downloadLink(
-                                                   "download3", "Download"
-                                               ),
-                                               br(),
-                                               br(),
-                                               DT::dataTableOutput("table3"),
-                                               br(),
-                                               uiOutput("matchReport"),
                                                br(),
                                                withSpinner(plotOutput(
                                                    "plot4",
+                                                   height = plotHeight / 2,
+                                                   width = "100%"
+                                               ), color = "grey"),
+                                               br(),
+                                               withSpinner(plotOutput(
+                                                   "plot5",
                                                    height = plotHeight / 4,
                                                    width = "100%"
                                                ), color = "grey"),
+                                               br(),
+                                               DT::dataTableOutput("table3"),
                                                br(),
                                                DT::dataTableOutput("table4"),
                                                br(),
@@ -404,10 +420,17 @@ server <- function(input, output) {
     })
 
     oligoSelection <- reactive({
-        oligoCandidates()[
-            oligoCandidates()$start >= as.numeric(input$zoomFromOligos) &
-                oligoCandidates()$end <= as.numeric(input$zoomToOligos),
-        ] #### If nrow 0 #####################
+        req(oligoCandidates())
+        x <- oligoCandidates()
+        fwd <- x$fwd & x$type == "primer" &
+            x$start >= as.numeric(input$fwdRegionFrom)  &
+            x$end <= as.numeric(input$fwdRegionTo)
+        rev <- (x$rev & x$type == "primer" &
+            x$start >= as.numeric(input$revRegionFrom)  &
+            x$end <= as.numeric(input$revRegionTo))
+
+        x[fwd | rev, ]
+      #### If nrow 0 ##################### # fix selection , add probe ###################
     })
 
     selectedOligo <- reactive({
@@ -490,21 +513,58 @@ server <- function(input, output) {
         h5("Show region")
     })
 
-    output$zoomFromOligos <- renderUI({
+    output$fwdRegionFrom <- renderUI({
         req(oligoCandidates())
-        numericInput("zoomFromOligos", h5("From"),
+        numericInput("fwdRegionFrom", h5("Fwd, from"),
             min = oligoCandidates()$roiStart[[1]],
             max = oligoCandidates()$roiEnd[[1]],
             value = oligoCandidates()$roiStart[[1]]
         )
     })
 
-    output$zoomToOligos <- renderUI({
+    output$fwdRegionTo <- renderUI({
         req(oligoCandidates())
-        numericInput("zoomToOligos", h5("To"),
-            min = oligoCandidates()$roiStart[[1]],
-            max = oligoCandidates()$roiEnd[[1]],
-            value = oligoCandidates()$roiEnd[[1]]
+        numericInput("fwdRegionTo", h5("Fwd, to"),
+                     min = oligoCandidates()$roiStart[[1]],
+                     max = oligoCandidates()$roiEnd[[1]],
+                     value = oligoCandidates()$roiEnd[[1]]
+        )
+    })
+
+
+    output$revRegionFrom <- renderUI({
+        req(oligoCandidates())
+        numericInput("revRegionFrom", h5("Rev, from"),
+                     min = oligoCandidates()$roiStart[[1]],
+                     max = oligoCandidates()$roiEnd[[1]],
+                     value = oligoCandidates()$roiStart[[1]]
+        )
+    })
+
+    output$revRegionTo <- renderUI({
+        req(oligoCandidates())
+        numericInput("revRegionTo", h5("Rev, to"),
+                     min = oligoCandidates()$roiStart[[1]],
+                     max = oligoCandidates()$roiEnd[[1]],
+                     value = oligoCandidates()$roiEnd[[1]]
+        )
+    })
+
+    output$prRegionFrom <- renderUI({
+        req(oligoCandidates())
+        numericInput("prRegionFrom", h5("Probe, from"),
+                     min = oligoCandidates()$roiStart[[1]],
+                     max = oligoCandidates()$roiEnd[[1]],
+                     value = oligoCandidates()$roiStart[[1]]
+        )
+    })
+
+    output$prRegionTo <- renderUI({
+        req(oligoCandidates())
+        numericInput("prRegionTo", h5("Probe, to"),
+                     min = oligoCandidates()$roiStart[[1]],
+                     max = oligoCandidates()$roiEnd[[1]],
+                     value = oligoCandidates()$roiEnd[[1]]
         )
     })
 
@@ -516,11 +576,6 @@ server <- function(input, output) {
     output$selectedOligo <- renderUI({
         req(selectedOligo())
         h4("Selection")
-    })
-
-    output$matchReport <- renderUI({
-        req(selectedOligoMatch())
-        h4("Selection, match report")
     })
 
     #### Html ####
@@ -562,6 +617,15 @@ server <- function(input, output) {
     })
 
     output$plot4 <- renderPlot({
+        req(selectedOligo())
+        from <- selectedOligo()$start
+        to <- selectedOligo()$end
+        plotData(consensus()[
+            consensus()$position >= from & consensus()$position <= to,
+            ], type = "nucleotide")
+    })
+
+    output$plot5 <- renderPlot({
         req(selectedOligoMatch())
         plotData(selectedOligoMatch())
     })
@@ -581,12 +645,12 @@ server <- function(input, output) {
 
     output$table2 <- DT::renderDataTable({
         req(oligoSelection())
-        roundDbls(as.data.frame(oligoSelection()))
+        roundDbls(removeListColumns(as.data.frame(oligoSelection())))
     }, options = list(
         info = FALSE,
         searching = FALSE, paging = FALSE,
         scrollX = TRUE, autoWidth = TRUE,
-        ordering = FALSE, scrollY = "400"
+        ordering = TRUE, scrollY = "400"
        ), rownames = FALSE,
     selection = list(mode = "single", selected = 1)
     )
@@ -631,14 +695,6 @@ server <- function(input, output) {
         },
         content <- function(file) {
             write.csv(as.data.frame(oligoSelection()), file)
-        })
-
-    output$download3 <- downloadHandler(
-        filename <- function() {
-            paste0("selected_oligo-", Sys.Date(), ".csv")
-        },
-        content <- function(file) {
-            write.csv(as.data.frame(selectedOligo()), file)
         })
 
 

@@ -28,7 +28,7 @@ library(rprimer)
 
 rprimer provides tools for analyzing sequence conservation and designing degenerate DNA oligos (primers and probes) from a multiple DNA sequence alignment. The package is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability.  
 
-In this vignette, I describe and demonstrate how to use rprimer by designing broadly reactive primers and probes for PCR based amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen. 
+In this vignette, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for PCR based amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen. 
 
 # Installation
 
@@ -48,6 +48,8 @@ The package contains five functions:
 * `assays()` 
 * `checkMatch()`
 * `plotData()`
+
+These functions are interconnected in a workflow. The workflow can be run either directly from the R console or through a Shiny application. The application is loaded by typing `runRprimerApp()` in the R console. It can also be found online at: **LANK**
 
 # Workflow
 

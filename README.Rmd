@@ -47,6 +47,8 @@ The package contains five functions:
 * `checkMatch()`
 * `plotData()`
 
+These functions are interconnected in a workflow. The workflow can be run either directly from the R console or through a Shiny application. The application is loaded by typing `runRprimerApp()` in the R console. It can also be found online at: **LANK**
+
 ## Workflow 
 
 ### Import alignment
