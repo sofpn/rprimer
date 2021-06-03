@@ -312,8 +312,8 @@ setMethod("checkMatch", "RprimerAssay", function(x, target) {
     names(matching) <- c(
         "perfectMatch", "idPerfectMatch",
         "oneMismatch", "idOneMismatch",
-        "twoMismatches", "idTwoMmismatches",
-        "threeMismatches", "idThreeMmismatches",
+        "twoMismatches", "idTwoMismatches",
+        "threeMismatches", "idThreeMismatches",
         "fourOrMoreMismatches", "idFourOrMoreMmismatches"
     )
     matching
