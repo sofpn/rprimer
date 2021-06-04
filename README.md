@@ -38,7 +38,7 @@ The package contains five functions:
 
 ## Shiny application
 
-The package can be run through a Shiny application, which is loaded by
+The package can be run through a Shiny application. It is loaded by
 typing `runRprimerApp()` in the R console.
 
 ## Workflow
@@ -191,12 +191,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMmismatches | offTargetMatch | idOffTargetMatch |
 | :--------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :-------------- | --------------: | :---------------- | -------------------: | :---------------------- | -------------: | :--------------- |
-| TCATCCAACCAACCCCTTYGCM |         0.92 | M73218.1….     |        0.06 | FJ457024….    |          0.01 | AY575857….      |               0 |                   |                 0.01 | MN614142….              |              0 |                  |
-| TATWTTCATCCAACCAACCC   |         0.94 | M73218.1….     |        0.04 | AY575857….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….              |              0 |                  |
-| GGGTGACMGGGTTGATTCTCA  |         0.93 | M73218.1….     |        0.06 | AB222183….    |          0.00 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….              |              0 |                  |
-| TYGTCTCRGCCAATGGCGA    |         0.96 | M73218.1….     |        0.04 | AB630970….    |          0.00 |                 |               0 |                   |                 0.00 |                         |              0 | MF444096.1       |
-| TGGTTTCTGGGGTGACMGG    |         0.98 | M73218.1….     |        0.01 | BD378055….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….              |              0 |                  |
-| TCTGGGGTGACMGGGTTGATT  |         0.94 | M73218.1….     |        0.04 | AB222183….    |          0.00 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….              |              0 |                  |
+| GATTCTCAGCCCTTCGCM     |         0.94 | M73218.1….     |        0.05 | AB222183….    |          0.00 | JF443725.1      |               0 |                   |                 0.01 | MN614142….              |           0.06 | AB073912….       |
+| TWTTCATCCAACCAACCCC    |         0.94 | M73218.1….     |        0.06 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….              |           0.00 |                  |
+| GACAGAATTRATTTCGTCGG   |         0.94 | M73218.1….     |        0.05 | AY575857….    |          0.01 | MH410175….      |               0 |                   |                 0.00 |                         |           0.00 |                  |
+| ATTCTCAGCCCTTCGCMMT    |         0.94 | M73218.1….     |        0.05 | AB222183….    |          0.00 |                 |               0 | JF443725.1        |                 0.01 | MN614142….              |           0.07 | X99441.1….       |
+| TTCATCCAACCAACCCCT     |         0.94 | M73218.1….     |        0.04 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….              |           0.01 | MG573193….       |
+| GGTGACMGGGTTGATTCTCAGC |         0.92 | M73218.1….     |        0.06 | AB222183….    |          0.00 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….              |           0.00 |                  |
 
 The match table can be visualized using `plotData()`:
 

@@ -104,13 +104,13 @@ useProbe <- conditionalPanel(
 
   ),
   sliderInput(
-    "gcRangeProbe",
+    "gcProbe",
     h5("GC content range"),
     value = c(0.4, 0.65), min = 0, max = 1,
 
   ),
   sliderInput(
-    "tmRangeProbe",
+    "tmProbe",
     h5("Melting temperature range"),
     value = c(50, 70), min = 20, max = 90,
 
@@ -129,6 +129,7 @@ ui <- shinydashboard::dashboardPage(
   shinydashboard::dashboardHeader(title = ""),
   shinydashboard::dashboardSidebar(
     sidebarMenu(
+      menuItem("Welcome!", tabName = "welcome"),
       menuItem("Target alignment", tabName = "import"),
       menuItem("1.  Consensus profile", tabName = "consensus"),
       menuItem("2.  Oligos", tabName = "oligos"),
@@ -138,30 +139,39 @@ ui <- shinydashboard::dashboardPage(
   dashboardBody(
     tabItems(
 
+      #### Welcome ####
+
+      tabItem(tabName = "welcome",
+              fluidRow(
+                box(
+                  title = ("Instructions for use"),
+                  h5(""),
+                  br(),
+                  uiOutput("codelink"),
+                  width = 12
+                )
+              )
+      ),
+
       #### Target alignment ####
 
       tabItem(tabName = "import",
               fluidRow(
-                column(width = 3,
-                box(width = 12, title = "Settings",
-                    hr(),
-                    radioButtons(
-                      "fileInput", label = NULL,
-                      choices = c(
-                        "Upload file", "Use example data"
-                      ),
-                      selected = "Upload file"
-                    )
-                )),
-                column(width = 9,
-                box(width = 12, "Output",
-                    upload,
-                    useExample,
-                    br(),
-                    htmlOutput("html1"),
-                    htmlOutput("html2")
+                column(width = 12,
+                       box(width = 12, title = "Select target alignment",
+                           radioButtons(
+                             "fileInput", label = NULL,
+                             choices = c(
+                               "Upload file", "Use example data"
+                             ),
+                             selected = "Upload file"),
+                           upload,
+                           useExample,
+                           br(),
+                           htmlOutput("html1"),
+                           htmlOutput("html2")
+                       )
                 ))
-              )
       ),
 
       #### Consensus ####
@@ -169,204 +179,230 @@ ui <- shinydashboard::dashboardPage(
       tabItem(tabName = "consensus",
               fluidRow(
                 column(width = 3,
-                box(width = 12, title = "Settings",
-                    numericInput(
-                      "ambiguityThreshold",
-                      h5("Threshold for an ambiguous base"),
-                      value = 0.05, min = 0, max = 0.2,
-                    ),
-                    uiOutput("roi"),
-                    uiOutput("roiFrom"),
-                    uiOutput("roiTo"),
-                    br(),
-                    uiOutput("getConsensusProfile")
-                )),
-                column(width =  9,
-                box(width = 12, title = "Output",
-                    uiOutput("showRegion"),
-                    column(width = 2,
-                           uiOutput("zoomFrom")
-                    ),
-                    column(width = 2,
-                           uiOutput("zoomTo")
-                    ),
-                    br(),
-                    tabBox(title = "",
-                           width = 12,
-                           tabPanel(title = "Plot",
-                                    br(),
-                                    shinycssloaders::withSpinner(plotOutput(
-                                      "plot1",
-                                      height = plotHeight,
-                                      width = "100%"
-                                    ), color = "grey")
+                       box(width = 12, title = "Settings",
+                           numericInput(
+                             "ambiguityThreshold",
+                             h5("Threshold for an ambiguous base"),
+                             value = 0.05, min = 0, max = 0.2,
                            ),
-                           tabPanel(title = "Table",
-                                    br(),
-                                    downloadLink("download1", "Download"),
-                                    br(),
-                                    br(),
-                                    DT::dataTableOutput("table1")
-                           )
-                    ))))),
+                           uiOutput("roi"),
+                           uiOutput("roiFrom"),
+                           uiOutput("roiTo"),
+                           br(),
+                           uiOutput("getConsensusProfile")
+                       )),
+                column(width =  9,
+                       box(width = 12, title = "Output",
+                           uiOutput("showRegion"),
+                           column(width = 2,
+                                  uiOutput("zoomFrom")
+                           ),
+                           column(width = 2,
+                                  uiOutput("zoomTo")
+                           ),
+                           br(),
+                           tabBox(title = "",
+                                  width = 12,
+                                  tabPanel(title = "Plot",
+                                           br(),
+                                           shinycssloaders::withSpinner(
+                                             plotOutput(
+                                               "plot1",
+                                               height = plotHeight,
+                                               width = "100%"
+                                             ), color = "grey")
+                                  ),
+                                  tabPanel(title = "Table",
+                                           br(),
+                                           downloadLink(
+                                             "download1", "Download"
+                                           ),
+                                           br(),
+                                           br(),
+                                           DT::dataTableOutput("table1")
+                                  )
+                           ))))),
 
       #### Oligos ####
 
       tabItem(tabName = "oligos",
               fluidRow(column(width = 3,
-                box(width = 12, title = "Settings",
-                    h4("Primers"),
-                    hr(),
-                    sliderInput(
-                      "lengthPrimer",
-                      h5("Length"), value = c(18, 22), min = 15, max = 40,
+                              tags$head(tags$style(
+                                HTML(
+                                  '.box{-webkit-box-shadow: none;
+                    -moz-box-shadow: none;
+                    box-shadow: none;}'))),
+                              box(width = 12, title = "Settings",
+                                  h4("Primers"),
+                                  hr(),
+                                  sliderInput(
+                                    "lengthPrimer",
+                                    h5("Length"),
+                                    value = c(18, 22), min = 15, max = 40,
 
-                    ),
-                    numericInput(
-                      "maxDegeneracyPrimer",
-                      h5("Maximum degeneracy"),
-                      value = 4, min = 1, max = 64,
+                                  ),
+                                  numericInput(
+                                    "maxDegeneracyPrimer",
+                                    h5("Maximum degeneracy"),
+                                    value = 4, min = 1, max = 64,
 
-                    ),
-                    checkboxInput(
-                      "avoidThreeEndRunsPrimer",
-                      h5("Avoid 3' end runs"),
-                      value = TRUE,
+                                  ),
+                                  checkboxInput(
+                                    "avoidThreeEndRunsPrimer",
+                                    h5("Avoid 3' end runs"),
+                                    value = TRUE,
 
-                    ),
-                    checkboxInput(
-                      "gcClampPrimer",
-                      h5("Use GC clamp"),
-                      value = TRUE,
+                                  ),
+                                  checkboxInput(
+                                    "gcClampPrimer",
+                                    h5("Use GC clamp"),
+                                    value = TRUE,
 
-                    ),
-                    sliderInput(
-                      "gcRangePrimer",
-                      h5("GC content range"),
-                      value = c(0.4, 0.65), min = 0, max = 1,
+                                  ),
+                                  sliderInput(
+                                    "gcPrimer",
+                                    h5("GC content range"),
+                                    value = c(0.4, 0.65), min = 0, max = 1,
 
-                    ),
-                    sliderInput(
-                      "tmRangePrimer",
-                      h5("Melting temperature range"),
-                      value = c(50, 65), min = 20, max = 90,
+                                  ),
+                                  sliderInput(
+                                    "tmPrimer",
+                                    h5("Melting temperature range"),
+                                    value = c(50, 65), min = 20, max = 90,
 
-                    ),
-                    numericInput(
-                      "concPrimer",
-                      h5("Concentration (nM)"),
-                      value = 500, min = 20, max = 2000,
+                                  ),
+                                  numericInput(
+                                    "concPrimer",
+                                    h5("Concentration (nM)"),
+                                    value = 500, min = 20, max = 2000,
 
-                    ),
-                    radioButtons(
-                      "designStrategyPrimer",
-                      h5("Design strategy"),
-                      choices = c("ambiguous", "mixed"),
-                      selected = "ambiguous"
-                    ),
-                    br(),
-                    h4("Probes"),
-                    hr(),
-                    checkboxInput(
-                      "probe",
-                      h5("Design probes"),
-                      value = FALSE,
+                                  ),
+                                  radioButtons(
+                                    "designStrategyPrimer",
+                                    h5("Design strategy"),
+                                    choices = c("ambiguous", "mixed"),
+                                    selected = "ambiguous"
+                                  ),
+                                  br(),
+                                  h4("Probes"),
+                                  hr(),
+                                  checkboxInput(
+                                    "probe",
+                                    h5("Design probes"),
+                                    value = FALSE,
 
-                    ),
-                    useProbe,
-                    br(),
-                    h4("General"),
-                    hr(),
-                    numericInput(
-                      "maxGapFrequency",
-                      h5("Maximum gap frequency"),
-                      value = 0.01, min = 0, max = 0.2,
+                                  ),
+                                  useProbe,
+                                  br(),
+                                  h4("General"),
+                                  hr(),
+                                  numericInput(
+                                    "maxGapFrequency",
+                                    h5("Maximum gap frequency"),
+                                    value = 0.01, min = 0, max = 0.2,
 
-                    ),
-                    numericInput(
-                      "concNa",
-                      h5("Sodium ion concentration (M)"),
-                      value = 0.05, min = 0, max = 1,
+                                  ),
+                                  numericInput(
+                                    "concNa",
+                                    h5("Sodium ion concentration (M)"),
+                                    value = 0.05, min = 0, max = 1,
 
-                    ),
-                    hr(),
-                    uiOutput("getOligos")
-                )),
-                column(width = 9,
-                box(width = 12, title = "Filter",
-                    column(width = 2, uiOutput("fwdRegionFrom")),
-                    column(width = 2, uiOutput("fwdRegionTo")),
-                    column(width = 2, uiOutput("revRegionFrom")),
-                    column(width = 2, uiOutput("revRegionTo")),
-                    column(width = 2, uiOutput("prRegionFrom")),
-                    column(width = 2, uiOutput("prRegionTo"))
-                ),
-                box(width = 12, title = "All oligos",
-                    tabBox(title = "", width = 12,
-                           tabPanel(title = "Plot",
-                                    br(),
-                                    shinycssloaders::withSpinner(plotOutput(
-                                      "plot3",
-                                      height = plotHeight,
-                                      width = "100%"
-                                    ), color = "grey")
-                           ),
-                           tabPanel(title = "Table and selection",
-                                    br(),
-                                    uiOutput("allOligos"),
-                                    br(),
-                                    downloadLink(
-                                      "download2", "Download"
-                                    ),
-                                    br(),
-                                    br(),
-                                    DT::dataTableOutput("table2")
-                ))),
-                box(width = 12, title = "Selection",
-                    column(width = 12,
-                           DT::dataTableOutput("table3")
-                    )
-                ),
-                box(width = 12, title = "All sequence variants",
-                    DT::dataTableOutput("table4")
-                ),
-                box(width = 12, title = "Match information",
-                    DT::dataTableOutput("table5")
-                ),
-                box(width = 6,
-                    title = "Nucleotide distribution in target alignment",
-                    shinycssloaders::withSpinner(plotOutput(
-                      "plot4",
-                      height = plotHeight / 2,
-                      width = "100%"
-                    ), color = "grey")
-                ),
-                box(width = 6, title = "Match plot",
-                    shinycssloaders::withSpinner(plotOutput(
-                      "plot5",
-                      height = plotHeight / 2,
-                      width = "100%"
-                    ), color = "grey")
-                ),
-                box(width = 12, title = "Match details",
-                    htmlOutput("html3"),
-                    br(),
-                    br(),
-                    htmlOutput("html4"),
-                    br(),
-                    br(),
-                    htmlOutput("html5"),
-                    br(),
-                    br(),
-                    htmlOutput("html6"),
-                    br(),
-                    br(),
-                    htmlOutput("html7")
-                )
+                                  ),
+                                  hr(),
+                                  uiOutput("getOligos")
+                              )),
+                       column(width = 9,
+                              box(width = 12, title = "Filter",
+                                  column(width = 2, uiOutput("fwdRegionFrom")),
+                                  column(width = 2, uiOutput("fwdRegionTo")),
+                                  column(width = 2, uiOutput("revRegionFrom")),
+                                  column(width = 2, uiOutput("revRegionTo")),
+                                  column(width = 2, uiOutput("prRegionFrom")),
+                                  column(width = 2, uiOutput("prRegionTo"))
+                              ),
+                              box(width = 12, title = "All oligos",
+                                  tabBox(title = "", width = 12,
+                                         tabPanel(title = "Plot",
+                                                  br(),
+                                                  shinycssloaders::withSpinner(
+                                                    plotOutput(
+                                                      "plot3",
+                                                      height = plotHeight,
+                                                      width = "100%"
+                                                    ), color = "grey")
+                                         ),
+                                         tabPanel(title = "Table and selection",
+                                                  downloadLink(
+                                                    "download2", "Download table"
+                                                  ),
+                                                  br(),
+                                                  downloadLink(
+                                                    "download3", "Download fasta"
+                                                  ),
+                                                  br(),
+                                                  br(),
+                                                  DT::dataTableOutput("table2")
+                                         ))),
+                              box(width = 12, title = "Selection",
+                                  collapsible = TRUE, collapsed = FALSE,
+                                  box(width = 12, title = "Table",
+                                      solidHeader = TRUE,
+                                      downloadLink(
+                                        "download4", "Download table"
+                                      ),
+                                      br(),
+                                      br(),
+                                      DT::dataTableOutput("table3")
+                                  ),
+                                  box(width = 12, title = "All sequence variants",
+                                      solidHeader = TRUE,
+                                      downloadLink(
+                                        "download5", "Download fasta"
+                                      ),
+                                      br(),
+                                      br(),
+                                      DT::dataTableOutput("table4")
+                                  ),
+                                  box(width = 6,
+                                      title = "Nucleotide distribution in target alignment",
+                                      solidHeader = TRUE,
+                                      shinycssloaders::withSpinner(plotOutput(
+                                        "plot4",
+                                        height = plotHeight / 2,
+                                        width = "100%"
+                                      ), color = "grey")
+                                  ),
+                                  box(width = 6, title = "Match plot",
+                                      solidHeader = TRUE,
+                                      shinycssloaders::withSpinner(plotOutput(
+                                        "plot5",
+                                        height = plotHeight / 2,
+                                        width = "100%"
+                                      ), color = "grey")
+                                  ),
+                                  box(width = 12, title = "Match details",
+                                      solidHeader = TRUE,
+                                      htmlOutput("html3"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html4"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html5"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html6"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html7"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html8")
+                                  ))
 
 
 
-                ))),
+                       ))),
 
       #### Assays ####
 
@@ -421,19 +457,19 @@ server <- function(input, output) {
     req(consensus())
     oligos(consensus(),
            maxGapFrequency = input$maxGapFrequency,
-           lengthPrimer = input$lengthPrimer, #[[1]]:input$lengthPrimer[[2]], ############
+           lengthPrimer = input$lengthPrimer,
            maxDegeneracyPrimer = input$maxDegeneracyPrimer,
            avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
-           gcRangePrimer = input$gcRangePrimer,
-           tmRangePrimer = input$tmRangePrimer,
+           gcPrimer = input$gcPrimer,
+           tmPrimer = input$tmPrimer,
            concPrimer = input$concPrimer,
            designStrategyPrimer = input$designStrategyPrimer,
            probe = input$probe,
-           lengthProbe = input$lengthProbe, #[[1]]:input$lenghtProbe[[2]],
+           lengthProbe = input$lengthProbe,
            maxDegeneracyProbe = input$maxDegeneracyProbe,
            avoidFiveEndGProbe = input$avoidFiveEndGProbe,
-           gcRangeProbe = input$gcRangeProbe,
-           tmRangeProbe = input$tmRangeProbe,
+           gcProbe = input$gcProbe,
+           tmProbe = input$tmProbe,
            concNa = input$concNa
     )
   })
@@ -461,7 +497,7 @@ server <- function(input, output) {
     x$fwd[x$type == "Primer" & x$end > as.numeric(input$fwdRegionTo)] <- FALSE
     x$rev[x$type == "primer" & x$start < as.numeric(input$revRegionFrom)] <- FALSE
     x$rev[x$type == "primer" & x$end > as.numeric(input$revRegionTo)] <- FALSE
-   if (nrow(x) == 0L) {
+    if (nrow(x) == 0L) {
       x <- emptyRow
     }
     RprimerOligo(x)
@@ -492,6 +528,11 @@ server <- function(input, output) {
   })
 
   #### Render UI ####
+
+  url <- a("Source code", href = "https://github.com/sofpn/rprimer")
+  output$codelink <- renderUI({
+    tagList(url)
+  })
 
   output$getConsensusProfile <- renderUI({
     req(aln())
@@ -640,32 +681,62 @@ server <- function(input, output) {
 
   output$html3 <- renderText({
     req(!is.null(selectedOligoMatch()))
-    c("<b>Perfect match:</b>", selectedOligoMatch()$idPerfectMatch[[1]])
+    c(
+      "<b>Perfect match</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedOligoMatch()$perfectMatch, 2), "<br><br>",
+      "ID<br>",
+      selectedOligoMatch()$idPerfectMatch[[1]])
   })
 
   output$html4 <- renderText({
     req(!is.null(selectedOligoMatch()))
-    c("<b>1 mismatch:</b>", selectedOligoMatch()$idOneMismatch[[1]])
+    c(
+      "<b>One mismatch</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedOligoMatch()$oneMismatch, 2), "<br><br>",
+      "ID<br>",
+      selectedOligoMatch()$idOneMismatch[[1]])
   })
 
   output$html5 <- renderText({
     req(!is.null(selectedOligoMatch()))
-    c("<b>2 mismatches:</b>", selectedOligoMatch()$idTwoMismatches[[1]])
+    c(
+      "<b>Two mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedOligoMatch()$twoMismatches, 2), "<br><br>",
+      "ID<br>",
+      selectedOligoMatch()$idTwoMismatches[[1]])
   })
 
   output$html6 <- renderText({
     req(!is.null(selectedOligoMatch()))
-    c("<b>3 mismatches:</b>", selectedOligoMatch()$idThreeMismatches[[1]])
+    c(
+      "<b>Three mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedOligoMatch()$threeMismatches, 2), "<br><br>",
+      "ID<br>",
+      selectedOligoMatch()$idThreeMismatches[[1]])
   })
 
   output$html7 <- renderText({
     req(!is.null(selectedOligoMatch()))
-    c("<b>4 or more mismatches:</b>", selectedOligoMatch()$idFourOrMoreMismatches[[1]])
+    c(
+      "<b>Four or more mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedOligoMatch()$fourOrMoreMismatches, 2), "<br><br>",
+      "ID<br>",
+      selectedOligoMatch()$idFourOrMoreMismatches[[1]])
   })
 
   output$html8 <- renderText({
     req(!is.null(selectedOligoMatch()))
-    c("<b>Off target match:</b>", selectedOligoMatch()$idOffTargetMatch[[1]])
+    c(
+      "<b>Off target match</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedOligoMatch()$offTargetMatch, 2), "<br><br>",
+      "ID<br>",
+      selectedOligoMatch()$idOffTargetMatch[[1]])
   })
 
 
@@ -763,19 +834,6 @@ server <- function(input, output) {
   ), rownames = FALSE, selection  = "none"
   )
 
-  output$table5 <-  DT::renderDataTable({
-    req(!is.null(selectedOligoMatch()))
-    x <- as.data.frame(selectedOligoMatch())
-    x <- x[!grepl("id", names(x))]
-    roundDbls(x)
-  }, options = list(
-    info = FALSE,
-    searching = FALSE, paging = FALSE,
-    scrollX = TRUE, autoWidth = FALSE,
-    ordering = FALSE
-  ), rownames = FALSE, selection  = "none"
-  )
-
   #### Download links ####
 
   output$download1 <- downloadHandler(
@@ -794,7 +852,33 @@ server <- function(input, output) {
       write.csv(as.data.frame(oligoSelection()), file)
     })
 
+  output$download3 <- downloadHandler(
+    filename <- function() {
+      paste0("oligos-fasta", Sys.Date(), ".txt")
+    },
+    content <- function(file) {
+      x <- oligoSelection()
+      x <- as(oligoSelection(), "DNAStringSet")
+      Biostrings::writeXStringSet(x, file)
+    })
 
+  output$download4 <- downloadHandler(
+    filename <- function() {
+      paste0("oligo-selection-", Sys.Date(), ".csv")
+    },
+    content <- function(file) {
+      write.csv(as.data.frame(selectedOligo()), file)
+    })
+
+  output$download5 <- downloadHandler(
+    filename <- function() {
+      paste0("oligo-selection-fasta-", Sys.Date(), ".txt")
+    },
+    content <- function(file) {
+      x <- selectedOligo()
+      x <- as(selectedOligo(), "DNAStringSet")
+      Biostrings::writeXStringSet(x, file)
+    })
 }
 
 # Run app ======================================================================

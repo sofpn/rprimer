@@ -6,8 +6,8 @@ x <- exampleRprimerOligo
 
 test_that("assays returns an error when it sould", {
     expect_error(assays(unclass(x)))
-    expect_error(assays(x, lengthRange = c(39, 120)))
-    expect_error(assays(x, lengthRange = c(40, 50001)))
+    expect_error(assays(x, length = c(39, 120)))
+    expect_error(assays(x, length = c(40, 50001)))
     expect_error(assays(x, tmDifferencePrimers = FALSE))
 })
 
@@ -22,7 +22,7 @@ test_that("assays works", {
 
 test_that(".combinePrimers works", {
     test <- .combinePrimers(x,
-        lengthRange = c(100, 2000), tmDifferencePrimers = 2
+        length = c(100, 2000), tmDifferencePrimers = 2
     )
     expect_true(all(test$ampliconLength >= 100))
     expect_true(all(test$ampliconLength <= 2000))

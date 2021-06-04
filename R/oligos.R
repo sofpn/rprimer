@@ -11,8 +11,8 @@
 #' A number [0, 1], defaults to \code{0.01}.
 #'
 #' @param lengthPrimer
-#' Primer length. A numeric vector [15, 30],
-#' defaults to \code{18:22}.
+#' Primer length range. A numeric vector [15, 30],
+#' defaults to \code{c(18, 22)}.
 #'
 #' @param maxDegeneracyPrimer
 #' Maximum number of variants of each primer. A number [1, 64],
@@ -30,11 +30,11 @@
 #' of the same nucleotide at the terminal 3' end should be avoided.
 #' \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.
 #'
-#' @param gcRangePrimer
+#' @param gcPrimer
 #' GC-content range for primers.
 #' A numeric vector [0, 1], defaults to \code{c(0.40, 0.65)}.
 #'
-#' @param tmRangePrimer
+#' @param tmPrimer
 #' Tm range for primers (in Celcius degrees).
 #' A numeric vector [30, 90], defaults to \code{c(55, 65)}.
 #'
@@ -51,8 +51,8 @@
 #' defaults to \code{TRUE}.
 #'
 #' @param lengthProbe
-#' Probe length. A numeric vector [15, 40],
-#' defaults to \code{18:22}.
+#' Probe length range. A numeric vector [15, 40],
+#' defaults to \code{c(18, 22)}.
 #'
 #' @param maxDegeneracyProbe
 #' Maximum number of variants of each probe. A number [1, 64],
@@ -63,11 +63,11 @@
 #' at the 5' end should be avoided. \code{TRUE} or \code{FALSE},
 #' defaults to \code{TRUE}.
 #'
-#' @param gcRangeProbe
+#' @param gcProbe
 #' GC-content range for probes. A numeric vector [0, 1],
 #' defaults to \code{c(0.40, 0.65)}.
 #'
-#' @param tmRangeProbe
+#' @param tmProbe
 #' Tm range for probes (in Celcius degrees).
 #' A numeric vector [30, 90], defaults to \code{c(55, 70)}.
 #'
@@ -104,15 +104,15 @@
 #'   \item{degeneracy}{Number of sequence variants of the oligo.}
 #'   \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.
 #'   }
-#'   \item{gcContentRange}{Range in GC-content of all sequence variants of
+#'   \item{gcContent}{Range in GC-content of all sequence variants of
 #'     the oligo.}
 #'   \item{tmMean}{Mean tm of all sequence variants of the oligo
 #'   (in Celcius degrees).}
-#'   \item{tmRange}{Range in tm of all sequence variants of the oligo
+#'   \item{tm}{Range in tm of all sequence variants of the oligo
 #'   (in Celcius degrees).}
 #'   \item{deltaGMean}{Mean delta G of all sequence variants of the oligo
 #'   (in kcal/mol).}
-#'   \item{deltaGRange}{Range in delta G of all sequence variants of the oligo
+#'   \item{deltaG}{Range in delta G of all sequence variants of the oligo
 #'   (in kcal/mol).}
 #'   \item{sequence}{All sequence variants of the oligo.}
 #'   \item{sequenceRc}{Reverse complements of all sequence variants.}
@@ -309,20 +309,20 @@
 #' oligos(roi, designStrategyPrimer = "mixed", probe = FALSE)
 oligos <- function(x,
                    maxGapFrequency = 0.01,
-                   lengthPrimer = 18:22,
+                   lengthPrimer = c(18, 22),
                    maxDegeneracyPrimer = 4,
                    gcClampPrimer = TRUE,
                    avoidThreeEndRunsPrimer = TRUE,
-                   gcRangePrimer = c(0.40, 0.65),
-                   tmRangePrimer = c(50, 65),
+                   gcPrimer = c(0.40, 0.65),
+                   tmPrimer = c(50, 65),
                    concPrimer = 500,
                    designStrategyPrimer = "ambiguous",
                    probe = TRUE,
-                   lengthProbe = 18:22,
+                   lengthProbe = c(18, 22),
                    maxDegeneracyProbe = 4,
                    avoidFiveEndGProbe = TRUE,
-                   gcRangeProbe = c(0.40, 0.65),
-                   tmRangeProbe = c(50, 70),
+                   gcProbe = c(0.40, 0.65),
+                   tmProbe = c(50, 70),
                    concProbe = 250,
                    concNa = 0.05) {
     if (!methods::is(x, "RprimerProfile")) {
@@ -343,15 +343,15 @@ oligos <- function(x,
     if (!is.logical(avoidThreeEndRunsPrimer)) {
         stop("'avoidThreeEndRunsPrimer' must be TRUE or FALSE", call. = FALSE)
     }
-    if (!(min(gcRangePrimer) >= 0 && max(gcRangePrimer) <= 1)) {
+    if (!(min(gcPrimer) >= 0 && max(gcPrimer) <= 1)) {
         stop(
-            "'gcRangePrimer' must be from 0 to 1, e.g. c(0.45, 0.65).",
+            "'gcPrimer' must be from 0 to 1, e.g. c(0.45, 0.65).",
             call. = FALSE
         )
     }
-    if (!(min(tmRangePrimer) >= 20 && max(tmRangePrimer) <= 90)) {
+    if (!(min(tmPrimer) >= 20 && max(tmPrimer) <= 90)) {
         stop(
-            "'tmRangePrimer' must be from 20 to 90, e.g. c(55, 60).",
+            "'tmPrimer' must be from 20 to 90, e.g. c(55, 60).",
             call. = FALSE
         )
     }
@@ -378,15 +378,15 @@ oligos <- function(x,
     if (!is.logical(avoidFiveEndGProbe)) {
         stop("'avoidFiveEndGProbe' must be TRUE or FALSE", call. = FALSE)
     }
-    if (!(min(gcRangeProbe) >= 0 && max(gcRangeProbe) <= 1)) {
+    if (!(min(gcProbe) >= 0 && max(gcProbe) <= 1)) {
         stop(
-            "'gcRangeProbe' must be from 0 to 1, e.g. c(0.45, 0.65).",
+            "'gcProbe' must be from 0 to 1, e.g. c(0.45, 0.65).",
             call. = FALSE
         )
     }
-    if (!(min(tmRangeProbe) >= 20 && max(tmRangeProbe) <= 90)) {
+    if (!(min(tmProbe) >= 20 && max(tmProbe) <= 90)) {
         stop(
-            "'tmRangeProbe' must be from 20 to 90, e.g. c(55, 60).",
+            "'tmProbe' must be from 20 to 90, e.g. c(55, 60).",
             call. = FALSE
         )
     }
@@ -396,8 +396,10 @@ oligos <- function(x,
     if (!(concNa >= 0.01 && concNa <= 1)) {
         stop("'concNa' must be from 0.01 to 1.", call. = FALSE)
     }
+    lengthPrimer <- seq(min(lengthPrimer), max(lengthPrimer))
     lengthOligo <- lengthPrimer
     if (probe) {
+        lengthProbe <- seq(min(lengthProbe), max(lengthProbe))
         lengthOligo <- unique(c(lengthOligo, lengthProbe))
     }
     lengthOligo <- lengthOligo[order(lengthOligo)]
@@ -422,8 +424,8 @@ oligos <- function(x,
         maxDegeneracyPrimer,
         gcClampPrimer,
         avoidThreeEndRunsPrimer,
-        gcRangePrimer,
-        tmRangePrimer,
+        gcPrimer,
+        tmPrimer,
         designStrategyPrimer,
         rowThreshold = 1,
         colThreshold = 1
@@ -437,8 +439,8 @@ oligos <- function(x,
             lengthProbe,
             maxDegeneracyProbe,
             avoidFiveEndGProbe,
-            gcRangeProbe,
-            tmRangeProbe,
+            gcProbe,
+            tmProbe,
             rowThreshold = 1,
             colThreshold = 1
         )
@@ -989,15 +991,15 @@ oligos <- function(x,
                            maxDegeneracyPrimer = 4,
                            gcClampPrimer = TRUE,
                            avoidThreeEndRunsPrimer = TRUE,
-                           gcRangePrimer = c(0.45, 0.55),
-                           tmRangePrimer = c(55, 65),
+                           gcPrimer = c(0.45, 0.55),
+                           tmPrimer = c(55, 65),
                            designStrategyPrimer = "ambiguous",
                            colThreshold = 0.75,
                            rowThreshold = 0.75) {
     x <- x[x$length %in% lengthPrimer, , drop = FALSE]
     x <- x[x$degeneracy <= maxDegeneracyPrimer, , drop = FALSE]
-    gcInRange <- .isWithinRange(x$gcContent, gcRangePrimer)
-    tmInRange <- .isWithinRange(x$tmPrimer, tmRangePrimer)
+    gcInRange <- .isWithinRange(x$gcContent, gcPrimer)
+    tmInRange <- .isWithinRange(x$tmPrimer, tmPrimer)
     x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
     x <- .checkAllPrimerVariants(
         x,
@@ -1063,15 +1065,15 @@ oligos <- function(x,
                           lengthProbe = 18:22,
                           maxDegeneracyProbe = 4,
                           avoidFiveEndGProbe = TRUE,
-                          gcRangeProbe = c(0.45, 0.55),
-                          tmRangeProbe = c(55, 65),
+                          gcProbe = c(0.45, 0.55),
+                          tmProbe = c(55, 65),
                           rowThreshold = 0.75,
                           colThreshold = 0.75) {
     x <- x[x$method == "ambiguous", , drop = FALSE]
     x <- x[x$length %in% lengthProbe, , drop = FALSE]
     x <- x[x$degeneracy <= maxDegeneracyProbe, , drop = FALSE]
-    gcInRange <- .isWithinRange(x$gcContent, gcRangeProbe)
-    tmInRange <- .isWithinRange(x$tmProbe, tmRangeProbe)
+    gcInRange <- .isWithinRange(x$gcContent, gcProbe)
+    tmInRange <- .isWithinRange(x$tmProbe, tmProbe)
     x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
     x <- .checkAllProbeVariants(
         x,

@@ -6,7 +6,7 @@
 #' @param x
 #' An \code{RprimerOligo} object, which can be with or without probes.
 #'
-#' @param lengthRange
+#' @param length
 #' Amplicon length range, a numeric vector [40, 5000], defaults to
 #' \code{c(65, 120)}.
 #'
@@ -152,21 +152,21 @@
 #' assays(exampleRprimerOligo)
 #'
 #' ## Modify the length range
-#' assays(exampleRprimerOligo, lengthRange = c(1000, 2000))
+#' assays(exampleRprimerOligo, length = c(1000, 2000))
 assays <- function(x,
-                   lengthRange = c(65, 120),
+                   length = c(65, 120),
                    tmDifferencePrimers = NULL) {
     if (!methods::is(x, "RprimerOligo")) {
         stop("'x' must be an RprimerOligo object.")
     }
-    if (!(min(lengthRange) >= 40 && max(lengthRange) <= 5000)) {
-        stop("'lengthRange' must be from 40 to 5000.", call. = FALSE)
+    if (!(min(length) >= 40 && max(length) <= 5000)) {
+        stop("'length' must be from 40 to 5000.", call. = FALSE)
     }
     if (!is.null(tmDifferencePrimers) && !is.numeric(tmDifferencePrimers)) {
         stop("'tmDifferencePrimers must be either 'NULL' or a number.")
     }
     x <- as.data.frame(x)
-    assays <- .combinePrimers(x[x$type == "primer", ], lengthRange)
+    assays <- .combinePrimers(x[x$type == "primer", ], length)
     if (any(x$type == "probe")) {
         assays <- .addProbes(assays, x[x$type == "probe", ])
     }
@@ -207,7 +207,7 @@ assays <- function(x,
 #' x <- exampleRprimerOligo
 #' .combinePrimers(x)
 .combinePrimers <- function(x,
-                            lengthRange = c(65, 120),
+                            length = c(65, 120),
                             tmDifferencePrimers = NULL) {
     assays <- .pairPrimers(x)
     ampliconLength <- assays$endRev - assays$startFwd + 1
@@ -219,8 +219,8 @@ assays <- function(x,
         start, end, ampliconLength, totalDegeneracy, score,
         assays
     )
-    assays <- assays[assays$ampliconLength >= min(lengthRange), , drop = FALSE]
-    assays <- assays[assays$ampliconLength <= max(lengthRange), , drop = FALSE]
+    assays <- assays[assays$ampliconLength >= min(length), , drop = FALSE]
+    assays <- assays[assays$ampliconLength <= max(length), , drop = FALSE]
     if (!is.null(tmDifferencePrimers)) {
         tmDifferencePrimers <- abs(tmDifferencePrimers)
         tmDifference <- abs(assays$tmMeanFwd - assays$tmMeanRev)
