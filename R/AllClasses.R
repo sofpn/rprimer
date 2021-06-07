@@ -205,7 +205,7 @@ S4Vectors::setValidity2("RprimerAssay", function(object) {
         "method"
     )
     colnames <- c(
-        "start", "end", "ampliconLength",
+        "start", "end", "length",
         "totalDegeneracy", "score",
         paste0(oligoColnames, "Fwd"),
         paste0(oligoColnames, "Rev"),

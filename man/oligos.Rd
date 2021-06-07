@@ -7,20 +7,20 @@
 oligos(
   x,
   maxGapFrequency = 0.01,
-  lengthPrimer = 18:22,
+  lengthPrimer = c(18, 22),
   maxDegeneracyPrimer = 4,
   gcClampPrimer = TRUE,
   avoidThreeEndRunsPrimer = TRUE,
-  gcRangePrimer = c(0.4, 0.65),
-  tmRangePrimer = c(50, 65),
+  gcPrimer = c(0.4, 0.65),
+  tmPrimer = c(50, 65),
   concPrimer = 500,
   designStrategyPrimer = "ambiguous",
   probe = TRUE,
-  lengthProbe = 18:22,
+  lengthProbe = c(18, 22),
   maxDegeneracyProbe = 4,
   avoidFiveEndGProbe = TRUE,
-  gcRangeProbe = c(0.4, 0.65),
-  tmRangeProbe = c(50, 70),
+  gcProbe = c(0.4, 0.65),
+  tmProbe = c(50, 70),
   concProbe = 250,
   concNa = 0.05
 )
@@ -32,8 +32,8 @@ oligos(
 the target alignment.
 A number [0, 1], defaults to \code{0.01}.}
 
-\item{lengthPrimer}{Primer length. A numeric vector [15, 30],
-defaults to \code{18:22}.}
+\item{lengthPrimer}{Primer length range. A numeric vector [15, 30],
+defaults to \code{c(18, 22)}.}
 
 \item{maxDegeneracyPrimer}{Maximum number of variants of each primer. A number [1, 64],
 defaults to \code{4}.}
@@ -48,10 +48,10 @@ C:s within the last five bases (3' end) of the oligo.
 of the same nucleotide at the terminal 3' end should be avoided.
 \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.}
 
-\item{gcRangePrimer}{GC-content range for primers.
+\item{gcPrimer}{GC-content range for primers.
 A numeric vector [0, 1], defaults to \code{c(0.40, 0.65)}.}
 
-\item{tmRangePrimer}{Tm range for primers (in Celcius degrees).
+\item{tmPrimer}{Tm range for primers (in Celcius degrees).
 A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
 
 \item{concPrimer}{Primer concentration in nM, for Tm calculation. A number
@@ -63,8 +63,8 @@ A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
 \item{probe}{If probes should be designed. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
 
-\item{lengthProbe}{Probe length. A numeric vector [15, 40],
-defaults to \code{18:22}.}
+\item{lengthProbe}{Probe length range. A numeric vector [15, 40],
+defaults to \code{c(18, 22)}.}
 
 \item{maxDegeneracyProbe}{Maximum number of variants of each probe. A number [1, 64],
 defaults to \code{4}.}
@@ -73,10 +73,10 @@ defaults to \code{4}.}
 at the 5' end should be avoided. \code{TRUE} or \code{FALSE},
 defaults to \code{TRUE}.}
 
-\item{gcRangeProbe}{GC-content range for probes. A numeric vector [0, 1],
+\item{gcProbe}{GC-content range for probes. A numeric vector [0, 1],
 defaults to \code{c(0.40, 0.65)}.}
 
-\item{tmRangeProbe}{Tm range for probes (in Celcius degrees).
+\item{tmProbe}{Tm range for probes (in Celcius degrees).
 A numeric vector [30, 90], defaults to \code{c(55, 70)}.}
 
 \item{concProbe}{Primer concentration in nM, for tm calculation. A numeric vector
@@ -110,15 +110,15 @@ An \code{RprimerOligo} object, which contains the following information:
   \item{degeneracy}{Number of sequence variants of the oligo.}
   \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.
   }
-  \item{gcContentRange}{Range in GC-content of all sequence variants of
+  \item{gcContent}{Range in GC-content of all sequence variants of
     the oligo.}
   \item{tmMean}{Mean tm of all sequence variants of the oligo
   (in Celcius degrees).}
-  \item{tmRange}{Range in tm of all sequence variants of the oligo
+  \item{tm}{Range in tm of all sequence variants of the oligo
   (in Celcius degrees).}
   \item{deltaGMean}{Mean delta G of all sequence variants of the oligo
   (in kcal/mol).}
-  \item{deltaGRange}{Range in delta G of all sequence variants of the oligo
+  \item{deltaG}{Range in delta G of all sequence variants of the oligo
   (in kcal/mol).}
   \item{sequence}{All sequence variants of the oligo.}
   \item{sequenceRc}{Reverse complements of all sequence variants.}

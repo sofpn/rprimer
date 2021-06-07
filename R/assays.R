@@ -21,7 +21,7 @@
 #' \describe{
 #'   \item{start}{Position where the assay starts.}
 #'   \item{end}{Position where the assay ends.}
-#'   \item{ampliconLength}{Length of the amplicon.}
+#'   \item{length}{Length of the amplicon.}
 #'   \item{totalDegeneracy}{Total number of oligos in the assay.}
 #'   \item{score}{Summarized oligo score. The lowest, and best,
 #'   possible score is 0. The highest possible score is 24 for assays
@@ -210,17 +210,17 @@ assays <- function(x,
                             length = c(65, 120),
                             tmDifferencePrimers = NULL) {
     assays <- .pairPrimers(x)
-    ampliconLength <- assays$endRev - assays$startFwd + 1
+    ampLength <- assays$endRev - assays$startFwd + 1
     start <- assays$startFwd
     end <- assays$endRev
     totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
     score <- assays$scoreFwd + assays$scoreRev
     assays <- cbind(
-        start, end, ampliconLength, totalDegeneracy, score,
+        start, end, "length" = ampLength, totalDegeneracy, score,
         assays
     )
-    assays <- assays[assays$ampliconLength >= min(length), , drop = FALSE]
-    assays <- assays[assays$ampliconLength <= max(length), , drop = FALSE]
+    assays <- assays[assays$length >= min(length), , drop = FALSE]
+    assays <- assays[assays$length <= max(length), , drop = FALSE]
     if (!is.null(tmDifferencePrimers)) {
         tmDifferencePrimers <- abs(tmDifferencePrimers)
         tmDifference <- abs(assays$tmMeanFwd - assays$tmMeanRev)
@@ -314,7 +314,7 @@ assays <- function(x,
     names(x)[names(x) %in% rename] <- c("plusPr", "minusPr")
     moveToLast <- c("roiStart", "roiEnd")
     x <- x[c(setdiff(names(x), moveToLast), moveToLast)]
-    moveToFirst <- c("start", "end", "ampliconLength")
+    moveToFirst <- c("start", "end", "length")
     x <- x[c(moveToFirst, setdiff(names(x), moveToFirst))]
     x
 }

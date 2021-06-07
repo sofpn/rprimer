@@ -4,12 +4,12 @@
 \alias{assays}
 \title{Design (RT)-PCR assays}
 \usage{
-assays(x, lengthRange = c(65, 120), tmDifferencePrimers = NULL)
+assays(x, length = c(65, 120), tmDifferencePrimers = NULL)
 }
 \arguments{
 \item{x}{An \code{RprimerOligo} object, which can be with or without probes.}
 
-\item{lengthRange}{Amplicon length range, a numeric vector [40, 5000], defaults to
+\item{length}{Amplicon length range, a numeric vector [40, 5000], defaults to
 \code{c(65, 120)}.}
 
 \item{tmDifferencePrimers}{Maximum allowed difference between the mean tm of the forward and reverse
@@ -22,7 +22,7 @@ An \code{RprimerAssay} object, which contains the following information:
 \describe{
   \item{start}{Position where the assay starts.}
   \item{end}{Position where the assay ends.}
-  \item{ampliconLength}{Length of the amplicon.}
+  \item{length}{Length of the amplicon.}
   \item{totalDegeneracy}{Total number of oligos in the assay.}
   \item{score}{Summarized oligo score. The lowest, and best,
   possible score is 0. The highest possible score is 24 for assays
@@ -155,5 +155,5 @@ data("exampleRprimerOligo")
 assays(exampleRprimerOligo)
 
 ## Modify the length range
-assays(exampleRprimerOligo, lengthRange = c(1000, 2000))
+assays(exampleRprimerOligo, length = c(1000, 2000))
 }

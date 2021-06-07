@@ -24,9 +24,9 @@ test_that(".combinePrimers works", {
     test <- .combinePrimers(x,
         length = c(100, 2000), tmDifferencePrimers = 2
     )
-    expect_true(all(test$ampliconLength >= 100))
-    expect_true(all(test$ampliconLength <= 2000))
-    expect_equal(test$end - test$start, test$ampliconLength - 1)
+    expect_true(all(test$length >= 100))
+    expect_true(all(test$length <= 2000))
+    expect_equal(test$end - test$start, test$length - 1)
     expect_error(.combinePrimers(x[1, ]))
     expect_true(all(abs(test$tmMeanFwd - test$tmMeanRev) <= 2))
 })

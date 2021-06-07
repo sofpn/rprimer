@@ -1,7 +1,9 @@
 #library(shiny)
-library(shinydashboard)
-#library(shinycssloaders)
+#library(shinydashboard)
 #devtools::load_all("C:/Users/Sofia/Desktop/rprimer")
+
+# remove ws  plots o match info pr
+# make selection renderUI, or sep boxes
 
 data("exampleRprimerAlignment")
 
@@ -36,6 +38,23 @@ removeListColumns <- function(x) {
   x[, !lists]
 }
 
+
+splitAssayToList <- function(x) {
+  x <- as.data.frame(x)
+  fwd <- x[, grepl("Fwd", names(x))]
+  names(fwd) <- gsub("Fwd", "", names(fwd))
+  rev <- x[, grepl("Rev", names(x))]
+  names(rev) <- gsub("Rev", "", names(rev))
+  if (any(grepl("Pr", names(x)))) {
+    pr <- x[, grepl("Pr", names(x))]
+    names(pr) <- gsub("Pr", "", names(pr))
+    all <- list(fwd, rev, pr)
+  } else {
+    all <- list(fwd, rev)
+  }
+  all
+}
+
 makeListTable <- function(x) {
   x <- as.data.frame(x)
   list <- vapply(seq_len(ncol(x)), function(i) {
@@ -62,7 +81,7 @@ makeEmptyRow <- function(x) {
   emptyRow$end <- 1
   emptyRow$fwd <- emptyRow$rev <- TRUE
   emptyRow$type <- "primer"
-  emptyRow$iupacSequence <- "emptyRow"
+  emptyRow$length <- NA
   emptyRow
 }
 
@@ -71,9 +90,14 @@ makeEmptyRow <- function(x) {
 upload <- conditionalPanel(
   condition = "input.fileInput == 'Upload file'",
   br(),
-  h5("Upload a multiple DNA sequence alignment in fasta format"),
+  h5("Upload a multiple DNA sequence alignment"),
   fileInput(
     "file1", "", multiple = FALSE, accept = c("text")
+  ),
+  radioButtons(
+    "filetype", h5("Format"),
+    choices = c("Fasta" = "fasta", "Clustal" = "clustal"),
+    selected = "fasta"
   )
 )
 
@@ -93,7 +117,7 @@ useProbe <- conditionalPanel(
   ),
   numericInput(
     "maxDegeneracyProbe",
-    h5("Maximum degeneracy"),
+    h5("Maximum degeneracy (1-64)"),
     value = 4, min = 1, max = 64,
 
   ),
@@ -111,7 +135,7 @@ useProbe <- conditionalPanel(
   ),
   sliderInput(
     "tmProbe",
-    h5("Melting temperature range"),
+    h5("Melting temperature range (Celcius degrees)"),
     value = c(50, 70), min = 20, max = 90,
 
   ),
@@ -125,15 +149,15 @@ useProbe <- conditionalPanel(
 
 # UI ===========================================================================
 
-ui <- shinydashboard::dashboardPage(
-  shinydashboard::dashboardHeader(title = ""),
-  shinydashboard::dashboardSidebar(
+ui <- dashboardPage(
+  dashboardHeader(title = "rprimer"),
+  dashboardSidebar(
     sidebarMenu(
-      menuItem("Welcome!", tabName = "welcome"),
-      menuItem("Target alignment", tabName = "import"),
-      menuItem("1.  Consensus profile", tabName = "consensus"),
-      menuItem("2.  Oligos", tabName = "oligos"),
-      menuItem("3.  Assays", tabName = "assays")
+      menuItem("Welcome", tabName = "welcome", icon = icon("heart")),
+      menuItem("Target alignment", tabName = "import", icon = icon("file-upload")),
+      menuItem("Consensus profile", tabName = "consensus", icon = icon("th")),
+      menuItem("Oligos", tabName = "oligos", icon = icon("dna")),
+      menuItem("Assays", tabName = "assays", icon = icon("stream"))
     )
   ),
   dashboardBody(
@@ -144,10 +168,27 @@ ui <- shinydashboard::dashboardPage(
       tabItem(tabName = "welcome",
               fluidRow(
                 box(
-                  title = ("Instructions for use"),
-                  h5(""),
+                  title = ("Design degenerate oligos from a multiple DNA sequence alignment"),
+                  h5(tags$b("Introduction")),
+                  h5(
+                  "rprimer provides tools for visualizing sequence
+                  conservation and designing degenerate primers, probes and (RT)-(q/d)PCR
+                  assays from a multiple DNA sequence alignment. The workflow is
+                  developed primarily for sequence variable RNA viruses, but it should be
+                  equally useful for other organisms with high sequence variability"
+                  ),
                   br(),
+                  h5(tags$b("Instructions for use")),
+                  h5("Add link to package vignette"),
+                  br(),
+                  h5(tags$b("Citation")),
+                  h5("S Persson et al., manuscript in preparation"),
+                  br(),
+                  h5(tags$b("Source code")),
                   uiOutput("codelink"),
+                  br(),
+                  h5(tags$b("Contact")),
+                  h5("sofia.persson@slv.se"),
                   width = 12
                 )
               )
@@ -243,7 +284,7 @@ ui <- shinydashboard::dashboardPage(
                                   ),
                                   numericInput(
                                     "maxDegeneracyPrimer",
-                                    h5("Maximum degeneracy"),
+                                    h5("Maximum degeneracy (1-64)"),
                                     value = 4, min = 1, max = 64,
 
                                   ),
@@ -267,7 +308,7 @@ ui <- shinydashboard::dashboardPage(
                                   ),
                                   sliderInput(
                                     "tmPrimer",
-                                    h5("Melting temperature range"),
+                                    h5("Melting temperature range (Celcius degrees)"),
                                     value = c(50, 65), min = 20, max = 90,
 
                                   ),
@@ -363,7 +404,7 @@ ui <- shinydashboard::dashboardPage(
                                       br(),
                                       DT::dataTableOutput("table4")
                                   ),
-                                  box(width = 6,
+                                  box(width = 12,
                                       title = "Nucleotide distribution in target alignment",
                                       solidHeader = TRUE,
                                       shinycssloaders::withSpinner(plotOutput(
@@ -372,7 +413,7 @@ ui <- shinydashboard::dashboardPage(
                                         width = "100%"
                                       ), color = "grey")
                                   ),
-                                  box(width = 6, title = "Match plot",
+                                  box(width = 12, title = "Match plot",
                                       solidHeader = TRUE,
                                       shinycssloaders::withSpinner(plotOutput(
                                         "plot5",
@@ -394,10 +435,7 @@ ui <- shinydashboard::dashboardPage(
                                       htmlOutput("html6"),
                                       br(),
                                       br(),
-                                      htmlOutput("html7"),
-                                      br(),
-                                      br(),
-                                      htmlOutput("html8")
+                                      htmlOutput("html7")
                                   ))
 
 
@@ -407,17 +445,177 @@ ui <- shinydashboard::dashboardPage(
       #### Assays ####
 
       tabItem(tabName = "assays",
-              box(width = 12, title = "Assays",
-                  h5("Design settings"),
-                  actionButton("getAssays", "Design assays"),
-                  hr()
-                  #plotOutput("plot4", height = plotHeight, width = plotWidth)
-              )
-      )
+              fluidRow(column(width = 3,
+                              tags$head(tags$style(
+                                HTML(
+                                  '.box{-webkit-box-shadow: none;
+                    -moz-box-shadow: none;
+                    box-shadow: none;}'))),
+                              box(width = 12, title = "Settings",
+                                  sliderInput(
+                                    "length",
+                                    h5("Length"),
+                                    value = c(60, 120), min = 40, max = 5000,
+                                  ),
+                                  numericInput(
+                                    "tmDifferencePrimers",
+                                    h5("Maximum melting temperature difference between primers (Celcius degrees)"),
+                                    value = 10, min = 0, max = Inf,
+                                  ),
+                                  hr(),
+                                  uiOutput("getAssays")
+                              )),
+                       column(width = 9,
+                              box(width = 12, title = "Filter",
+                                  column(width = 2, uiOutput("assayRegionFrom")),
+                                  column(width = 2, uiOutput("assayRegionTo")),
+                              ),
+                              box(width = 12, title = "All assays",
+                                  tabBox(title = "", width = 12,
+                                         tabPanel(title = "Plot",
+                                                  br(),
+                                                  shinycssloaders::withSpinner(
+                                                    plotOutput(
+                                                      "plot6",
+                                                      height = plotHeight,
+                                                      width = "100%"
+                                                    ), color = "grey")
+                                         ),
+                                         tabPanel(title = "Table and selection",
+                                                  downloadLink(
+                                                    "download6", "Download table"
+                                                  ),
+                                                  br(),
+                                                  downloadLink(
+                                                    "download7", "Download fasta"
+                                                  ),
+                                                  br(),
+                                                  br(),
+                                                  DT::dataTableOutput("table5")
+                                         ))),
+                              box(width = 12, title = "Selection",
+                                  collapsible = TRUE, collapsed = FALSE,
+                                  box(width = 12, title = "Table",
+                                      solidHeader = TRUE,
+                                      downloadLink(
+                                        "download8", "Download table"
+                                      ),
+                                      br(),
+                                      br(),
+                                      DT::dataTableOutput("table6")
+                                  ),
+                                  box(width = 12, title = "All sequence variants",
+                                      solidHeader = TRUE,
+                                      downloadLink(
+                                        "download9", "Download fasta"
+                                      ),
+                                      br(),
+                                      br(),
+                                      uiOutput("fwd2"),
+                                      DT::dataTableOutput("table7"),
+                                      br(),
+                                      uiOutput("rev2"),
+                                      DT::dataTableOutput("table8"),
+                                      br(),
+                                      uiOutput("pr2"),
+                                      DT::dataTableOutput("table9")
+
+                                  ),
+                                  box(width = 12,
+                                      title = "Nucleotide distribution in target alignment",
+                                      solidHeader = TRUE,
+                                      uiOutput("fwd"),
+                                      br(),
+                                      br(),
+                                      shinycssloaders::withSpinner(plotOutput(
+                                        "plot7",
+                                        height = plotHeight / 2,
+                                        width = "100%"
+                                      ), color = "grey"),
+                                      uiOutput("rev"),
+                                      br(),
+                                      br(),
+                                      shinycssloaders::withSpinner(plotOutput(
+                                        "plot8",
+                                        height = plotHeight / 2,
+                                        width = "100%"
+                                      ), color = "grey"),
+                                      uiOutput("pr"),
+                                      br(),
+                                      br(),
+                                      shinycssloaders::withSpinner(plotOutput(
+                                        "plot9",
+                                        height = plotHeight / 2,
+                                        width = "100%"
+                                      ), color = "grey")
+                                  ),
+                                  box(width = 12, title = "Match plot",
+                                      solidHeader = TRUE,
+                                      shinycssloaders::withSpinner(plotOutput(
+                                        "plot10",
+                                        height = plotHeight / 2,
+                                        width = "100%"
+                                      ), color = "grey")
+                                  ),
+                                  box(width = 12, title = "Match details",
+                                      solidHeader = TRUE,
+                                      uiOutput("fwd3"),
+                                      hr(),
+                                      htmlOutput("html9"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html10"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html11"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html12"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html13"),
+                                      br(),
+                                      br(),
+                                      uiOutput("rev3"),
+                                      hr(),
+                                      htmlOutput("html14"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html15"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html16"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html17"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html18"),
+                                      br(),
+                                      br(),
+                                      uiOutput("pr3"),
+                                      hr(),
+                                      htmlOutput("html19"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html20"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html21"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html22"),
+                                      br(),
+                                      br(),
+                                      htmlOutput("html23")
+                                  ))
+
+
+                       )
 
 
 
-    )))
+              )))))
 
 # Server =======================================================================
 
@@ -429,7 +627,7 @@ server <- function(input, output) {
     if (input$fileInput == "Upload file") {
       req(input$file1)
       x <- Biostrings::readDNAMultipleAlignment(
-        input$file1$datapath, format = "fasta"
+        input$file1$datapath, format = input$filetype
       )
     } else if (input$fileInput == "Use example data") {
       data("exampleRprimerAlignment")
@@ -515,7 +713,7 @@ server <- function(input, output) {
   selectedOligoMatch <- reactive({
     req(selectedOligo())
     req(aln())
-    if (selectedOligo()$iupacSequence == "emptyRow") {
+    if (is.na(selectedOligo()$length[[1]])) {
       NULL
     } else {
       checkMatch(selectedOligo(), aln())
@@ -524,12 +722,52 @@ server <- function(input, output) {
 
   assayCandidates <- eventReactive(input$getAssays, {
     req(oligoCandidates())
-    assays(oligoCandidates())
+    assays(oligoCandidates(),
+           length = input$length,
+           tmDifferencePrimers = input$tmDifferencePrimers)
+  })
+
+  assaySelection <- reactive({
+    req(assayCandidates())
+    x <- assayCandidates()
+    x <- as.data.frame(x)
+    emptyRow <- makeEmptyRow(x)
+    x <- x[
+      x$start >= input$assayRegionFrom & x$end <= input$assayRegionTo,
+    ]
+    if (nrow(x) == 0L) {
+      x <- emptyRow
+    }
+    RprimerAssay(x)
+  })
+
+  selectedAssay <- reactive({
+    req(assaySelection())
+    if (!is.null(input$table5_rows_selected)) {
+      assaySelection()[input$table5_rows_selected, ]
+    } else {
+      assaySelection()[1, ]
+    }
+  })
+
+  selectedAssayList <- reactive({
+    req(!is.na(selectedAssay()$length[[1]]))
+    splitAssayToList(selectedAssay())
+  })
+
+  selectedAssayMatch <- reactive({
+    req(selectedAssay())
+    req(aln())
+    if (is.na(selectedAssay()$length[[1]])) {
+      NULL
+    } else {
+      checkMatch(selectedAssay(), aln())
+    }
   })
 
   #### Render UI ####
 
-  url <- a("Source code", href = "https://github.com/sofpn/rprimer")
+  url <- a("GitHub", href = "https://github.com/sofpn/rprimer")
   output$codelink <- renderUI({
     tagList(url)
   })
@@ -667,6 +905,76 @@ server <- function(input, output) {
     h4("Nucleotide distribution in target alignment")
   })
 
+  output$getAssays <- renderUI({
+    req(oligoSelection())
+    actionButton("getAssays", "Get assays")
+  })
+
+  output$assayRegionFrom <- renderUI({
+    req(assayCandidates())
+    numericInput("assayRegionFrom", h5("From"),
+                 min = assayCandidates()$roiStart[[1]],
+                 max = assayCandidates()$roiEnd[[1]],
+                 value = assayCandidates()$roiStart[[1]]
+    )
+  })
+
+  output$assayRegionTo <- renderUI({
+    req(assayCandidates())
+    numericInput("assayRegionTo", h5("To"),
+                 min = assayCandidates()$roiStart[[1]],
+                 max = assayCandidates()$roiEnd[[1]],
+                 value = assayCandidates()$roiEnd[[1]]
+    )
+  })
+
+  output$fwd <- renderUI({
+    req(selectedAssay())
+    h4("Forward")
+  })
+
+  output$rev <- renderUI({
+    req(selectedAssay())
+    h4("Reverse")
+  })
+
+  output$pr <- renderUI({
+    req(any(grepl("Pr", names(selectedAssay()))))
+    h4("Probe")
+  })
+
+  output$fwd2 <- renderUI({
+    req(selectedAssay())
+    h4("Forward")
+  })
+
+  output$rev2 <- renderUI({
+    req(selectedAssay())
+    h4("Reverse")
+  })
+
+  output$pr2 <- renderUI({
+    req(any(grepl("Pr", names(selectedAssay()))))
+    h4("Probe")
+  })
+
+  output$fwd3 <- renderUI({
+    req(selectedAssayMatch())
+    h4("Forward")
+  })
+
+  output$rev3 <- renderUI({
+    req(selectedAssayMatch())
+    h4("Reverse")
+  })
+
+  output$pr3 <- renderUI({
+    req(any(grepl("Pr", names(selectedAssayMatch()))))
+    h4("Probe")
+  })
+
+
+
   #### Html ####
 
   output$html1 <- renderText({
@@ -729,17 +1037,155 @@ server <- function(input, output) {
       selectedOligoMatch()$idFourOrMoreMismatches[[1]])
   })
 
-  output$html8 <- renderText({
-    req(!is.null(selectedOligoMatch()))
+  output$html9 <- renderText({
+    req(!is.null(selectedAssayMatch()))
     c(
-      "<b>Off target match</b><br><br>",
+      "<b>Perfect match</b><br><br>",
       "Proportion of target sequences<br>",
-      round(selectedOligoMatch()$offTargetMatch, 2), "<br><br>",
+      round(selectedAssayMatch()$perfectMatchFwd, 2), "<br><br>",
       "ID<br>",
-      selectedOligoMatch()$idOffTargetMatch[[1]])
+      selectedAssayMatch()$idPerfectMatchFwd[[1]])
   })
 
+  output$html10 <- renderText({
+    req(!is.null(selectedAssayMatch()))
+    c(
+      "<b>One mismatch</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$oneMismatchFwd, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idOneMismatchFwd[[1]])
+  })
 
+  output$html11 <- renderText({
+    req(!is.null(selectedAssayMatch()))
+    c(
+      "<b>Two mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$twoMismatchesFwd, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idTwoMismatchesFwd[[1]])
+  })
+
+  output$html12 <- renderText({
+    req(!is.null(selectedAssayMatch()))
+    c(
+      "<b>Three mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$threeMismatchesFwd, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idThreeMismatchesFwd[[1]])
+  })
+
+  output$html13 <- renderText({
+    req(!is.null(selectedAssayMatch()))
+    c(
+      "<b>Four or more mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$fourOrMoreMismatchesFwd, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idFourOrMoreMismatchesFwd[[1]])
+  })
+
+  output$html14 <- renderText({
+    req(!is.null(selectedAssayMatch()))
+    c(
+      "<b>Perfect match</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$perfectMatchRev, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idPerfectMatchRev[[1]])
+  })
+
+  output$html15 <- renderText({
+    req(!is.null(selectedAssayMatch()))
+    c(
+      "<b>One mismatch</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$oneMismatchRev, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idOneMismatchRev[[1]])
+  })
+
+  output$html16 <- renderText({
+    req(!is.null(selectedAssayMatch()))
+    c(
+      "<b>Two mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$twoMismatchesRev, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idTwoMismatchesRev[[1]])
+  })
+
+  output$html17 <- renderText({
+    req(!is.null(selectedAssayMatch()))
+    c(
+      "<b>Three mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$threeMismatchesRev, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idThreeMismatchesRev[[1]])
+  })
+
+  output$html18 <- renderText({
+    req(!is.null(selectedAssayMatch()))
+    c(
+      "<b>Four or more mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$fourOrMoreMismatchesRev, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idFourOrMoreMismatchesRev[[1]])
+  })
+
+  output$html19 <- renderText({
+    req(any(grepl("Pr", names(selectedAssayMatch()))))
+    c(
+      "<b>Perfect match</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$perfectMatchPr, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idPerfectMatchPr[[1]])
+  })
+
+  output$html20 <- renderText({
+    req(any(grepl("Pr", names(selectedAssayMatch()))))
+    c(
+      "<b>One mismatch</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$oneMismatchPr, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idOneMismatchPr[[1]])
+  })
+
+  output$html21 <- renderText({
+    req(any(grepl("Pr", names(selectedAssayMatch()))))
+    c(
+      "<b>Two mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$twoMismatchesPr, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idTwoMismatchesPr[[1]])
+  })
+
+  output$html22 <- renderText({
+    req(any(grepl("Pr", names(selectedAssayMatch()))))
+    c(
+      "<b>Three mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$threeMismatchesPr, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idThreeMismatchesPr[[1]])
+  })
+
+  output$html23 <- renderText({
+    req(any(grepl("Pr", names(selectedAssayMatch()))))
+    c(
+      "<b>Four or more mismatches</b><br><br>",
+      "Proportion of target sequences<br>",
+      round(selectedAssayMatch()$fourOrMoreMismatchesPr, 2), "<br><br>",
+      "ID<br>",
+      selectedAssayMatch()$idFourOrMoreMismatchesPr[[1]])
+  })
 
 
   #### Plots ####
@@ -756,7 +1202,7 @@ server <- function(input, output) {
 
   output$plot4 <- renderPlot({
     req(selectedOligo())
-    if (selectedOligo()$iupacSequence == "emptyRow") {
+    if (is.na(selectedOligo()$length[[1]])) {
       NULL
     } else {
       from <- selectedOligo()$start
@@ -770,6 +1216,55 @@ server <- function(input, output) {
   output$plot5 <- renderPlot({
     req(!is.null(selectedOligoMatch()))
     plotData(selectedOligoMatch())
+  })
+
+  output$plot6 <- renderPlot({
+    req(assaySelection())
+    plotData(assaySelection())
+  })
+
+  output$plot7 <- renderPlot({
+    req(selectedAssay())
+    if (is.na(selectedAssay()$length[[1]])) {
+      NULL
+    } else {
+      from <- selectedAssay()$startFwd
+      to <- selectedAssay()$endFwd
+      plotData(consensus()[
+        consensus()$position >= from & consensus()$position <= to,
+      ], type = "nucleotide")
+    }
+  })
+
+  output$plot8 <- renderPlot({
+    req(selectedAssay())
+    if (is.na(selectedAssay()$length[[1]])) {
+      NULL
+    } else {
+      from <- selectedAssay()$startRev
+      to <- selectedAssay()$endRev
+      plotData(consensus()[
+        consensus()$position >= from & consensus()$position <= to,
+      ], type = "nucleotide", rc = TRUE)
+    }
+  })
+
+  output$plot9 <- renderPlot({
+    req(any(grepl("Pr", names(selectedAssay()))))
+    if (is.na(selectedAssay()$length[[1]])) {
+      NULL
+    } else {
+      from <- selectedAssay()$startPr
+      to <- selectedAssay()$endPr
+      plotData(consensus()[
+        consensus()$position >= from & consensus()$position <= to,
+      ], type = "nucleotide", rc = TRUE)
+    }
+  })
+
+  output$plot10 <- renderPlot({
+    req(!is.null(selectedAssayMatch()))
+    plotData(selectedAssayMatch())
   })
 
   #### Tables ####
@@ -787,7 +1282,7 @@ server <- function(input, output) {
 
   output$table2 <- DT::renderDataTable({
     req(oligoSelection())
-    if (oligoSelection()$iupacSequence[[1]] == "emptyRow") {
+    if (is.na(oligoSelection()$length[[1]])) {
       NULL
     } else {
       roundDbls(removeListColumns(as.data.frame(oligoSelection())))
@@ -803,7 +1298,7 @@ server <- function(input, output) {
 
   output$table3 <- DT::renderDataTable({
     req(selectedOligo())
-    if (selectedOligo()$iupacSequence[[1]] == "emptyRow") {
+    if (is.na(selectedOligo()$length[[1]])) {
       NULL
     } else {
       x <- selectedOligo()
@@ -821,11 +1316,78 @@ server <- function(input, output) {
 
   output$table4 <- DT::renderDataTable({
     req(selectedOligo())
-    if (selectedOligo()$iupacSequence[[1]] == "emptyRow") {
+    if (is.na(selectedOligo()$length[[1]])) {
       NULL
     } else {
       roundDbls(makeListTable(selectedOligo()))
     }
+  }, options = list(
+    info = FALSE,
+    searching = FALSE, paging = FALSE,
+    scrollX = TRUE, autoWidth = FALSE,
+    ordering = FALSE
+  ), rownames = FALSE, selection  = "none"
+  )
+
+  output$table5 <- DT::renderDataTable({
+    req(assaySelection())
+    if (is.na(assaySelection()$length[[1]])) {
+      NULL
+    } else {
+      roundDbls(removeListColumns(as.data.frame(assaySelection())))
+    }
+  }, options = list(
+    info = FALSE,
+    searching = FALSE, paging = FALSE,
+    scrollX = TRUE, autoWidth = TRUE,
+    ordering = TRUE, scrollY = "300"
+  ), rownames = FALSE,
+  selection = list(mode = "single", selected = 1)
+  )
+
+  output$table6 <- DT::renderDataTable({
+    req(selectedAssay())
+    if (is.na(selectedAssay()$length[[1]])) {
+      NULL
+    } else {
+      x <- selectedAssay()
+      x <- as.data.frame(x)
+      x <- removeListColumns(x)
+      roundDbls(x)
+    }
+  }, options = list(
+    info = FALSE,
+    searching = FALSE, paging = FALSE,
+    scrollX = TRUE, autoWidth = TRUE,
+    ordering = FALSE
+  ), rownames = FALSE, selection  = "none"
+  )
+
+  output$table7 <- DT::renderDataTable({
+    req(selectedAssayList())
+    roundDbls(makeListTable(selectedAssayList()[[1]]))
+  }, options = list(
+    info = FALSE,
+    searching = FALSE, paging = FALSE,
+    scrollX = TRUE, autoWidth = FALSE,
+    ordering = FALSE
+  ), rownames = FALSE, selection  = "none"
+  )
+
+  output$table8 <- DT::renderDataTable({
+    req(selectedAssayList())
+    roundDbls(makeListTable(selectedAssayList()[[2]]))
+  }, options = list(
+    info = FALSE,
+    searching = FALSE, paging = FALSE,
+    scrollX = TRUE, autoWidth = FALSE,
+    ordering = FALSE
+  ), rownames = FALSE, selection  = "none"
+  )
+
+  output$table9 <- DT::renderDataTable({
+    req(length(selectedAssayList()) == 3)
+    roundDbls(makeListTable(selectedAssayList()[[3]]))
   }, options = list(
     info = FALSE,
     searching = FALSE, paging = FALSE,
@@ -879,6 +1441,44 @@ server <- function(input, output) {
       x <- as(selectedOligo(), "DNAStringSet")
       Biostrings::writeXStringSet(x, file)
     })
+
+
+  output$download6 <- downloadHandler(
+    filename <- function() {
+      paste0("assays-", Sys.Date(), ".csv")
+    },
+    content <- function(file) {
+      write.csv(as.data.frame(assaySelection()), file)
+    })
+
+  output$download7 <- downloadHandler(
+    filename <- function() {
+      paste0("assays-fasta", Sys.Date(), ".txt")
+    },
+    content <- function(file) {
+      x <- assayection()
+      x <- as(assaySelection(), "DNAStringSet")
+      Biostrings::writeXStringSet(x, file)
+    })
+
+  output$download8 <- downloadHandler(
+    filename <- function() {
+      paste0("assay-selection-", Sys.Date(), ".csv")
+    },
+    content <- function(file) {
+      write.csv(as.data.frame(selectedAssay()), file)
+    })
+
+  output$download9 <- downloadHandler(
+    filename <- function() {
+      paste0("assay-selection-fasta-", Sys.Date(), ".txt")
+    },
+    content <- function(file) {
+      x <- selectedAssay()
+      x <- as(selectedAssay(), "DNAStringSet")
+      Biostrings::writeXStringSet(x, file)
+    })
+
 }
 
 # Run app ======================================================================

@@ -514,7 +514,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
         patchwork::wrap_plots(
             list(
                 .boxPlot(
-                    x, x$ampliconLength, "\n\nAmplicon length",
+                    x, x$length, "\n\nAmplicon length",
                     color = color
                 ),
                 .barPlot(
@@ -528,7 +528,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
         patchwork::wrap_plots(
             list(
                 .barPlot(
-                    x, x$ampliconLength, "\n\nAmplicon length",
+                    x, x$length, "\n\nAmplicon length",
                     color = color
                 ),
                 .barPlot(
