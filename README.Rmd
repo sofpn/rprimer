@@ -49,7 +49,9 @@ The package contains five functions:
 
 ## Shiny application
 
-The package can be run through a Shiny application. It is loaded by typing `runRprimerApp()` in the R console. 
+The package can be run through a Shiny application. It is loaded by: 
+
+* `runRprimerApp()` 
 
 ## Workflow 
 
