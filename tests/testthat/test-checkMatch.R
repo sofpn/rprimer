@@ -56,34 +56,6 @@ test_that(".getSequenceNames works", {
     expect_equal(result, list("A"))
 })
 
-# .getMatchIndexOffTarget ======================================================
-
-test_that(".getMatchIndexOffTarget works", {
-    x <- Biostrings::DNAStringSet("AAAAA")
-    target <- c(
-        "AAAAA",
-        "AAAAT",
-        "AAATT",
-        "AATTT",
-        "ATTTT",
-        "TTTTT"
-    )
-    target <- Biostrings::DNAStringSet(target)
-    result <- .getMatchIndexOffTarget(x, target, max.mismatch = 4)
-    expect_equal(result, 1:5)
-    result <- .getMatchIndexOffTarget(x, target, max.mismatch = 3)
-    expect_equal(result, 1:4)
-    target <- c(
-        "YYYYY", ## Wobble bases should return mismatch
-        "-AAAA" ## Gaps should return mismatch
-    )
-    target <- Biostrings::DNAStringSet(target)
-    result <- .getMatchIndexOffTarget(x, target, max.mismatch = 1)
-    expect_equal(result, 2)
-    result <- .getMatchIndexOffTarget(x, target, max.mismatch = 0)
-    expect_equal(result, integer(0L))
-})
-
 # .getMatchProportion ==========================================================
 
 test_that(".getMatchProportion works", {
@@ -101,29 +73,8 @@ test_that(".getMatchProportion works", {
     expect_true(is.data.frame(result))
 })
 
-# .getMatchProportionOffTarget =================================================
-
-test_that(".getMatchProportionOffTarget works", {
-    x <- Biostrings::DNAStringSet("AAAAA")
-    target <- c(
-        "A" = "AAAAA",
-        "B" = "AAAAT",
-        "C" = "AAATT",
-        "D" = "AATTT",
-        "E" = "ATTTT",
-        "F" = "TTTTT"
-    )
-    target <- Biostrings::DNAStringSet(target)
-    result <- .getMatchProportionOffTarget(x, target)
-    expect_equal(result$offTargetMatch, 5 / length(target))
-    expect_equal(
-        result$idOffTargetMatch, list(c("A", "B", "C", "D", "E"))
-    )
-})
-
 # .checkMatchOligo =============================================================
 
-# ontarget and offtarget are right
 test_that(".checkMatchOligo works", {
     x <- as.data.frame(exampleRprimerOligo[1, ])
 

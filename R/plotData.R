@@ -502,7 +502,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
             "label",
             x = start, y = 0.8,
             label = paste(
-                "Assays n =", nrow(x)
+                "Assays n =", nrow(x[!is.na(x$length), ])
             ), size = 3, hjust = 0, fontface = 2,
             color = "#424B54", fill = "white", label.size = NA
         ) +
@@ -739,10 +739,8 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
     })
     names(x)[3] <- "mismatches"
     levels(x$mismatches) <- c(
-        "0 mismatches", "1 mismatch",
-        paste0(seq(2, length(levels(x$mismatches)) - 3), " mismatches"),
-        paste0(length(levels(x$mismatches)) - 2, " or more mismatches"),
-        "Off target matches"
+        "0 mismatches", "1 mismatch", "2 mismatches", "3 mismatches",
+        "4 or more mismatches"
     )
     if (type == "oligo") {
         yLabels <- x$iupacSequence
@@ -752,18 +750,10 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
             " (length: ", nchar(x$iupacSequence), ")"
         )
     }
-    onTarget <- x[x$mismatches != "Off target matches", ]
-    offTarget <- x[x$mismatches == "Off target matches", ]
     ggplot2::ggplot(data = x, ggplot2::aes(x = id)) +
         ggplot2::geom_bar(
-            data = onTarget,
             ggplot2::aes(x = id, y = value, fill = mismatches),
             stat = "identity", position = "stack"
-        ) +
-        ggplot2::geom_bar(
-            data = offTarget,
-            ggplot2::aes(x = id, y = value, fill = mismatches),
-            stat = "identity", position = "stack", width = 0.1
         ) +
         ggplot2::ylab("Proportion") +
         ggplot2::xlab("") +
@@ -775,7 +765,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
         ggplot2::scale_fill_manual(
             values = c(
                 "#BDC9CC", "#B4B1B4", "#AC999C",
-                "#A38183", "#9B6A6C", "#424B54"
+                "#A38183", "#9B6A6C" #, "#424B54"
             )
         ) +
         .themeRprimer(showLegend = showLegend)

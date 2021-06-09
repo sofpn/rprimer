@@ -19,13 +19,14 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+#
+devtools::load_all(".")
 library(rprimer)
 ```
 
 # Introduction
 
-rprimer provides tools for analyzing sequence conservation and designing degenerate DNA oligos (primers and probes) from a multiple DNA sequence alignment. The package is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability.  
+rprimer provides tools for analyzing sequence conservation and designing degenerate  oligos (primers and probes) from a multiple DNA sequence alignment. The package is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability.  
 
 In this vignette, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for PCR based amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen. 
 
@@ -50,7 +51,9 @@ The package contains five functions, which are interconnected in a workflow:
 
 # Shiny application
 
-The package can be run through a Shiny application. It is loaded by typing `runRprimerApp()` in the R console. 
+The workflow can be run through a Shiny app. It is loaded by:
+
+* `runRprimerApp()`
 
 # Workflow
 
@@ -321,7 +324,7 @@ The final step is to find pairs of forward and reverse primers, and eventually, 
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `length`: amplicon length range, defaults to `c(65, 120)`
-* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta, see  [@santalucia2007physical] for how to calculate the proportion of hybridized primer at different temperatures.
+* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta, see  [@santalucia2007physical] for how to calculate the proportion of hybridized primer at different temperatures.]
 
 An error message will return if no assays are found.
 
@@ -340,7 +343,7 @@ myAssays[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The output contains many columns, but can be viewed as a whole by using `View(as.data.frame(myAssays))`, if you are working in RStudio. 
+The output contains many columns, but can be viewed as a whole by using `View(as.data.frame(myAssays))` if you are working in RStudio. 
 
 Again, the results can be visualized using `plotData()`: 
 
@@ -412,7 +415,7 @@ It is often valuable to investigate how well the generated oligos or assays matc
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
 
-The output gives information on both the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo within the intended oligo binding region (i.e., on target match). It also reports the proportion of target sequences that matches to the oligo with no more than four mismatches within *all other regions* in the alignment (i.e., off target match). However, note that the output does not say anything about the type, position or severity of the mismatches.
+The output gives information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo *within the intended oligo binding region*. However, note that the output does not say anything about the type or severity of the mismatches.
 
 Below, I show how to use `checkMatch()` for both oligos and assays. The function is rather slow, especially if there are many target sequences, so a good idea could be to select only a few oligo or assay candidates to investigate. 
 
@@ -443,8 +446,6 @@ The output can be visualized using `plotData()`:
 ```{r, fig.width=12, fig.height=8}
 plotData(oligoSelectionMatch)
 ```
-
-Recall that off target match refers to the proportion of target sequences that matches with no more than four mismatches to all other regions than the intended oligo binding region. 
 
 **Assays** 
 
@@ -495,7 +496,7 @@ assaySelection %>%
 
 ## Export to file
 
-Before proceeding to wet lab evaluation, it is recommended to evaluate the final primer and probe candidates for 1) the potential to form primer dimers and hairpin structures, and 2), the potential to (not) cross react with non-targets. 
+Before proceeding to wet lab evaluation, it is highly recommended to evaluate the final primer and probe candidates for 1) the potential to form primer dimers and hairpin structures, and 2), the potential to (not) cross react with non-targets. 
 
 These tasks are best performed by other software. Below, I show how to export the results to file so that they can be readily analyzed by other tools.  
 
@@ -536,6 +537,8 @@ Biostrings::writeXStringSet(toFile, file = "myOligos.txt")
 
 The design process is summarized below. 
 
+Using the R console: 
+
 ```r
 library(rprimer)
 
@@ -559,6 +562,14 @@ plotData(myAssays)
 View(as.data.frame(myConsensusProfile))
 View(as.data.frame(myOligos))
 View(as.data.frame(myAssays))
+```
+
+Using the app: 
+
+```r
+library(rprimer)
+
+runRprimerApp()
 ```
 
 # Classes and example data

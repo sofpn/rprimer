@@ -1,22 +1,13 @@
-#' Coerce an RprimerOligo object to a DNAStringset object
+#' Coerce an RprimerOligo or RprimerAssay object to a DNAStringset object
 #'
 #' @details
 #' All sequences will be written in 5' to 3' direction.
-#'
-#' @describeIn RprimerOligo-class
 #'
 #' @export
 #'
 #' @import methods
 setAs("RprimerOligo", "DNAStringSet", function(from) .toDNAStringSetOligo(from))
 
-#' Coerce an RprimerAssay object to a DNAStringset object
-#'
-#' @details
-#' All sequences will be written in 5' to 3' direction.
-#'
-#' @describeIn RprimerAssay-class
-#'
 #' @export
 #'
 #' @import methods
