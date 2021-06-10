@@ -156,7 +156,7 @@ probeSelectionTable <- conditionalPanel(
     condition = "input.probe == true",
     br(),
     h4("Probe"),
-    dataTableOutput("table9")
+    DT::dataTableOutput("table9")
 )
 
 probeSelectionPlot <- conditionalPanel(
@@ -542,7 +542,7 @@ server <- function(input, output) {
                             ),
                             br(),
                             br(),
-                            dataTableOutput("table1")
+                            DT::dataTableOutput("table1")
                    )
             )
         )
@@ -768,7 +768,7 @@ server <- function(input, output) {
                             ),
                             br(),
                             br(),
-                            dataTableOutput("table2")
+                            DT::dataTableOutput("table2")
                    )
             )
         )
@@ -787,7 +787,7 @@ server <- function(input, output) {
                 ),
                 br(),
                 br(),
-                dataTableOutput("table3")
+                DT::dataTableOutput("table3")
             ),
             box(width = 12, title = "All sequence variants",
                 solidHeader = TRUE,
@@ -796,7 +796,7 @@ server <- function(input, output) {
                 ),
                 br(),
                 br(),
-                dataTableOutput("table4")
+                DT::dataTableOutput("table4")
             ),
             box(width = 12,
                 title = "Nucleotide distribution in target alignment",
@@ -921,7 +921,7 @@ server <- function(input, output) {
                             ),
                             br(),
                             br(),
-                            dataTableOutput("table5")
+                            DT::dataTableOutput("table5")
                    )))
     })
 
@@ -938,7 +938,7 @@ server <- function(input, output) {
                 ),
                 br(),
                 br(),
-                dataTableOutput("table6")
+                DT::dataTableOutput("table6")
             ),
             box(width = 12, title = "All sequence variants",
                 solidHeader = TRUE,
@@ -948,10 +948,10 @@ server <- function(input, output) {
                 br(),
                 br(),
                 h4("Forward"),
-                dataTableOutput("table7"),
+                DT::dataTableOutput("table7"),
                 br(),
                 h4("Reverse"),
-                dataTableOutput("table8"),
+                DT::dataTableOutput("table8"),
                 probeSelectionTable
             ),
             box(width = 12,
