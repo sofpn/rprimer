@@ -1315,7 +1315,7 @@ server <- function(input, output) {
 
     #### Tables ####
 
-    output$table1 <- renderDataTable({
+    output$table1 <- DT::renderDataTable({
         x <- roundDbls(as.data.frame(consensusSelection()))
         names(x) <- c(
             "Position", "A", "C", "G", "T", "Other", "Gaps", "Majority",
@@ -1330,7 +1330,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table2 <- renderDataTable({
+    output$table2 <- DT::renderDataTable({
         if (is.na(oligoSelection()$length[[1]])) {
             NULL
         } else {
@@ -1353,7 +1353,7 @@ server <- function(input, output) {
     selection = list(mode = "single")
     )
 
-    output$table3 <- renderDataTable({
+    output$table3 <- DT::renderDataTable({
         if (is.na(selectedOligo()$length[[1]])) {
             NULL
         } else {
@@ -1376,7 +1376,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table4 <- renderDataTable({
+    output$table4 <- DT::renderDataTable({
         if (is.na(selectedOligo()$length[[1]])) {
             NULL
         } else {
@@ -1394,7 +1394,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table5 <- renderDataTable({
+    output$table5 <- DT::renderDataTable({
         if (is.na(assaySelection()$length[[1]])) {
             NULL
         } else {
@@ -1457,7 +1457,7 @@ server <- function(input, output) {
     selection = list(mode = "single")
     )
 
-    output$table6 <- renderDataTable({
+    output$table6 <- DT::renderDataTable({
         if (is.na(selectedAssay()$length[[1]])) {
             NULL
         } else {
@@ -1519,7 +1519,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table7 <- renderDataTable({
+    output$table7 <- DT::renderDataTable({
         x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[1]])))
         names(x) <- c(
             "Sequence", "GC content", "Tm", "Delta G"
@@ -1533,7 +1533,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table8 <- renderDataTable({
+    output$table8 <- DT::renderDataTable({
         x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[2]])))
         names(x) <- c(
             "Sequence", "GC content", "Tm", "Delta G"
@@ -1547,7 +1547,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table9 <- renderDataTable({
+    output$table9 <- DT::renderDataTable({
         req(length(selectedAssayList()) == 3)
         x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[3]])))
         names(x) <- c(
