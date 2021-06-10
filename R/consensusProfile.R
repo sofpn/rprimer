@@ -72,7 +72,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     }
     if (!(ambiguityThreshold >= 0 && ambiguityThreshold <= 0.2)) {
         stop(
-            paste0("'ambiguityThreshold' must be a number from 0 to 0.2."),
+            "'ambiguityThreshold' must be a number from 0 to 0.2.",
             call. = FALSE
         )
     }

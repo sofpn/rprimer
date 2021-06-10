@@ -166,7 +166,6 @@ x <- exampleRprimerOligo[1:2, ]
 target <- exampleRprimerAlignment
 
 checkMatch(x, target)
-
 #### RprimerAssay objects
 
 data("exampleRprimerAssay")
@@ -176,7 +175,6 @@ x <- exampleRprimerAssay[1:2, ]
 target <- exampleRprimerAlignment
 
 checkMatch(x, target)
-
 }
 \references{
 Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:

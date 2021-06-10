@@ -156,7 +156,7 @@ probeSelectionTable <- conditionalPanel(
     condition = "input.probe == true",
     br(),
     h4("Probe"),
-    DT::dataTableOutput("table9")
+    dataTableOutput("table9")
 )
 
 probeSelectionPlot <- conditionalPanel(
@@ -542,7 +542,7 @@ server <- function(input, output) {
                             ),
                             br(),
                             br(),
-                            DT::dataTableOutput("table1")
+                            dataTableOutput("table1")
                    )
             )
         )
@@ -768,7 +768,7 @@ server <- function(input, output) {
                             ),
                             br(),
                             br(),
-                            DT::dataTableOutput("table2")
+                            dataTableOutput("table2")
                    )
             )
         )
@@ -787,7 +787,7 @@ server <- function(input, output) {
                 ),
                 br(),
                 br(),
-                DT::dataTableOutput("table3")
+                dataTableOutput("table3")
             ),
             box(width = 12, title = "All sequence variants",
                 solidHeader = TRUE,
@@ -796,7 +796,7 @@ server <- function(input, output) {
                 ),
                 br(),
                 br(),
-                DT::dataTableOutput("table4")
+                dataTableOutput("table4")
             ),
             box(width = 12,
                 title = "Nucleotide distribution in target alignment",
@@ -921,7 +921,7 @@ server <- function(input, output) {
                             ),
                             br(),
                             br(),
-                            DT::dataTableOutput("table5")
+                            dataTableOutput("table5")
                    )))
     })
 
@@ -938,7 +938,7 @@ server <- function(input, output) {
                 ),
                 br(),
                 br(),
-                DT::dataTableOutput("table6")
+                dataTableOutput("table6")
             ),
             box(width = 12, title = "All sequence variants",
                 solidHeader = TRUE,
@@ -948,10 +948,10 @@ server <- function(input, output) {
                 br(),
                 br(),
                 h4("Forward"),
-                DT::dataTableOutput("table7"),
+                dataTableOutput("table7"),
                 br(),
                 h4("Reverse"),
-                DT::dataTableOutput("table8"),
+                dataTableOutput("table8"),
                 probeSelectionTable
             ),
             box(width = 12,
@@ -1315,7 +1315,7 @@ server <- function(input, output) {
 
     #### Tables ####
 
-    output$table1 <- DT::renderDataTable({
+    output$table1 <- renderDataTable({
         x <- roundDbls(as.data.frame(consensusSelection()))
         names(x) <- c(
             "Position", "A", "C", "G", "T", "Other", "Gaps", "Majority",
@@ -1330,7 +1330,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table2 <- DT::renderDataTable({
+    output$table2 <- renderDataTable({
         if (is.na(oligoSelection()$length[[1]])) {
             NULL
         } else {
@@ -1353,7 +1353,7 @@ server <- function(input, output) {
     selection = list(mode = "single")
     )
 
-    output$table3 <- DT::renderDataTable({
+    output$table3 <- renderDataTable({
         if (is.na(selectedOligo()$length[[1]])) {
             NULL
         } else {
@@ -1376,7 +1376,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table4 <- DT::renderDataTable({
+    output$table4 <- renderDataTable({
         if (is.na(selectedOligo()$length[[1]])) {
             NULL
         } else {
@@ -1394,7 +1394,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table5 <- DT::renderDataTable({
+    output$table5 <- renderDataTable({
         if (is.na(assaySelection()$length[[1]])) {
             NULL
         } else {
@@ -1457,7 +1457,7 @@ server <- function(input, output) {
     selection = list(mode = "single")
     )
 
-    output$table6 <- DT::renderDataTable({
+    output$table6 <- renderDataTable({
         if (is.na(selectedAssay()$length[[1]])) {
             NULL
         } else {
@@ -1519,7 +1519,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table7 <- DT::renderDataTable({
+    output$table7 <- renderDataTable({
         x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[1]])))
         names(x) <- c(
             "Sequence", "GC content", "Tm", "Delta G"
@@ -1533,7 +1533,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table8 <- DT::renderDataTable({
+    output$table8 <- renderDataTable({
         x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[2]])))
         names(x) <- c(
             "Sequence", "GC content", "Tm", "Delta G"
@@ -1547,7 +1547,7 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
-    output$table9 <- DT::renderDataTable({
+    output$table9 <- renderDataTable({
         req(length(selectedAssayList()) == 3)
         x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[3]])))
         names(x) <- c(

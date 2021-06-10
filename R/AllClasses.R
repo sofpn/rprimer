@@ -371,3 +371,84 @@ S4Vectors::setValidity2("RprimerMatchAssay", function(object) {
         msg
     }
 })
+
+# Coerce =======================================================================
+
+#' Coerce an RprimerOligo or RprimerAssay object to a DNAStringSet object
+#'
+#' \code{as} can be used for converting oligo sequences within an
+#' RprimerOligo or RprimerAssay object into a DNAStringSet object
+#' (Pages et al., 2020).
+#'
+#' @name coerce
+#'
+#' @aliases coerce, RprimerOligo, RprimerAssay
+#'
+#' @export
+#'
+#' @import methods
+#'
+#' @importClassesFrom Biostrings DNAStringSet
+#'
+#' @references
+#' Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
+#' Efficient manipulation of biological strings. R package version
+#' 2.57.2.
+#'
+#' @examples
+#' ## Convert an RprimerOligo object to a DNAStringSet
+#' data("exampleRPrimerOligo")
+#'
+#' ## Pick rows to convert
+#' x <- exampleRprimerOligo[1:2, ]
+#' as(x, DNAStringSet)
+#'
+#' ## Convert an RprimerAssay object to a DNAStringSet
+#' data("exampleRPrimerAssay")
+#'
+#' ## Pick rows to convert
+#' x <- exampleRprimerAssay[1:2, ]
+#' as(x, DNAStringSet)
+setAs("RprimerOligo", "DNAStringSet", function(from) .toDNAStringSetOligo(from))
+
+#'  @describeIn coerce
+#'
+#'  @export
+#'
+#' @import methods
+setAs("RprimerAssay", "DNAStringSet", function(from) .toDNAStringSetAssay(from))
+
+# Helpers ======================================================================
+
+.addNames <- function(x, type, additionalInfo = "") {
+    unlist(lapply(seq_along(x), function(i) {
+        names(x[[i]]) <- paste0(
+            type, "_", i, additionalInfo, "_variant_", seq_along(x[[i]])
+        )
+        x[[i]]
+    }))
+}
+
+.toDNAStringSetOligo <- function(x) {
+    oligo <- x$sequence
+    oligo <- .addNames(oligo, "oligo")
+    Biostrings::DNAStringSet(oligo)
+}
+
+.toDNAStringSetAssay <- function(x) {
+    fwd <- x$sequenceFwd
+    fwd <- .addNames(fwd, "assay", "_fwd")
+    fwd <- Biostrings::DNAStringSet(fwd)
+    rev <- x$sequenceRev
+    rev <- .addNames(rev, "assay", "_rev")
+    rev <- Biostrings::DNAStringSet(rev)
+    rev <- Biostrings::reverseComplement(rev)
+    if ("sequencePr" %in% names(x)) {
+        pr <- x$sequencePr
+        pr <- .addNames(pr, "assay", "_pr")
+        pr <- Biostrings::DNAStringSet(pr)
+    } else {
+        pr <- NULL
+    }
+    c(fwd, rev, pr)
+}

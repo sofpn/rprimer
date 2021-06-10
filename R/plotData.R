@@ -64,7 +64,6 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 #'
 #' ## Plot the nucleotide distribution of the roi, as reverse complement
 #' plotData(roi, type = "nucleotide", rc = TRUE)
-#'
 setMethod("plotData", "RprimerProfile", function(x,
                                                  type = "overview",
                                                  highlight = NULL,
@@ -112,7 +111,6 @@ setMethod("plotData", "RprimerProfile", function(x,
 #' ## Select a subset of the oligos, and plot
 #' selected <- oligos[oligos$start >= 5000, ]
 #' plotData(selected)
-#'
 setMethod("plotData", "RprimerOligo", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -135,7 +133,6 @@ setMethod("plotData", "RprimerOligo", function(x) {
 #'
 #' data("exampleRprimerAssay")
 #' plotData(exampleRprimerAssay)
-#'
 setMethod("plotData", "RprimerAssay", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -156,7 +153,6 @@ setMethod("plotData", "RprimerAssay", function(x) {
 #'
 #' data("exampleRprimerMatchOligo")
 #' plotData(exampleRprimerMatchOligo)
-#'
 setMethod("plotData", "RprimerMatchOligo", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -174,7 +170,6 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
 #'
 #' data("exampleRprimerMatchAssay")
 #' plotData(exampleRprimerMatchAssay)
-#'
 setMethod("plotData", "RprimerMatchAssay", function(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
@@ -765,7 +760,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
         ggplot2::scale_fill_manual(
             values = c(
                 "#BDC9CC", "#B4B1B4", "#AC999C",
-                "#A38183", "#9B6A6C" #, "#424B54"
+                "#A38183", "#9B6A6C" # , "#424B54"
             )
         ) +
         .themeRprimer(showLegend = showLegend)

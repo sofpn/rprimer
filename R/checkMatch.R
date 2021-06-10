@@ -160,7 +160,6 @@ setGeneric("checkMatch", function(x, target) standardGeneric("checkMatch"))
 #' target <- exampleRprimerAlignment
 #'
 #' checkMatch(x, target)
-#'
 setMethod("checkMatch", "RprimerOligo", function(x, target) {
     if (!methods::is(target, "DNAMultipleAlignment")) {
         stop("'target' must be a DNAMultipleAlignment object.", call. = FALSE)
@@ -185,7 +184,6 @@ setMethod("checkMatch", "RprimerOligo", function(x, target) {
 #' target <- exampleRprimerAlignment
 #'
 #' checkMatch(x, target)
-#'
 setMethod("checkMatch", "RprimerAssay", function(x, target) {
     if (!methods::is(target, "DNAMultipleAlignment")) {
         stop("'target' must be a DNAMultipleAlignment object.", call. = FALSE)

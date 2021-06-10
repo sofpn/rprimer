@@ -2,16 +2,21 @@
 % Please edit documentation in R/runRprimerApp.R
 \name{runRprimerApp}
 \alias{runRprimerApp}
-\title{Run the rprimer package as a shiny application}
+\title{rprimer Shiny application}
 \usage{
 runRprimerApp()
 }
 \value{
-A Shiny web application
+Opens the Shiny application.
 }
 \description{
-Run the rprimer package as a shiny application
+\code{runRprimerApp()} starts a Shiny application where
+the workflow of the rprimer package can be run through a
+graphical user interface.
 }
 \examples{
-\donttest{runRprimerApp()}
+## Only run the application in interactive R sessions:
+if (interactive()) {
+    runRprimerApp()
+}
 }

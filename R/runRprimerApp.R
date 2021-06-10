@@ -1,12 +1,21 @@
-#' Run the rprimer package as a shiny application
+#' rprimer Shiny application
+#'
+#' \code{runRprimerApp()} starts a Shiny application where
+#' the workflow of the rprimer package can be run through a
+#' graphical user interface.
 #'
 #' @return
-#' A Shiny web application
+#' Opens the Shiny application.
+#'
+#' @import shiny shinydashboard shinycssloaders
 #'
 #' @export
 #'
 #' @examples
-#' \donttest{runRprimerApp()}
+#' ## Only run the application in interactive R sessions:
+#' if (interactive()) {
+#'     runRprimerApp()
+#' }
 runRprimerApp <- function() {
     appDir <- system.file("shiny-app", "app.R", package = "rprimer")
     if (appDir == "") {

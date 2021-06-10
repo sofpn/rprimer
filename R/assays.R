@@ -216,7 +216,8 @@ assays <- function(x,
     totalDegeneracy <- assays$degeneracyFwd + assays$degeneracyRev
     score <- assays$scoreFwd + assays$scoreRev
     assays <- cbind(
-        start, end, "length" = ampLength, totalDegeneracy, score,
+        start, end,
+        "length" = ampLength, totalDegeneracy, score,
         assays
     )
     assays <- assays[assays$length >= min(length), , drop = FALSE]
