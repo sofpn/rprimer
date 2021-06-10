@@ -1,7 +1,6 @@
 library(shiny)
 library(shinydashboard)
-#library(rprimer)
-
+library(rprimer)
 
 data("exampleRprimerAlignment")
 
@@ -222,7 +221,7 @@ ui <- dashboardPage(
                         box(
                             title = ("Design degenerate oligos from a multiple DNA sequence alignment"),
                             h5(
-                                "This application is under development."
+                                "This application is under development"
                                 ),
                             br(),
                             h5(tags$b("Introduction")),

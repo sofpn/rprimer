@@ -2,7 +2,7 @@
 title: "rprimer"
 author: "Sofia"
 package: rprimer
-output: BiocStyle::pdf_document
+output: BiocStyle::html_document
 bibliography: bibliography.bibtex
 vignette: >
   %\VignetteIndexEntry{Getting started}
@@ -26,7 +26,7 @@ library(rprimer)
 
 # Introduction
 
-rprimer provides tools for analyzing sequence conservation and designing degenerate  oligos (primers and probes) from a multiple DNA sequence alignment. The package is developed primarily for sequence variable viruses, but it should also be useful for other targets with high sequence variability.  
+rprimer provides tools for analyzing sequence conservation and designing degenerate oligos (primers and probes) from a multiple DNA sequence alignment. The package is developed primarily for sequence variable viruses, but it should also be useful for other targets with high sequence variability.  
 
 In this vignette, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for PCR based amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen. 
 
@@ -51,7 +51,7 @@ The package contains five functions, which are interconnected in a workflow:
 
 # Shiny application
 
-The workflow can be run through a Shiny app. It is loaded by:
+The workflow described in this vignette can also be run through a Shiny app. It is loaded by:
 
 * `runRprimerApp()`
 
@@ -195,7 +195,7 @@ The design settings (i.e., the arguments of `oligos()`) are:
 
 All sequence variants of an oligo must fulfill all specified design constraints to be considered as a potential candidate. 
 
-Oligos with at least one sequence variant containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") will be excluded from consideration.
+Oligos with at least one sequence variant containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
 
 An error message will return if no oligos are found. If so, a good idea could be to re-run the process from [Step 1](#Step1) and increase the `ambiguityThreshold` in `consensusProfile()`, and/or relax the design constraints above. 
 
@@ -214,7 +214,7 @@ myOligos[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-The manual (`?oligos`) contains a detailed description of each variable, but what may not be entirely self-explanatory is that some variables (e.g. `sequence` `gcContent` and `tm`) can hold several values in each entry. All values within a specific row can be retrieved by:   
+The manual (`?oligos`) contains a detailed description of each variable, but what may not be fully self-explanatory is that some variables (e.g. `sequence` `gcContent` and `tm`) can hold several values in each entry. All values within a specific row can be retrieved by:   
 
 ```{r}
 myOligos$sequence[[1]] ## All sequence variants of the first oligo (i.e., first row) 
@@ -415,7 +415,7 @@ It is often valuable to investigate how well the generated oligos or assays matc
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
 
-The output gives information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo *within the intended oligo binding region*. However, note that the output does not say anything about the type or severity of the mismatches.
+The output gives information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo within the intended oligo binding region. However, note that the output does not say anything about the type or severity of the mismatches.
 
 Below, I show how to use `checkMatch()` for both oligos and assays. The function is rather slow, especially if there are many target sequences, so a good idea could be to select only a few oligo or assay candidates to investigate. 
 
@@ -574,7 +574,7 @@ runRprimerApp()
 
 # Classes and example data
 
-The "rprimer" classes (`RprimerProfile`, `RprimerOligo`, `RprimerAssay`, `RprimerMatchOligo` and `RprimerMatchAssay`) extends the `DataFrame` class from S4Vectors [@PagesS4], and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow()`, `ncol()`, `head()`, `tail()`, `rbind()`, `cbind()` etc. They can be coerced to traditional data frames by using `as.data.frame()``. 
+The "rprimer" classes (`RprimerProfile`, `RprimerOligo`, `RprimerAssay`, `RprimerMatchOligo` and `RprimerMatchAssay`) extends the `DataFrame` class from S4Vectors [@PagesS4], and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow()`, `ncol()`, `head()`, `tail()`, `rbind()`, `cbind()` etc. They can be coerced to traditional data frames by using `as.data.frame()`. 
 
 Example datasets of each class are provided with the package, and are loaded by: 
 
