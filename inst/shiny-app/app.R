@@ -640,7 +640,6 @@ server <- function(input, output) {
     output$oligoFilter <- renderUI({
         req(oligoCandidates())
         box(width = 12, title = "Filter",
-            collapsible = TRUE, collapsed = TRUE,
             column(width = 12,
                    column(width = 2,
                           numericInput("fwdRegionFrom", h5("Fwd, from"),
@@ -677,34 +676,34 @@ server <- function(input, output) {
                    column(width = 2,
                           sliderInput("minOligoIdentity",
                                       h5("Minimum identity"),
-                                      min = 0, #round(min(
-                                          #oligoCandidates()$identity, na.rm = TRUE
-                                      #) - 0.05, 2),
+                                      min = round(min(
+                                          oligoCandidates()$identity, na.rm = TRUE
+                                      ) - 0.05, 2),
                                       max = 1,
-                                      value = 0, #min(
-                                          #oligoCandidates()$identity, na.rm = TRUE
-                                      #) - 0.05,
+                                      value = min(
+                                          oligoCandidates()$identity, na.rm = TRUE
+                                      ) - 0.05,
                                       width = 200)
                    ),
                    column(width = 2,
                           sliderInput("minOligoCoverage",
                                       h5("Minimum coverage"),
-                                      min = 0, #round(min(
-                                          #oligoCandidates()$coverage, na.rm = TRUE
-                                      #) - 0.05, 2),
+                                      min = round(min(
+                                          oligoCandidates()$coverage, na.rm = TRUE
+                                      ) - 0.05, 2),
                                       max = 1,
-                                      value = 0, #min(
-                                          #oligoCandidates()$coverage, na.rm = TRUE
-                                      #) - 0.05,
+                                      value = 0, min(
+                                          oligoCandidates()$coverage, na.rm = TRUE
+                                      ) - 0.05,
                                       width = 200)
 
                    ),
                    column(width = 2,
                           sliderInput("maxOligoScore",
                                       h5("Maximum score (lower is better)"),
-                                      min = 0, #min(oligoCandidates()$score, na.rm = TRUE),
-                                      max = 12, #max(oligoCandidates()$score, na.rm = TRUE),
-                                      value = 0, # max(oligoCandidates()$score, na.rm = TRUE),
+                                      min = min(oligoCandidates()$score, na.rm = TRUE),
+                                      max = max(oligoCandidates()$score, na.rm = TRUE),
+                                      value = max(oligoCandidates()$score, na.rm = TRUE),
                                       width = 200)
 
                    )
@@ -744,7 +743,6 @@ server <- function(input, output) {
     output$oligoOutput <- renderUI({
         req(oligoCandidates())
         box(width = 12, title = "All oligos",
-            collapsible = TRUE,
             tabBox(title = "", width = 12,
                    tabPanel(title = "Plot",
                             br(),
@@ -779,7 +777,6 @@ server <- function(input, output) {
     output$oligoSelection <- renderUI({
         req(selectedOligo())
         box(width = 12, title = "Selection",
-            collapsible = TRUE, collapsed = FALSE,
             box(width = 12, title = "Table",
                 solidHeader = TRUE,
                 downloadLink(
@@ -861,7 +858,6 @@ server <- function(input, output) {
     output$assayFilter <- renderUI({
         req(assayCandidates())
         box(width = 12, title = "Filter",
-            collapsible = TRUE, collapsed = TRUE,
             column(width = 12,
                    column(width = 2,
                           numericInput("assayRegionFrom", h5("From"),
@@ -882,9 +878,9 @@ server <- function(input, output) {
                    column(width = 2,
                           sliderInput("maxAssayScore",
                                       h5("Maximum score (lower is better)"),
-                                      min = 0, # min(assayCandidates()$score, na.rm = TRUE),
-                                      max = 36, #max(assayCandidates()$score, na.rm = TRUE),
-                                      value = 36, #max(assayCandidates()$score, na.rm = TRUE),
+                                      min = min(assayCandidates()$score, na.rm = TRUE),
+                                      max = max(assayCandidates()$score, na.rm = TRUE),
+                                      value = max(assayCandidates()$score, na.rm = TRUE),
                                       width = 200)
                    )
 
@@ -897,7 +893,6 @@ server <- function(input, output) {
     output$assayOutput <- renderUI({
         req(assayCandidates())
         box(width = 12, title = "All assays",
-            collapsible = TRUE,
             tabBox(title = "", width = 12,
                    tabPanel(title = "Plot",
                             br(),
@@ -930,7 +925,6 @@ server <- function(input, output) {
     output$assaySelection <- renderUI({
         req(selectedAssay())
         box(width = 12, title = "Selection",
-            collapsible = TRUE, collapsed = FALSE,
             box(width = 12, title = "Table",
                 solidHeader = TRUE,
                 downloadLink(
