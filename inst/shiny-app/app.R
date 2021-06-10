@@ -677,34 +677,34 @@ server <- function(input, output) {
                    column(width = 2,
                           sliderInput("minOligoIdentity",
                                       h5("Minimum identity"),
-                                      min = round(min(
-                                          oligoCandidates()$identity, na.rm = TRUE
-                                      ) - 0.05, 2),
+                                      min = 0, #round(min(
+                                          #oligoCandidates()$identity, na.rm = TRUE
+                                      #) - 0.05, 2),
                                       max = 1,
-                                      value = min(
-                                          oligoCandidates()$identity, na.rm = TRUE
-                                      ) - 0.05,
+                                      value = 0, #min(
+                                          #oligoCandidates()$identity, na.rm = TRUE
+                                      #) - 0.05,
                                       width = 200)
                    ),
                    column(width = 2,
                           sliderInput("minOligoCoverage",
                                       h5("Minimum coverage"),
-                                      min = round(min(
-                                          oligoCandidates()$coverage, na.rm = TRUE
-                                      ) - 0.05, 2),
+                                      min = 0, #round(min(
+                                          #oligoCandidates()$coverage, na.rm = TRUE
+                                      #) - 0.05, 2),
                                       max = 1,
-                                      value = min(
-                                          oligoCandidates()$coverage, na.rm = TRUE
-                                      ) - 0.05,
+                                      value = 0, #min(
+                                          #oligoCandidates()$coverage, na.rm = TRUE
+                                      #) - 0.05,
                                       width = 200)
 
                    ),
                    column(width = 2,
                           sliderInput("maxOligoScore",
                                       h5("Maximum score (lower is better)"),
-                                      min = min(oligoCandidates()$score, na.rm = TRUE),
-                                      max = max(oligoCandidates()$score, na.rm = TRUE),
-                                      value = max(oligoCandidates()$score, na.rm = TRUE),
+                                      min = 0, #min(oligoCandidates()$score, na.rm = TRUE),
+                                      max = 12, #max(oligoCandidates()$score, na.rm = TRUE),
+                                      value = 0, # max(oligoCandidates()$score, na.rm = TRUE),
                                       width = 200)
 
                    )
@@ -882,9 +882,9 @@ server <- function(input, output) {
                    column(width = 2,
                           sliderInput("maxAssayScore",
                                       h5("Maximum score (lower is better)"),
-                                      min = min(assayCandidates()$score, na.rm = TRUE),
-                                      max = max(assayCandidates()$score, na.rm = TRUE),
-                                      value = max(assayCandidates()$score, na.rm = TRUE),
+                                      min = 0, # min(assayCandidates()$score, na.rm = TRUE),
+                                      max = 36, #max(assayCandidates()$score, na.rm = TRUE),
+                                      value = 36, #max(assayCandidates()$score, na.rm = TRUE),
                                       width = 200)
                    )
 

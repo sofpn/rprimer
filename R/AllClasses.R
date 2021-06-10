@@ -73,6 +73,8 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 #'
 #' @name RprimerOligo-class
 #'
+#' @family RprimerOligo
+#'
 #' @description
 #' \code{RprimerOligo} extends the \code{S4Vectors::DataFrame} class,
 #' without any additional slots.
@@ -145,6 +147,8 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 #' An S4 class for representation of PCR assays
 #'
 #' @name RprimerAssay-class
+#'
+#' @family RprimerAssay
 #'
 #' @description
 #' \code{RprimerAssay} extends the \code{S4Vectors::DataFrame} class,
@@ -374,17 +378,17 @@ S4Vectors::setValidity2("RprimerMatchAssay", function(object) {
 
 # Coerce =======================================================================
 
-#' Coerce an RprimerOligo or RprimerAssay object to a DNAStringSet object
+#' Coerce an RprimerOligo object to a DNAStringSet object
 #'
 #' \code{as} can be used for converting oligo sequences within an
-#' RprimerOligo or RprimerAssay object into a DNAStringSet object
+#' RprimerOligo object into a DNAStringSet object
 #' (Pages et al., 2020).
 #'
 #' @name coerce
 #'
-#' @aliases coerce, RprimerOligo, RprimerAssay
+#' @family RprimerOligo
 #'
-#' @export
+#' @exportMethod coerce
 #'
 #' @import methods
 #'
@@ -397,25 +401,41 @@ S4Vectors::setValidity2("RprimerMatchAssay", function(object) {
 #'
 #' @examples
 #' ## Convert an RprimerOligo object to a DNAStringSet
-#' data("exampleRPrimerOligo")
+#' data("exampleRprimerOligo")
 #'
 #' ## Pick rows to convert
 #' x <- exampleRprimerOligo[1:2, ]
-#' as(x, DNAStringSet)
+#' as(x, "DNAStringSet")
+setAs("RprimerOligo", "DNAStringSet", function(from) .toDNAStringSetOligo(from))
+
+#' Coerce an RprimerAssay object to a DNAStringSet object
 #'
+#' \code{as} can be used for converting oligo sequences within an
+#' RprimerAssay object into a DNAStringSet object
+#' (Pages et al., 2020).
+#'
+#' @name coerce
+#'
+#' @family RprimerAssay
+#'
+#' @exportMethod coerce
+#'
+#' @import methods
+#'
+#' @importClassesFrom Biostrings DNAStringSet
+#'
+#' @references
+#' Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
+#' Efficient manipulation of biological strings. R package version
+#' 2.57.2.
+#'
+#' @examples
 #' ## Convert an RprimerAssay object to a DNAStringSet
-#' data("exampleRPrimerAssay")
+#' data("exampleRprimerAssay")
 #'
 #' ## Pick rows to convert
 #' x <- exampleRprimerAssay[1:2, ]
-#' as(x, DNAStringSet)
-setAs("RprimerOligo", "DNAStringSet", function(from) .toDNAStringSetOligo(from))
-
-#'  @describeIn coerce
-#'
-#'  @export
-#'
-#' @import methods
+#' as(x, "DNAStringSet")
 setAs("RprimerAssay", "DNAStringSet", function(from) .toDNAStringSetAssay(from))
 
 # Helpers ======================================================================

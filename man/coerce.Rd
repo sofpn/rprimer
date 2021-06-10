@@ -2,32 +2,45 @@
 % Please edit documentation in R/AllClasses.R
 \name{coerce}
 \alias{coerce}
-\alias{coerce,}
-\alias{RprimerOligo,}
-\alias{RprimerAssay}
-\title{Coerce an RprimerOligo or RprimerAssay object to a DNAStringSet object}
+\title{Coerce an RprimerOligo object to a DNAStringSet object}
 \description{
 \code{as} can be used for converting oligo sequences within an
-RprimerOligo or RprimerAssay object into a DNAStringSet object
+RprimerOligo object into a DNAStringSet object
+(Pages et al., 2020).
+
+\code{as} can be used for converting oligo sequences within an
+RprimerAssay object into a DNAStringSet object
 (Pages et al., 2020).
 }
 \examples{
 ## Convert an RprimerOligo object to a DNAStringSet
-data("exampleRPrimerOligo")
+data("exampleRprimerOligo")
 
 ## Pick rows to convert
 x <- exampleRprimerOligo[1:2, ]
-as(x, DNAStringSet)
-
+as(x, "DNAStringSet")
 ## Convert an RprimerAssay object to a DNAStringSet
-data("exampleRPrimerAssay")
+data("exampleRprimerAssay")
 
 ## Pick rows to convert
 x <- exampleRprimerAssay[1:2, ]
-as(x, DNAStringSet)
+as(x, "DNAStringSet")
 }
 \references{
 Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
 Efficient manipulation of biological strings. R package version
 2.57.2.
+
+Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
+Efficient manipulation of biological strings. R package version
+2.57.2.
 }
+\seealso{
+Other RprimerOligo: 
+\code{\link{RprimerOligo-class}}
+
+Other RprimerAssay: 
+\code{\link{RprimerAssay-class}}
+}
+\concept{RprimerAssay}
+\concept{RprimerOligo}
