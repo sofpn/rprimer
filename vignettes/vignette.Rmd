@@ -2,7 +2,7 @@
 title: "rprimer"
 author: "Sofia"
 package: rprimer
-output: BiocStyle::html_document
+output: BiocStyle::pdf_document
 bibliography: bibliography.bibtex
 vignette: >
   %\VignetteIndexEntry{Getting started}
@@ -19,13 +19,14 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#devtools::load_all(".")
+#
+devtools::load_all(".")
 library(rprimer)
 ```
 
 # Introduction
 
-rprimer provides tools for analyzing sequence conservation and designing degenerate  oligos (primers and probes) from a multiple DNA sequence alignment. The package is developed primarily for sequence variable viruses, but it should be equally useful for other organisms with high sequence variability.  
+rprimer provides tools for analyzing sequence conservation and designing degenerate  oligos (primers and probes) from a multiple DNA sequence alignment. The package is developed primarily for sequence variable viruses, but it should also be useful for other targets with high sequence variability.  
 
 In this vignette, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for PCR based amplification and detection of hepatitis E virus (HEV), which is a sequence variable RNA virus and a common foodborne pathogen. 
 

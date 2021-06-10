@@ -14,10 +14,10 @@ roundDbls <- function(x) {
     x <- as.data.frame(x)
     y <- lapply(seq_len(ncol(x)), function(i) {
         out <- if (is.double(x[, i])) {
-            round(x[, i], 2)
+            round(x[, i], 4)
         } else if (is.list(x[, i])) {
             if (is.double(x[, i][[1]])) {
-                list(round(x[, i][[1]], 2))
+                list(round(x[, i][[1]], 4))
             } else {
                 list(x[, i][[1]])
             }
@@ -221,13 +221,17 @@ ui <- dashboardPage(
                     box-shadow: none;}'))),
                         box(
                             title = ("Design degenerate oligos from a multiple DNA sequence alignment"),
+                            h5(
+                                "This application is under development."
+                                ),
+                            br(),
                             h5(tags$b("Introduction")),
                             h5(
-                                "rprimer provides tools for visualizing sequence
+                                "This application provides tools for visualizing sequence
                                 conservation and designing degenerate primers, probes and (RT)-(q/d)PCR
                                 assays from a multiple DNA sequence alignment. The workflow is
-                                developed primarily for sequence variable RNA viruses, but it should be
-                                equally useful for other organisms with high sequence variability"
+                                developed primarily for sequence variable RNA viruses, but it should also
+                                be useful for other targets with high sequence variability"
                             ),
                             br(),
                             h5(tags$b("Instructions for use")),
@@ -400,7 +404,6 @@ server <- function(input, output) {
             oligoSelection()[input$table2_rows_selected, ]
         } else {
             NULL
-            #oligoSelection()[1, ]
         }
     })
 
@@ -418,7 +421,7 @@ server <- function(input, output) {
         req(oligoCandidates())
         assays(oligoCandidates(),
                length = input$length,
-               tmDifferencePrimers = input$tmDifferencePrimers)
+               tmDifferencePrimers = as.numeric(input$tmDifferencePrimers))
     })
 
     assaySelection <- reactive({
@@ -673,7 +676,7 @@ server <- function(input, output) {
                    column(width = 2, uiOutput("prRegionTo"))
             ),
             column(width = 12,
-                   column(width = 2,
+                   column(width = 3,
                           sliderInput("minOligoIdentity",
                                       h5("Minimum identity"),
                                       min = round(min(
@@ -685,20 +688,20 @@ server <- function(input, output) {
                                       ) - 0.05,
                                       width = 200)
                    ),
-                   column(width = 2,
+                   column(width = 3,
                           sliderInput("minOligoCoverage",
                                       h5("Minimum coverage"),
                                       min = round(min(
                                           oligoCandidates()$coverage, na.rm = TRUE
                                       ) - 0.05, 2),
                                       max = 1,
-                                      value = 0, min(
+                                      value = min(
                                           oligoCandidates()$coverage, na.rm = TRUE
                                       ) - 0.05,
                                       width = 200)
 
                    ),
-                   column(width = 2,
+                   column(width = 3,
                           sliderInput("maxOligoScore",
                                       h5("Maximum score (lower is better)"),
                                       min = min(oligoCandidates()$score, na.rm = TRUE),
@@ -875,7 +878,7 @@ server <- function(input, output) {
                    )
             ),
             column(width = 12,
-                   column(width = 2,
+                   column(width = 3,
                           sliderInput("maxAssayScore",
                                       h5("Maximum score (lower is better)"),
                                       min = min(assayCandidates()$score, na.rm = TRUE),
@@ -1544,8 +1547,9 @@ server <- function(input, output) {
     output$table9 <- DT::renderDataTable({
         req(length(selectedAssayList()) == 3)
         x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[3]])))
+        #### Error here #####
         names(x) <- c(
-            "Sequence", "GC content", "Tm", "Delta G"
+            "Sequence, plus", "Sequence, minus", "GC content", "Tm", "Delta G"
         )
         x    }, options = list(
         info = FALSE,

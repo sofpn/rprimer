@@ -166,7 +166,9 @@ assays <- function(x,
         stop("'tmDifferencePrimers must be either 'NULL' or a number.")
     }
     x <- as.data.frame(x)
-    assays <- .combinePrimers(x[x$type == "primer", ], length)
+    assays <- .combinePrimers(x[x$type == "primer", ],
+                              length,
+                              tmDifferencePrimers)
     if (any(x$type == "probe")) {
         assays <- .addProbes(assays, x[x$type == "probe", ])
     }
