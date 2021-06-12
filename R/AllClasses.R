@@ -1,50 +1,115 @@
-# RprimerProfile ===============================================================
+# Rprimer classes =============================================================
 
-#' An S4 class for representation of a consensus profile
+#' S4 classes for representation of different Rprimer objects
 #'
-#' @name RprimerProfile-class
+#' @name Rprimer-class
 #'
 #' @description
-#' \code{RprimerProfile} extends the \code{S4Vectors::DataFrame} class,
-#' without any additional slots.
+#' The rprimer package contains five different S4 classes. Each class is used
+#' as input/output for the different functions in the oligo and assay design
+#' workflow:
 #'
-#' @export
+#'  \itemize{
+#'  \item \code{RprimerProfile} - output from \code{consensusProfile()},
+#'  input for \code{oligos()}
+#'  \item \code{RprimerOligo} - output from \code{oligos()}, input
+#'  for \code{assays()} and \code{checkMatch()}
+#'  \item \code{RprimerAssay} - output from \code{assays()}, input
+#'  for \code{checkMatch()}
+#'  \item \code{RprimerMatchOligo} - output from \code{checkMatch()}
+#'  \item \code{RprimerMatchAssay} - output from \code{checkMatch()}
+#' }
+#'
+#' These classes extends the \code{S4Vectors::DataFrame} class
+#' (Pages et al., 2020), without any additional slots.
+#'
+#' @section Coercion:
+#' Each class can be converted to a traditional data frame, by using either
+#' \code{as()} or \code{as.data.frame()}.
+#'
+#' Moreover, \code{as()} can also be used for converting oligo sequences
+#' within an
+#' \code{RprimerOligo} or \code{RprimerAssay} object into a
+#' \code{Biostrings::DNAStringSet}
+#' object (Pages et al., 2020).
+#' All sequences will be written in the
+#' same direction as the input alignment that was used to generate
+#' the oligos.
+#'
+#' @param ...
+#' A data frame or list to be converted into an Rprimer object.
+#'
+#' @return
+#' An Rprimer object if validation succeeds, an error
+#' message otherwise.
 #'
 #' @import methods
 #'
 #' @importClassesFrom S4Vectors DataFrame
-.RprimerProfile <- setClass("RprimerProfile", contains = "DataFrame")
-
-#' RprimerProfile
 #'
-#' The constructor, \code{RprimerProfile()},
-#' constructs an \code{RprimerProfile} object in a similar fashion as the
-#' \code{S4Vectors::DataFrame()} constructor.
+#' @importClassesFrom Biostrings DNAStringSet
 #'
-#' @param ...
-#' A data frame or list to be converted into an \code{RprimerProfile} object.
-#'
-#' @return
-#' An \code{RprimerProfile} object if validation succeeds, an error
-#' message otherwise.
-#'
-#' @describeIn RprimerProfile-class
-#'
-#' @export
-#'
-#' @importFrom S4Vectors DataFrame
+#' @seealso consensusProfile, oligos, assays, checkMatch
 #'
 #' @references
 #' Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
 #' Foundation of vector-like and list-like containers in
 #' Bioconductor. R package version 0.28.0.
 #'
+#' Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
+#' Efficient manipulation of biological strings. R package version
+#' 2.57.2.
+#'
 #' @examples
+#' ## Constructors
+#'
 #' data("exampleRprimerProfile")
 #' x <- as.data.frame(exampleRprimerProfile)
 #' RprimerProfile(x)
+#'
+#' data("exampleRprimerOligo")
+#' x <- as.data.frame(exampleRprimerOligo)
+#' RprimerOligo(x)
+#'
+#' data("exampleRprimerAssay")
+#' x <- as.data.frame(exampleRprimerAssay)
+#' RprimerAssay(x)
+#'
+#' data("exampleRprimerMatchOligo")
+#' x <- as.data.frame(exampleRprimerMatchOligo)
+#' RprimerMatchOligo(x)
+#'
+#' data("exampleRprimerMatchAssay")
+#' x <- as.data.frame(exampleRprimerMatchAssay)
+#' RprimerMatchAssay(x)
+#'
+#' ## Coercion methods for RprimerOligo and RprimerAssay objects
+#'
+#' ## Convert an RprimerOligo object to a DNAStringSet
+#' data("exampleRprimerOligo")
+#'
+#' ## Pick rows to convert
+#' x <- exampleRprimerOligo[1:2, ]
+#' as(x, "DNAStringSet")
+#'
+#' ## Convert an RprimerAssay object to a DNAStringSet
+#' data("exampleRprimerAssay")
+#'
+#' ## Pick rows to convert
+#' x <- exampleRprimerAssay[1:2, ]
+#' as(x, "DNAStringSet")
+NULL
+
+# RprimerProfile ===============================================================
+
+#' @rdname Rprimer-class
+.RprimerProfile <- setClass("RprimerProfile", contains = "DataFrame")
+
+#' @export
+#'
+#' @rdname Rprimer-class
 RprimerProfile <- function(...) {
-    df <- DataFrame(..., row.names = NULL, check.names = TRUE)
+    df <- S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerProfile(df)
 }
 
@@ -69,53 +134,14 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 
 # RprimerOligo ================================================================
 
-#' An S4 class for representation of oligos
-#'
-#' @name RprimerOligo-class
-#'
-#' @family RprimerOligo
-#'
-#' @description
-#' \code{RprimerOligo} extends the \code{S4Vectors::DataFrame} class,
-#' without any additional slots.
-#'
-#' @export
-#'
-#' @import methods
-#'
-#' @importClassesFrom S4Vectors DataFrame
+#' @rdname Rprimer-class
 .RprimerOligo <- setClass("RprimerOligo", contains = "DataFrame")
 
-#' RprimerOligo
-#'
-#' The constructor, \code{RprimerOligo()},
-#' constructs an \code{RprimerOligo} object in a similar fashion as the
-#' \code{S4Vectors::DataFrame()} constructor.
-#'
-#' @describeIn RprimerOligo-class
-#'
-#' @param ...
-#' A data frame or list to be converted into an \code{RprimerOligo} object.
-#'
-#' @return
-#' An \code{RprimerOligo} object if validation succeeds, an error
-#' message otherwise.
-#'
 #' @export
 #'
-#' @importFrom S4Vectors DataFrame
-#'
-#' @references
-#' Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
-#' Foundation of vector-like and list-like containers in
-#' Bioconductor. R package version 0.28.0.
-#'
-#' @examples
-#' data("exampleRprimerOligo")
-#' x <- as.data.frame(exampleRprimerOligo)
-#' RprimerOligo(x)
+#' @rdname Rprimer-class
 RprimerOligo <- function(...) {
-    df <- DataFrame(..., row.names = NULL, check.names = TRUE)
+    df <- S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerOligo(df)
 }
 
@@ -144,56 +170,14 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 
 # RprimerAssay ================================================================
 
-#' An S4 class for representation of PCR assays
-#'
-#' @name RprimerAssay-class
-#'
-#' @family RprimerAssay
-#'
-#' @description
-#' \code{RprimerAssay} extends the \code{S4Vectors::DataFrame} class,
-#' without any additional slots. It has the same accessors and
-#' coercion, subsetting, and combining methods as the parent class, but has
-#' some additional checks for validity.
-#'
-#' @export
-#'
-#' @import methods
-#'
-#' @importClassesFrom S4Vectors DataFrame
+#' @rdname Rprimer-class
 .RprimerAssay <- setClass("RprimerAssay", contains = "DataFrame")
 
-#' RprimerAssay
-#'
-#' The constructor, \code{RprimerAssay()},
-#' constructs an \code{RprimerAssay} object in a similar fashion as the
-#' \code{S4Vectors::DataFrame()} constructor.
-#'
-#' @describeIn RprimerAssay-class
-#'
-#' @param ...
-#' A data frame or list to be converted into an \code{RprimerAssay}
-#' object.
-#'
-#' @return
-#' An \code{RprimerAssay} object if validation succeeds, an error
-#' message otherwise.
-#'
 #' @export
 #'
-#' @importFrom S4Vectors DataFrame
-#'
-#' @references
-#' Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
-#' Foundation of vector-like and list-like containers in
-#' Bioconductor. R package version 0.28.0.
-#'
-#' @examples
-#' data("exampleRprimerAssay")
-#' x <- as.data.frame(exampleRprimerAssay)
-#' RprimerAssay(x)
+#' @rdname Rprimer-class
 RprimerAssay <- function(...) {
-    df <- DataFrame(..., row.names = NULL, check.names = TRUE)
+    df <- S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerAssay(df)
 }
 
@@ -230,54 +214,14 @@ S4Vectors::setValidity2("RprimerAssay", function(object) {
 
 # RprimerMatchOligo ============================================================
 
-#' An S4 class for representation of match proportions of oligos
-#'
-#' @name RprimerMatchOligo-class
-#'
-#' @description
-#' \code{RprimerMatchOligo} extends the \code{S4Vectors::DataFrame} class,
-#' without any additional slots. It has the same accessors and
-#' coercion, subsetting, and combining methods as the parent class, but has
-#' some additional checks for validity.
-#'
-#' @export
-#'
-#' @import methods
-#'
-#' @importClassesFrom S4Vectors DataFrame
+#' @rdname Rprimer-class
 .RprimerMatchOligo <- setClass("RprimerMatchOligo", contains = "DataFrame")
 
-#' RprimerMatchOligo
-#'
-#' The constructor, \code{RprimerMatchOligo()},
-#' constructs an \code{RprimerMatchOligo} object in a similar fashion as the
-#' \code{S4Vectors::DataFrame()} constructor.
-#'
-#' @describeIn RprimerMatchOligo-class
-#'
-#' @param ...
-#' A data frame or list to be converted into an \code{RprimerMatchOligo}
-#' object.
-#'
-#' @return
-#' An \code{RprimerMatchOligo} object if validation succeeds, an error
-#' message otherwise.
-#'
 #' @export
 #'
-#' @importFrom S4Vectors DataFrame
-#'
-#' @references
-#' Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
-#' Foundation of vector-like and list-like containers in
-#' Bioconductor. R package version 0.28.0.
-#'
-#' @examples
-#' data("exampleRprimerMatchOligo")
-#' x <- as.data.frame(exampleRprimerMatchOligo)
-#' RprimerMatchOligo(x)
+#' @rdname Rprimer-class
 RprimerMatchOligo <- function(...) {
-    df <- DataFrame(..., row.names = NULL, check.names = TRUE)
+    df <- S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerMatchOligo(df)
 }
 
@@ -302,54 +246,14 @@ S4Vectors::setValidity2("RprimerMatchOligo", function(object) {
 
 # RprimerMatchAssay ============================================================
 
-#' An S4 class for representation of match percentages for assays
-#'
-#' @name RprimerMatchAssay-class
-#'
-#' @description
-#' \code{RprimerMatchAssay} extends the \code{S4Vectors::DataFrame} class,
-#' without any additional slots. It has the same accessors and
-#' coercion, subsetting, and combining methods as the parent class, but has
-#' some additional checks for validity.
-#'
-#' @export
-#'
-#' @import methods
-#'
-#' @importClassesFrom S4Vectors DataFrame
+#' @rdname Rprimer-class
 .RprimerMatchAssay <- setClass("RprimerMatchAssay", contains = "DataFrame")
 
-#' RprimerMatchAssay
-#'
-#' The constructor, \code{RprimerMatchAssay()},
-#' constructs an \code{RprimerMatchAssay} object in a similar fashion as the
-#' \code{S4Vectors::DataFrame()} constructor.
-#'
-#' @describeIn RprimerMatchAssay-class
-#'
-#' @param ...
-#' A data frame or list to be converted into an \code{RprimerMatchAssay}
-#' object.
-#'
-#' @return
-#' An \code{RprimerMatchAssay} object if validation succeeds, an error
-#' message otherwise.
-#'
 #' @export
 #'
-#' @importFrom S4Vectors DataFrame
-#'
-#' @references
-#' Pages, H., Lawrence, M., and Aboyoun, R. (2020). S4Vectors:
-#' Foundation of vector-like and list-like containers in
-#' Bioconductor. R package version 0.28.0.
-#'
-#' @examples
-#' data("exampleRprimerMatchAssay")
-#' x <- as.data.frame(exampleRprimerMatchAssay)
-#' RprimerMatchAssay(x)
+#' @rdname Rprimer-class
 RprimerMatchAssay <- function(...) {
-    df <- DataFrame(..., row.names = NULL, check.names = TRUE)
+    df <- S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerMatchAssay(df)
 }
 
@@ -378,64 +282,14 @@ S4Vectors::setValidity2("RprimerMatchAssay", function(object) {
 
 # Coerce =======================================================================
 
-#' Coerce an RprimerOligo object to a DNAStringSet object
-#'
-#' \code{as} can be used for converting oligo sequences within an
-#' RprimerOligo object into a DNAStringSet object
-#' (Pages et al., 2020).
-#'
 #' @name coerce
 #'
-#' @family RprimerOligo
-#'
-#' @exportMethod coerce
-#'
-#' @import methods
-#'
-#' @importClassesFrom Biostrings DNAStringSet
-#'
-#' @references
-#' Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
-#' Efficient manipulation of biological strings. R package version
-#' 2.57.2.
-#'
-#' @examples
-#' ## Convert an RprimerOligo object to a DNAStringSet
-#' data("exampleRprimerOligo")
-#'
-#' ## Pick rows to convert
-#' x <- exampleRprimerOligo[1:2, ]
-#' as(x, "DNAStringSet")
+#' @rdname Rprimer-class
 setAs("RprimerOligo", "DNAStringSet", function(from) .toDNAStringSetOligo(from))
 
-#' Coerce an RprimerAssay object to a DNAStringSet object
-#'
-#' \code{as} can be used for converting oligo sequences within an
-#' RprimerAssay object into a DNAStringSet object
-#' (Pages et al., 2020).
-#'
 #' @name coerce
 #'
-#' @family RprimerAssay
-#'
-#' @exportMethod coerce
-#'
-#' @import methods
-#'
-#' @importClassesFrom Biostrings DNAStringSet
-#'
-#' @references
-#' Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
-#' Efficient manipulation of biological strings. R package version
-#' 2.57.2.
-#'
-#' @examples
-#' ## Convert an RprimerAssay object to a DNAStringSet
-#' data("exampleRprimerAssay")
-#'
-#' ## Pick rows to convert
-#' x <- exampleRprimerAssay[1:2, ]
-#' as(x, "DNAStringSet")
+#' @rdname Rprimer-class
 setAs("RprimerAssay", "DNAStringSet", function(from) .toDNAStringSetAssay(from))
 
 # Helpers ======================================================================

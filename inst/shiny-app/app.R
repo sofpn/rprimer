@@ -4,6 +4,8 @@ library(rprimer)
 
 data("exampleRprimerAlignment")
 
+### todo :amp sequence in fasta ####
+
 plotWidth = 800
 plotHeight = 600
 
@@ -806,6 +808,15 @@ server <- function(input, output) {
                     width = "100%"
                 ), color = "grey")
             ),
+            box(width = 12,
+                title = "Position in target alignment",
+                solidHeader = TRUE,
+                shinycssloaders::withSpinner(plotOutput(
+                    "plotNtOligo",
+                    height = plotHeight / 2,
+                    width = "100%"
+                ), color = "grey")
+            ),
             box(width = 12, title = "Match plot",
                 solidHeader = TRUE,
                 shinycssloaders::withSpinner(plotOutput(
@@ -950,6 +961,10 @@ server <- function(input, output) {
                 DT::dataTableOutput("table8"),
                 probeSelectionTable
             ),
+            box(width = 12, title = "Amplicon sequence",
+                solidHeader = TRUE,
+                verbatimTextOutput("ampSeq")
+            ),
             box(width = 12,
                 title = "Nucleotide distribution in target alignment",
                 solidHeader = TRUE,
@@ -970,6 +985,15 @@ server <- function(input, output) {
                     width = "100%"
                 ), color = "grey"),
                 probeSelectionPlot
+            ),
+            box(width = 12,
+                title = "Position in target alignment",
+                solidHeader = TRUE,
+                shinycssloaders::withSpinner(plotOutput(
+                    "plotNtAssay",
+                    height = plotHeight / 2,
+                    width = "100%"
+                ), color = "grey")
             ),
             box(width = 12, title = "Match plot",
                 solidHeader = TRUE,
@@ -1023,6 +1047,21 @@ server <- function(input, output) {
 
         )
     })
+
+    #### verbatim TO DO ###############
+
+ #   output$ampSeq <- verbatimTextOutput({
+ #       if (is.na(selectedAssay()$length[[1]])) {
+ #           NULL
+ #       } else {
+ #          from <- selectedAssay()$start
+ #         to <- selectedAssay()$end
+ #            amplicon <- consensus()[
+ #               consensus()$position >= from & consensus()$position <= to,
+ #           ]
+ #           toupper(paste(amplicon$iupac, collapse = ""))
+ #       }
+ #   })
 
     #### Html ####
 
@@ -1236,7 +1275,6 @@ server <- function(input, output) {
             selectedAssayMatch()$idFourOrMoreMismatchesPr[[1]])
     })
 
-
     #### Plots ####
 
     output$plot1 <- renderPlot({
@@ -1308,6 +1346,27 @@ server <- function(input, output) {
         req(!is.null(selectedAssayMatch()))
         plotData(selectedAssayMatch())
     })
+
+    output$plotNtOligo <- renderPlot({
+        if (is.na(selectedOligo()$length[[1]])) {
+            NULL
+        } else {
+            from <- selectedOligo()$start
+            to <- selectedOligo()$end
+            plotData(consensus(), highlight = c(from, to))
+        }
+    })
+
+    output$plotNtAssay <- renderPlot({
+        if (is.na(selectedAssay()$length[[1]])) {
+            NULL
+        } else {
+            from <- selectedAssay()$start
+            to <- selectedAssay()$end
+            plotData(consensus(), highlight = c(from, to))
+        }
+    })
+
 
     #### Tables ####
 
@@ -1546,7 +1605,6 @@ server <- function(input, output) {
     output$table9 <- DT::renderDataTable({
         req(length(selectedAssayList()) == 3)
         x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[3]])))
-        #### Error here #####
         names(x) <- c(
             "Sequence, plus", "Sequence, minus", "GC content", "Tm", "Delta G"
         )

@@ -19,8 +19,7 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-#
-devtools::load_all(".")
+# devtools::load_all(".")
 library(rprimer)
 ```
 
