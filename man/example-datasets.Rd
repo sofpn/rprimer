@@ -46,19 +46,19 @@ object (Pages et al., 2020)
 containing an alignment of 200 hepatitis E virus
 sequences collected from NCBI GenBank. See
 "documentation_example_alignment.txt" within the inst/script folder
-for more details
+for more details.
 \item \code{exampleRprimerProfile} - an \code{RprimerProfile} object, generated
-from the alignment above
+from the alignment above.
 \item \code{exampleRprimerOligo} - an \code{RprimerOligo} object, generated from
-the consensus profile above
+the consensus profile above.
 \item \code{exampleRprimerAssay} - an \code{RprimerAssay} object, generated from
-the oligos above
+the oligos above.
 \item \code{exampleRprimerMatchOligo} - an \code{RprimerMatchOligo} object,
 describing how well some oligos match with the sequences in
-exampleRprimerAlignment
+exampleRprimerAlignment.
 \item \code{exampleRprimerMatchAssay} - an \code{RprimerMatchAssay} object,
 describing how well some assays match with the seuqences in
-exampleRprimerAlignment
+exampleRprimerAlignment.
 }
 }
 \references{

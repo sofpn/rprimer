@@ -45,13 +45,13 @@ workflow:
 
  \itemize{
  \item \code{RprimerProfile} - output from \code{consensusProfile()},
- input for \code{oligos()}
+ input for \code{oligos()}.
  \item \code{RprimerOligo} - output from \code{oligos()}, input
- for \code{assays()} and \code{checkMatch()}
+ for \code{assays()} and \code{checkMatch()}.
  \item \code{RprimerAssay} - output from \code{assays()}, input
- for \code{checkMatch()}
- \item \code{RprimerMatchOligo} - output from \code{checkMatch()}
- \item \code{RprimerMatchAssay} - output from \code{checkMatch()}
+ for \code{checkMatch()}.
+ \item \code{RprimerMatchOligo} - output from \code{checkMatch()}.
+ \item \code{RprimerMatchAssay} - output from \code{checkMatch()}.
 }
 
 These classes extends the \code{S4Vectors::DataFrame} class

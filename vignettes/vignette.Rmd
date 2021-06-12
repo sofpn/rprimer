@@ -19,7 +19,8 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-# devtools::load_all(".")
+# 
+devtools::load_all(".")
 library(rprimer)
 ```
 
@@ -70,9 +71,9 @@ These sequences were collected by searching for “[a-z]”[porgn:__txid1678143]
 
 ## Data import {#Data}
 
-The alignment must be imported to R using the `readDNAMultipleAlignment()` function from the Biostrings package [@PagesBios]. The input file can contain from one to several thousands of sequences. 
+The alignment must first be imported to R using the `readDNAMultipleAlignment()` function from Biostrings [@PagesBios]. The input file can contain from one to several thousands of sequences. 
 
-Below, I import the file "example_alignment.txt":  
+Below, I show how to import the file "example_alignment.txt":  
 
 ```{r}
 filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
@@ -142,7 +143,7 @@ selection <- myConsensusProfile[
 plotData(selection)
 ```
 
-The nucleotide distribution can be displayed by specifying `type = nucleotide`: 
+The nucleotide distribution can be displayed by specifying `type = nucleotide`:
 
 ```{r, fig.width=12, fig.height=6}
 ## Select position 1000 to 1020 in the consensus profile 
@@ -350,7 +351,7 @@ Again, the results can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-All candidate assays are located within a conserved stretch of ~70 bases. This is also the target region for the most frequently used RT-qPCR assay for detection of HEV, developed by Jothikumar and colleagues [@jothikumar2006broadly].
+All candidate assays are located within a conserved stretch of ~70 bases, which happens to be the target region for the most frequently used RT-qPCR assay for detection of HEV, developed by Jothikumar and colleagues [@jothikumar2006broadly].
 
 There are now over 1000 assays, but one way of reducing the amount is to subset the output dataset to only contain assays with the best total oligo scores (see the score variable in the table above). The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12; see [Step 2](#Step2) for more information).
 
@@ -522,7 +523,7 @@ as(myOligos[1:2, ], "DNAStringSet")
 as(myAssays[1:2, ], "DNAStringSet")
 ```
 
-Note that all sequences will be written in 3' to 5' direction, and that all sequence variants of each oligo will be printed.  
+Note that all sequences will be written in the same direction as the input target alignment, and that all sequence variants of each oligo will be printed.
 
 The sequences can now be saved as fasta format, for example: 
 
@@ -563,17 +564,18 @@ View(as.data.frame(myOligos))
 View(as.data.frame(myAssays))
 ```
 
-Using the app: 
+Using the Shiny application:  
 
 ```r
 library(rprimer)
 
+## Start application 
 runRprimerApp()
 ```
 
 # Classes and example data
 
-The "rprimer" classes (`RprimerProfile`, `RprimerOligo`, `RprimerAssay`, `RprimerMatchOligo` and `RprimerMatchAssay`) extends the `DataFrame` class from S4Vectors [@PagesS4], and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow()`, `ncol()`, `head()`, `tail()`, `rbind()`, `cbind()` etc. They can be coerced to traditional data frames by using `as.data.frame()`. 
+The "Rprimer" classes (`RprimerProfile`, `RprimerOligo`, `RprimerAssay`, `RprimerMatchOligo` and `RprimerMatchAssay`) extends the `DataFrame` class from S4Vectors [@PagesS4], and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow()`, `ncol()`, `head()`, `tail()`, `rbind()`, `cbind()` etc. They can be coerced to traditional data frames by using `as.data.frame()`. 
 
 Example datasets of each class are provided with the package, and are loaded by: 
 

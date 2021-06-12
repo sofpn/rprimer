@@ -15,7 +15,7 @@ the workflow of the rprimer package can be run through a
 graphical user interface.
 }
 \examples{
-## Only run the application in interactive R sessions:
+## Only run this in interactive R sessions:
 if (interactive()) {
     runRprimerApp()
 }
