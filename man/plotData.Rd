@@ -22,7 +22,8 @@ plotData(x, ...)
 \S4method{plotData}{RprimerMatchAssay}(x)
 }
 \arguments{
-\item{x}{An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.}
+\item{x}{An \code{RprimerProfile}, \code{RprimerOligo} \code{RprimerAssay},
+\code{rprimerMatchOligo} or \code{RprimerMatchAssay} object.}
 
 \item{...}{Optional arguments for \code{RprimerProfile} objects.}
 
@@ -47,7 +48,8 @@ See examples below.}
 A plot.
 }
 \description{
-\code{plotData} can be used to visualize all the Rprimer objects.
+\code{plotData} can be used to visualize objects from all different
+Rprimer classes.
 }
 \section{Methods (by class)}{
 \itemize{

@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-#' ## Only run the application in interactive R sessions:
+#' ## Only run this in interactive R sessions:
 #' if (interactive()) {
 #'     runRprimerApp()
 #' }

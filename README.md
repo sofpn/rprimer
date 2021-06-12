@@ -9,6 +9,8 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
 
+*This package is in development*
+
 ## Installation
 
 rprimer can be installed from [GitHub](https://github.com/) with:
@@ -28,7 +30,7 @@ library(rprimer)
 rprimer provides tools for designing degenerate DNA oligos for sequence
 variable targets.
 
-The package contains five functions:
+The design workflow consists of five functions:
 
   - `consensusProfile()`
   - `oligos()`
@@ -38,9 +40,13 @@ The package contains five functions:
 
 ## Shiny application
 
-The package can be run through a Shiny application. It is loaded by:
+The design workflow can also be run through a Shiny application. It is
+loaded by:
 
   - `runRprimerApp()`
+
+The application is also available
+[online](https://sofpn.shinyapps.io/rprimer).
 
 ## Workflow
 
@@ -179,10 +185,10 @@ plotData(myAssays)
 ### Check match
 
 `checkMatch()` shows the proportion and names of the target sequences in
-the input alignment that match with the generated oligos or assays. As
-an example, we check six randomly selected oligos from `myOligos`:
+the input alignment that match with the generated oligos or assays:
 
 ``` r
+## Randomly select six oligos to illustrate an example 
 selection <- sample(seq_len(nrow(myOligos)), size = 6)
 
 matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
@@ -192,12 +198,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMmismatches |
 | :--------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :-------------- | --------------: | :---------------- | -------------------: | :---------------------- |
-| TTCATCCAACCAACCCCTTYG  |         0.94 | M73218.1….     |        0.05 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….              |
-| ATWTTCATCCAACCAACCCCTT |         0.94 | M73218.1….     |        0.06 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….              |
-| TCCAACCAACCCCTTYGC     |         0.92 | M73218.1….     |        0.06 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….              |
-| TCCAACCAACCCCTTYGC     |         0.92 | M73218.1….     |        0.06 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….              |
-| GGGTGACMGGGTTGATTCTCAG |         0.92 | M73218.1….     |        0.06 | AB222183….    |          0.00 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….              |
-| TCCAACCAACCCCTTYGCM    |         0.92 | M73218.1….     |        0.06 | FJ457024….    |          0.01 | AY575857….      |               0 |                   |                 0.01 | MN614142….              |
+| TGATTCTCAGCCCTTCGC     |         0.94 | M73218.1….     |        0.06 | JF443725….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
+| TCCCCTATWTTCATCCAACCAA |         0.96 | M73218.1….     |        0.03 | AY575857….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
+| ATTCTCAGCCCTTCGCMMT    |         0.94 | M73218.1….     |        0.05 | AB222183….    |             0 |                 |               0 | JF443725.1        |                 0.01 | MN614142….              |
+| GTGGTTTCTGGGGTGACM     |         0.98 | M73218.1….     |        0.01 | BD378055….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
+| TCCCCTATWTTCATCCAACCA  |         0.96 | M73218.1….     |        0.03 | AY575857….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
+| TGGTTTCTGGGGTGACMGGG   |         0.96 | M73218.1….     |        0.03 | BD378055….    |             0 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….              |
 
 The match table can be visualized using `plotData()`:
 

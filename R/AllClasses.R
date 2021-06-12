@@ -2,7 +2,7 @@
 
 #' S4 classes for representation of different Rprimer objects
 #'
-#' @name Rprimer-class
+#' @name Rprimer-classes
 #'
 #' @description
 #' The rprimer package contains five different S4 classes. Each class is used
@@ -11,13 +11,13 @@
 #'
 #'  \itemize{
 #'  \item \code{RprimerProfile} - output from \code{consensusProfile()},
-#'  input for \code{oligos()}
+#'  input for \code{oligos()}.
 #'  \item \code{RprimerOligo} - output from \code{oligos()}, input
-#'  for \code{assays()} and \code{checkMatch()}
+#'  for \code{assays()} and \code{checkMatch()}.
 #'  \item \code{RprimerAssay} - output from \code{assays()}, input
-#'  for \code{checkMatch()}
-#'  \item \code{RprimerMatchOligo} - output from \code{checkMatch()}
-#'  \item \code{RprimerMatchAssay} - output from \code{checkMatch()}
+#'  for \code{checkMatch()}.
+#'  \item \code{RprimerMatchOligo} - output from \code{checkMatch()}.
+#'  \item \code{RprimerMatchAssay} - output from \code{checkMatch()}.
 #' }
 #'
 #' These classes extends the \code{S4Vectors::DataFrame} class
@@ -102,12 +102,12 @@ NULL
 
 # RprimerProfile ===============================================================
 
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 .RprimerProfile <- setClass("RprimerProfile", contains = "DataFrame")
 
 #' @export
 #'
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 RprimerProfile <- function(...) {
     df <- S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerProfile(df)
@@ -134,12 +134,12 @@ S4Vectors::setValidity2("RprimerProfile", function(object) {
 
 # RprimerOligo ================================================================
 
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 .RprimerOligo <- setClass("RprimerOligo", contains = "DataFrame")
 
 #' @export
 #'
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 RprimerOligo <- function(...) {
     df <- S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerOligo(df)
@@ -170,12 +170,12 @@ S4Vectors::setValidity2("RprimerOligo", function(object) {
 
 # RprimerAssay ================================================================
 
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 .RprimerAssay <- setClass("RprimerAssay", contains = "DataFrame")
 
 #' @export
 #'
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 RprimerAssay <- function(...) {
     df <- S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerAssay(df)
@@ -214,12 +214,12 @@ S4Vectors::setValidity2("RprimerAssay", function(object) {
 
 # RprimerMatchOligo ============================================================
 
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 .RprimerMatchOligo <- setClass("RprimerMatchOligo", contains = "DataFrame")
 
 #' @export
 #'
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 RprimerMatchOligo <- function(...) {
     df <- S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerMatchOligo(df)
@@ -246,12 +246,12 @@ S4Vectors::setValidity2("RprimerMatchOligo", function(object) {
 
 # RprimerMatchAssay ============================================================
 
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 .RprimerMatchAssay <- setClass("RprimerMatchAssay", contains = "DataFrame")
 
 #' @export
 #'
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 RprimerMatchAssay <- function(...) {
     df <- S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE)
     .RprimerMatchAssay(df)
@@ -284,12 +284,12 @@ S4Vectors::setValidity2("RprimerMatchAssay", function(object) {
 
 #' @name coerce
 #'
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 setAs("RprimerOligo", "DNAStringSet", function(from) .toDNAStringSetOligo(from))
 
 #' @name coerce
 #'
-#' @rdname Rprimer-class
+#' @rdname Rprimer-classes
 setAs("RprimerAssay", "DNAStringSet", function(from) .toDNAStringSetAssay(from))
 
 # Helpers ======================================================================

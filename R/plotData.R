@@ -1,9 +1,11 @@
 #' Plot an Rprimer object
 #'
-#' \code{plotData} can be used to visualize all the Rprimer objects.
+#' \code{plotData} can be used to visualize objects from all different
+#' Rprimer classes.
 #'
 #' @param x
-#' An \code{RprimerProfile}, \code{RprimerOligo} or \code{RprimerAssay} object.
+#' An \code{RprimerProfile}, \code{RprimerOligo} \code{RprimerAssay},
+#' \code{rprimerMatchOligo} or \code{RprimerMatchAssay} object.
 #'
 #' @param ...
 #' Optional arguments for \code{RprimerProfile} objects.
@@ -15,7 +17,7 @@
 #'
 #' @param highlight
 #' For \code{Rprimeroligo} objects:
-#' if a specific region within an overview plot should be highlighted.
+#' If a specific region within an overview plot should be highlighted.
 #' A numeric vector indicating the start and end position,
 #' e.g. \code{c(100, 1000)}, defaults to \code{NULL}
 #' (i.e., no highlight).

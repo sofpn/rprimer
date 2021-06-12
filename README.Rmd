@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+*This package is in development*
+
 ## Installation
 
 rprimer can be installed from [GitHub](https://github.com/) with:
@@ -39,7 +41,7 @@ library(rprimer)
 
 rprimer provides tools for designing degenerate DNA oligos for sequence variable targets.
 
-The package contains five functions:
+The design workflow consists of five functions:
 
 * `consensusProfile()`
 * `oligos()` 
@@ -49,9 +51,11 @@ The package contains five functions:
 
 ## Shiny application
 
-The package can be run through a Shiny application. It is loaded by: 
+The design workflow can also be run through a Shiny application. It is loaded by: 
 
 * `runRprimerApp()` 
+
+The application is also available [online](https://sofpn.shinyapps.io/rprimer). 
 
 ## Workflow 
 
@@ -147,9 +151,10 @@ plotData(myAssays)
 
 ### Check match 
 
-`checkMatch()` shows the proportion and names of the target sequences in the input alignment that match with the generated oligos or assays. As an example, we check six randomly selected oligos from `myOligos`: 
+`checkMatch()` shows the proportion and names of the target sequences in the input alignment that match with the generated oligos or assays:
 
 ```{r}
+## Randomly select six oligos to illustrate an example 
 selection <- sample(seq_len(nrow(myOligos)), size = 6)
 
 matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)

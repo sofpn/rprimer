@@ -40,7 +40,7 @@ devtools::install_github("sofpn/rprimer")
 ```
 # Overview
 
-The package contains five functions, which are interconnected in a workflow:
+The design workflow consists of five functions:
 
 * `consensusProfile()`
 * `oligos()`  
@@ -50,7 +50,7 @@ The package contains five functions, which are interconnected in a workflow:
 
 # Shiny application
 
-The workflow described in this vignette can also be run through a Shiny app. It is loaded by:
+The design workflow can also be run through a Shiny application. It is loaded by:
 
 * `runRprimerApp()`
 

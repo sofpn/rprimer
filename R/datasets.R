@@ -1,64 +1,64 @@
-#' An multiple DNA alignment of hepatitis E virus sequences
+#' Example datasets
 #'
-#' An alignment with 200 hepatitis E virus sequences.
+#' @name example-datasets
 #'
-#' @format A \code{Biostrings::DNAMultipleAlignment} object.
+#' @description
+#' The purpose of these datasets is to illustrate the functionality of
+#' rprimer. The following datasets are provided:
 #'
-#' @usage data("exampleRprimerAlignment")
-#'
-#' @source
-#' The sequences were collected from NCBI GenBank and the alignment
-#' was imported to the package using \code{Biostrings::readDNAStringSet()}
-#' (Pages et al., 2020). See the file
+#' \itemize{
+#' \item \code{exampleRprimerAlignment} - a \code{Biostrings::DNAMultipleAlignment}
+#' object (Pages et al., 2020)
+#' containing an alignment of 200 hepatitis E virus
+#' sequences collected from NCBI GenBank. See
 #' "documentation_example_alignment.txt" within the inst/script folder
-#' for more details on how it was generated.
+#' for more details.
+#' \item \code{exampleRprimerProfile} - an \code{RprimerProfile} object, generated
+#' from the alignment above.
+#' \item \code{exampleRprimerOligo} - an \code{RprimerOligo} object, generated from
+#' the consensus profile above.
+#' \item \code{exampleRprimerAssay} - an \code{RprimerAssay} object, generated from
+#' the oligos above.
+#' \item \code{exampleRprimerMatchOligo} - an \code{RprimerMatchOligo} object,
+#' describing how well some oligos match with the sequences in
+#' exampleRprimerAlignment.
+#' \item \code{exampleRprimerMatchAssay} - an \code{RprimerMatchAssay} object,
+#' describing how well some assays match with the seuqences in
+#' exampleRprimerAlignment.
+#' }
 #'
 #' @references
 #' H. Pages, P. Aboyoun, R. Gentleman and S. DebRoy (2020). Biostrings:
 #' Efficient manipulation of biological strings. R package version
 #' 2.57.2.
+NULL
+
+#' @rdname example-datasets
+#'
+#' @usage data("exampleRprimerAlignment")
 "exampleRprimerAlignment"
 
-#' A consensus profile from an alignment of hepatitis E virus sequences
-#'
-#' @format An example of an \code{RprimerProfile} object.
+#' @rdname example-datasets
 #'
 #' @usage data("exampleRprimerProfile")
 "exampleRprimerProfile"
 
-#' Primers and probes targeted to hepatitis E virus
-#'
-#' @format An example of an \code{RprimerOligo} object.
-#'
-#' @describeIn exampleData
+#' @rdname example-datasets
 #'
 #' @usage data("exampleRprimerOligo")
 "exampleRprimerOligo"
 
-#' PCR assays targeted to hepatitis E virus
-#'
-#' @format An example of an \code{RprimerAssay} object.
+#' @rdname example-datasets
 #'
 #' @usage data("exampleRprimerAssay")
 "exampleRprimerAssay"
 
-#' Proportion of sequences that matches to oligos
-#'
-#' This dataset describes the proportion of HEV target sequences that
-#' matches to a set of oligos.
-#'
-#' @format An example of an \code{RprimerMatchOligo} object.
+#' @rdname example-datasets
 #'
 #' @usage data("exampleRprimerMatchOligo")
 "exampleRprimerMatchOligo"
 
-
-#' Proportion of sequences that matches to assays
-#'
-#' This dataset describes the proportion of HEV target sequences that
-#' matches to a set of assays.
-#'
-#' @format An example of an \code{RprimerMatchAssay} object.
+#' @rdname example-datasets
 #'
 #' @usage data("exampleRprimerMatchAssay")
 "exampleRprimerMatchAssay"
