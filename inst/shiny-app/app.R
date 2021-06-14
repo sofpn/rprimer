@@ -9,6 +9,8 @@ data("exampleRprimerAlignment")
 plotWidth = 800
 plotHeight = 600
 
+options(shiny.sanitize.errors = FALSE)
+
 # Custom functions =============================================================
 
 roundDbls <- function(x) {
@@ -277,9 +279,7 @@ ui <- dashboardPage(
             tabItem(tabName = "consensus",
                     fluidRow(
                         column(width = 3, uiOutput("consensusSettings")),
-                        column(width =  9,
-                               uiOutput("consensusFilter"),
-                               uiOutput("consensusOutput"))
+                        column(width =  9, uiOutput("consensusOutput"))
                     )
             ),
 
@@ -336,13 +336,6 @@ server <- function(input, output) {
         consensus[
             consensus$position >= as.numeric(input$roiFrom) &
                 consensus$position <= as.numeric(input$roiTo),
-        ]
-    })
-
-    consensusSelection <- reactive({
-        consensus()[
-            consensus()$position >= as.numeric(input$zoomFrom) &
-                consensus()$position <= as.numeric(input$zoomTo),
         ]
     })
 
@@ -499,30 +492,6 @@ server <- function(input, output) {
         )
     })
 
-    #### Consensus filter ####
-
-    output$consensusFilter <- renderUI({
-        req(consensus())
-        box(width = 12, title = "Filter",
-            h5("Zoom to region"),
-            column(width = 2,
-                   numericInput(
-                       "zoomFrom", h5("From"),
-                       min = min(consensus()$position, na.rm = TRUE),
-                       max = max(consensus()$position, na.rm = TRUE),
-                       value = min(consensus()$position, na.rm = TRUE)
-                   )
-            ),
-            column(width = 2,
-                   numericInput(
-                       "zoomTo", h5("To"),
-                       min = min(consensus()$position, na.rm = TRUE),
-                       max = max(consensus()$position, na.rm = TRUE),
-                       value = max(consensus()$position, na.rm = TRUE)
-                   )
-            )
-        )
-    })
 
     #### Consensus output ####
 
@@ -533,8 +502,7 @@ server <- function(input, output) {
                    tabPanel(title = "Plot",
                             br(),
                             shinycssloaders::withSpinner(
-                                plotOutput(
-                                    "plot1",
+                                plotOutput("plot1",
                                     height = plotHeight,
                                     width = "100%"
                                 ), color = "grey")
@@ -555,7 +523,7 @@ server <- function(input, output) {
     #### Oligo settings ####
 
     output$oligoSettings <- renderUI({
-        req(consensusSelection())
+        req(consensus())
         box(width = 12, title = "Settings",
             h4("Primers"),
             hr(),
@@ -1278,7 +1246,7 @@ server <- function(input, output) {
     #### Plots ####
 
     output$plot1 <- renderPlot({
-        plotData(consensusSelection())
+        plotData(consensus())
     })
 
     output$plot3 <- renderPlot({
@@ -1371,7 +1339,7 @@ server <- function(input, output) {
     #### Tables ####
 
     output$table1 <- DT::renderDataTable({
-        x <- roundDbls(as.data.frame(consensusSelection()))
+        x <- roundDbls(as.data.frame(consensus()))
         names(x) <- c(
             "Position", "A", "C", "G", "T", "Other", "Gaps", "Majority",
             "Identity", "IUPAC", "Entropy", "Coverage"
@@ -1624,7 +1592,7 @@ server <- function(input, output) {
         },
         content <- function(file) {
             write.table(
-                as.data.frame(consensusSelection()), file,
+                as.data.frame(consensus()), file,
                 quote = FALSE, sep = "\t",
                 row.names = FALSE
             )
