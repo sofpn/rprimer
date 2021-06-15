@@ -346,6 +346,7 @@ server <- function(input, output) {
                lengthPrimer = input$lengthPrimer,
                maxDegeneracyPrimer = input$maxDegeneracyPrimer,
                avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
+               gcClampPrimer = input$gcClampPrimer,
                gcPrimer = input$gcPrimer,
                tmPrimer = input$tmPrimer,
                concPrimer = input$concPrimer,
@@ -366,7 +367,7 @@ server <- function(input, output) {
         x <- as.data.frame(x)
         emptyRow <- makeEmptyRow(x)
         fwd <- x$fwd & x$type == "primer" &
-            x$start >= as.numeric(input$fwdRegionFrom)  &
+            x$start >= as.numeric(input$fwdRegionFrom) &
             x$end <= as.numeric(input$fwdRegionTo)
         rev <- (x$rev & x$type == "primer" &
                     x$start >= as.numeric(input$revRegionFrom)  &
@@ -1306,7 +1307,7 @@ server <- function(input, output) {
             to <- selectedAssay()$endPr
             plotData(consensus()[
                 consensus()$position >= from & consensus()$position <= to,
-            ], type = "nucleotide", rc = TRUE)
+            ], type = "nucleotide")
         }
     })
 
@@ -1442,7 +1443,8 @@ server <- function(input, output) {
                     "Design method, reverse",
                     "Plus sense, probe", "Minus sense, probe",
                     "Start, probe", "End, probe", "Length, probe",
-                    "IUPAC sequence, probe", "Identity, probe",
+                    "IUPAC sequence, probe", "IUPAC sequence RC, probe",
+                    "Identity, probe",
                     "Coverage, probe", "Degeneracy, probe",
                     "GC content, mean, probe", "GC content, range, probe",
                     "Tm, mean, probe", "Tm, range, probe",
@@ -1505,7 +1507,8 @@ server <- function(input, output) {
                     "Design method, reverse",
                     "Plus sense, probe", "Minus sense, probe",
                     "Start, probe", "End, probe", "Length, probe",
-                    "IUPAC sequence, probe", "Identity, probe",
+                    "IUPAC sequence, probe", "IUPAC sequence RC, probe",
+                    "Identity, probe",
                     "Coverage, probe", "Degeneracy, probe",
                     "GC content, mean, probe", "GC content, range, probe",
                     "Tm, mean, probe", "Tm, range, probe",
@@ -1670,7 +1673,7 @@ server <- function(input, output) {
             paste0("assay-selection-", Sys.Date(), ".txt")
         },
         content <- function(file) {
-            write.txt(
+            write.table(
                 as.data.frame(selectedAssay()), file,
                 quote = FALSE, sep = "\t",
                 row.names = FALSE

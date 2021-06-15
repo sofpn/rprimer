@@ -40,8 +40,8 @@ The design workflow consists of five functions:
 
 ## Shiny application
 
-The design workflow can also be run through a Shiny application. It is
-loaded by:
+The design workflow can be run through a Shiny application. It is loaded
+by:
 
   - `runRprimerApp()`
 
@@ -198,12 +198,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMmismatches |
 | :--------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :-------------- | --------------: | :---------------- | -------------------: | :---------------------- |
+| CCCCTATWTTCATCCAACCAA  |         0.96 | M73218.1….     |        0.03 | AY575857….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
+| TTGATTCTCAGCCCTTCGC    |         0.93 | M73218.1….     |        0.06 | JF443725….    |             0 | AB222183.1      |               0 |                   |                 0.01 | MN614142….              |
+| ATWTTCATCCAACCAACCCCTT |         0.94 | M73218.1….     |        0.06 | FJ457024….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
+| TTGATTCTCAGCCCTTCGC    |         0.93 | M73218.1….     |        0.06 | JF443725….    |             0 | AB222183.1      |               0 |                   |                 0.01 | MN614142….              |
+| CCTATWTTCATCCAACCAAC   |         0.94 | M73218.1….     |        0.04 | AY575857….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
 | TGATTCTCAGCCCTTCGC     |         0.94 | M73218.1….     |        0.06 | JF443725….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
-| TCCCCTATWTTCATCCAACCAA |         0.96 | M73218.1….     |        0.03 | AY575857….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
-| ATTCTCAGCCCTTCGCMMT    |         0.94 | M73218.1….     |        0.05 | AB222183….    |             0 |                 |               0 | JF443725.1        |                 0.01 | MN614142….              |
-| GTGGTTTCTGGGGTGACM     |         0.98 | M73218.1….     |        0.01 | BD378055….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
-| TCCCCTATWTTCATCCAACCA  |         0.96 | M73218.1….     |        0.03 | AY575857….    |             0 |                 |               0 |                   |                 0.01 | MN614142….              |
-| TGGTTTCTGGGGTGACMGGG   |         0.96 | M73218.1….     |        0.03 | BD378055….    |             0 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….              |
 
 The match table can be visualized using `plotData()`:
 
