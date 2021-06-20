@@ -4,8 +4,6 @@ library(rprimer)
 
 data("exampleRprimerAlignment")
 
-### todo :amp sequence in fasta ####
-
 plotWidth = 800
 plotHeight = 600
 
@@ -87,7 +85,6 @@ makeEmptyRow <- function(x) {
 }
 
 # Conditional panels ===========================================================
-
 
 #### File upload/use example #####
 
@@ -234,7 +231,7 @@ ui <- dashboardPage(
                                 conservation and designing degenerate primers, probes and (RT)-(q/d)PCR
                                 assays from a multiple DNA sequence alignment. The workflow is
                                 developed primarily for sequence variable RNA viruses, but it should also
-                                be useful for other targets with high sequence variability"
+                                be useful for other targets with high sequence variability."
                             ),
                             br(),
                             h5(tags$b("Instructions for use")),
@@ -384,9 +381,22 @@ server <- function(input, output) {
         x$fwd[x$type == "Primer" & x$end > as.numeric(input$fwdRegionTo)] <- FALSE
         x$rev[x$type == "primer" & x$start < as.numeric(input$revRegionFrom)] <- FALSE
         x$rev[x$type == "primer" & x$end > as.numeric(input$revRegionTo)] <- FALSE
-        x <- x[x$identity >= input$minOligoIdentity, ]
-        x <- x[x$coverage >= input$minOligoCoverage, ]
-        x <- x[x$score <= input$maxOligoScore, ]
+        x$fwd[x$type == "primer" &
+                  x$identity < input$minOligoIdentityFwd |
+                  x$coverage < input$minOligoCoverageFwd] <- FALSE
+        x$rev[x$type == "primer" &
+                  x$identity < input$minOligoIdentityRev |
+                  x$coverage < input$minOligoCoverageRev] <- FALSE
+        if (any(x$type == "probe")) {
+            x$fwd[x$type == "probe" &
+                      x$identity < input$minOligoIdentityPr |
+                      x$coverage < input$minOligoCoveragePr] <- FALSE
+            x$rev[x$type == "probe" &
+                      x$identity < input$minOligoIdentityPr |
+                      x$coverage < input$minOligoCoveragePr] <- FALSE
+        }
+        x <- x[x$fwd | x$rev | (x$fwd & x$rev), ]
+        #### !!subsettningen kan snyggas till.... ####
         if (nrow(x) == 0L) {
             x <- emptyRow
         }
@@ -413,8 +423,8 @@ server <- function(input, output) {
     })
 
     assayCandidates <- eventReactive(input$getAssays, {
-        req(oligoCandidates())
-        assays(oligoCandidates(),
+        req(oligoSelection())
+        assays(oligoSelection(),
                length = input$length,
                tmDifferencePrimers = as.numeric(input$tmDifferencePrimers))
     })
@@ -646,40 +656,113 @@ server <- function(input, output) {
                    column(width = 2, uiOutput("prRegionTo"))
             ),
             column(width = 12,
-                   column(width = 3,
-                          sliderInput("minOligoIdentity",
-                                      h5("Minimum identity"),
+                   column(width = 4,
+                          sliderInput("minOligoIdentityFwd",
+                                      round = -4, step = 0.0001, ticks = FALSE,
+                                      h5("Fwd, minimum identity"),
                                       min = round(min(
-                                          oligoCandidates()$identity, na.rm = TRUE
-                                      ) - 0.05, 2),
-                                      max = 1,
-                                      value = min(
-                                          oligoCandidates()$identity, na.rm = TRUE
-                                      ) - 0.05,
+                                          oligoCandidates()$identity[
+                                              oligoCandidates()$fwd &
+                                                  oligoCandidates()$type == "primer"
+                                          ],
+                                          na.rm = TRUE), 4
+                                      ),
+                                      max = round(max(
+                                          oligoCandidates()$identity[
+                                              oligoCandidates()$fwd &
+                                                  oligoCandidates()$type == "primer"
+                                          ],
+                                          na.rm = TRUE), 4
+                                      ),
+                                      value = round(min(
+                                          oligoCandidates()$identity[
+                                              oligoCandidates()$fwd &
+                                                  oligoCandidates()$type == "primer"
+                                          ],
+                                          na.rm = TRUE), 4
+                                      ),
+                                      width = 200),
+                          sliderInput("minOligoCoverageFwd",
+                                      round = -4, step = 0.0001, ticks = FALSE,
+                                      h5("Fwd, minimum coverage"),
+                                      min = round(min(
+                                          oligoCandidates()$coverage[
+                                              oligoCandidates()$fwd &
+                                                  oligoCandidates()$type == "primer"
+                                              ],
+                                          na.rm = TRUE), 4
+                                      ),
+                                      max = round(max(
+                                          oligoCandidates()$coverage[
+                                              oligoCandidates()$fwd &
+                                                  oligoCandidates()$type == "primer"
+                                          ],
+                                          na.rm = TRUE), 4
+                                      ),
+                                      value = round(min(
+                                          oligoCandidates()$coverage[
+                                              oligoCandidates()$fwd &
+                                                  oligoCandidates()$type == "primer"
+                                          ], na.rm = TRUE), 4
+                                      ),
                                       width = 200)
                    ),
-                   column(width = 3,
-                          sliderInput("minOligoCoverage",
-                                      h5("Minimum coverage"),
+                   column(width = 4,
+                          sliderInput("minOligoIdentityRev",
+                                      round = -4, step = 0.0001, ticks = FALSE,
+                                      h5("Rev, minimum identity"),
                                       min = round(min(
-                                          oligoCandidates()$coverage, na.rm = TRUE
-                                      ) - 0.05, 2),
-                                      max = 1,
-                                      value = min(
-                                          oligoCandidates()$coverage, na.rm = TRUE
-                                      ) - 0.05,
+                                          oligoCandidates()$identity[
+                                              oligoCandidates()$rev &
+                                                  oligoCandidates()$type == "primer"
+                                              ],
+                                          na.rm = TRUE), 4
+                                      ),
+                                      max = round(max(
+                                          oligoCandidates()$identity[
+                                              oligoCandidates()$rev &
+                                                  oligoCandidates()$type == "primer"
+                                          ],
+                                          na.rm = TRUE), 4
+                                      ),
+                                      value = round(min(
+                                          oligoCandidates()$identity[
+                                              oligoCandidates()$rev &
+                                                  oligoCandidates()$type == "primer"
+                                          ],
+                                          na.rm = TRUE), 4
+                                      ),
+                                      width = 200),
+                          sliderInput("minOligoCoverageRev",
+                                      round = -4, step = 0.0001, ticks = FALSE,
+                                      h5("Rev, minimum coverage"),
+                                      min = round(min(
+                                          oligoCandidates()$coverage[
+                                              oligoCandidates()$rev &
+                                                  oligoCandidates()$type == "primer"
+                                          ],
+                                          na.rm = TRUE), 4
+                                      ),
+                                      max = round(max(
+                                          oligoCandidates()$coverage[
+                                              oligoCandidates()$rev &
+                                                  oligoCandidates()$type == "primer"
+                                          ],
+                                          na.rm = TRUE), 4
+                                      ),
+                                      value = round(min(
+                                          oligoCandidates()$coverage[
+                                              oligoCandidates()$rev &
+                                                  oligoCandidates()$type == "primer"
+                                          ], na.rm = TRUE), 4
+                                      ),
                                       width = 200)
 
                    ),
-                   column(width = 3,
-                          sliderInput("maxOligoScore",
-                                      h5("Maximum score (lower is better)"),
-                                      min = min(oligoCandidates()$score, na.rm = TRUE),
-                                      max = max(oligoCandidates()$score, na.rm = TRUE),
-                                      value = max(oligoCandidates()$score, na.rm = TRUE),
-                                      width = 200)
-
-                   )
+                   column(width = 4,
+                          uiOutput("minOligoIdentityPr"),
+                          uiOutput("minOligoCoveragePr")
+                          )
             )
         )
     })
@@ -697,8 +780,64 @@ server <- function(input, output) {
 
     })
 
+    output$minOligoIdentityPr <- renderUI({
+        if (any(oligoCandidates()$type == "probe")) {
+            sliderInput("minOligoIdentityPr",
+                        round = -4, step = 0.0001, ticks = FALSE,
+                        h5("Pr, minimum identity"),
+                        min = round(min(
+                            oligoCandidates()$identity[
+                                oligoCandidates()$type == "probe"
+                                ],
+                            na.rm = TRUE), 4
+                        ),
+                        max = round(max(
+                            oligoCandidates()$identity[
+                                oligoCandidates()$type == "probe"
+                            ],
+                            na.rm = TRUE), 4
+                        ),
+                        value = round(min(
+                            oligoCandidates()$identity[
+                                oligoCandidates()$type == "probe"
+                            ],
+                            na.rm = TRUE), 4
+                        ), width = 200)
+        } else {
+            NULL
+        }
+
+    })
+
+    output$minOligoCoveragePr <- renderUI({
+        if (any(oligoCandidates()$type == "probe")) {
+            sliderInput("minOligoCoveragePr",
+                        round = -4, step = 0.0001, ticks = FALSE,
+                        h5("Pr, minimum coverage"),
+                        min = round(min(
+                            oligoCandidates()$coverage[
+                                oligoCandidates()$type == "probe"
+                            ],
+                            na.rm = TRUE), 4),
+                        max = round(max(
+                            oligoCandidates()$coverage[
+                                oligoCandidates()$type == "probe"
+                            ],
+                            na.rm = TRUE), 4),
+                        value = round(min(
+                            oligoCandidates()$coverage[
+                                oligoCandidates()$type == "probe"
+                            ],
+                            na.rm = TRUE), 4),
+                        width = 200)
+
+        } else {
+            NULL
+        }
+
+    })
+
     output$prRegionTo <- renderUI({
-        req(oligoCandidates())
         if (any(oligoCandidates()$type == "probe")) {
             numericInput("prRegionTo", h5("Probe, to"),
                          min = oligoCandidates()$roiStart[[1]],
@@ -773,15 +912,6 @@ server <- function(input, output) {
                 solidHeader = TRUE,
                 shinycssloaders::withSpinner(plotOutput(
                     "plot4",
-                    height = plotHeight / 2,
-                    width = "100%"
-                ), color = "grey")
-            ),
-            box(width = 12,
-                title = "Position in target alignment",
-                solidHeader = TRUE,
-                shinycssloaders::withSpinner(plotOutput(
-                    "plotNtOligo",
                     height = plotHeight / 2,
                     width = "100%"
                 ), color = "grey")
@@ -1314,16 +1444,6 @@ server <- function(input, output) {
     output$plot10 <- renderPlot({
         req(!is.null(selectedAssayMatch()))
         plotData(selectedAssayMatch())
-    })
-
-    output$plotNtOligo <- renderPlot({
-        if (is.na(selectedOligo()$length[[1]])) {
-            NULL
-        } else {
-            from <- selectedOligo()$start
-            to <- selectedOligo()$end
-            plotData(consensus(), highlight = c(from, to))
-        }
     })
 
     output$plotNtAssay <- renderPlot({
