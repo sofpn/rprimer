@@ -100,29 +100,6 @@ plotData(myConsensusProfile)
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
-Or zoom into a specific region of interest:
-
-``` r
-## Select position 5000 to 5500 
-roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5500, ]
-
-plotData(roi)
-```
-
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
-
-The nucleotide distribution can be shown by specifying `type =
-"nucleotide`:
-
-``` r
-## Select position 150 to 170
-selection <- myConsensusProfile[myConsensusProfile$position >= 150 & myConsensusProfile$position <= 170, ]
-
-plotData(selection, type = "nucleotide")
-```
-
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
-
 ### Step 2: `oligos`
 
 The next step is to design oligos. You can either use the default
@@ -150,7 +127,7 @@ The results can be visualized as a dashboard, using `plotData()`:
 plotData(myOligos)
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
 ### Step 3: `assays`
 
@@ -180,7 +157,7 @@ The assays can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
 ### Check match
 
@@ -196,14 +173,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence        | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches |
-| :------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :-------------- | --------------: | :---------------- | -------------------: | :--------------------- |
-| CRGTGGTTTCTGGGGTGA   |         0.96 | M73218.1….     |        0.03 | BD378055….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
-| CTGGGGTGACMGGGTTGATT |         0.94 | M73218.1….     |        0.04 | AB222183….    |             0 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….             |
-| ACMGGGTTGATTCTCAGC   |         0.93 | M73218.1….     |        0.06 | AB222183….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
-| GGGGTGACMGGGTTGATTC  |         0.94 | M73218.1….     |        0.04 | AB222183….    |             0 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….             |
-| TGATTCTCAGCCCTTCGC   |         0.94 | M73218.1….     |        0.06 | JF443725….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
-| TTCATCCAACCAACCCCTTY |         0.94 | M73218.1….     |        0.05 | FJ457024….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
+| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches |
+| :--------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :-------------- | --------------: | :---------------- | -------------------: | :--------------------- |
+| TCATCCAACCAACCCCTTY    |         0.94 | M73218.1….     |        0.05 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
+| TCATCCAACCAACCCCTTYGCM |         0.92 | M73218.1….     |        0.06 | FJ457024….    |          0.01 | AY575857….      |               0 |                   |                 0.01 | MN614142….             |
+| GGTTGATTCTCAGCCCTTCGCM |         0.91 | M73218.1….     |        0.07 | AY575857….    |          0.01 | JF443725….      |               0 |                   |                 0.01 | MN614142….             |
+| TTCTGGGGTGACMGGGTTGA   |         0.95 | M73218.1….     |        0.04 | AB222183….    |          0.00 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….             |
+| TCCAACCAACCCCTTYGC     |         0.92 | M73218.1….     |        0.06 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
+| CGACAGAATTRATTTCGTCGG  |         0.94 | M73218.1….     |        0.05 | AY575857….    |          0.01 | MH410175….      |               0 |                   |                 0.00 |                        |
 
 The match table can be visualized using `plotData()`:
 
@@ -211,7 +188,7 @@ The match table can be visualized using `plotData()`:
 plotData(matchTableOligos)
 ```
 
-<img src="man/figures/README-unnamed-chunk-18-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
 
 ## More information
 

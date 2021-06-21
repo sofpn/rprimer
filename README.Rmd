@@ -91,24 +91,6 @@ The results can be visualized with `plotData()`. You can either plot the entire 
 plotData(myConsensusProfile)
 ```
 
-Or zoom into a specific region of interest: 
-
-```{r, fig.width=12, fig.height=6}
-## Select position 5000 to 5500 
-roi <- myConsensusProfile[myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5500, ]
-
-plotData(roi)
-```
-
-The nucleotide distribution can be shown by specifying `type = "nucleotide`:
-
-```{r, fig.width=12, fig.height=6}
-## Select position 150 to 170
-selection <- myConsensusProfile[myConsensusProfile$position >= 150 & myConsensusProfile$position <= 170, ]
-
-plotData(selection, type = "nucleotide")
-```
-
 ### Step 2: `oligos`
 
 The next step is to design oligos. You can either use the default settings as below, or adjust them (see the package vignette or `?oligos` for more information). 

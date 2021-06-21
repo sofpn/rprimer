@@ -84,6 +84,30 @@ makeEmptyRow <- function(x) {
     emptyRow
 }
 
+assayOverviewTable <- function(x) {
+    x <- as.data.frame(x)
+    if (any(grepl("Pr", names(x)))) {
+        x$iupacSequencePr <- ifelse(x$plusPr, x$iupacSequencePr, NA)
+        x$iupacSequenceRcPr <- ifelse(x$minusPr, x$iupacSequenceRcPr, NA)
+        x <- x[c(
+            "start", "end", "length", "iupacSequenceFwd", "iupacSequenceRev",
+            "iupacSequencePr", "iupacSequenceRcPr"
+        )]
+        names(x) <- c(
+            "Start", "End", "Length", "Forward", "Reverse",
+            "Probe, plus", "Probe, minus"
+        )
+    } else {
+        x <- x[c(
+            "start", "end", "length", "iupacSequenceFwd", "iupacSequenceRev"
+        )]
+        names(x) <- c(
+            "Start", "End", "Length", "Forward", "Reverse"
+        )
+    }
+    x
+}
+
 # Conditional panels ===========================================================
 
 #### File upload/use example #####
@@ -152,31 +176,12 @@ useProbe <- conditionalPanel(
 
 #### Assay with probe ####
 
-probeSelectionTable <- conditionalPanel(
-    condition = "input.probe == true",
-    br(),
-    h4("Probe"),
-    DT::dataTableOutput("table9")
-)
-
-probeSelectionPlot <- conditionalPanel(
-    condition = "input.probe == true",
-    h4("Probe"),
-    br(),
-    br(),
-    shinycssloaders::withSpinner(plotOutput(
-        "plot9",
-        height = plotHeight / 2,
-        width = "100%"
-    ), color = "grey")
-)
-
 probeSelectionMatch <- conditionalPanel(
     condition = "input.probe == true",
     br(),
     br(),
-    h4("Probe"),
-    hr(),
+    h5("Probe"),
+    br(),
     htmlOutput("html19"),
     br(),
     br(),
@@ -190,6 +195,28 @@ probeSelectionMatch <- conditionalPanel(
     br(),
     br(),
     htmlOutput("html23")
+)
+
+assayProbeInfo <- conditionalPanel(
+    condition = "input.probe == true",
+    box(width = 12, title = "Probe",
+        solidHeader = TRUE,
+        DT::dataTableOutput("tablePr"),
+        br(),
+        h5("All sequence variants"),
+        DT::dataTableOutput("table9"),
+        br(),
+        h5("Match information"),
+        DT::dataTableOutput("tablePrMatch"),
+        br(),
+        h5("Nucleotide distribution in target alignment"),
+        shinycssloaders::withSpinner(plotOutput(
+            "plot9",
+            height = plotHeight / 2,
+            width = "100%"
+        ), color = "grey"),
+    )
+
 )
 
 # UI ===========================================================================
@@ -466,6 +493,11 @@ server <- function(input, output) {
         } else {
             checkMatch(selectedAssay(), aln())
         }
+    })
+
+    selectedAssayMatchList <- reactive({
+        req(selectedAssayMatch())
+        splitAssayToList(selectedAssayMatch())
     })
 
     # Links ====================================================================
@@ -866,8 +898,7 @@ server <- function(input, output) {
                                 ), color = "grey")
                    ),
                    tabPanel(title = "Table and selection",
-                            h5("Select a row for more details."),
-                            br(),
+                            h5("Select a row for more details"),
                             br(),
                             downloadLink(
                                 "download2", "Download table"
@@ -1016,8 +1047,7 @@ server <- function(input, output) {
                                 ), color = "grey")
                    ),
                    tabPanel(title = "Table and selection",
-                            h5("Select a row for more details."),
-                            br(),
+                            h5("Select a row for more details"),
                             br(),
                             downloadLink(
                                 "download6", "Download table"
@@ -1037,75 +1067,72 @@ server <- function(input, output) {
     output$assaySelection <- renderUI({
         req(selectedAssay())
         box(width = 12, title = "Selection",
-            box(width = 12, title = "Table",
+            box(width = 12, title = "Overview",
                 solidHeader = TRUE,
                 downloadLink(
-                    "download8", "Download table"
+                    "download8", "Download summary table"
+                ),
+                br(),
+                downloadLink(
+                    "download9", "Download assay as fasta"
                 ),
                 br(),
                 br(),
-                DT::dataTableOutput("table6")
-            ),
-            box(width = 12, title = "All sequence variants",
-                solidHeader = TRUE,
-                downloadLink(
-                    "download9", "Download fasta"
-                ),
+                DT::dataTableOutput("table6"),
                 br(),
                 br(),
-                h4("Forward"),
-                DT::dataTableOutput("table7"),
-                br(),
-                h4("Reverse"),
-                DT::dataTableOutput("table8"),
-                probeSelectionTable
-            ),
-            box(width = 12, title = "Amplicon sequence",
-                solidHeader = TRUE,
-                verbatimTextOutput("ampSeq")
-            ),
-            box(width = 12,
-                title = "Nucleotide distribution in target alignment",
-                solidHeader = TRUE,
-                h4("Forward"),
-                br(),
-                br(),
-                shinycssloaders::withSpinner(plotOutput(
-                    "plot7",
-                    height = plotHeight / 2,
-                    width = "100%"
-                ), color = "grey"),
-                h4("Reverse"),
-                br(),
-                br(),
-                shinycssloaders::withSpinner(plotOutput(
-                    "plot8",
-                    height = plotHeight / 2,
-                    width = "100%"
-                ), color = "grey"),
-                probeSelectionPlot
-            ),
-            box(width = 12,
-                title = "Position in target alignment",
-                solidHeader = TRUE,
+                h5("Position in target alignment"),
                 shinycssloaders::withSpinner(plotOutput(
                     "plotNtAssay",
                     height = plotHeight / 2,
                     width = "100%"
                 ), color = "grey")
             ),
-            box(width = 12, title = "Match plot",
+            box(width = 12, title = "Forward",
+                solidHeader = TRUE,
+                DT::dataTableOutput("tableFwd"),
+                br(),
+                h5("All sequence variants"),
+                DT::dataTableOutput("table7"),
+                br(),
+                h5("Match information"),
+                DT::dataTableOutput("tableFwdMatch"),
+                br(),
+                h5("Nucleotide distribution in target alignment"),
+                shinycssloaders::withSpinner(plotOutput(
+                    "plot7",
+                    height = plotHeight / 2,
+                    width = "100%"
+                ), color = "grey"),
+            ),
+            box(width = 12, title = "Reverse",
+                solidHeader = TRUE,
+                DT::dataTableOutput("tableRev"),
+                br(),
+                h5("All sequence variants"),
+                DT::dataTableOutput("table8"),
+                br(),
+                h5("Match information"),
+                DT::dataTableOutput("tableRevMatch"),
+                br(),
+                h5("Nucleotide distribution in target alignment"),
+                shinycssloaders::withSpinner(plotOutput(
+                    "plot8",
+                    height = plotHeight / 2,
+                    width = "100%"
+                ), color = "grey"),
+            ),
+            assayProbeInfo,
+            box(width = 12, title = "Match details",
                 solidHeader = TRUE,
                 shinycssloaders::withSpinner(plotOutput(
                     "plot10",
                     height = plotHeight / 2,
                     width = "100%"
-                ), color = "grey")
-            ),
-            box(width = 12, title = "Match details",
-                solidHeader = TRUE,
-                h4("Forward"),
-                hr(),
+                ), color = "grey"),
+                br(),
+                h5("Forward"),
+                br(),
                 htmlOutput("html9"),
                 br(),
                 br(),
@@ -1121,8 +1148,8 @@ server <- function(input, output) {
                 htmlOutput("html13"),
                 br(),
                 br(),
-                h4("Reverse"),
-                hr(),
+                h5("Reverse"),
+                br(),
                 htmlOutput("html14"),
                 br(),
                 br(),
@@ -1177,200 +1204,141 @@ server <- function(input, output) {
     output$html3 <- renderText({
         req(!is.null(selectedOligoMatch()))
         c(
-            "<b>Perfect match</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedOligoMatch()$perfectMatch, 2), "<br><br>",
-            "ID<br>",
+            "<b>Perfect match</b><br>",
             selectedOligoMatch()$idPerfectMatch[[1]])
     })
 
     output$html4 <- renderText({
         req(!is.null(selectedOligoMatch()))
         c(
-            "<b>One mismatch</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedOligoMatch()$oneMismatch, 2), "<br><br>",
-            "ID<br>",
+            "<b>One mismatch</b><br>",
             selectedOligoMatch()$idOneMismatch[[1]])
     })
 
     output$html5 <- renderText({
         req(!is.null(selectedOligoMatch()))
         c(
-            "<b>Two mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedOligoMatch()$twoMismatches, 2), "<br><br>",
-            "ID<br>",
+            "<b>Two mismatches</b><br>",
             selectedOligoMatch()$idTwoMismatches[[1]])
     })
 
     output$html6 <- renderText({
         req(!is.null(selectedOligoMatch()))
         c(
-            "<b>Three mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedOligoMatch()$threeMismatches, 2), "<br><br>",
-            "ID<br>",
+            "<b>Three mismatches</b><br>",
             selectedOligoMatch()$idThreeMismatches[[1]])
     })
 
     output$html7 <- renderText({
         req(!is.null(selectedOligoMatch()))
         c(
-            "<b>Four or more mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedOligoMatch()$fourOrMoreMismatches, 2), "<br><br>",
-            "ID<br>",
+            "<b>Four or more mismatches</b><br>",
             selectedOligoMatch()$idFourOrMoreMismatches[[1]])
     })
 
     output$html9 <- renderText({
         req(!is.null(selectedAssayMatch()))
         c(
-            "<b>Perfect match</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$perfectMatchFwd, 2), "<br><br>",
-            "ID<br>",
+            "<b>Perfect match</b><br>",
             selectedAssayMatch()$idPerfectMatchFwd[[1]])
     })
 
     output$html10 <- renderText({
         req(!is.null(selectedAssayMatch()))
         c(
-            "<b>One mismatch</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$oneMismatchFwd, 2), "<br><br>",
-            "ID<br>",
+            "<b>One mismatch</b><br>",
             selectedAssayMatch()$idOneMismatchFwd[[1]])
     })
 
     output$html11 <- renderText({
         req(!is.null(selectedAssayMatch()))
         c(
-            "<b>Two mismatches</b><br><br>",
+            "<b>Two mismatches</b><br>",
             "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$twoMismatchesFwd, 2), "<br><br>",
-            "ID<br>",
             selectedAssayMatch()$idTwoMismatchesFwd[[1]])
     })
 
     output$html12 <- renderText({
         req(!is.null(selectedAssayMatch()))
         c(
-            "<b>Three mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$threeMismatchesFwd, 2), "<br><br>",
-            "ID<br>",
+            "<b>Three mismatches</b><br>",
             selectedAssayMatch()$idThreeMismatchesFwd[[1]])
     })
 
     output$html13 <- renderText({
         req(!is.null(selectedAssayMatch()))
         c(
-            "<b>Four or more mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$fourOrMoreMismatchesFwd, 2), "<br><br>",
-            "ID<br>",
+            "<b>Four or more mismatches</b><br>",
             selectedAssayMatch()$idFourOrMoreMismatchesFwd[[1]])
     })
 
     output$html14 <- renderText({
         req(!is.null(selectedAssayMatch()))
         c(
-            "<b>Perfect match</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$perfectMatchRev, 2), "<br><br>",
-            "ID<br>",
+            "<b>Perfect match</b><br>",
             selectedAssayMatch()$idPerfectMatchRev[[1]])
     })
 
     output$html15 <- renderText({
         req(!is.null(selectedAssayMatch()))
         c(
-            "<b>One mismatch</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$oneMismatchRev, 2), "<br><br>",
-            "ID<br>",
+            "<b>One mismatch</b><br>",
             selectedAssayMatch()$idOneMismatchRev[[1]])
     })
 
     output$html16 <- renderText({
         req(!is.null(selectedAssayMatch()))
         c(
-            "<b>Two mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$twoMismatchesRev, 2), "<br><br>",
-            "ID<br>",
+            "<b>Two mismatches</b><br>",
             selectedAssayMatch()$idTwoMismatchesRev[[1]])
     })
 
     output$html17 <- renderText({
         req(!is.null(selectedAssayMatch()))
         c(
-            "<b>Three mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$threeMismatchesRev, 2), "<br><br>",
-            "ID<br>",
+            "<b>Three mismatches</b><br>",
             selectedAssayMatch()$idThreeMismatchesRev[[1]])
     })
 
     output$html18 <- renderText({
         req(!is.null(selectedAssayMatch()))
         c(
-            "<b>Four or more mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$fourOrMoreMismatchesRev, 2), "<br><br>",
-            "ID<br>",
+            "<b>Four or more mismatches</b><br>",
             selectedAssayMatch()$idFourOrMoreMismatchesRev[[1]])
     })
 
     output$html19 <- renderText({
         req(any(grepl("Pr", names(selectedAssayMatch()))))
         c(
-            "<b>Perfect match</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$perfectMatchPr, 2), "<br><br>",
-            "ID<br>",
+            "<b>Perfect match</b><br>",
             selectedAssayMatch()$idPerfectMatchPr[[1]])
     })
 
     output$html20 <- renderText({
         req(any(grepl("Pr", names(selectedAssayMatch()))))
         c(
-            "<b>One mismatch</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$oneMismatchPr, 2), "<br><br>",
-            "ID<br>",
+            "<b>One mismatch</b><br>",
             selectedAssayMatch()$idOneMismatchPr[[1]])
     })
 
     output$html21 <- renderText({
         req(any(grepl("Pr", names(selectedAssayMatch()))))
         c(
-            "<b>Two mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$twoMismatchesPr, 2), "<br><br>",
-            "ID<br>",
+            "<b>Two mismatches</b><br>",
             selectedAssayMatch()$idTwoMismatchesPr[[1]])
     })
 
     output$html22 <- renderText({
         req(any(grepl("Pr", names(selectedAssayMatch()))))
         c(
-            "<b>Three mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$threeMismatchesPr, 2), "<br><br>",
-            "ID<br>",
+            "<b>Three mismatches</b><br>",
             selectedAssayMatch()$idThreeMismatchesPr[[1]])
     })
 
     output$html23 <- renderText({
         req(any(grepl("Pr", names(selectedAssayMatch()))))
         c(
-            "<b>Four or more mismatches</b><br><br>",
-            "Proportion of target sequences<br>",
-            round(selectedAssayMatch()$fourOrMoreMismatchesPr, 2), "<br><br>",
-            "ID<br>",
+            "<b>Four or more mismatches</b><br>",
             selectedAssayMatch()$idFourOrMoreMismatchesPr[[1]])
     })
 
@@ -1606,56 +1574,7 @@ server <- function(input, output) {
         if (is.na(selectedAssay()$length[[1]])) {
             NULL
         } else {
-            x <- selectedAssay()
-            x <- roundDbls(removeListColumns(as.data.frame(x)))
-            names(x) <- if (any(grepl("Pr", names(x)))) {
-                c(
-                    "Start", "End", "Length", "Total degeneracy", "Score",
-                    "Start, forward", "End, forward", "Length, forward",
-                    "IUPAC sequence, forward", "Identity, forward",
-                    "Coverage, forward", "Degeneracy, forward",
-                    "GC content, mean, forward", "GC content, range, forward",
-                    "Tm, mean, forward", "Tm, range, forward",
-                    "Delta G, mean, forward", "Delta G, range, forward",
-                    "Design method, forward",
-                    "Start, reverse", "End, reverse", "Length, reverse",
-                    "IUPAC sequence, reverse", "Identity, reverse",
-                    "Coverage, reverse", "Degeneracy, reverse",
-                    "GC content, mean, reverse", "GC content, range, reverse",
-                    "Tm, mean, reverse", "Tm, range, reverse",
-                    "Delta G, mean, reverse", "Delta G, range, reverse",
-                    "Design method, reverse",
-                    "Plus sense, probe", "Minus sense, probe",
-                    "Start, probe", "End, probe", "Length, probe",
-                    "IUPAC sequence, probe", "IUPAC sequence RC, probe",
-                    "Identity, probe",
-                    "Coverage, probe", "Degeneracy, probe",
-                    "GC content, mean, probe", "GC content, range, probe",
-                    "Tm, mean, probe", "Tm, range, probe",
-                    "Delta G, mean, probe", "Delta G, range, probe",
-                    "Design method, probe", "ROI, start", "ROI, end"
-                )
-            } else {
-                c(
-                    "Start", "End", "Length", "Total degeneracy", "Score",
-                    "Start, forward", "End, forward", "Length, forward",
-                    "IUPAC sequence, forward", "Identity, forward",
-                    "Coverage, forward", "Degeneracy, forward",
-                    "GC content, mean, forward", "GC content, range, forward",
-                    "Tm, mean, forward", "Tm, range, forward",
-                    "Delta G, mean, forward", "Delta G, range, forward",
-                    "Design method, forward",
-                    "Start, reverse", "End, reverse", "Length, reverse",
-                    "IUPAC sequence, reverse", "Identity, reverse",
-                    "Coverage, reverse", "Degeneracy, reverse",
-                    "GC content, mean, reverse", "GC content, range, reverse",
-                    "Tm, mean, reverse", "Tm, range, reverse",
-                    "Delta G, mean, reverse", "Delta G, range, reverse",
-                    "Design method, reverse",
-                    "ROI, start", "ROI, end"
-                )
-            }
-            x
+            assayOverviewTable(selectedAssay())
         }
     }, options = list(
         info = FALSE,
@@ -1665,10 +1584,74 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
+    output$tableFwd <- DT::renderDataTable({
+        x <- roundDbls(removeListColumns(selectedAssayList()[[1]]))
+        names(x) <- c(
+            "Start", "End", "Length", "IUPAC sequence", "Identity",
+            "Coverage", "Degeneracy", "GC, mean", "GC, range", "Tm, mean",
+            "Tm, range", "Delta G, mean", "Delta G, range", "Method"
+            )
+        x
+    }, options = list(
+        info = FALSE,
+        searching = FALSE, paging = FALSE,
+        scrollX = TRUE, autoWidth = FALSE,
+        ordering = FALSE
+    ), rownames = FALSE, selection  = "none"
+    )
+
+    output$tableFwdMatch <- DT::renderDataTable({
+        x <- roundDbls(removeListColumns(selectedAssayMatchList()[[1]]))
+        x <- x[ , -1]
+        names(x) <- c(
+            "Perfect match", "1 mismatch", "2 mismatches", "3 mismatches",
+            "4 or more mismatches"
+            )
+        x
+    }, options = list(
+        info = FALSE,
+        searching = FALSE, paging = FALSE,
+        scrollX = TRUE, autoWidth = FALSE,
+        ordering = FALSE
+    ), rownames = FALSE, selection  = "none"
+    )
+
     output$table7 <- DT::renderDataTable({
         x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[1]])))
         names(x) <- c(
             "Sequence", "GC content", "Tm", "Delta G"
+        )
+        x
+    }, options = list(
+        info = FALSE,
+        searching = FALSE, paging = FALSE,
+        scrollX = TRUE, autoWidth = FALSE,
+        ordering = FALSE
+    ), rownames = FALSE, selection  = "none"
+    )
+
+    output$tableRev <- DT::renderDataTable({
+        x <- roundDbls(removeListColumns(selectedAssayList()[[2]]))
+        names(x) <- c(
+            "Start", "End", "Length", "IUPAC sequence", "Identity",
+            "Coverage", "Degeneracy", "GC, mean", "GC, range", "Tm, mean",
+            "Tm, range", "Delta G, mean", "Delta G, range", "Method"
+        )
+        x
+    }, options = list(
+        info = FALSE,
+        searching = FALSE, paging = FALSE,
+        scrollX = TRUE, autoWidth = FALSE,
+        ordering = FALSE
+    ), rownames = FALSE, selection  = "none"
+    )
+
+    output$tableRevMatch <- DT::renderDataTable({
+        x <- roundDbls(removeListColumns(selectedAssayMatchList()[[2]]))
+        x <- x[ , -1]
+        names(x) <- c(
+            "Perfect match", "1 mismatch", "2 mismatches", "3 mismatches",
+            "4 or more mismatches"
         )
         x
     }, options = list(
@@ -1693,6 +1676,45 @@ server <- function(input, output) {
     ), rownames = FALSE, selection  = "none"
     )
 
+    output$tablePr <- DT::renderDataTable({
+        req(length(selectedAssayList()) == 3)
+        x <- roundDbls(removeListColumns(selectedAssayList()[[3]]))
+        x$iupacSequence <- ifelse(x$plus, x$iupacSequence, NA)
+        x$iupacSequenceRc <- ifelse(x$minus, x$iupacSequenceRc, NA)
+        x <- x[, c(-1, -2)]
+        names(x) <- c(
+            "Start", "End", "Length", "IUPAC sequence, plus",
+            "Iupac sequence, minus",
+            "Identity",
+            "Coverage", "Degeneracy", "GC, mean", "GC, range", "Tm, mean",
+            "Tm, range", "Delta G, mean", "Delta G, range", "Method"
+        )
+        x
+    }, options = list(
+        info = FALSE,
+        searching = FALSE, paging = FALSE,
+        scrollX = TRUE, autoWidth = TRUE,
+        ordering = FALSE
+    ), rownames = FALSE, selection  = "none"
+    )
+
+    output$tablePrMatch <- DT::renderDataTable({
+        req(length(selectedAssayList()) == 3)
+        x <- roundDbls(removeListColumns(selectedAssayMatchList()[[3]]))
+        x <- x[ , -1]
+        names(x) <- c(
+            "Perfect match", "1 mismatch", "2 mismatches", "3 mismatches",
+            "4 or more mismatches"
+        )
+        x
+    }, options = list(
+        info = FALSE,
+        searching = FALSE, paging = FALSE,
+        scrollX = TRUE, autoWidth = FALSE,
+        ordering = FALSE
+    ), rownames = FALSE, selection  = "none"
+    )
+
     output$table9 <- DT::renderDataTable({
         req(length(selectedAssayList()) == 3)
         x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[3]])))
@@ -1706,6 +1728,8 @@ server <- function(input, output) {
         ordering = FALSE
     ), rownames = FALSE, selection  = "none"
     )
+
+
 
     #### Download links ####
 
