@@ -195,11 +195,14 @@ assays <- function(x,
         stringsAsFactors = FALSE
     )
     names(pairs) <- c("fwd", "rev")
-    fwd <- x[match(pairs$fwd, x$iupacSequence), ]
-    rev <- x[match(pairs$rev, x$iupacSequenceRc), ]
+    fwdMatch <- x[x$method == "ambiguous" | x$method == "mixedFwd", ]
+    fwd <- fwdMatch[match(pairs$fwd, fwdMatch$iupacSequence), ]
+    revMatch <- x[x$method == "ambiguous" | x$method == "mixedRev", ]
+    rev <- revMatch[match(pairs$rev, revMatch$iupacSequenceRc), ]
     names(fwd) <- paste0(names(fwd), "Fwd")
     names(rev) <- paste0(names(rev), "Rev")
-    cbind(fwd, rev)
+    all <- cbind(fwd, rev)
+    all
 }
 
 #' @noRd

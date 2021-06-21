@@ -1011,8 +1011,11 @@ oligos <- function(x,
     fwd <- x$okFwd
     rev <- x$okRev
     x <- cbind(x, fwd, rev)
-    x$rev[x$method == "mixedFwd" & x$rev] <- FALSE
-    x$fwd[x$method == "mixedRev" & x$fwd] <- FALSE
+    if (designStrategyPrimer == "mixed") {
+        x$rev[x$method == "mixedFwd" & x$rev] <- FALSE
+        x$fwd[x$method == "mixedRev" & x$fwd] <- FALSE
+        x <- x[x$method != "ambiguous", ]
+    }
     x <- x[x$fwd | x$rev, , drop = FALSE]
     remove <- c(
         "gcInRange", "tmInRange",

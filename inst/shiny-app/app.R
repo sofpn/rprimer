@@ -11,6 +11,53 @@ options(shiny.sanitize.errors = FALSE)
 
 # Custom functions =============================================================
 
+selectOligos <- function(x,
+                         fwdFrom,
+                         fwdTo,
+                         revFrom,
+                         revTo,
+                         prFrom,
+                         prTo,
+                         fwdIdentity,
+                         fwdCoverage,
+                         revIdentity,
+                         revCoverage,
+                         prIdentity,
+                         prCoverage) {
+    x <- as.data.frame(x)
+    emptyRow <- makeEmptyRow(x)
+    primers <- x[x$type == "primer", ]
+    fwd <- primers$fwd &
+        primers$start >= fwdFrom &
+        primers$end <= fwdTo &
+        primers$identity >= fwdIdentity &
+        primers$coverage >= fwdCoverage
+    rev <- primers$rev &
+        primers$start >= revFrom &
+        primers$end <= revTo &
+        primers$identity >= revIdentity &
+        primers$coverage >= revCoverage
+    primers$fwd <- fwd
+    primers$rev <- rev
+    if (any(x$type == "probe")) {
+        probes <- x[x$type == "probe", ]
+        pr <- probes$start >= prFrom &
+            probes$end <= prTo &
+            probes$identity >= prIdentity &
+            probes$coverage >= prCoverage
+        probes <- probes[pr, ]
+    } else {
+        probes <- NULL
+    }
+    all <- rbind(primers, probes)
+    all <- all[all$fwd | all$rev, ]
+    all <- all[order(all$start), ]
+    if (nrow(all) == 0L) {
+        all <- emptyRow
+    }
+    RprimerOligo(all)
+}
+
 roundDbls <- function(x) {
     x <- as.data.frame(x)
     y <- lapply(seq_len(ncol(x)), function(i) {
@@ -387,47 +434,20 @@ server <- function(input, output) {
 
     oligoSelection <- reactive({
         req(oligoCandidates())
-        x <- oligoCandidates()
-        x <- as.data.frame(x)
-        emptyRow <- makeEmptyRow(x)
-        fwd <- x$fwd & x$type == "primer" &
-            x$start >= as.numeric(input$fwdRegionFrom) &
-            x$end <= as.numeric(input$fwdRegionTo)
-        rev <- (x$rev & x$type == "primer" &
-                    x$start >= as.numeric(input$revRegionFrom)  &
-                    x$end <= as.numeric(input$revRegionTo))
-        if (any(x$type == "probe")) {
-            pr <- x$type == "probe" &
-                x$start >= as.numeric(input$prRegionFrom)  &
-                x$end <= as.numeric(input$prRegionTo)
-            x <- x[fwd | rev | pr, ]
-        } else {
-            x <- x[fwd | rev, ]
-        }
-        x$fwd[x$type == "primer" & x$start < as.numeric(input$fwdRegionFrom)] <- FALSE
-        x$fwd[x$type == "Primer" & x$end > as.numeric(input$fwdRegionTo)] <- FALSE
-        x$rev[x$type == "primer" & x$start < as.numeric(input$revRegionFrom)] <- FALSE
-        x$rev[x$type == "primer" & x$end > as.numeric(input$revRegionTo)] <- FALSE
-        x$fwd[x$type == "primer" &
-                  x$identity < input$minOligoIdentityFwd |
-                  x$coverage < input$minOligoCoverageFwd] <- FALSE
-        x$rev[x$type == "primer" &
-                  x$identity < input$minOligoIdentityRev |
-                  x$coverage < input$minOligoCoverageRev] <- FALSE
-        if (any(x$type == "probe")) {
-            x$fwd[x$type == "probe" &
-                      x$identity < input$minOligoIdentityPr |
-                      x$coverage < input$minOligoCoveragePr] <- FALSE
-            x$rev[x$type == "probe" &
-                      x$identity < input$minOligoIdentityPr |
-                      x$coverage < input$minOligoCoveragePr] <- FALSE
-        }
-        x <- x[x$fwd | x$rev | (x$fwd & x$rev), ]
-        #### !!subsettningen kan snyggas till.... ####
-        if (nrow(x) == 0L) {
-            x <- emptyRow
-        }
-        RprimerOligo(x)
+        selectOligos(oligoCandidates(),
+                     fwdFrom = input$fwdRegionFrom,
+                     fwdTo = input$fwdRegionTo,
+                     revFrom = input$revRegionFrom,
+                     revTo = input$revRegionTo,
+                     prFrom = input$prRegionFrom,
+                     prTo = input$prRegionTo,
+                     fwdIdentity = input$minOligoIdentityFwd,
+                     revIdentity = input$minOligoIdentityRev,
+                     prIdentity = input$minOligoIdentityPr,
+                     fwdCoverage = input$minOligoCoverageFwd,
+                     revCoverage = input$minOligoCoverageRev,
+                     prCoverage = input$minOligoCoveragePr
+                     )
     })
 
     selectedOligo <- reactive({
@@ -1174,21 +1194,6 @@ server <- function(input, output) {
         )
     })
 
-    #### verbatim TO DO ###############
-
- #   output$ampSeq <- verbatimTextOutput({
- #       if (is.na(selectedAssay()$length[[1]])) {
- #           NULL
- #       } else {
- #          from <- selectedAssay()$start
- #         to <- selectedAssay()$end
- #            amplicon <- consensus()[
- #               consensus()$position >= from & consensus()$position <= to,
- #           ]
- #           toupper(paste(amplicon$iupac, collapse = ""))
- #       }
- #   })
-
     #### Html ####
 
     output$html1 <- renderText({
@@ -1403,9 +1408,10 @@ server <- function(input, output) {
         } else {
             from <- selectedAssay()$startPr
             to <- selectedAssay()$endPr
+            rc <- ifelse(selectedAssay()$plusPr, FALSE, TRUE)
             plotData(consensus()[
                 consensus()$position >= from & consensus()$position <= to,
-            ], type = "nucleotide")
+            ], type = "nucleotide", rc = rc)
         }
     })
 
@@ -1512,6 +1518,10 @@ server <- function(input, output) {
         } else {
             x <- assaySelection()
             x <- roundDbls(removeListColumns(as.data.frame(x)))
+            if (any(grepl("Pr", names(x)))) {
+                x$iupacSequencePr <- ifelse(x$plusPr, x$iupacSequencePr, NA)
+                x$iupacSequenceRcPr <- ifelse(x$minusPr, x$iupacSequenceRcPr, NA)
+            }
             names(x) <- if (any(grepl("Pr", names(x)))) {
                 c(
                     "Start", "End", "Length", "Total degeneracy", "Score",
@@ -1579,7 +1589,7 @@ server <- function(input, output) {
     }, options = list(
         info = FALSE,
         searching = FALSE, paging = FALSE,
-        scrollX = TRUE, autoWidth = TRUE,
+        scrollX = TRUE, autoWidth = FALSE,
         ordering = FALSE
     ), rownames = FALSE, selection  = "none"
     )
@@ -1721,6 +1731,12 @@ server <- function(input, output) {
         names(x) <- c(
             "Sequence, plus", "Sequence, minus", "GC content", "Tm", "Delta G"
         )
+     #   if (!selectedAssayList()$plus) {
+     #       x <- x[c("Sequence, minus", "GC content", "Tm", "Delta G")]
+     #   }
+     #   if (!selectedAssayList()$minus) {
+     #       x <- x[c("Sequence, plus", "GC content", "Tm", "Delta G")]
+     #   }
         x    }, options = list(
         info = FALSE,
         searching = FALSE, paging = FALSE,
