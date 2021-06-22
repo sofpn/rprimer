@@ -166,11 +166,11 @@ assays <- function(x,
         stop("'tmDifferencePrimers must be either 'NULL' or a number.")
     }
     x <- as.data.frame(x)
-    assays <- .combinePrimers(x[x$type == "primer", ],
+    assays <- .combinePrimers(x[x$type == "primer", , drop = FALSE],
                               length,
                               tmDifferencePrimers)
     if (any(x$type == "probe")) {
-        assays <- .addProbes(assays, x[x$type == "probe", ])
+        assays <- .addProbes(assays, x[x$type == "probe", , drop = FALSE])
     }
     assays <- .beautifyPrimers(assays)
     if (any(x$type == "probe")) {
@@ -188,21 +188,20 @@ assays <- function(x,
 #' x <- exampleRprimerOligo
 #' .pairPrimers(x)
 .pairPrimers <- function(x) {
-    fwd <- x[x$fwd, ]
-    rev <- x[x$rev, ]
+    fwd <- x[x$fwd, , drop = FALSE]
+    rev <- x[x$rev, , drop = FALSE]
     pairs <- expand.grid(
         fwd$iupacSequence, rev$iupacSequenceRc,
         stringsAsFactors = FALSE
     )
     names(pairs) <- c("fwd", "rev")
-    fwdMatch <- x[x$method == "ambiguous" | x$method == "mixedFwd", ]
-    fwd <- fwdMatch[match(pairs$fwd, fwdMatch$iupacSequence), ]
-    revMatch <- x[x$method == "ambiguous" | x$method == "mixedRev", ]
-    rev <- revMatch[match(pairs$rev, revMatch$iupacSequenceRc), ]
+    fwdMatch <- x[x$method == "ambiguous" | x$method == "mixedFwd", , drop = FALSE]
+    fwd <- fwdMatch[match(pairs$fwd, fwdMatch$iupacSequence), , drop = FALSE]
+    revMatch <- x[x$method == "ambiguous" | x$method == "mixedRev", , drop = FALSE]
+    rev <- revMatch[match(pairs$rev, revMatch$iupacSequenceRc), , drop = FALSE]
     names(fwd) <- paste0(names(fwd), "Fwd")
     names(rev) <- paste0(names(rev), "Rev")
-    all <- cbind(fwd, rev)
-    all
+    cbind(fwd, rev)
 }
 
 #' @noRd
@@ -244,12 +243,12 @@ assays <- function(x,
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
 #' assays <- .combinePrimers(x)
-#' .identifyProbes(assays, x[x$type == "probe", ])
+#' .identifyProbes(assays, x[x$type == "probe", , drop = FALSE])
 .identifyProbes <- function(x, probes) {
     lapply(seq_len(nrow(x)), function(i) {
         from <- x$endFwd[[i]] + 1
         to <- x$startRev[[i]] - 1
-        probes[probes$start >= from & probes$end <= to, ]
+        probes[probes$start >= from & probes$end <= to, , drop = FALSE]
     })
 }
 
@@ -258,7 +257,7 @@ assays <- function(x,
 #' @examples
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
-#' probes <- .identifyProbes(assays, x[x$type == "probe", ])
+#' probes <- .identifyProbes(assays, x[x$type == "probe", , drop = FALSE])
 #' test <- .extractProbes(assays, probes)
 .extractProbes <- function(x, probes) {
     nProbes <- vapply(probes, nrow, integer(1), USE.NAMES = FALSE)
@@ -287,7 +286,7 @@ assays <- function(x,
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
 #' assays <- .combinePrimers(x)
-#' test <- .addProbes(assays, x[x$type == "probe", ])
+#' test <- .addProbes(assays, x[x$type == "probe", , drop = FALSE])
 .addProbes <- function(x, probes) {
     probeCandidates <- .identifyProbes(x, probes)
     .extractProbes(x, probeCandidates)

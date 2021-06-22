@@ -655,10 +655,11 @@ oligos <- function(x,
         which(x$gapFrequency > maxGapFrequency),
         which(invalidCharacters)
     ))
-    if (length(invalid > 0L)) {
-        lapply(x, function(x) {
+    if (length(invalid) > 0L) {
+        x <- lapply(x, function(x) {
             if (is.matrix(x)) x[-invalid, , drop = FALSE] else x[-invalid]
         })
+        x
     } else {
         x
     }
