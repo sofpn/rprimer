@@ -293,10 +293,10 @@ ui <- dashboardPage(
                                 '.box{-webkit-box-shadow: none;
                     -moz-box-shadow: none;
                     box-shadow: none;}'))),
-                        box(
+                        box(width = 12,
                             title = ("Design degenerate oligos from a multiple DNA sequence alignment"),
                             h5(
-                                "This application is under development"
+                                em("This application is under development")
                                 ),
                             br(),
                             h5(tags$b("Introduction")),
@@ -305,7 +305,7 @@ ui <- dashboardPage(
                                 conservation and designing degenerate primers, probes and (RT)-(q/d)PCR
                                 assays from a multiple DNA sequence alignment. The workflow is
                                 developed primarily for sequence variable RNA viruses, but it should also
-                                be useful for other targets with high sequence variability."
+                                be useful for other targets with high sequence variability"
                             ),
                             br(),
                             h5(tags$b("Instructions for use")),
@@ -314,14 +314,19 @@ ui <- dashboardPage(
                             h5(tags$b("Citation")),
                             h5("S Persson et al., 2021, manuscript in preparation"),
                             br(),
-                            h5(tags$b("Source code")),
+                            h5(tags$b("R package and source code")),
                             uiOutput("codelink"),
                             br(),
+                            img(
+                                src = "rprimer.png",
+                                width = 150, height = 150
+                            ),
+                            br(),
+                            br(),
                             h5(tags$b("Contact")),
-                            h5("sofia.persson@slv.se"),
-                            width = 12
-                        )
-                    )
+                            h5("sofia.persson@slv.se")
+
+                    ))
             ),
 
             # Target alignment =================================================
