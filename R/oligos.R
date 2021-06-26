@@ -659,10 +659,8 @@ oligos <- function(x,
         x <- lapply(x, function(x) {
             if (is.matrix(x)) x[-invalid, , drop = FALSE] else x[-invalid]
         })
-        x
-    } else {
-        x
     }
+    x
 }
 
 #' @noRd
@@ -851,6 +849,7 @@ oligos <- function(x,
         iupacOligos <- .generateOligos(x, lengthOligo = i)
         if (designStrategyPrimer == "mixed") {
             iupacOligos <- .designMixedOligos(iupacOligos, probe)
+            ##### two separate generate oligos?! ####
         } else {
             iupacOligos <- .dropItems(iupacOligos)
         }

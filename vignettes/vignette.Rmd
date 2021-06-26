@@ -50,7 +50,7 @@ The design workflow consists of five functions:
 
 # Shiny application
 
-The design workflow can also be run through a Shiny application. It is loaded by:
+The package can be run through a Shiny application. It is loaded by:
 
 * `runRprimerApp()`
 

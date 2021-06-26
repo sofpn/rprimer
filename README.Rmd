@@ -4,15 +4,6 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, echo=FALSE, fig.align='right', out.width='25%', out.extra='style="float:right; padding:10px"'}
-#knitr::include_graphics("./man/figures/rprimer.png")
-```
-
-<!-- badges: start -->
-[![R build status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
-[![Codecov test coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
-<!-- badges: end -->
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -22,7 +13,14 @@ knitr::opts_chunk$set(
 )
 ```
 
+# rprimer <img src='man/figures/rprimer.png' align="right" height="139" />
+
 *This package is in development*
+
+<!-- badges: start -->
+[![R build status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
+[![Codecov test coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
+<!-- badges: end -->
 
 ## Installation
 
@@ -55,7 +53,7 @@ The design workflow consists of five functions:
 
 ## Shiny application
 
-The design workflow can be run through a Shiny application. It is loaded by: 
+The package can be run through a Shiny application. It is loaded by: 
 
 * `runRprimerApp()` 
 

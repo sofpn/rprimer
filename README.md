@@ -1,6 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# rprimer <img src='man/figures/rprimer.png' align="right" height="139" />
+
+*This package is in development*
+
 <!-- badges: start -->
 
 [![R build
@@ -8,8 +12,6 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 [![Codecov test
 coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
-
-*This package is in development*
 
 ## Installation
 
@@ -40,8 +42,7 @@ The design workflow consists of five functions:
 
 ## Shiny application
 
-The design workflow can be run through a Shiny application. It is loaded
-by:
+The package can be run through a Shiny application. It is loaded by:
 
   - `runRprimerApp()`
 
@@ -98,7 +99,7 @@ entire genome:
 plotData(myConsensusProfile)
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ### Step 2: `oligos`
 
@@ -127,7 +128,7 @@ The results can be visualized as a dashboard, using `plotData()`:
 plotData(myOligos)
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
 ### Step 3: `assays`
 
@@ -157,7 +158,7 @@ The assays can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
 ### Check match
 
@@ -173,14 +174,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches |
-| :--------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :-------------- | --------------: | :---------------- | -------------------: | :--------------------- |
-| AATTRATTTCGTCGGCYGG    |         0.88 | M73218.1….     |        0.10 | AY575857….    |             0 |                 |            0.01 | MH410175….        |                 0.00 |                        |
-| MGGGTTGATTCTCAGCCCT    |         0.92 | M73218.1….     |        0.06 | AB222183….    |             0 |                 |            0.00 |                   |                 0.01 | MN614142….             |
-| WTTCATCCAACCAACCCC     |         0.94 | M73218.1….     |        0.06 | FJ457024….    |             0 |                 |            0.00 |                   |                 0.01 | MN614142….             |
-| ATTCTCAGCCCTTCGCMMTCCC |         0.94 | M73218.1….     |        0.05 | AB222183….    |             0 |                 |            0.00 | JF443725.1        |                 0.01 | MN614142….             |
-| GGGGTGACMGGGTTGATTCTCA |         0.93 | M73218.1….     |        0.06 | AB222183….    |             0 | JQ953665.1      |            0.00 |                   |                 0.01 | MN614142….             |
-| TTCATCCAACCAACCCCTT    |         0.94 | M73218.1….     |        0.04 | FJ457024….    |             0 |                 |            0.00 |                   |                 0.01 | MN614142….             |
+| iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches |
+| :-------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :-------------- | --------------: | :---------------- | -------------------: | :--------------------- |
+| TGGGGTGACMGGGTTGATTCT |         0.93 | M73218.1….     |        0.06 | AB222183….    |             0 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….             |
+| GGGTTGATTCTCAGCCCTT   |         0.92 | M73218.1….     |        0.06 | AB222183….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
+| ACMGGGTTGATTCTCAGC    |         0.93 | M73218.1….     |        0.06 | AB222183….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
+| MTCCCCTATWTTCATCCAAC  |         0.96 | M73218.1….     |        0.04 | JF443725….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
+| CMGGGTTGATTCTCAGCCCTT |         0.92 | M73218.1….     |        0.06 | AB222183….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
+| GGTGACMGGGTTGATTCTCA  |         0.93 | M73218.1….     |        0.06 | AB222183….    |             0 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….             |
 
 The match table can be visualized using `plotData()`:
 
@@ -188,7 +189,7 @@ The match table can be visualized using `plotData()`:
 plotData(matchTableOligos)
 ```
 
-<img src="man/figures/README-unnamed-chunk-17-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
 
 ## More information
 

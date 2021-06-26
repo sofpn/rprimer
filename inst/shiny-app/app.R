@@ -1264,7 +1264,6 @@ server <- function(input, output) {
         req(!is.null(selectedAssayMatch()))
         c(
             "<b>Two mismatches</b><br>",
-            "Proportion of target sequences<br>",
             selectedAssayMatch()$idTwoMismatchesFwd[[1]])
     })
 
