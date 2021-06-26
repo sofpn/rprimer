@@ -3,8 +3,6 @@
 
 # rprimer <img src='man/figures/rprimer.png' align="right" height="139" />
 
-*This package is in development*
-
 <!-- badges: start -->
 
 [![R build
@@ -12,6 +10,11 @@ status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https
 [![Codecov test
 coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
+
+*This package is in development*
+
+rprimer provides tools for designing degenerate DNA oligos for sequence
+variable targets.
 
 ## Installation
 
@@ -28,9 +31,6 @@ library(rprimer)
 ```
 
 ## Overview
-
-rprimer provides tools for designing degenerate DNA oligos for sequence
-variable targets.
 
 The design workflow consists of five functions:
 
@@ -176,12 +176,12 @@ Results:
 
 | iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches |
 | :-------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :-------------- | --------------: | :---------------- | -------------------: | :--------------------- |
-| TGGGGTGACMGGGTTGATTCT |         0.93 | M73218.1….     |        0.06 | AB222183….    |             0 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….             |
-| GGGTTGATTCTCAGCCCTT   |         0.92 | M73218.1….     |        0.06 | AB222183….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
-| ACMGGGTTGATTCTCAGC    |         0.93 | M73218.1….     |        0.06 | AB222183….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
-| MTCCCCTATWTTCATCCAAC  |         0.96 | M73218.1….     |        0.04 | JF443725….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
-| CMGGGTTGATTCTCAGCCCTT |         0.92 | M73218.1….     |        0.06 | AB222183….    |             0 |                 |               0 |                   |                 0.01 | MN614142….             |
-| GGTGACMGGGTTGATTCTCA  |         0.93 | M73218.1….     |        0.06 | AB222183….    |             0 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….             |
+| CATCCAACCAACCCCTTYGCM |         0.92 | M73218.1….     |        0.06 | FJ457024….    |          0.01 | AY575857….      |               0 |                   |                 0.01 | MN614142….             |
+| CYTGGCGAATGCTGTGGT    |         0.92 | M73218.1….     |        0.06 | L25595.1….    |          0.00 | KT818608.1      |               0 | KJ013415.1        |                 0.00 |                        |
+| TTGATTCTCAGCCCTTCGCMM |         0.93 | M73218.1….     |        0.05 | AY575857….    |          0.00 | AB222183.1      |               0 | JF443725.1        |                 0.01 | MN614142….             |
+| TGATTCTCAGCCCTTCGC    |         0.94 | M73218.1….     |        0.06 | JF443725….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
+| TTTCTGGGGTGACMGGGT    |         0.95 | M73218.1….     |        0.04 | AB222183….    |          0.00 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….             |
+| GTYGTCTCRGCCAATGGCGA  |         0.96 | M73218.1….     |        0.04 | AB630970….    |          0.00 |                 |               0 |                   |                 0.00 |                        |
 
 The match table can be visualized using `plotData()`:
 

@@ -15,12 +15,14 @@ knitr::opts_chunk$set(
 
 # rprimer <img src='man/figures/rprimer.png' align="right" height="139" />
 
-*This package is in development*
-
 <!-- badges: start -->
 [![R build status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 [![Codecov test coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
+
+*This package is in development*
+
+rprimer provides tools for designing degenerate DNA oligos for sequence variable targets.
 
 ## Installation
 
@@ -40,8 +42,6 @@ library(rprimer)
 ```
 
 ## Overview 
-
-rprimer provides tools for designing degenerate DNA oligos for sequence variable targets.
 
 The design workflow consists of five functions:
 
