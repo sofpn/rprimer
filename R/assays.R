@@ -258,7 +258,7 @@ assays <- function(x,
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
 #' probes <- .identifyProbes(assays, x[x$type == "probe", , drop = FALSE])
-#' test <- .extractProbes(assays, probes)
+#' .extractProbes(assays, probes)
 .extractProbes <- function(x, probes) {
     nProbes <- vapply(probes, nrow, integer(1), USE.NAMES = FALSE)
     select <- lapply(seq_along(nProbes), function(x) {
@@ -286,7 +286,7 @@ assays <- function(x,
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
 #' assays <- .combinePrimers(x)
-#' test <- .addProbes(assays, x[x$type == "probe", , drop = FALSE])
+#  .addProbes(assays, x[x$type == "probe", , drop = FALSE])
 .addProbes <- function(x, probes) {
     probeCandidates <- .identifyProbes(x, probes)
     .extractProbes(x, probeCandidates)

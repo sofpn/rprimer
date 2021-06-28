@@ -1,3 +1,5 @@
+# remove col and row thres as much as possible
+
 #' Design primers and probes
 #'
 #' \code{oligos()} designs oligos (primers and probes)
@@ -397,59 +399,71 @@ oligos <- function(x,
         stop("'concNa' must be from 0.01 to 1.", call. = FALSE)
     }
     lengthPrimer <- seq(min(lengthPrimer), max(lengthPrimer))
-    lengthOligo <- lengthPrimer
-    if (probe) {
-        lengthProbe <- seq(min(lengthProbe), max(lengthProbe))
-        lengthOligo <- unique(c(lengthOligo, lengthProbe))
-    }
-    lengthOligo <- lengthOligo[order(lengthOligo)]
-    maxDegeneracy <- maxDegeneracyPrimer
-    if (probe) {
-        maxDegeneracy <- max(c(maxDegeneracyPrimer, maxDegeneracyProbe))
-    }
-    oligos <- .designOligos(
-        x,
-        lengthOligo,
-        maxGapFrequency,
-        maxDegeneracy,
-        concPrimer,
-        designStrategyPrimer,
-        probe,
-        concProbe,
-        concNa
-    )
-    primers <- .filterPrimers(
-        oligos,
-        lengthPrimer,
-        maxDegeneracyPrimer,
-        gcClampPrimer,
-        avoidThreeEndRunsPrimer,
-        gcPrimer,
-        tmPrimer,
-        designStrategyPrimer,
-        rowThreshold = 1,
-        colThreshold = 1
-    )
-    if (nrow(primers) == 0L) {
-        stop("No primers were found.", call. = FALSE)
-    }
-    if (probe) {
-        probes <- .filterProbes(
-            oligos,
-            lengthProbe,
-            maxDegeneracyProbe,
-            avoidFiveEndGProbe,
-            gcProbe,
-            tmProbe,
-            rowThreshold = 1,
-            colThreshold = 1
+    lengthProbe <- seq(min(lengthProbe), max(lengthProbe))
+    if (designStrategyPrimer == "mixed") {
+        primers <- .designMixedPrimers(
+            x,
+            maxGapFrequency = maxGapFrequency,
+            lengthPrimer = lengthPrimer,
+            maxDegeneracyPrimer = maxDegeneracyPrimer,
+            gcClampPrimer = gcClampPrimer,
+            avoidThreeEndRunsPrimer = avoidThreeEndRunsPrimer,
+            gcPrimer = gcPrimer,
+            tmPrimer = tmPrimer,
+            concPrimer = concPrimer,
+            concNa = concNa
         )
-        if (nrow(probes) == 0L) {
-            stop("No probes were found.", call. = FALSE)
+        if (nrow(primers) == 0L) {
+            stop("No primers were found.", call. = FALSE)
         }
-        oligos <- rbind(primers, probes)
-    } else {
         oligos <- primers
+        if (probe) {
+            probes <- .designAmbiguousOligos(
+                x,
+                primer = FALSE,
+                lengthProbe = lengthProbe,
+                maxDegeneracyProbe = maxDegeneracyProbe,
+                avoidFiveEndGProbe = avoidFiveEndGProbe,
+                gcProbe = gcProbe,
+                tmProbe = tmProbe,
+                concProbe = concProbe,
+                concNa = concNa
+            )
+            if (nrow(probes) == 0L) {
+                stop("No probes were found.", call. = FALSE)
+            }
+            oligos <- rbind(oligos, probes)
+        }
+    } else {
+        oligos <- .designAmbiguousOligos(
+            x,
+            maxGapFrequency = maxGapFrequency,
+            primer = TRUE,
+            lengthPrimer = lengthPrimer,
+            maxDegeneracyPrimer = maxDegeneracyPrimer,
+            gcClampPrimer = gcClampPrimer,
+            avoidThreeEndRunsPrimer = avoidThreeEndRunsPrimer,
+            gcPrimer = gcPrimer,
+            tmPrimer = tmPrimer,
+            concPrimer = concPrimer,
+            probe = probe,
+            lengthProbe = lengthProbe,
+            maxDegeneracyProbe = maxDegeneracyProbe,
+            avoidFiveEndGProbe = avoidFiveEndGProbe,
+            gcProbe = gcProbe,
+            tmProbe = tmProbe,
+            concProbe = concProbe,
+            concNa = concNa
+        )
+        if (nrow(oligos[oligos$type == "primer", ]) == 0L) {
+               stop("No primers were found.", call. = FALSE)
+        }
+        if (probe) {
+            if (nrow(oligos[oligos$type == "probe", ]) == 0L) {
+                    stop("No probes were found.", call. = FALSE)
+                }
+        }
+
     }
     oligos <- .scoreOligos(oligos)
     oligos <- .beautifyOligos(oligos)
@@ -473,9 +487,33 @@ oligos <- function(x,
 #'
 #' @examples
 #' .countDegeneracy(c("A", "R", "T", "T", "N", "G"))
-.countDegeneracy <- function(x) {
-    nNucleotides <- lookup$degeneracy[x]
-    prod(nNucleotides)
+.countDegeneracy <- function(x) prod(lookup$degeneracy[x])
+
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerProfile")
+#' .generateAmbiguousOligos(exampleRprimerProfile, lengthOligo = 18)
+.generateAmbiguousOligos <- function(x, lengthOligo = 20) {
+    oligos <- list()
+    oligos$iupacSequence <- .nmers(x$iupac, lengthOligo)
+    oligos$start <- seq_len(nrow(oligos$iupacSequence)) + min(x$position) - 1
+    oligos$end <- seq_len(
+        nrow(oligos$iupacSequence)
+    ) + lengthOligo - 1 + min(x$position) - 1
+    oligos$length <- rep(lengthOligo, nrow(oligos$iupacSequence))
+    oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
+    oligos$gapFrequency <- apply(.nmers(x$gaps, lengthOligo), 1, max)
+    oligos$coverage <- .nmers(x$coverage, lengthOligo) |> rowMeans()
+    oligos$identity <- .nmers(x$identity, lengthOligo) |> rowMeans()
+    oligos$method <- rep("ambiguous", nrow(oligos$iupacSequence))
+    oligos$roiStart <- rep(
+        min(x$position, na.rm = TRUE), nrow(oligos$iupacSequence)
+    )
+    oligos$roiEnd <- rep(
+        max(x$position, na.rm = TRUE), nrow(oligos$iupacSequence)
+    )
+    oligos
 }
 
 #' @noRd
@@ -506,11 +544,12 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' .generateOligos(exampleRprimerProfile, lengthOligo = 18)
-.generateOligos <- function(x, lengthOligo = 20) {
+#' .mixFwd(exampleRprimerProfile, 20)
+.mixFwd <- function(x, lengthOligo = 20) {
     oligos <- list()
-    oligos$majoritySequence <- .nmers(x$majority, lengthOligo)
-    oligos$iupacSequence <- .nmers(x$iupac, lengthOligo)
+    majority <- .nmers(x$majority, lengthOligo)
+    iupac <- .nmers(x$iupac, lengthOligo)
+    oligos$iupacSequence <- .splitAndPaste(majority, iupac)
     oligos$start <- seq_len(nrow(oligos$iupacSequence)) + min(x$position) - 1
     oligos$end <- seq_len(
         nrow(oligos$iupacSequence)
@@ -518,19 +557,13 @@ oligos <- function(x,
     oligos$length <- rep(lengthOligo, nrow(oligos$iupacSequence))
     oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
     oligos$gapFrequency <- apply(.nmers(x$gaps, lengthOligo), 1, max)
-    oligos$coverage <- .nmers(x$coverage, lengthOligo)
-    oligos$identity <- .nmers(x$identity, lengthOligo)
-    oligos$identityCoverage <- .splitAndPaste(
-        oligos$identity, oligos$coverage,
+    identityCoverage <- .splitAndPaste(
+        .nmers(x$identity, lengthOligo), .nmers(x$coverage, lengthOligo),
         combine = FALSE
     )
-    oligos$coverageIdentity <- .splitAndPaste(
-        oligos$coverage, oligos$identity,
-        rev = TRUE, combine = FALSE
-    )
-    oligos$identity <- rowMeans(oligos$identity)
-    oligos$coverage <- rowMeans(oligos$coverage)
-    oligos$method <- rep("ambiguous", nrow(oligos$iupacSequence))
+    oligos$identity <- identityCoverage[[1]] |> rowMeans()
+    oligos$coverage <- identityCoverage[[2]] |> rowMeans()
+    oligos$method <- rep("mixedFwd", nrow(oligos$iupacSequence))
     oligos$roiStart <- rep(
         min(x$position, na.rm = TRUE), nrow(oligos$iupacSequence)
     )
@@ -544,73 +577,43 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .generateOligos(exampleRprimerProfile)
-#' .mixOligos(x)
-.mixOligos <- function(x, rev = FALSE) {
+#' .mixRev(exampleRprimerProfile, 20)
+.mixRev <- function(x, lengthOligo = 20) {
     oligos <- list()
-    if (rev) {
-        oligos$iupacSequence <- .splitAndPaste(
-            x$iupacSequence, x$majoritySequence,
-            rev = TRUE
-        )
-        oligos$coverage <- rowMeans(x$coverageIdentity[[1]])
-        oligos$identity <- rowMeans(x$coverageIdentity[[2]])
-        oligos$method <- rep("mixedRev", nrow(oligos$iupacSequence))
-    } else {
-        oligos$iupacSequence <- .splitAndPaste(
-            x$majoritySequence, x$iupacSequence
-        )
-        oligos$coverage <- rowMeans(x$identityCoverage[[2]])
-        oligos$identity <- rowMeans(x$identityCoverage[[1]])
-        oligos$method <- rep("mixedFwd", nrow(oligos$iupacSequence))
-    }
+    majority <- .nmers(x$majority, lengthOligo)
+    iupac <- .nmers(x$iupac, lengthOligo)
+    oligos$iupacSequence <- .splitAndPaste(iupac, majority, rev = TRUE)
+    oligos$start <- seq_len(nrow(oligos$iupacSequence)) + min(x$position) - 1
+    oligos$end <- seq_len(
+        nrow(oligos$iupacSequence)
+    ) + lengthOligo - 1 + min(x$position) - 1
+    oligos$length <- rep(lengthOligo, nrow(oligos$iupacSequence))
     oligos$degeneracy <- apply(oligos$iupacSequence, 1, .countDegeneracy)
+    oligos$gapFrequency <- apply(.nmers(x$gaps, lengthOligo), 1, max)
+    coverageIdentity <- .splitAndPaste(
+        .nmers(x$coverage, lengthOligo), .nmers(x$identity, lengthOligo),
+        combine = FALSE, rev = TRUE
+    )
+    oligos$identity <- coverageIdentity[[2]] |> rowMeans()
+    oligos$coverage <- coverageIdentity[[1]] |> rowMeans()
+    oligos$method <- rep("mixedRev", nrow(oligos$iupacSequence))
+    oligos$roiStart <- rep(
+        min(x$position, na.rm = TRUE), nrow(oligos$iupacSequence)
+    )
+    oligos$roiEnd <- rep(
+        max(x$position, na.rm = TRUE), nrow(oligos$iupacSequence)
+    )
     oligos
 }
 
-#' @noRd
-#'
-#' @examples
-#' data("exampleRprimerProfile")
-#' x <- .generateOligos(exampleRprimerProfile)
-#' .generateMixedOligos(x)
-.generateMixedOligos <- function(x, rev = FALSE) {
-    oligos <- list()
-    oligos <- .mixOligos(x, rev)
-    oligos$start <- x$start
-    oligos$end <- x$end
-    oligos$length <- x$length
-    oligos$gapFrequency <- x$gapFrequency
-    oligos$roiStart <- x$roiStart
-    oligos$roiEnd <- x$roiEnd
-    order <- c(
-        "iupacSequence", "start", "end", "length", "degeneracy", "gapFrequency",
-        "identity", "coverage", "method", "roiStart",
-        "roiEnd"
-    )
-    oligos[order]
-}
 
 #' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .generateOligos(exampleRprimerProfile)
-#' .dropItems(x)
-.dropItems <- function(x) {
-    within(x, rm(
-        "majoritySequence", "identityCoverage", "coverageIdentity"
-    ))
-}
-
-#' @noRd
-#'
-#' @examples
-#' data("exampleRprimerProfile")
-#' x <- .generateOligos(exampleRprimerProfile)
-#' mixedFwd <- .generateMixedOligos(x)
-#' mixedRev <- .generateMixedOligos(x, rev = TRUE)
-#' .mergeLists(mixedFwd, mixedRev)
+#' fwd <- .mixFwd(exampleRprimerProfile)
+#' rev <- .mixRev(exampleRprimerProfile)
+#' .mergeLists(fwd, rev)
 .mergeLists <- function(first, second) {
     x <- lapply(names(first), function(i) {
         if (is.matrix(first[[i]])) {
@@ -627,24 +630,18 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .generateOligos(exampleRprimerProfile)
-#' .designMixedOligos(x)
-.designMixedOligos <- function(x, probe = TRUE) {
-    mixedFwd <- .generateMixedOligos(x)
-    mixedRev <- .generateMixedOligos(x, rev = TRUE)
-    x <- .dropItems(x)
-    out <- .mergeLists(mixedFwd, mixedRev)
-    if (probe) {
-        out <- .mergeLists(out, x)
-    }
-    out
+#' .generateMixedOligos(exampleRprimerProfile, lengthOligo = 20)
+.generateMixedOligos <- function(x, lengthOligo = 20) {
+    fwd <- .mixFwd(x, lengthOligo)
+    rev <- .mixRev(x, lengthOligo)
+    .mergeLists(fwd, rev)
 }
 
 #' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .generateOligos(exampleRprimerProfile)
+#' x <- .generateMixedOligos(exampleRprimerProfile)
 #' .filterOligos(x)
 .filterOligos <- function(x, maxGapFrequency = 0.1, maxDegeneracy = 4) {
     invalidCharacters <- apply(x$iupacSequence, 1, function(x) {
@@ -682,10 +679,10 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .filterOligos(.generateOligos(exampleRprimerProfile))
+#' x <- .filterOligos(.generateMixedOligos(exampleRprimerProfile))
 #' x$sequence <- apply(x$iupacSequence, 1, .expandDegenerates)
-#' .makeOligoMatrix(x$sequence)
-.makeOligoMatrix <- function(x) {
+#' .oligoMatrix(x$sequence)
+.oligoMatrix <- function(x) {
     degeneracy <- vapply(x, nrow, integer(1L))
     id <- lapply(seq_along(degeneracy), function(x) rep(x, degeneracy[[x]]))
     id <- unlist(id)
@@ -708,9 +705,9 @@ oligos <- function(x,
 #'
 #' @examples
 #' seq <- matrix(c(1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0))
-#' .detectGcClamp(gc, rev = FALSE)
-#' .detectGcClamp(gc, rev = TRUE)
-.detectGcClamp <- function(x, rev = FALSE) {
+#' .gcClamp(gc, rev = FALSE)
+#' .gcClamp(gc, rev = TRUE)
+.gcClamp <- function(x, rev = FALSE) {
     if (rev) {
         end <- x[, seq_len(5), drop = FALSE]
         5 - rowSums(end) >= 2 & 5 - rowSums(end) <= 3 ## Because of complement..
@@ -724,8 +721,8 @@ oligos <- function(x,
 #'
 #' @examples
 #' seq <- matrix(c("A", "C", "G", "G", "T", "T", "A", "A"))
-#' .detectThreeEndRuns(seq, rev = FALSE)
-.detectThreeEndRuns <- function(x, rev = FALSE) {
+#' .endRuns(seq, rev = FALSE)
+.endRuns <- function(x, rev = FALSE) {
     if (rev) {
         end <- x[, seq_len(3), drop = FALSE]
     } else {
@@ -739,8 +736,8 @@ oligos <- function(x,
 #' @noRd
 #'
 #' @examples
-#' .detectRepeats(c("ACTTTTCT", "ACTTTTTCT", "ATCTCTCTCA"))
-.detectRepeats <- function(x) {
+#' .repeats(c("ACTTTTCT", "ACTTTTTCT", "ATCTCTCTCA"))
+.repeats <- function(x) {
     di <- "(AT){4,}|(TA){4,}|(AC){4,}|(CA){4,}|(AG){4,}|(GA){4,}|(GT){4,}|(TG){4,}|(CG){4,}|(GC){4,}|(CT){4,}|(TC){4,}|)"
     mono <- "([A-Z])\\1\\1\\1\\1"
     vapply(x, function(y) {
@@ -752,12 +749,12 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .filterOligos(.generateOligos(exampleRprimerProfile))
-#' .getAllVariants(x)
-.getAllVariants <- function(x,
-                            concPrimer = 500,
-                            concProbe = 250,
-                            concNa = 0.05) {
+#' x <- .filterOligos(.generateMixedOligos(exampleRprimerProfile))
+#' .allVariants(x)
+.allVariants <- function(x,
+                         concPrimer = 500,
+                         concProbe = 250,
+                         concNa = 0.05) {
     all <- list()
     all$sequence <- apply(x$iupacSequence, 1, .expandDegenerates)
     ## If there is only one variant of each oligo,
@@ -768,7 +765,7 @@ oligos <- function(x,
             all$sequence[i, , drop = FALSE]
         })
     }
-    all$sequence <- .makeOligoMatrix(all$sequence)
+    all$sequence <- .oligoMatrix(all$sequence)
     all$sequenceRc <- .reverseComplement(all$sequence)
     gc <- all$sequence == "C" | all$sequence == "G"
     n <- rowSums(
@@ -776,10 +773,10 @@ oligos <- function(x,
             all$sequence == "G" | all$sequence == "T"
     )
     all$gcContent <- rowSums(gc) / n
-    all$gcClampFwd <- .detectGcClamp(gc)
-    all$gcClampRev <- .detectGcClamp(gc, rev = TRUE)
-    all$threeEndRunsFwd <- .detectThreeEndRuns(all$sequence)
-    all$threeEndRunsRev <- .detectThreeEndRuns(all$sequence, rev = TRUE)
+    all$gcClampFwd <- .gcClamp(gc)
+    all$gcClampRev <- .gcClamp(gc, rev = TRUE)
+    all$threeEndRunsFwd <- .endRuns(all$sequence)
+    all$threeEndRunsRev <- .endRuns(all$sequence, rev = TRUE)
     all$fiveEndGPlus <- all$sequence[, 1] == "G"
     all$fiveEndGMinus <- all$sequence[, ncol(all$sequence)] == "C"
     tmParam <- .tmParameters(all$sequence, concNa)
@@ -788,7 +785,7 @@ oligos <- function(x,
     all$deltaG <- .deltaG(tmParam)
     all$sequence <- apply(all$sequence, 1, paste, collapse = "")
     all$sequenceRc <- apply(all$sequenceRc, 1, paste, collapse = "")
-    all$repeats <- .detectRepeats(all$sequence)
+    all$repeats <- .repeats(all$sequence)
     lapply(all, function(x) unname(split(unname(x), f = as.integer(names(x)))))
 }
 
@@ -796,9 +793,9 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .getAllVariants(.filterOligos(.generateOligos(exampleRprimerProfile)))
-#' .getMeanAndRange(x)
-.getMeanAndRange <- function(x) {
+#' x <- .allVariants(.filterOligos(.generateMixedOligos(exampleRprimerProfile)))
+#' .meanRange(x)
+.meanRange <- function(x) {
     x <- x[c("gcContent", "tmPrimer", "tmProbe", "deltaG")]
     means <- lapply(x, function(y) {
         vapply(y, function(z) {
@@ -821,7 +818,7 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .dropItems(.filterOligos(.generateOligos(exampleRprimerProfile)))
+#' x <- .filterOligos(.generateMixedOligos(exampleRprimerProfile))
 #' .makeOligoDf(x)
 .makeOligoDf <- function(x) {
     x <- within(x, rm("gapFrequency"))
@@ -835,47 +832,7 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' .designOligos(exampleRprimerProfile)
-.designOligos <- function(x,
-                          lengthOligo = 18:22,
-                          maxGapFrequency = 0.1,
-                          maxDegeneracy = 4,
-                          concPrimer = 500,
-                          designStrategyPrimer = "ambiguous",
-                          probe = TRUE,
-                          concProbe = 250,
-                          concNa = 0.05) {
-    allOligos <- lapply(lengthOligo, function(i) {
-        iupacOligos <- .generateOligos(x, lengthOligo = i)
-        if (designStrategyPrimer == "mixed") {
-            iupacOligos <- .designMixedOligos(iupacOligos, probe)
-            ##### two separate generate oligos?! ####
-        } else {
-            iupacOligos <- .dropItems(iupacOligos)
-        }
-        iupacOligos <- .filterOligos(
-            iupacOligos, maxGapFrequency, maxDegeneracy
-        )
-        nOligos <- vapply(iupacOligos, length, integer(1))
-        if (all(nOligos == 0L)) {
-            stop("No primers were found.", call. = FALSE)
-        }
-        allVariants <- .getAllVariants(
-            iupacOligos, concPrimer, concProbe, concNa
-        )
-        meansAndRanges <- .getMeanAndRange(allVariants)
-        allVariants <- data.frame(do.call("cbind", allVariants))
-        iupacOligos <- .makeOligoDf(iupacOligos)
-        cbind(iupacOligos, meansAndRanges, allVariants)
-    })
-    do.call("rbind", allOligos)
-}
-
-#' @noRd
-#'
-#' @examples
-#' data("exampleRprimerProfile")
-#' x <- .getAllVariants(.filterOligos(.generateOligos(exampleRprimerProfile)))
+#' x <- .allVariants(.filterOligos(.generateMixedOligos(exampleRprimerProfile)))
 #' .isWithinRange(x$gcContent, c(0.4, 0.6))
 .isWithinRange <- function(x, range) {
     lapply(x, function(y) y >= min(range) & y <= max(range))
@@ -885,9 +842,9 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .designOligos(exampleRprimerProfile)
+#' x <- .allVariants(.filterOligos(.generateMixedOligos(exampleRprimerProfile)))
 #' gcInRange <- .isWithinRange(x$gcContent, c(0.4, 0.6))
-#' x <- cbind(x, data.frame(cbind(gcInRange)))
+#' x <- data.frame(cbind(gcInRange))
 #' .convertToMatrices(x["gcInRange"])
 .convertToMatrices <- function(x) {
     lapply(seq_len(nrow(x)), function(i) {
@@ -896,42 +853,21 @@ oligos <- function(x,
     })
 }
 
-#' Check if design constraints are fulfilled
-#'
-#' \code{.checkValidity()} takes a list with logical matrices as input.
-#' Within these matrices, each row represents a unique sequence variant
-#' and each column
-#' represents a design constraint (e.g. the presence of GC-clamp, or
-#' dinucleotide repeats, etc.). It inverts columns with "undesired" criteria
-#' (e.g. the presence of dinucleotide repeats), computes row and column means,
-#' and checks
-#' whether the row and column means are equal to or higher than
-#' a specified acceptance threshold.
-#'
 #' Column means represent the proportion
 #' of sequence variants that fulfill a specific criteria (e.g. GC-clamp),
 #' and row means represent the proportion of the desired design criteria that
 #' are fulfilled by specific sequence variants.
 #'
-#' @param x A list with logical matrices.
-#'
-#' @param rowThreshold
-#' Minimum accepted value for row means.
-#'
-#' @param colThreshold Minimum accepted value for column means.
-#'
-#' @return A logical vector.
-#'
 #' @noRd
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .designOligos(exampleRprimerProfile)
+#' x <- .allVariants(.filterOligos(.generateMixedOligos(exampleRprimerProfile)))
 #' gcInRange <- .isWithinRange(x$gcContent, c(0.4, 0.6))
-#' x <- cbind(x, data.frame(cbind(gcInRange)))
-#' check <- .convertToMatrices(x[c("gcInRange", "repeats", "threeEndRunsFwd")])
+#' x <- data.frame(cbind(gcInRange))
+#' check <- .convertToMatrices(x["gcInRange"])
 #' .isValid(check, rowThreshold = 0.5, colThreshold = 0.5)
-.isValid <- function(x, rowThreshold, colThreshold) {
+.isValid <- function(x, rowThreshold = 1, colThreshold = 1) {
     valid <- vapply(x, function(y) {
         toInvert <- c(
             "repeats", "threeEndRunsFwd", "threeEndRunsRev",
@@ -947,19 +883,9 @@ oligos <- function(x,
 }
 
 #' @noRd
-#'
-#' @examples
-#' data("exampleRprimerProfile")
-#' x <- .designOligos(exampleRprimerProfile)
-#' gcInRange <- .isWithinRange(x$gcContent, c(0.4, 0.6))
-#' tmInRange <- .isWithinRange(x$tmPrimer, c(55, 65))
-#' x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
-#' .checkAllPrimerVariants(x)
-.checkAllPrimerVariants <- function(x,
-                                    gcClampPrimer = TRUE,
-                                    avoidThreeEndRunsPrimer = TRUE,
-                                    rowThreshold = 1,
-                                    colThreshold = 1) {
+.checkPrimers <- function(x,
+                          gcClampPrimer = TRUE,
+                          avoidThreeEndRunsPrimer = TRUE) {
     selectFwd <- c("repeats", "tmInRange", "gcInRange")
     selectRev <- c("repeats", "tmInRange", "gcInRange")
     if (gcClampPrimer) {
@@ -970,52 +896,36 @@ oligos <- function(x,
         selectFwd <- c(selectFwd, "threeEndRunsFwd")
         selectRev <- c(selectRev, "threeEndRunsRev")
     }
-    xFwd <- x[selectFwd]
-    xFwd <- .convertToMatrices(xFwd)
-    okFwd <- .isValid(xFwd, rowThreshold, colThreshold)
-    xRev <- x[selectRev]
-    xRev <- .convertToMatrices(xRev)
-    okRev <- .isValid(xRev, rowThreshold, colThreshold)
-    x <- cbind(x, okFwd, okRev)
-    x[x$okFwd | x$okRev, , drop = FALSE]
+    fwdPrimers <- x[selectFwd]
+    fwdPrimers <- .convertToMatrices(fwdPrimers)
+    fwd <- .isValid(fwdPrimers)
+    revPrimers <- x[selectRev]
+    revPrimers <- .convertToMatrices(revPrimers)
+    rev <- .isValid(revPrimers)
+    x <- cbind(x, fwd, rev)
+    x[x$fwd | x$rev, , drop = FALSE]
 }
 
 #' @noRd
-#'
-#' @examples
-#' data("exampleRprimerProfile")
-#' x <- .designOligos(exampleRprimerProfile)
-#' .filterPrimers(x)
 .filterPrimers <- function(x,
                            lengthPrimer = 18:22,
                            maxDegeneracyPrimer = 4,
                            gcClampPrimer = TRUE,
                            avoidThreeEndRunsPrimer = TRUE,
                            gcPrimer = c(0.45, 0.55),
-                           tmPrimer = c(55, 65),
-                           designStrategyPrimer = "ambiguous",
-                           colThreshold = 0.75,
-                           rowThreshold = 0.75) {
+                           tmPrimer = c(55, 65)) {
     x <- x[x$length %in% lengthPrimer, , drop = FALSE]
     x <- x[x$degeneracy <= maxDegeneracyPrimer, , drop = FALSE]
     gcInRange <- .isWithinRange(x$gcContent, gcPrimer)
     tmInRange <- .isWithinRange(x$tmPrimer, tmPrimer)
     x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
-    x <- .checkAllPrimerVariants(
+    x <- .checkPrimers(
         x,
         gcClampPrimer,
-        avoidThreeEndRunsPrimer,
-        rowThreshold,
-        colThreshold
+        avoidThreeEndRunsPrimer
     )
-    fwd <- x$okFwd
-    rev <- x$okRev
-    x <- cbind(x, fwd, rev)
-    if (designStrategyPrimer == "mixed") {
-        x$rev[x$method == "mixedFwd" & x$rev] <- FALSE
-        x$fwd[x$method == "mixedRev" & x$fwd] <- FALSE
-        x <- x[x$method != "ambiguous", ]
-    }
+    x$rev[x$method == "mixedFwd" & x$rev] <- FALSE
+    x$fwd[x$method == "mixedRev" & x$fwd] <- FALSE
     x <- x[x$fwd | x$rev, , drop = FALSE]
     remove <- c(
         "gcInRange", "tmInRange",
@@ -1033,56 +943,78 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerProfile")
-#' x <- .designOligos(exampleRprimerProfile)
-#' gcInRange <- .isWithinRange(x$gcContent, c(0.4, 0.6))
-#' tmInRange <- .isWithinRange(x$tmPrimer, c(55, 65))
-#' x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
-#' .checkAllProbeVariants(x)
-.checkAllProbeVariants <- function(x,
-                                   avoidFiveEndGProbe,
-                                   rowThreshold,
-                                   colThreshold) {
+#' .designMixedPrimers(exampleRprimerProfile)
+.designMixedPrimers <- function(x,
+                                maxGapFrequency = 0.01,
+                                lengthPrimer = 18:22,
+                                maxDegeneracyPrimer = 4,
+                                gcClampPrimer = TRUE,
+                                avoidThreeEndRunsPrimer = TRUE,
+                                gcPrimer = c(0.45, 0.55),
+                                tmPrimer = c(55, 65),
+                                concPrimer = 500,
+                                concNa = 0.05) {
+    lengthPrimer <- lengthPrimer[order(lengthPrimer)]
+    all <- lapply(lengthPrimer, function(i) {
+        mixed <- .generateMixedOligos(x, lengthOligo = i)
+        mixed <- .filterOligos(
+            mixed, maxGapFrequency, maxDegeneracyPrimer
+        )
+        allVariants <- .allVariants(
+            mixed, concPrimer, concProbe = NA, concNa
+        )
+        meansAndRanges <- .meanRange(allVariants)
+        allVariants <- data.frame(do.call("cbind", allVariants))
+        mixed <- .makeOligoDf(mixed)
+        cbind(mixed, meansAndRanges, allVariants)
+    })
+    all <- do.call("rbind", all)
+    all <- .filterPrimers(
+        all,
+        lengthPrimer,
+        maxDegeneracyPrimer,
+        gcClampPrimer,
+        avoidThreeEndRunsPrimer,
+        gcPrimer,
+        tmPrimer
+    )
+    all
+}
+
+#' @noRd
+.checkProbes <- function(x,
+                         avoidFiveEndGProbe) {
     selectFwd <- c("repeats", "tmInRange", "gcInRange")
     selectRev <- c("repeats", "tmInRange", "gcInRange")
     if (avoidFiveEndGProbe) {
         selectFwd <- c(selectFwd, "fiveEndGPlus")
         selectRev <- c(selectRev, "fiveEndGMinus")
     }
-    xFwd <- x[selectFwd]
-    xFwd <- .convertToMatrices(xFwd)
-    fwd <- .isValid(xFwd, rowThreshold, colThreshold)
-    xRev <- x[selectRev]
-    xRev <- .convertToMatrices(xRev)
-    rev <- .isValid(xRev, rowThreshold, colThreshold)
+    fwdProbes <- x[selectFwd]
+    fwdProbes <- .convertToMatrices(fwdProbes)
+    fwd <- .isValid(fwdProbes)
+    revProbes <- x[selectRev]
+    revProbes <- .convertToMatrices(revProbes)
+    rev <- .isValid(revProbes)
     x <- cbind(x, fwd, rev)
     x[x$fwd | x$rev, , drop = FALSE]
 }
 
 #' @noRd
-#'
-#' @examples
-#' data("exampleRprimerProfile")
-#' x <- .designOligos(exampleRprimerProfile)
-#' .filterProbes(x)
 .filterProbes <- function(x,
                           lengthProbe = 18:22,
                           maxDegeneracyProbe = 4,
                           avoidFiveEndGProbe = TRUE,
                           gcProbe = c(0.45, 0.55),
-                          tmProbe = c(55, 65),
-                          rowThreshold = 0.75,
-                          colThreshold = 0.75) {
-    x <- x[x$method == "ambiguous", , drop = FALSE]
+                          tmProbe = c(55, 65)) {
     x <- x[x$length %in% lengthProbe, , drop = FALSE]
     x <- x[x$degeneracy <= maxDegeneracyProbe, , drop = FALSE]
     gcInRange <- .isWithinRange(x$gcContent, gcProbe)
     tmInRange <- .isWithinRange(x$tmProbe, tmProbe)
     x <- cbind(x, data.frame(cbind(tmInRange, gcInRange)))
-    x <- .checkAllProbeVariants(
+    x <- .checkProbes(
         x,
-        avoidFiveEndGProbe,
-        rowThreshold,
-        colThreshold
+        avoidFiveEndGProbe
     )
     remove <- c(
         "gcInRange", "tmInRange", "tmPrimerMean",
@@ -1094,6 +1026,81 @@ oligos <- function(x,
     names(x)[names(x) %in% oldnames] <- newnames
     type <- rep("probe", nrow(x))
     cbind(type, x)
+}
+
+#' @noRd
+#'
+#' @examples
+#' data("exampleRprimerProfile")
+#' .designAmbiguousOligos(exampleRprimerProfile)
+.designAmbiguousOligos <- function(x,
+                                   maxGapFrequency = 0.01,
+                                   primer = TRUE,
+                                   lengthPrimer = c(18, 22),
+                                   maxDegeneracyPrimer = 4,
+                                   gcClampPrimer = TRUE,
+                                   avoidThreeEndRunsPrimer = TRUE,
+                                   gcPrimer = c(0.40, 0.65),
+                                   tmPrimer = c(50, 65),
+                                   concPrimer = 500,
+                                   probe = TRUE,
+                                   lengthProbe = c(18, 22),
+                                   maxDegeneracyProbe = 4,
+                                   avoidFiveEndGProbe = TRUE,
+                                   gcProbe = c(0.40, 0.65),
+                                   tmProbe = c(50, 70),
+                                   concProbe = 250,
+                                   concNa = 0.05) {
+    if (probe && primer) {
+        lengthOligo <- unique(c(lengthPrimer, lengthProbe))
+        maxDegeneracy <- max(c(maxDegeneracyPrimer, maxDegeneracyProbe))
+    } else if (!probe && primer) {
+        lengthOligo <- lengthPrimer
+        maxDegeneracy <- maxDegeneracyPrimer
+    } else if (probe && !primer) {
+        lengthOligo <- lengthProbe
+        maxDegeneracy <- maxDegeneracyProbe
+    }
+    lengthOligo <- lengthOligo[order(lengthOligo)]
+    ambiguous <- lapply(lengthOligo, function(i) {
+        amb <- .generateAmbiguousOligos(x, lengthOligo = i)
+        amb <- .filterOligos(
+            amb, maxGapFrequency, maxDegeneracy
+        )
+        allVariants <- .allVariants(
+            amb, concPrimer, concProbe, concNa
+        )
+        meanAndRange <- .meanRange(allVariants)
+        allVariants <- data.frame(do.call("cbind", allVariants))
+        amb <- .makeOligoDf(amb)
+        cbind(amb, meanAndRange, allVariants)
+    })
+    ambiguous <- do.call("rbind", ambiguous)
+    if (primer) {
+        primers <- .filterPrimers(
+            ambiguous,
+            lengthPrimer,
+            maxDegeneracyPrimer,
+            gcClampPrimer,
+            avoidThreeEndRunsPrimer,
+            gcPrimer,
+            tmPrimer
+        )
+    } else {
+        primers <- NULL
+    }
+    if (probe) {
+        probes <- .filterProbes(
+            ambiguous,
+            lengthProbe,
+            maxDegeneracyProbe,
+            avoidFiveEndGProbe,
+            gcProbe,
+            tmProbe)
+    } else {
+        probes <- NULL
+    }
+    rbind(primers, probes)
 }
 
 #' @noRd
@@ -1176,11 +1183,6 @@ oligos <- function(x,
 }
 
 #' @noRd
-#'
-#' @examples
-#' data("exampleRprimerProfile")
-#' x <- .scoreOligos(.filterPrimers(.designOligos(exampleRprimerProfile)))
-#' .beautifyOligos(x)
 .beautifyOligos <- function(x) {
     keep <- c(
         "type", "fwd", "rev", "start", "end", "length",
