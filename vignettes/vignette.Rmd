@@ -2,7 +2,7 @@
 title: "rprimer"
 author: "Sofia"
 package: rprimer
-output: BiocStyle::html_document
+output: BiocStyle::pdf_document
 bibliography: bibliography.bibtex
 vignette: >
   %\VignetteIndexEntry{Getting started}
@@ -19,7 +19,8 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-# devtools::load_all(".")
+# 
+devtools::load_all(".")
 library(rprimer)
 ```
 
@@ -352,10 +353,10 @@ plotData(myAssays)
 
 All candidate assays are located within a conserved stretch of ~70 bases, which happens to be the target region for the most frequently used RT-qPCR assay for detection of HEV, developed by Jothikumar and colleagues [@jothikumar2006broadly].
 
-There are now over 1000 assays, but one way of reducing the amount is to subset the output dataset to only contain assays with the best total oligo scores (see the score variable in the table above). The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12; see [Step 2](#Step2) for more information).
+There are now over 1000 assays, but the number can be reduced by subseting the output dataset by e.g. score (see the score variable in the table above). The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12; see [Step 2](#Step2) for more information).
 
 ```{r, fig.width=12, fig.height=6}
-## Get the minimum score from myAssays
+## Get the minimum (best) score from myAssays
 bestAssayScore <- min(myAssays$score)
 bestAssayScore
 
@@ -433,7 +434,7 @@ oligoSelectionMatch[1:10, ] %>%
   scroll_box(width = "650px", height = "300px")
 ```
 
-As with many of the other outputs, some variables can hold several values in each row. All values within a specific row can be retrieved by: 
+Note that the id-variables can hold several values in each row. All values can be retrieved by: 
 
 ```{r}
 ## Get the id of all sequences that matches perfectly with the first oligo in the input dataset
@@ -472,7 +473,7 @@ plotData(assaySelectionMatch)
 
 It is also possible to add the match information to the input oligo or assay by using `cbind()`. 
 
-The columns named iupacSequence in `assaySelectionMatch` can be removed when pasting the two objects together, to avoid duplication:
+The iupacSequence-columns in `assaySelectionMatch` can be removed when pasting the two objects together, to avoid duplication:
 
 ```{r}
 ## Remove columns with 'iupacSequence' in their names in the match dataset

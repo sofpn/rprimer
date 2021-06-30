@@ -9,6 +9,7 @@ plotWidth = 800
 plotHeight = 600
 
 options(shiny.sanitize.errors = FALSE)
+options(shiny.maxRequestSize = 90*1024^2)
 
 # Conditional panels ===========================================================
 
@@ -391,7 +392,7 @@ server <- function(input, output) {
         box(width = 12, title = "Settings",
             numericInput(
                 "ambiguityThreshold",
-                h5("Threshold for an ambiguous base"),
+                h5("Threshold for an ambiguous base (0-0.2)"),
                 value = 0.05, min = 0, max = 0.2,
             ),
             h5("Region of interest"),
