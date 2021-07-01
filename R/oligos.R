@@ -960,13 +960,17 @@ oligos <- function(x,
         mixed <- .filterOligos(
             mixed, maxGapFrequency, maxDegeneracyPrimer
         )
-        allVariants <- .allVariants(
-            mixed, concPrimer, concProbe = NA, concNa
-        )
-        meansAndRanges <- .meanRange(allVariants)
-        allVariants <- data.frame(do.call("cbind", allVariants))
-        mixed <- .makeOligoDf(mixed)
-        cbind(mixed, meansAndRanges, allVariants)
+        if (length(mixed[[1]] > 0L)) {
+            allVariants <- .allVariants(
+                mixed, concPrimer, concProbe = NA, concNa
+            )
+            meansAndRanges <- .meanRange(allVariants)
+            allVariants <- data.frame(do.call("cbind", allVariants))
+            mixed <- .makeOligoDf(mixed)
+            cbind(mixed, meansAndRanges, allVariants)
+        } else {
+            NULL
+        }
     })
     all <- do.call("rbind", all)
     all <- .filterPrimers(
@@ -1067,13 +1071,17 @@ oligos <- function(x,
         amb <- .filterOligos(
             amb, maxGapFrequency, maxDegeneracy
         )
-        allVariants <- .allVariants(
-            amb, concPrimer, concProbe, concNa
-        )
-        meanAndRange <- .meanRange(allVariants)
-        allVariants <- data.frame(do.call("cbind", allVariants))
-        amb <- .makeOligoDf(amb)
-        cbind(amb, meanAndRange, allVariants)
+        if (length(amb[[1]] > 0L)) {
+            allVariants <- .allVariants(
+                amb, concPrimer = concPrimer, concProbe = concProbe, concNa = concNa
+            )
+            meanAndRange <- .meanRange(allVariants)
+            allVariants <- data.frame(do.call("cbind", allVariants))
+            amb <- .makeOligoDf(amb)
+            cbind(amb, meanAndRange, allVariants)
+        } else {
+            NULL
+        }
     })
     ambiguous <- do.call("rbind", ambiguous)
     if (primer) {

@@ -2,7 +2,7 @@
 title: "rprimer"
 author: "Sofia"
 package: rprimer
-output: BiocStyle::pdf_document
+output: BiocStyle::html_document
 bibliography: bibliography.bibtex
 vignette: >
   %\VignetteIndexEntry{Getting started}
@@ -19,8 +19,7 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-# 
-devtools::load_all(".")
+# devtools::load_all(".")
 library(rprimer)
 ```
 
