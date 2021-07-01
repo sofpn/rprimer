@@ -756,7 +756,7 @@ oligos <- function(x,
                          concProbe = 250,
                          concNa = 0.05) {
     all <- list()
-    all$sequence <- apply(x$iupacSequence, 1, .expandDegenerates)
+    all$sequence <- apply(x$iupacSequence, 1, .expandDegenerates, simplify = FALSE)
     ## If there is only one variant of each oligo,
     ## (and apply returns a matrix instead of a list):
     if (is.matrix(all$sequence)) {
