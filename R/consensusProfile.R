@@ -156,7 +156,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 .dnaBasesOnly <- function(x) {
     bases <- c("A", "C", "G", "T")
     s <- x[rownames(x) %in% bases, , drop = FALSE]
-    apply(s, 2, function(x) x / sum(x))
+    apply(s, 2, \(x) x / sum(x))
 }
 
 #' @noRd
@@ -167,7 +167,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' .iupacConsensus(x)
 .iupacConsensus <- function(x, ambiguityThreshold = 0) {
     x <- .dnaBasesOnly(x)
-    basesToInclude <- apply(x, 2, function(y) {
+    basesToInclude <- apply(x, 2, \(y) {
         paste(rownames(x)[y > ambiguityThreshold], collapse = ",")
     })
     consensus <- vapply(
@@ -199,7 +199,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 #' .shannonEntropy(x)
 .shannonEntropy <- function(x) {
     x <- .dnaBasesOnly(x)
-    entropy <- apply(x, 2, function(y) ifelse(y == 0, 0, y * log2(y)))
+    entropy <- apply(x, 2, \(y) ifelse(y == 0, 0, y * log2(y)))
     entropy <- abs(colSums(entropy))
     entropy[is.na(entropy)] <- 0
     unname(entropy)

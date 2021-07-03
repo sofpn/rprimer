@@ -166,9 +166,11 @@ assays <- function(x,
         stop("'tmDifferencePrimers must be either 'NULL' or a number.")
     }
     x <- as.data.frame(x)
-    assays <- .combinePrimers(x[x$type == "primer", , drop = FALSE],
-                              length,
-                              tmDifferencePrimers)
+    assays <- .combinePrimers(
+        x[x$type == "primer", , drop = FALSE],
+        length,
+        tmDifferencePrimers
+    )
     if (any(x$type == "probe")) {
         assays <- .addProbes(assays, x[x$type == "probe", , drop = FALSE])
     }
@@ -245,7 +247,7 @@ assays <- function(x,
 #' assays <- .combinePrimers(x)
 #' .identifyProbes(assays, x[x$type == "probe", , drop = FALSE])
 .identifyProbes <- function(x, probes) {
-    lapply(seq_len(nrow(x)), function(i) {
+    lapply(seq_len(nrow(x)), \(i) {
         from <- x$endFwd[[i]] + 1
         to <- x$startRev[[i]] - 1
         probes[probes$start >= from & probes$end <= to, , drop = FALSE]
@@ -261,7 +263,7 @@ assays <- function(x,
 #' .extractProbes(assays, probes)
 .extractProbes <- function(x, probes) {
     nProbes <- vapply(probes, nrow, integer(1), USE.NAMES = FALSE)
-    select <- lapply(seq_along(nProbes), function(x) {
+    select <- lapply(seq_along(nProbes), \(x) {
         rep(x, nProbes[[x]])
     })
     select <- unlist(select)
@@ -286,7 +288,7 @@ assays <- function(x,
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
 #' assays <- .combinePrimers(x)
-#  .addProbes(assays, x[x$type == "probe", , drop = FALSE])
+#' #  .addProbes(assays, x[x$type == "probe", , drop = FALSE])
 .addProbes <- function(x, probes) {
     probeCandidates <- .identifyProbes(x, probes)
     .extractProbes(x, probeCandidates)

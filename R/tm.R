@@ -7,7 +7,7 @@
 .nn <- function(x) {
     from <- (seq_along(x) - 1)[-1]
     to <- seq_along(x)[-1]
-    vapply(seq_along(from), function(i) {
+    vapply(seq_along(from), \(i) {
         paste(x[from[[i]]:to[[i]]], collapse = "")
     }, character(1L))
 }

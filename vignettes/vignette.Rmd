@@ -323,7 +323,7 @@ The final step is to find pairs of forward and reverse primers, and eventually, 
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `length`: amplicon length range, defaults to `c(65, 120)`
-* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees, in absolute value). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta, see  [@santalucia2007physical] for how to calculate the proportion of hybridized primer at different temperatures.]
+* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed; what in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta, see  [@santalucia2007physical] for how to calculate the proportion of hybridized primer at different temperatures.]
 
 An error message will return if no assays are found.
 
@@ -350,9 +350,11 @@ Again, the results can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-All candidate assays are located within a conserved stretch of ~70 bases, which happens to be the target region for the most frequently used RT-qPCR assay for detection of HEV, developed by Jothikumar and colleagues [@jothikumar2006broadly].
+All candidate assays are located within a conserved stretch of ~70 bases, which also is the target region for the most frequently used RT-qPCR assay for detection of HEV, developed by Jothikumar and colleagues [@jothikumar2006broadly].
 
-There are now over 1000 assays, but the number can be reduced by subseting the output dataset by e.g. score (see the score variable in the table above). The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12; see [Step 2](#Step2) for more information).
+There are now over 1000 assays, but the number can be reduced by subsetting the output dataset by e.g. score (see the score variable in the table above). 
+
+The best possible score is 0 and the worst possible score is 24 for an assay with only primers and 36 for an assay with probe (the maximum possible score for each oligo is 12; see [Step 2](#Step2) for more information).
 
 ```{r, fig.width=12, fig.height=6}
 ## Get the minimum (best) score from myAssays
@@ -414,7 +416,7 @@ It is often valuable to investigate how well the generated oligos or assays matc
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
 
-The output gives information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo within the intended oligo binding region. However, note that the output does not say anything about the type or severity of the mismatches.
+The output gives information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo within the intended oligo binding region in the alignment. However, note that the output does not say anything about the type or severity of the mismatches.
 
 Below, I show how to use `checkMatch()` for both oligos and assays. The function is rather slow, especially if there are many target sequences, so a good idea could be to select only a few oligo or assay candidates to investigate. 
 

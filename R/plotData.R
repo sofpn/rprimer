@@ -33,7 +33,7 @@
 #' @return A plot.
 #'
 #' @export
-setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
+setGeneric("plotData", \(x, ...) standardGeneric("plotData"))
 
 # Methods ======================================================================
 
@@ -66,10 +66,10 @@ setGeneric("plotData", function(x, ...) standardGeneric("plotData"))
 #'
 #' ## Plot the nucleotide distribution of the roi, as reverse complement
 #' plotData(roi, type = "nucleotide", rc = TRUE)
-setMethod("plotData", "RprimerProfile", function(x,
-                                                 type = "overview",
-                                                 highlight = NULL,
-                                                 rc = FALSE) {
+setMethod("plotData", "RprimerProfile", \(x,
+    type = "overview",
+    highlight = NULL,
+    rc = FALSE) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
     }
@@ -113,7 +113,7 @@ setMethod("plotData", "RprimerProfile", function(x,
 #' ## Select a subset of the oligos, and plot
 #' selected <- oligos[oligos$start >= 5000, ]
 #' plotData(selected)
-setMethod("plotData", "RprimerOligo", function(x) {
+setMethod("plotData", "RprimerOligo", \(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
     }
@@ -135,7 +135,7 @@ setMethod("plotData", "RprimerOligo", function(x) {
 #'
 #' data("exampleRprimerAssay")
 #' plotData(exampleRprimerAssay)
-setMethod("plotData", "RprimerAssay", function(x) {
+setMethod("plotData", "RprimerAssay", \(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
     }
@@ -155,7 +155,7 @@ setMethod("plotData", "RprimerAssay", function(x) {
 #'
 #' data("exampleRprimerMatchOligo")
 #' plotData(exampleRprimerMatchOligo)
-setMethod("plotData", "RprimerMatchOligo", function(x) {
+setMethod("plotData", "RprimerMatchOligo", \(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
     }
@@ -172,7 +172,7 @@ setMethod("plotData", "RprimerMatchOligo", function(x) {
 #'
 #' data("exampleRprimerMatchAssay")
 #' plotData(exampleRprimerMatchAssay)
-setMethod("plotData", "RprimerMatchAssay", function(x) {
+setMethod("plotData", "RprimerMatchAssay", \(x) {
     if (nrow(x) == 0L) {
         stop("'x' does not contain any observations.", call. = FALSE)
     }
@@ -544,7 +544,7 @@ setMethod("plotData", "RprimerMatchAssay", function(x) {
     x <- as.data.frame(x)
     x <- x[c("a", "c", "g", "t", "other", "gaps")]
     x <- as.matrix(x)
-    masked <- apply(x, 1, function(y) all(is.na(y)))
+    masked <- apply(x, 1, \(y) all(is.na(y)))
     which(masked)
 }
 
