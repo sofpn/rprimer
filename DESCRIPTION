@@ -31,7 +31,8 @@ Imports:
     S4Vectors,
     shiny,
     shinydashboard,
-    shinycssloaders
+    shinycssloaders,
+    shinyFeedback
 Suggests: 
     BiocStyle,
     covr,

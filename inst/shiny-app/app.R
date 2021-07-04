@@ -71,7 +71,7 @@ useProbe <- conditionalPanel(
     ),
     numericInput(
         "concProbe",
-        h5("Concentration (nM)"),
+        h5("Concentration (20-2000 nM)"),
         value = 250, min = 20, max = 2000,
 
     )
@@ -123,8 +123,6 @@ assayProbeInfo <- conditionalPanel(
 )
 
 # UI ===========================================================================
-
-# Tab titles ===================================================================
 
 ui <- dashboardPage(
     dashboardHeader(title = ""),
@@ -204,6 +202,7 @@ ui <- dashboardPage(
 
             tabItem(tabName = "consensus",
                     fluidRow(
+                        shinyFeedback::useShinyFeedback(),
                         column(width = 3, uiOutput("consensusSettings")),
                         column(width =  9, uiOutput("consensusOutput"))
                     )
@@ -258,6 +257,10 @@ server <- function(input, output) {
     })
 
     consensus <- eventReactive(input$getConsensusProfile, {
+        valid <- input$ambiguityThreshold >=  0 && input$ambiguityThreshold <= 0.2
+        shinyFeedback::feedbackDanger(
+            "ambiguityThreshold", !valid, "Enter a value from 0 to 0.2"
+        )
         consensus <- consensusProfile(aln(), input$ambiguityThreshold)
         consensus[
             consensus$position >= as.numeric(input$roiFrom) &
@@ -267,6 +270,30 @@ server <- function(input, output) {
 
     oligoCandidates <- eventReactive(input$getOligos, {
         req(consensus())
+        validDegenPrimer <- input$maxDegeneracyPrimer >= 1 && input$maxDegeneracyPrimer <= 64
+        shinyFeedback::feedbackDanger(
+            "maxDegeneracyPrimer", !validDegenPrimer, "Enter a value from 1 to 64"
+        )
+        validDegenProbe <- input$maxDegeneracyProbe >= 1 && input$maxDegeneracyProbe <= 64
+        shinyFeedback::feedbackDanger(
+            "maxDegeneracyProbe", !validDegenProbe, "Enter a value from 1 to 64"
+        )
+        validConcPrimer <- input$concPrimer >= 20 && input$concPrimer <= 2000
+        shinyFeedback::feedbackDanger(
+            "concPrimer", !validConcPrimer, "Enter a value from 20 to 2000"
+        )
+        validConcProbe <- input$concProbe >= 20 && input$concProbe <= 2000
+        shinyFeedback::feedbackDanger(
+            "concProbe", !validConcProbe, "Enter a value from 20 to 2000"
+        )
+        validConcNa <- input$concNa >= 0.01 && input$concNa <= 1
+        shinyFeedback::feedbackDanger(
+            "concNa", !validConcNa, "Enter a value from 0.01 to 1"
+        )
+        validGap <- input$maxGapFrequency >= 0 && input$maxGapFrequency <= 1
+        shinyFeedback::feedbackDanger(
+            "maxGapFrequency", !validGap, "Enter a value from 0 to 1"
+        )
         oligos(consensus(),
                maxGapFrequency = input$maxGapFrequency,
                lengthPrimer = input$lengthPrimer,
@@ -392,7 +419,7 @@ server <- function(input, output) {
         box(width = 12, title = "Settings",
             numericInput(
                 "ambiguityThreshold",
-                h5("Threshold for an ambiguous base (0-0.2)"),
+                h5("Threshold for an ambiguous base (0-0,2)"),
                 value = 0.05, min = 0, max = 0.2,
             ),
             h5("Region of interest"),
@@ -483,7 +510,7 @@ server <- function(input, output) {
             ),
             numericInput(
                 "concPrimer",
-                h5("Concentration (nM)"),
+                h5("Concentration (20-2000 nM)"),
                 value = 500, min = 20, max = 2000,
 
             ),
@@ -510,13 +537,13 @@ server <- function(input, output) {
             hr(),
             numericInput(
                 "maxGapFrequency",
-                h5("Maximum gap frequency"),
+                h5("Maximum gap frequency (0-1)"),
                 value = 0.01, min = 0, max = 0.2,
 
             ),
             numericInput(
                 "concNa",
-                h5("Sodium ion concentration (M)"),
+                h5("Sodium ion concentration (0,01-1 M)"),
                 value = 0.05, min = 0, max = 1,
 
             ),

@@ -1067,7 +1067,9 @@ oligos <- function(x,
     ambiguous <- lapply(lengthOligo, \(i) {
         amb <- .generateAmbiguousOligos(x, lengthOligo = i)
         amb <- .filterOligos(
-            amb, xGapFrequency, maxDegeneracy
+            amb,
+            maxGapFrequency = maxGapFrequency,
+            maxDegeneracy = maxDegeneracy
         )
         if (length(amb[[1]] > 0L)) {
             allVariants <- .allVariants(
@@ -1137,8 +1139,8 @@ oligos <- function(x,
 .scoreDegeneracy <- function(x) {
     score <- vector(mode = "double", length = length(x))
     score[x == 1] <- 0
-    score[x == 2 & x == 3] <- 1
-    score[x == 3 & x == 4] <- 2
+    score[x == 2 | x == 3] <- 1
+    score[x == 3 | x == 4] <- 2
     score[x > 4] <- 3
     score
 }

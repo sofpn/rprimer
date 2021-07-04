@@ -135,7 +135,7 @@ plotData(myAssays)
 
 ### Check match 
 
-`checkMatch()` shows the proportion and names of the target sequences in the input alignment that match with the generated oligos or assays:
+`checkMatch()` shows the proportion and names of the target sequences in the input alignment that match with the generated oligos or assays.
 
 ```{r}
 ## Randomly select six oligos to illustrate an example 
