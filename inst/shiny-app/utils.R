@@ -1,6 +1,6 @@
 # Custom functions =============================================================
 
-selectOligos <- function(x,
+filterOligos <- function(x,
                          fwdFrom,
                          fwdTo,
                          revFrom,
@@ -97,7 +97,7 @@ makeListTable <- function(x) {
     }, logical(1L))
     x <- x[, list]
     allCols <- lapply(seq_len(ncol(x)), function(i) {
-        x[ , i][[1]]
+        x[, i][[1]]
     })
     all <- data.frame(do.call("cbind", allCols))
     names(all) <- names(x)

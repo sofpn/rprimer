@@ -23,6 +23,7 @@ Depends:
     R (>= 4.1)
 Imports:
     Biostrings,
+    bslib,
     ggplot2,
     IRanges,
     methods,

@@ -57,8 +57,6 @@ The package can be run through a Shiny application. It is loaded by:
 
 * `runRprimerApp()` 
 
-The application is also available [online](https://sofpn.shinyapps.io/rprimer). 
-
 ## Workflow 
 
 ### Import alignment
