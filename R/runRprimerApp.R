@@ -7,7 +7,7 @@
 #' @return
 #' Opens the Shiny application.
 #'
-#' @import shiny shinydashboard shinycssloaders
+#' @import bslib shiny shinycssloaders shinyFeedback
 #'
 #' @export
 #'
@@ -17,12 +17,12 @@
 #'     runRprimerApp()
 #' }
 runRprimerApp <- function() {
-    appDir <- system.file("shiny-app", "app.R", package = "rprimer")
-    if (appDir == "") {
+    dir <- system.file("shiny-app", "app.R", package = "rprimer")
+    if (dir == "") {
         stop(
-            "Could not find the app directory. Try re-installing `rprimer`.",
+            "The app directory was not found. Try to install `rprimer` again.",
             call. = FALSE
         )
     }
-    shiny::runApp(appDir, display.mode = "normal")
+    shiny::runApp(dir, display.mode = "normal")
 }

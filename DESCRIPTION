@@ -31,7 +31,6 @@ Imports:
     reshape2,
     S4Vectors,
     shiny,
-    shinydashboard,
     shinycssloaders,
     shinyFeedback
 Suggests: 

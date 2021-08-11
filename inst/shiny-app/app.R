@@ -197,12 +197,12 @@ server <- function(input, output, session) {
     })
 
     output$page56 <- renderUI({
-        # req(is(oligoFilter$data(), "RprimerOligo")) #####################################################
+        req(is(oligoFilter$data(), "RprimerOligo"))
         actionButton("page56", label = div("Next", icon("chevron-right")))
     })
 
     output$page67 <- renderUI({
-        # req(is(assay$data(), "RprimerAssay")) #####################################################
+        req(is(assay$data(), "RprimerAssay"))
         actionButton("page67", label = div("Next", icon("chevron-right")))
     })
 
