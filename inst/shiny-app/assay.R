@@ -51,47 +51,45 @@ assayUI <- function(id) {
                     tabPanel(
                         title = "Selection",
                         br(),
-                        box(
-                            width = 12,
-                            tabsetPanel(
-                                tabPanel(
-                                    title = "Overview",
-                                    br(),
-                                    uiOutput(ns("getSelectionData")),
-                                    br(),
-                                    h5("General assay information"),
-                                    hr(),
-                                    DT::dataTableOutput(ns("assayTableSelection")),
-                                    br(),
-                                    h5("Details"),
-                                    hr(),
-                                    br(),
-                                    uiOutput(ns("detailsTab"))
-                                ),
-                                tabPanel(
-                                    title = "Match details",
-                                    br(),
-                                    h5(
-                                        "Proportion of matching sequences within the
+                        width = 12,
+                        tabsetPanel(
+                            tabPanel(
+                                title = "Overview",
+                                br(),
+                                uiOutput(ns("getSelectionData")),
+                                br(),
+                                h5("General assay information"),
+                                hr(),
+                                DT::dataTableOutput(ns("assayTableSelection")),
+                                br(),
+                                h5("Details"),
+                                hr(),
+                                br(),
+                                uiOutput(ns("detailsTab"))
+                            ),
+                            tabPanel(
+                                title = "Match details",
+                                br(),
+                                h5(
+                                    "Proportion of matching sequences within the
                                                   intended target binding region in the input alignment"
-                                    ),
-                                    hr(),
-                                    br(),
-                                    column(
-                                        width = 12, align = "center",
-                                        shinycssloaders::withSpinner(
-                                            plotOutput(
-                                                ns("matchPlot"),
-                                                width = "100%"
-                                            ),
-                                            color = "grey"
-                                        )
-                                    ),
-                                    h5("Details"),
-                                    hr(),
-                                    br(),
-                                    uiOutput(ns("matchDetailsTab"))
-                                )
+                                ),
+                                hr(),
+                                br(),
+                                column(
+                                    width = 12, align = "center",
+                                    shinycssloaders::withSpinner(
+                                        plotOutput(
+                                            ns("matchPlot"),
+                                            width = "100%"
+                                        ),
+                                        color = "grey"
+                                    )
+                                ),
+                                h5("Details"),
+                                hr(),
+                                br(),
+                                uiOutput(ns("matchDetailsTab"))
                             )
                         )
                     )
@@ -104,20 +102,20 @@ assayUI <- function(id) {
 assayServer <- function(id, alignment, consensus, oligos) {
     moduleServer(id, function(input, output, session) {
 
-        # alignment <- reactive(exampleRprimerAlignment)
-        # consensus <- reactive(exampleRprimerProfile)
-        # oligos <- reactive(exampleRprimerOligo) #####################################################
-
-
         assay <- eventReactive(input$getAssays, {
             req(is(oligos(), "RprimerOligo"))
 
             tryCatch(
                 {
+                    if (is.na(oligos()$length[[1]])) {
+                        stop("No assays were found.", .call = FALSE)
+                    }
+
                     assays(oligos(),
                         length = input$length,
                         tmDifferencePrimers = as.numeric(input$tmDifferencePrimers)
                     )
+
                 },
                 error = function(cond) {
                     showNotification(
@@ -187,15 +185,13 @@ assayServer <- function(id, alignment, consensus, oligos) {
             req(is(assay(), "RprimerAssay"))
             ns <- session$ns
             fluidRow(
-                box(
-                    downloadLink(
-                        ns("downloadTable"), "Download table as .txt"
-                    ),
-                    br(),
-                    downloadLink(
-                        ns("downloadFasta"),
-                        "Download assays in fasta-format"
-                    )
+                downloadLink(
+                    ns("downloadTable"), "Download table as .txt"
+                ),
+                br(),
+                downloadLink(
+                    ns("downloadFasta"),
+                    "Download assays in fasta-format"
                 )
             )
         })
@@ -462,10 +458,6 @@ assayServer <- function(id, alignment, consensus, oligos) {
             }
         })
 
-
-
-
-
         output$assayTableSelection <- DT::renderDataTable(
             {
                 req(selectedAssay())
@@ -530,16 +522,14 @@ assayServer <- function(id, alignment, consensus, oligos) {
             req(selectedAssay())
             ns <- session$ns
             fluidRow(
-                box(
-                    downloadLink(
-                        ns("downloadSelectionTable"),
-                        "Download assay information as .txt"
-                    ),
-                    br(),
-                    downloadLink(
-                        ns("downloadSelectionFasta"),
-                        "Download assay in fasta-format"
-                    )
+                downloadLink(
+                    ns("downloadSelectionTable"),
+                    "Download assay information as .txt"
+                ),
+                br(),
+                downloadLink(
+                    ns("downloadSelectionFasta"),
+                    "Download assay in fasta-format"
                 )
             )
         })
@@ -708,8 +698,8 @@ assayServer <- function(id, alignment, consensus, oligos) {
             {
                 req(selectedAssayMatchList())
                 x <- roundDbls(removeListColumns(selectedAssayMatchList()[[1]]))
-                x <- x[, -1]
                 names(x) <- c(
+                    "IUPAC sequence",
                     "Perfect match", "1 mismatch", "2 mismatches", "3 mismatches",
                     "4 or more mismatches"
                 )
@@ -729,8 +719,8 @@ assayServer <- function(id, alignment, consensus, oligos) {
             {
                 req(selectedAssayMatchList())
                 x <- roundDbls(removeListColumns(selectedAssayMatchList()[[2]]))
-                x <- x[, -1]
                 names(x) <- c(
+                    "IUPAC sequence",
                     "Perfect match", "1 mismatch", "2 mismatches", "3 mismatches",
                     "4 or more mismatches"
                 )
@@ -750,8 +740,8 @@ assayServer <- function(id, alignment, consensus, oligos) {
             {
                 req(length(selectedAssayList()) == 3)
                 x <- roundDbls(removeListColumns(selectedAssayMatchList()[[3]]))
-                x <- x[, -1]
                 names(x) <- c(
+                    "IUPAC sequence",
                     "Perfect match", "1 mismatch", "2 mismatches", "3 mismatches",
                     "4 or more mismatches"
                 )
@@ -894,6 +884,5 @@ assayServer <- function(id, alignment, consensus, oligos) {
         })
 
         list(data = reactive(assay()))
-
     })
 }

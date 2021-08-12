@@ -53,7 +53,7 @@ The design workflow consists of five functions:
 
 ## Shiny application
 
-The package can be run through a Shiny application. It is loaded by: 
+The package can be run through a Shiny application (a graphical user interface). It is loaded by: 
 
 * `runRprimerApp()` 
 
@@ -61,7 +61,7 @@ The package can be run through a Shiny application. It is loaded by:
 
 ### Import alignment
 
-The first step is to import an alignment with target sequences of interest. This is done by using `readDNAMultipleAlignment()` from the Biostrings package.
+The first step is to import an alignment with target sequences of interest. This is done by using `readDNAMultipleAlignment()` from Biostrings.
 
 The file "example_alignment.txt" contains an alignment of 200 hepatitis E virus sequences. 
 
@@ -85,7 +85,7 @@ Results (row 100-110):
 knitr::kable(myConsensusProfile[100:110, ], digits = 2)
 ```
 
-The results can be visualized with `plotData()`. You can either plot the entire genome:
+The results can be visualized with `plotData()`:
 
 ```{r, fig.width=12, fig.height=6}
 plotData(myConsensusProfile)
@@ -133,7 +133,7 @@ plotData(myAssays)
 
 ### Check match 
 
-`checkMatch()` shows the proportion and names of the target sequences in the input alignment that match with the generated oligos or assays.
+`checkMatch()` shows the proportion and names of the target sequences in the input alignment that match with the generated oligos or assays. See the package vignette or `?checkMatch` for more information. 
 
 ```{r}
 ## Randomly select six oligos to illustrate an example 

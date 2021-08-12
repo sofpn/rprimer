@@ -42,7 +42,8 @@ The design workflow consists of five functions:
 
 ## Shiny application
 
-The package can be run through a Shiny application. It is loaded by:
+The package can be run through a Shiny application (a graphical user
+interface). It is loaded by:
 
   - `runRprimerApp()`
 
@@ -51,8 +52,8 @@ The package can be run through a Shiny application. It is loaded by:
 ### Import alignment
 
 The first step is to import an alignment with target sequences of
-interest. This is done by using `readDNAMultipleAlignment()` from the
-Biostrings package.
+interest. This is done by using `readDNAMultipleAlignment()` from
+Biostrings.
 
 The file “example\_alignment.txt” contains an alignment of 200 hepatitis
 E virus sequences.
@@ -89,8 +90,7 @@ Results (row 100-110):
 |      109 | 0.00 | 0.00 | 0 | 1.00 |     0 |    0 | T        |     1.00 | T     |    0.00 |     1.00 |
 |      110 | 0.00 | 0.08 | 0 | 0.92 |     0 |    0 | T        |     0.92 | Y     |    0.40 |     1.00 |
 
-The results can be visualized with `plotData()`. You can either plot the
-entire genome:
+The results can be visualized with `plotData()`:
 
 ``` r
 plotData(myConsensusProfile)
@@ -160,7 +160,8 @@ plotData(myAssays)
 ### Check match
 
 `checkMatch()` shows the proportion and names of the target sequences in
-the input alignment that match with the generated oligos or assays.
+the input alignment that match with the generated oligos or assays. See
+the package vignette or `?checkMatch` for more information.
 
 ``` r
 ## Randomly select six oligos to illustrate an example 
@@ -173,12 +174,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches |
 | :--------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :-------------- | --------------: | :---------------- | -------------------: | :--------------------- |
-| AGAATTRATTTCGTCGGCYGG  |         0.88 | M73218.1….     |        0.10 | AY575857….    |          0.00 |                 |            0.01 | MH410175….        |                 0.00 |                        |
-| TGGTTTCTGGGGTGACMGGGTT |         0.95 | M73218.1….     |        0.04 | AB222183….    |          0.00 | JQ953665.1      |            0.00 |                   |                 0.01 | MN614142….             |
-| CRGTGGTTTCTGGGGTGACM   |         0.96 | M73218.1….     |        0.03 | BD378055….    |          0.00 |                 |            0.00 |                   |                 0.01 | MN614142….             |
-| WTTCATCCAACCAACCCC     |         0.94 | M73218.1….     |        0.06 | FJ457024….    |          0.00 |                 |            0.00 |                   |                 0.01 | MN614142….             |
-| GGCRGTGGTTTCTGGGGTGA   |         0.92 | M73218.1….     |        0.06 | BD378055….    |          0.00 |                 |            0.00 |                   |                 0.01 | MN614142….             |
-| CGACAGAATTRATTTCGTCG   |         0.94 | M73218.1….     |        0.05 | AY575857….    |          0.01 | MH410175….      |            0.00 |                   |                 0.00 |                        |
+| CCGACAGAATTRATTTCGTCGG |         0.94 | M73218.1….     |        0.05 | AY575857….    |          0.01 | MH410175….      |               0 |                   |                 0.00 |                        |
+| GGGTTGATTCTCAGCCCTTC   |         0.92 | M73218.1….     |        0.07 | AY575857….    |          0.00 | AB222183.1      |               0 |                   |                 0.01 | MN614142….             |
+| GTYGTCTCRGCCAATGGCGA   |         0.96 | M73218.1….     |        0.04 | AB630970….    |          0.00 |                 |               0 |                   |                 0.00 |                        |
+| TGACMGGGTTGATTCTCA     |         0.94 | M73218.1….     |        0.05 | AB222183….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
+| TGACMGGGTTGATTCTCAGCC  |         0.93 | M73218.1….     |        0.06 | AB222183….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
+| WTTCATCCAACCAACCCCTT   |         0.94 | M73218.1….     |        0.06 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
 
 The match table can be visualized using `plotData()`:
 

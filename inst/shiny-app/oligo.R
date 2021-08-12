@@ -136,34 +136,31 @@ oligoUI <- function(id) {
                     tabPanel(
                         title = "Selection",
                         br(),
-                        box(
-                            width = 12,
-                            tabsetPanel(
-                                tabPanel(
-                                    title = "Overview",
-                                    br(),
-                                    uiOutput(ns("getSelectionData")),
-                                    br(),
-                                    h5("Oligo information"),
-                                    hr(),
-                                    DT::dataTableOutput(ns("oligoTableSelection")),
-                                    br(),
-                                    h5("All sequence variants"),
-                                    hr(),
-                                    DT::dataTableOutput(ns("oligoTableSelectionAll")),
-                                    br(),
-                                    h5("Nucleotide distribution in target alignment (5'-3')"),
-                                    hr(),
-                                    br(),
-                                    column(
-                                        width = 12, align = "center",
-                                        shinycssloaders::withSpinner(
-                                            plotOutput(
-                                                ns("ntPlot"),
-                                                width = "75%"
-                                            ),
-                                            color = "grey"
-                                        )
+                        tabsetPanel(
+                            tabPanel(
+                                title = "Overview",
+                                br(),
+                                uiOutput(ns("getSelectionData")),
+                                br(),
+                                h5("Oligo information"),
+                                hr(),
+                                DT::dataTableOutput(ns("oligoTableSelection")),
+                                br(),
+                                h5("All sequence variants"),
+                                hr(),
+                                DT::dataTableOutput(ns("oligoTableSelectionAll")),
+                                br(),
+                                h5("Nucleotide distribution in target alignment (5'-3')"),
+                                hr(),
+                                br(),
+                                column(
+                                    width = 12, align = "center",
+                                    shinycssloaders::withSpinner(
+                                        plotOutput(
+                                            ns("ntPlot"),
+                                            width = "75%"
+                                        ),
+                                        color = "grey"
                                     )
                                 ),
                                 tabPanel(
@@ -324,15 +321,13 @@ oligoServer <- function(id, alignment, consensus) {
             req(is(ols(), "RprimerOligo"))
             ns <- session$ns
             fluidRow(
-                box(
-                    downloadLink(
-                        ns("downloadTable"), "Download table as .txt"
-                    ),
-                    br(),
-                    downloadLink(
-                        ns("downloadFasta"),
-                        "Download oligo sequences in fasta-format"
-                    )
+                downloadLink(
+                    ns("downloadTable"), "Download table as .txt"
+                ),
+                br(),
+                downloadLink(
+                    ns("downloadFasta"),
+                    "Download oligo sequences in fasta-format"
                 )
             )
         })
@@ -389,16 +384,14 @@ oligoServer <- function(id, alignment, consensus) {
             req(is(selectedOligo(), "RprimerOligo"))
             ns <- session$ns
             fluidRow(
-                box(
-                    downloadLink(
-                        ns("downloadSelectionTable"),
-                        "Download oligo information as .txt"
-                    ),
-                    br(),
-                    downloadLink(
-                        ns("downloadSelectionFasta"),
-                        "Download oligo sequence in fasta-format"
-                    )
+                downloadLink(
+                    ns("downloadSelectionTable"),
+                    "Download oligo information as .txt"
+                ),
+                br(),
+                downloadLink(
+                    ns("downloadSelectionFasta"),
+                    "Download oligo sequence in fasta-format"
                 )
             )
         })

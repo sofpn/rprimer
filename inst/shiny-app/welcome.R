@@ -1,7 +1,7 @@
 welcomeUI <- function(id) {
     tagList(
         titlePanel("Welcome!"),
-        h5(tags$b("Introduction")),
+        h5(tags$b("Overview")),
         h5(
             "This application provides tools for visualizing sequence
                                 conservation and designing degenerate primers, probes and (RT)-(q/d)PCR
@@ -11,9 +11,6 @@ welcomeUI <- function(id) {
         ),
         h5(tags$b("Citation")),
         h5("S Persson et al., 2021, manuscript in preparation"),
-        h5(tags$b("R package and source code")),
-        a("GitHub", href = "https://github.com/sofpn/rprimer"),
-        h5(tags$b("Contact")),
-        h5("sofia.persson@slv.se")
+        tags$h5(tags$b(tags$a(href = "https://github.com/sofpn/rprimer", "Source code", icon("github"))))
     )
 }

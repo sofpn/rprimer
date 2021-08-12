@@ -37,80 +37,77 @@ oligoFilterUI <- function(id) {
                     tabPanel(
                         title = "Selection",
                         br(),
-                        box(
-                            width = 12,
-                            tabsetPanel(
-                                tabPanel(
-                                    title = "Overview",
-                                    br(),
-                                    uiOutput(ns("getSelectionData")),
-                                    br(),
-                                    h5("Oligo information"),
-                                    hr(),
-                                    DT::dataTableOutput(ns("oligoTableSelection")),
-                                    br(),
-                                    h5("All sequence variants"),
-                                    hr(),
-                                    DT::dataTableOutput(ns("oligoTableSelectionAll")),
-                                    br(),
-                                    h5("Nucleotide distribution in target alignment (5'-3')"),
-                                    hr(),
-                                    br(),
-                                    column(
-                                        width = 12, align = "center",
-                                        shinycssloaders::withSpinner(
-                                            plotOutput(
-                                                ns("ntPlot"),
-                                                width = "75%"
-                                            ),
-                                            color = "grey"
-                                        )
+                        tabsetPanel(
+                            tabPanel(
+                                title = "Overview",
+                                br(),
+                                uiOutput(ns("getSelectionData")),
+                                br(),
+                                h5("Oligo information"),
+                                hr(),
+                                DT::dataTableOutput(ns("oligoTableSelection")),
+                                br(),
+                                h5("All sequence variants"),
+                                hr(),
+                                DT::dataTableOutput(ns("oligoTableSelectionAll")),
+                                br(),
+                                h5("Nucleotide distribution in target alignment (5'-3')"),
+                                hr(),
+                                br(),
+                                column(
+                                    width = 12, align = "center",
+                                    shinycssloaders::withSpinner(
+                                        plotOutput(
+                                            ns("ntPlot"),
+                                            width = "75%"
+                                        ),
+                                        color = "grey"
                                     )
-                                ),
-                                tabPanel(
-                                    title = "Match details",
-                                    br(),
-                                    h5(
-                                        "Proportion of matching sequences
+                                )
+                            ),
+                            tabPanel(
+                                title = "Match details",
+                                br(),
+                                h5(
+                                    "Proportion of matching sequences
                                         within the intended target binding
                                         region in the input alignmnent"
-                                    ),
-                                    hr(),
-                                    DT::dataTableOutput(
-                                        ns("oligoTableSelectionMatch")
-                                    ),
-                                    br(),
-                                    br(),
-                                    column(
-                                        width = 12, align = "center",
-                                        shinycssloaders::withSpinner(
-                                            plotOutput(
-                                                ns("matchPlot"),
-                                                width = "75%"
-                                            ),
-                                            color = "grey"
-                                        )
-                                    ),
-                                    br(),
-                                    br(),
-                                    h5("Target sequence names"),
-                                    hr(),
-                                    htmlOutput(ns("perfectMatch")),
-                                    br(),
-                                    br(),
-                                    htmlOutput(ns("oneMismatch")),
-                                    br(),
-                                    br(),
-                                    htmlOutput(ns("twoMismatches")),
-                                    br(),
-                                    br(),
-                                    htmlOutput(ns("threeMismatches")),
-                                    br(),
-                                    br(),
-                                    htmlOutput(ns("fourOrMoreMismatches")),
-                                    br(),
-                                    br()
-                                )
+                                ),
+                                hr(),
+                                DT::dataTableOutput(
+                                    ns("oligoTableSelectionMatch")
+                                ),
+                                br(),
+                                br(),
+                                column(
+                                    width = 12, align = "center",
+                                    shinycssloaders::withSpinner(
+                                        plotOutput(
+                                            ns("matchPlot"),
+                                            width = "75%"
+                                        ),
+                                        color = "grey"
+                                    )
+                                ),
+                                br(),
+                                br(),
+                                h5("Target sequence names"),
+                                hr(),
+                                htmlOutput(ns("perfectMatch")),
+                                br(),
+                                br(),
+                                htmlOutput(ns("oneMismatch")),
+                                br(),
+                                br(),
+                                htmlOutput(ns("twoMismatches")),
+                                br(),
+                                br(),
+                                htmlOutput(ns("threeMismatches")),
+                                br(),
+                                br(),
+                                htmlOutput(ns("fourOrMoreMismatches")),
+                                br(),
+                                br()
                             )
                         )
                     )
@@ -122,142 +119,232 @@ oligoFilterUI <- function(id) {
 
 oligoFilterServer <- function(id, alignment, consensus, oligos) {
     moduleServer(id, function(input, output, session) {
-        ols <- reactive({
-            req(oligos())
-            oligos()
-      #      filterOligos(oligos(),
-      #          fwdFrom = input$fwdRegionFrom,
-      #          fwdTo = input$fwdRegionTo,
-      #         revFrom = input$revRegionFrom,
-       #         revTo = input$revRegionTo,
-        #        prFrom = input$prRegionFrom,
-        #        prTo = input$prRegionTo,
-    #            fwdIdentity = input$minOligoIdentityFwd,
-     #           revIdentity = input$minOligoIdentityRev,
-      #          prIdentity = input$minOligoIdentityPr,
-       #         fwdCoverage = input$minOligoCoverageFwd,
-    #            revCoverage = input$minOligoCoverageRev,
-    #            prCoverage = input$minOligoCoveragePr
-     #       )
-        })
+        output$fwd <- renderUI({
+            req(any(oligos()$type == "primer" & oligos()$fwd))
 
-        customUI <- function(x) { # more args
             ns <- session$ns
-            # if (any(x$type == type)) {
 
-            # } ## fwd, rev primer if primer...
-
-            fluidRow(
+            list(
+                h5("Forward"),
+                hr(),
+                numericInput(ns("fwdRegionFrom"), h5("From"),
+                    min = oligos()$roiStart[[1]],
+                    max = oligos()$roiEnd[[1]],
+                    value = oligos()$roiStart[[1]]
+                ),
+                numericInput(ns("fwdRegionTo"), h5("To"),
+                    min = oligos()$roiStart[[1]],
+                    max = oligos()$roiEnd[[1]],
+                    value = oligos()$roiEnd[[1]]
+                ),
                 sliderInput(ns("minOligoIdentityFwd"),
-                    round = -4, step = 0.0001, ticks = FALSE,
-                    h5("Fwd, minimum identity"),
+                    round = -4, step = 0.0001,
+                    h5("Mminimum identity"),
                     min = round(min(
-                        allOligos()$identity[
-                            allOligos()$fwd &
-                                allOligos()$type == "primer"
+                        oligos()$identity[
+                            oligos()$fwd &
+                                oligos()$type == "primer"
                         ],
                         na.rm = TRUE
                     ), 4),
                     max = round(max(
-                        allOligos()$identity[
-                            allOligos()$fwd &
-                                allOligos()$type == "primer"
+                        oligos()$identity[
+                            oligos()$fwd &
+                                oligos()$type == "primer"
                         ],
                         na.rm = TRUE
                     ), 4),
                     value = round(min(
-                        allOligos()$identity[
-                            allOligos()$fwd &
-                                allOligos()$type == "primer"
+                        oligos()$identity[
+                            oligos()$fwd &
+                                oligos()$type == "primer"
                         ],
                         na.rm = TRUE
-                    ), 4),
-                    width = 200
+                    ), 4)
                 ),
                 sliderInput(ns("minOligoCoverageFwd"),
-                    round = -4, step = 0.0001, ticks = FALSE,
-                    h5("Fwd, minimum coverage"),
+                    round = -4, step = 0.0001,
+                    h5("Minimum coverage"),
                     min = round(min(
-                        allOligos()$coverage[
-                            allOligos()$fwd &
-                                allOligos()$type == "primer"
+                        oligos()$coverage[
+                            oligos()$fwd &
+                                oligos()$type == "primer"
                         ],
                         na.rm = TRUE
                     ), 4),
                     max = round(max(
-                        allOligos()$coverage[
-                            allOligos()$fwd &
-                                allOligos()$type == "primer"
+                        oligos()$coverage[
+                            oligos()$fwd &
+                                oligos()$type == "primer"
                         ],
                         na.rm = TRUE
                     ), 4),
                     value = round(min(
-                        allOligos()$coverage[
-                            allOligos()$fwd &
-                                allOligos()$type == "primer"
+                        oligos()$coverage[
+                            oligos()$fwd &
+                                oligos()$type == "primer"
                         ],
                         na.rm = TRUE
-                    ), 4),
-                    width = 200
-                ),
-                sliderInput(ns("minOligoIdentityRev"),
-                    round = -4, step = 0.0001, ticks = FALSE,
-                    h5("Minimum identity"),
-                    min = round(min(
-                        allOligos()$identity[
-                            allOligos()$rev &
-                                allOligos()$type == "primer"
-                        ],
-                        na.rm = TRUE
-                    ), 4),
-                    max = round(max(
-                        allOligos()$identity[
-                            allOligos()$rev &
-                                allOligos()$type == "primer"
-                        ],
-                        na.rm = TRUE
-                    ), 4),
-                    value = round(min(
-                        allOligos()$identity[
-                            allOligos()$rev &
-                                allOligos()$type == "primer"
-                        ],
-                        na.rm = TRUE
-                    ), 4),
-                    width = 200
-                ),
-                sliderInput(ns("minOligoCoverageRev"),
-                    round = -4, step = 0.0001, ticks = FALSE,
-                    h5("Rev, minimum coverage"),
-                    min = round(min(
-                        allOligos()$coverage[
-                            allOligos()$rev &
-                                allOligos()$type == "primer"
-                        ],
-                        na.rm = TRUE
-                    ), 4),
-                    max = round(max(
-                        allOligos()$coverage[
-                            allOligos()$rev &
-                                allOligos()$type == "primer"
-                        ],
-                        na.rm = TRUE
-                    ), 4),
-                    value = round(min(
-                        allOligos()$coverage[
-                            allOligos()$rev &
-                                allOligos()$type == "primer"
-                        ],
-                        na.rm = TRUE
-                    ), 4),
-                    width = 200
+                    ), 4)
                 )
             )
-        }
+        })
 
-        # output$fwd <- customUI(oligos())
-        # output$rev <- customUI(oligos())
-        # output$pr <- customUI(oligos8)
+        output$rev <- renderUI({
+            req(any(oligos()$type == "primer" & oligos()$rev))
+
+            ns <- session$ns
+
+            list(
+                h5("Reverse"),
+                hr(),
+                numericInput(ns("revRegionFrom"), h5("From"),
+                    min = oligos()$roiStart[[1]],
+                    max = oligos()$roiEnd[[1]],
+                    value = oligos()$roiStart[[1]]
+                ),
+                numericInput(ns("revRegionTo"), h5("To"),
+                    min = oligos()$roiStart[[1]],
+                    max = oligos()$roiEnd[[1]],
+                    value = oligos()$roiEnd[[1]]
+                ),
+                sliderInput(ns("minOligoIdentityRev"),
+                    round = -4, step = 0.0001,
+                    h5("Minimum identity"),
+                    min = round(min(
+                        oligos()$identity[
+                            oligos()$rev &
+                                oligos()$type == "primer"
+                        ],
+                        na.rm = TRUE
+                    ), 4),
+                    max = round(max(
+                        oligos()$identity[
+                            oligos()$rev &
+                                oligos()$type == "primer"
+                        ],
+                        na.rm = TRUE
+                    ), 4),
+                    value = round(min(
+                        oligos()$identity[
+                            oligos()$rev &
+                                oligos()$type == "primer"
+                        ],
+                        na.rm = TRUE
+                    ), 4)
+                ),
+                sliderInput(ns("minOligoCoverageRev"),
+                    round = -4, step = 0.0001,
+                    h5("Minimum coverage"),
+                    min = round(min(
+                        oligos()$coverage[
+                            oligos()$rev &
+                                oligos()$type == "primer"
+                        ],
+                        na.rm = TRUE
+                    ), 4),
+                    max = round(max(
+                        oligos()$coverage[
+                            oligos()$rev &
+                                oligos()$type == "primer"
+                        ],
+                        na.rm = TRUE
+                    ), 4),
+                    value = round(min(
+                        oligos()$coverage[
+                            oligos()$rev &
+                                oligos()$type == "primer"
+                        ],
+                        na.rm = TRUE
+                    ), 4)
+                )
+            )
+        })
+
+
+        output$pr <- renderUI({
+            req(any(oligos()$type == "probe"))
+
+            ns <- session$ns
+
+            list(
+                h5("Probe"),
+                hr(),
+                numericInput(ns("prRegionFrom"), h5("From"),
+                    min = oligos()$roiStart[[1]],
+                    max = oligos()$roiEnd[[1]],
+                    value = oligos()$roiStart[[1]]
+                ),
+                numericInput(ns("prRegionTo"), h5("To"),
+                    min = oligos()$roiStart[[1]],
+                    max = oligos()$roiEnd[[1]],
+                    value = oligos()$roiEnd[[1]]
+                ),
+                sliderInput(ns("minOligoIdentityPr"),
+                    round = -4, step = 0.0001,
+                    h5("Minimum identity"),
+                    min = round(min(
+                        oligos()$identity[
+                            oligos()$type == "probe"
+                        ],
+                        na.rm = TRUE
+                    ), 4),
+                    max = round(max(
+                        oligos()$identity[
+                            oligos()$type == "probe"
+                        ],
+                        na.rm = TRUE
+                    ), 4),
+                    value = round(min(
+                        oligos()$identity[
+                            oligos()$type == "probe"
+                        ],
+                        na.rm = TRUE
+                    ), 4)
+                ),
+                sliderInput(ns("minOligoCoveragePr"),
+                    round = -4, step = 0.0001,
+                    h5("Minimum coverage"),
+                    min = round(min(
+                        oligos()$coverage[
+                            oligos()$type == "probe"
+                        ],
+                        na.rm = TRUE
+                    ), 4),
+                    max = round(max(
+                        oligos()$coverage[
+                            oligos()$type == "probe"
+                        ],
+                        na.rm = TRUE
+                    ), 4),
+                    value = round(min(
+                        oligos()$coverage[
+                            oligos()$type == "probe"
+                        ],
+                        na.rm = TRUE
+                    ), 4)
+                )
+            )
+        })
+
+
+        ols <- reactive({
+            req(oligos())
+            filterOligos(oligos(),
+                fwdFrom = input$fwdRegionFrom,
+                fwdTo = input$fwdRegionTo,
+                revFrom = input$revRegionFrom,
+                revTo = input$revRegionTo,
+                prFrom = input$prRegionFrom,
+                prTo = input$prRegionTo,
+                fwdIdentity = input$minOligoIdentityFwd,
+                revIdentity = input$minOligoIdentityRev,
+                prIdentity = input$minOligoIdentityPr,
+                fwdCoverage = input$minOligoCoverageFwd,
+                revCoverage = input$minOligoCoverageRev,
+                prCoverage = input$minOligoCoveragePr
+            )
+        })
 
         selectedOligo <- reactive({
             req(ols())
@@ -285,18 +372,16 @@ oligoFilterServer <- function(id, alignment, consensus, oligos) {
         })
 
         output$getData <- renderUI({
-            req(is(ols(), "RprimerOligo"))
+            req(!is.na(ols()$length[[1]]))
             ns <- session$ns
             fluidRow(
-                box(
-                    downloadLink(
-                        ns("downloadTable"), "Download table as .txt"
-                    ),
-                    br(),
-                    downloadLink(
-                        ns("downloadFasta"),
-                        "Download oligo sequences in fasta-format"
-                    )
+                downloadLink(
+                    ns("downloadTable"), "Download table as .txt"
+                ),
+                br(),
+                downloadLink(
+                    ns("downloadFasta"),
+                    "Download oligo sequences in fasta-format"
                 )
             )
         })
@@ -328,16 +413,20 @@ oligoFilterServer <- function(id, alignment, consensus, oligos) {
         output$oligoTable <- DT::renderDataTable(
             {
                 req(is(ols(), "RprimerOligo"))
-                x <- roundDbls(removeListColumns(as.data.frame(ols())))
-                names(x) <- c(
-                    "Type", "Forward", "Reverse", "Start", "End", "Length",
-                    "IUPAC sequence", "IUPAC sequence, RC", "Identity",
-                    "Coverage", "Degeneracy", "GC content, mean",
-                    "GC content, range", "Tm, mean", "Tm, range", "Delta G, mean",
-                    "Delta G, range", "Design method", "Score", "ROI, start",
-                    "ROI, end"
-                )
-                x
+                if (is.na(ols()$length[[1]])) {
+                    NULL
+                } else {
+                    x <- roundDbls(removeListColumns(as.data.frame(ols())))
+                    names(x) <- c(
+                        "Type", "Forward", "Reverse", "Start", "End", "Length",
+                        "IUPAC sequence", "IUPAC sequence, RC", "Identity",
+                        "Coverage", "Degeneracy", "GC content, mean",
+                        "GC content, range", "Tm, mean", "Tm, range", "Delta G, mean",
+                        "Delta G, range", "Design method", "Score", "ROI, start",
+                        "ROI, end"
+                    )
+                    x
+                }
             },
             options = list(
                 info = FALSE,
@@ -353,16 +442,14 @@ oligoFilterServer <- function(id, alignment, consensus, oligos) {
             req(is(selectedOligo(), "RprimerOligo"))
             ns <- session$ns
             fluidRow(
-                box(
-                    downloadLink(
-                        ns("downloadSelectionTable"),
-                        "Download oligo information as .txt"
-                    ),
-                    br(),
-                    downloadLink(
-                        ns("downloadSelectionFasta"),
-                        "Download oligo sequence in fasta-format"
-                    )
+                downloadLink(
+                    ns("downloadSelectionTable"),
+                    "Download oligo information as .txt"
+                ),
+                br(),
+                downloadLink(
+                    ns("downloadSelectionFasta"),
+                    "Download oligo sequence in fasta-format"
                 )
             )
         })
