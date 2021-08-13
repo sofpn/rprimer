@@ -174,12 +174,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches |
 | :--------------------- | -----------: | :------------- | ----------: | :------------ | ------------: | :-------------- | --------------: | :---------------- | -------------------: | :--------------------- |
-| CCGACAGAATTRATTTCGTCGG |         0.94 | M73218.1….     |        0.05 | AY575857….    |          0.01 | MH410175….      |               0 |                   |                 0.00 |                        |
-| GGGTTGATTCTCAGCCCTTC   |         0.92 | M73218.1….     |        0.07 | AY575857….    |          0.00 | AB222183.1      |               0 |                   |                 0.01 | MN614142….             |
-| GTYGTCTCRGCCAATGGCGA   |         0.96 | M73218.1….     |        0.04 | AB630970….    |          0.00 |                 |               0 |                   |                 0.00 |                        |
-| TGACMGGGTTGATTCTCA     |         0.94 | M73218.1….     |        0.05 | AB222183….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
-| TGACMGGGTTGATTCTCAGCC  |         0.93 | M73218.1….     |        0.06 | AB222183….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
-| WTTCATCCAACCAACCCCTT   |         0.94 | M73218.1….     |        0.06 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
+| TCATCCAACCAACCCCTTYGC  |         0.92 | M73218.1….     |        0.06 | FJ457024….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
+| TTGATTCTCAGCCCTTCGC    |         0.93 | M73218.1….     |        0.06 | JF443725….    |          0.00 | AB222183.1      |               0 |                   |                 0.01 | MN614142….             |
+| CCCTATWTTCATCCAACCAACC |         0.94 | M73218.1….     |        0.04 | AY575857….    |          0.00 |                 |               0 |                   |                 0.01 | MN614142….             |
+| GGTGACMGGGTTGATTCTCA   |         0.93 | M73218.1….     |        0.06 | AB222183….    |          0.00 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….             |
+| TCTGGGGTGACMGGGTTGATTC |         0.94 | M73218.1….     |        0.04 | AB222183….    |          0.00 | JQ953665.1      |               0 |                   |                 0.01 | MN614142….             |
+| TYGTCTCRGCCAATGGCGAG   |         0.96 | M73218.1….     |        0.03 | AB630970….    |          0.01 | MN646690….      |               0 |                   |                 0.00 |                        |
 
 The match table can be visualized using `plotData()`:
 

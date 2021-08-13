@@ -11,6 +11,6 @@ welcomeUI <- function(id) {
         ),
         h5(tags$b("Citation")),
         h5("S Persson et al., 2021, manuscript in preparation"),
-        tags$h5(tags$b(tags$a(href = "https://github.com/sofpn/rprimer", "Source code", icon("github"))))
+        tags$h5(tags$b(tags$a(href = "https://github.com/sofpn/rprimer", "View source", icon("github"))))
     )
 }

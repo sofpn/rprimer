@@ -162,50 +162,50 @@ oligoUI <- function(id) {
                                         ),
                                         color = "grey"
                                     )
-                                ),
-                                tabPanel(
-                                    title = "Match details",
-                                    br(),
-                                    h5(
-                                        "Proportion of matching sequences within the
-                                                  intended target binding region in the input alignment"
-                                    ),
-                                    hr(),
-                                    DT::dataTableOutput(
-                                        ns("oligoTableSelectionMatch")
-                                    ),
-                                    br(),
-                                    br(),
-                                    column(
-                                        width = 12, align = "center",
-                                        shinycssloaders::withSpinner(
-                                            plotOutput(
-                                                ns("matchPlot"),
-                                                width = "75%"
-                                            ),
-                                            color = "grey"
-                                        )
-                                    ),
-                                    br(),
-                                    br(),
-                                    h5("Target sequence names"),
-                                    hr(),
-                                    htmlOutput(ns("perfectMatch")),
-                                    br(),
-                                    br(),
-                                    htmlOutput(ns("oneMismatch")),
-                                    br(),
-                                    br(),
-                                    htmlOutput(ns("twoMismatches")),
-                                    br(),
-                                    br(),
-                                    htmlOutput(ns("threeMismatches")),
-                                    br(),
-                                    br(),
-                                    htmlOutput(ns("fourOrMoreMismatches")),
-                                    br(),
-                                    br()
                                 )
+                            ),
+                            tabPanel(
+                                title = "Match details",
+                                br(),
+                                h5(
+                                    "Proportion of matching sequences within the
+                                                  intended target binding region in the input alignment"
+                                ),
+                                hr(),
+                                DT::dataTableOutput(
+                                    ns("oligoTableSelectionMatch")
+                                ),
+                                br(),
+                                br(),
+                                column(
+                                    width = 12, align = "center",
+                                    shinycssloaders::withSpinner(
+                                        plotOutput(
+                                            ns("matchPlot"),
+                                            width = "75%"
+                                        ),
+                                        color = "grey"
+                                    )
+                                ),
+                                br(),
+                                br(),
+                                h5("Target sequence names"),
+                                hr(),
+                                htmlOutput(ns("perfectMatch")),
+                                br(),
+                                br(),
+                                htmlOutput(ns("oneMismatch")),
+                                br(),
+                                br(),
+                                htmlOutput(ns("twoMismatches")),
+                                br(),
+                                br(),
+                                htmlOutput(ns("threeMismatches")),
+                                br(),
+                                br(),
+                                htmlOutput(ns("fourOrMoreMismatches")),
+                                br(),
+                                br()
                             )
                         )
                     )
@@ -253,22 +253,22 @@ oligoServer <- function(id, alignment, consensus) {
             tryCatch(
                 {
                     oligos(consensus(),
-                        maxGapFrequency = input$maxGapFrequency,
-                        lengthPrimer = input$lengthPrimer,
-                        maxDegeneracyPrimer = input$maxDegeneracyPrimer,
-                        avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
-                        gcClampPrimer = input$gcClampPrimer,
-                        gcPrimer = input$gcPrimer,
-                        tmPrimer = input$tmPrimer,
-                        concPrimer = input$concPrimer,
-                        designStrategyPrimer = input$designStrategyPrimer,
-                        probe = input$probe,
-                        lengthProbe = input$lengthProbe,
-                        maxDegeneracyProbe = input$maxDegeneracyProbe,
-                        avoidFiveEndGProbe = input$avoidFiveEndGProbe,
-                        gcProbe = input$gcProbe,
-                        tmProbe = input$tmProbe,
-                        concNa = input$concNa
+                           maxGapFrequency = input$maxGapFrequency,
+                           lengthPrimer = input$lengthPrimer,
+                           maxDegeneracyPrimer = input$maxDegeneracyPrimer,
+                           avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
+                           gcClampPrimer = input$gcClampPrimer,
+                           gcPrimer = input$gcPrimer,
+                           tmPrimer = input$tmPrimer,
+                           concPrimer = input$concPrimer,
+                           designStrategyPrimer = input$designStrategyPrimer,
+                           probe = input$probe,
+                           lengthProbe = input$lengthProbe,
+                           maxDegeneracyProbe = input$maxDegeneracyProbe,
+                           avoidFiveEndGProbe = input$avoidFiveEndGProbe,
+                           gcProbe = input$gcProbe,
+                           tmProbe = input$tmProbe,
+                           concNa = input$concNa
                     )
                 },
                 error = function(cond) {
@@ -320,7 +320,7 @@ oligoServer <- function(id, alignment, consensus) {
         output$getData <- renderUI({
             req(is(ols(), "RprimerOligo"))
             ns <- session$ns
-            fluidRow(
+            list(
                 downloadLink(
                     ns("downloadTable"), "Download table as .txt"
                 ),
@@ -383,7 +383,7 @@ oligoServer <- function(id, alignment, consensus) {
         output$getSelectionData <- renderUI({
             req(is(selectedOligo(), "RprimerOligo"))
             ns <- session$ns
-            fluidRow(
+            list(
                 downloadLink(
                     ns("downloadSelectionTable"),
                     "Download oligo information as .txt"

@@ -120,7 +120,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
                 error = function(cond) {
                     showNotification(
                         "No assays were found.\n
-                        Try to adjust design settings.",
+                        Try to adjust oligo or assay design settings.",
                         type = "error",
                         duration = NULL
                     )
@@ -184,7 +184,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
         output$getData <- renderUI({
             req(is(assay(), "RprimerAssay"))
             ns <- session$ns
-            fluidRow(
+            list(
                 downloadLink(
                     ns("downloadTable"), "Download table as .txt"
                 ),
@@ -521,7 +521,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
         output$getSelectionData <- renderUI({
             req(selectedAssay())
             ns <- session$ns
-            fluidRow(
+            list(
                 downloadLink(
                     ns("downloadSelectionTable"),
                     "Download assay information as .txt"

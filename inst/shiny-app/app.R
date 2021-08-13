@@ -11,6 +11,33 @@ source("oligo_filter.R")
 source("assay.R")
 source("assay_filter.R")
 
+# Helpers ======================================================================
+
+switchPage <- function(i) {
+    updateTabsetPanel(inputId = "wizard", selected = paste0("page", i))
+}
+
+previousButton <- function(i) {
+    id <- paste0("page", i + 1, i)
+    actionButton(
+        id, "Previous",
+        icon = icon("chevron-left")
+    )
+}
+
+nextButton <- function(i) {
+    id <- paste0("page", i - 1, i)
+    actionButton(
+        id,
+        label = div(
+            "Next", icon("chevron-right"), class = "btn btn-primary"
+        )
+    )
+}
+
+# UI ===========================================================================
+
+
 ui <- fluidPage(
 
     tags$head(
@@ -39,10 +66,7 @@ ui <- fluidPage(
                 column(width = 6),
                 column(
                     width = 6, align = "right",
-                    actionButton(
-                        "page12",
-                        label = div("Next", icon("chevron-right"))
-                    )
+                    nextButton(2)
                 )
             ),
         ),
@@ -53,10 +77,7 @@ ui <- fluidPage(
             fluidRow(
                 column(
                     width = 6,
-                    actionButton(
-                        "page21", "Previous",
-                        icon = icon("chevron-left")
-                    )
+                    previousButton(1)
                 ),
                 column(
                     width = 6, align = "right",
@@ -71,10 +92,7 @@ ui <- fluidPage(
             fluidRow(
                 column(
                     width = 6,
-                    actionButton(
-                        "page32", "Previous",
-                        icon = icon("chevron-left")
-                    )
+                    previousButton(2)
                 ),
                 column(
                     width = 6, align = "right",
@@ -89,10 +107,7 @@ ui <- fluidPage(
             fluidRow(
                 column(
                     width = 6,
-                    actionButton(
-                        "page43", "Previous",
-                        icon = icon("chevron-left")
-                    )
+                    previousButton(3)
                 ),
                 column(
                     width = 6, align = "right",
@@ -107,14 +122,11 @@ ui <- fluidPage(
             fluidRow(
                 column(
                     width = 6,
-                    actionButton(
-                        "page54", "Previous",
-                        icon = icon("chevron-left")
-                    )
+                    previousButton(4)
                 ),
                 column(
                     width = 6, align = "right",
-                    uiOutput("page56")
+                    nextButton(6)
                 )
             )
         ),
@@ -125,10 +137,7 @@ ui <- fluidPage(
             fluidRow(
                 column(
                     width = 6,
-                    actionButton(
-                        "page65", "Previous",
-                        icon = icon("chevron-left")
-                    )
+                    previousButton(5)
                 ),
                 column(
                     width = 6, align = "right",
@@ -143,15 +152,14 @@ ui <- fluidPage(
             fluidRow(
                 column(
                     width = 6,
-                    actionButton(
-                        "page76", "Previous",
-                        icon = icon("chevron-left")
-                    )
+                    previousButton(6)
                 )
             )
         )
     )
 )
+
+# Server =======================================================================
 
 server <- function(input, output, session) {
     alignment <- dataServer("data")
@@ -183,32 +191,23 @@ server <- function(input, output, session) {
 
     output$page23 <- renderUI({
         req(is(alignment$data(), "DNAMultipleAlignment"))
-        actionButton("page23", label = div("Next", icon("chevron-right")))
+        nextButton(3)
     })
 
     output$page34 <- renderUI({
         (is(consensus$data(), "RprimerProfile"))
-        actionButton("page34", label = div("Next", icon("chevron-right")))
+        nextButton(4)
     })
 
     output$page45 <- renderUI({
         req(is(oligo$data(), "RprimerOligo"))
-        actionButton("page45", label = div("Next", icon("chevron-right")))
-    })
-
-    output$page56 <- renderUI({
-        req(is(oligoFilter$data(), "RprimerOligo"))
-        actionButton("page56", label = div("Next", icon("chevron-right")))
+        nextButton(5)
     })
 
     output$page67 <- renderUI({
         req(is(assay$data(), "RprimerAssay"))
-        actionButton("page67", label = div("Next", icon("chevron-right")))
+        nextButton(7)
     })
-
-    switchPage <- function(i) {
-        updateTabsetPanel(inputId = "wizard", selected = paste0("page", i))
-    }
 
     observeEvent(input$page12, switchPage(2))
     observeEvent(input$page21, switchPage(1))

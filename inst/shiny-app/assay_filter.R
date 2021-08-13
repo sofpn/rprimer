@@ -178,7 +178,7 @@ assayFilterServer <- function(id, alignment, consensus, assays) {
         output$getData <- renderUI({
             req(!is.na(assay()$length[[1]]))
             ns <- session$ns
-            fluidRow(
+            list(
                 downloadLink(
                     ns("downloadTable"), "Download table as .txt"
                 ),
@@ -519,7 +519,7 @@ assayFilterServer <- function(id, alignment, consensus, assays) {
         output$getSelectionData <- renderUI({
             req(selectedAssay())
             ns <- session$ns
-            fluidRow(
+            list(
                 downloadLink(
                     ns("downloadSelectionTable"),
                     "Download assay information as .txt"

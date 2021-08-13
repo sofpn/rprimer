@@ -138,14 +138,15 @@ is also added:
 }
 \description{
 \code{checkMatch()} checks how well the oligos within an \code{RprimerOligo}
-or \code{RprimerAssay} object match with their intended target sequences.
+or \code{RprimerAssay} object match with their intended target sequences
+within a multiple sequence alignment.
 The output gives information on the proportion and names of target
 sequences that match perfectly as well as with one, two, three or four or
 more mismatches to the oligo.
 Ambiguous bases and gaps in the
 target sequences will be identified as mismatches.
-The match check is only performed within the intended oligo
-binding region.
+Note that the match check is only performed within the intended oligo
+binding region in the alignment.
 Also, note that the output does not say anything about the type or
 severity of the mismatches.
 The function is a wrapper to \code{Biostrings::vcountPDict()}

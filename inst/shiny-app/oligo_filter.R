@@ -374,7 +374,7 @@ oligoFilterServer <- function(id, alignment, consensus, oligos) {
         output$getData <- renderUI({
             req(!is.na(ols()$length[[1]]))
             ns <- session$ns
-            fluidRow(
+            list(
                 downloadLink(
                     ns("downloadTable"), "Download table as .txt"
                 ),
@@ -441,7 +441,7 @@ oligoFilterServer <- function(id, alignment, consensus, oligos) {
         output$getSelectionData <- renderUI({
             req(is(selectedOligo(), "RprimerOligo"))
             ns <- session$ns
-            fluidRow(
+            list(
                 downloadLink(
                     ns("downloadSelectionTable"),
                     "Download oligo information as .txt"
