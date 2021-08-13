@@ -1,56 +1,55 @@
 options(shiny.maxRequestSize = 90 * 1024^2)
 
 dataUI <- function(id) {
-    ns <- NS(id)
+    ns <- shiny::NS(id)
 
-    tagList(
-        titlePanel("File import"),
-        br(),
-        sidebarLayout(
-            sidebarPanel(
-                radioButtons(
+    shiny::tagList(
+        shiny::titlePanel("File import"),
+        shiny::br(),
+        shiny::sidebarLayout(
+            shiny::sidebarPanel(
+                shiny::radioButtons(
                     ns("dataSelection"),
                     label = NULL,
                     choices = c(
                         "Upload alignment", "Use example data"
                     ), selected = "Upload alignment"
                 ),
-                conditionalPanel(
-                    ns = NS(id),
+                shiny::conditionalPanel(
+                    ns = shiny::NS(id),
                     condition = "input.dataSelection == 'Upload alignment'",
-                    radioButtons(
-                        ns("filetype"), h5("Format"),
+                    shiny::radioButtons(
+                        ns("filetype"), shiny::h5("Format"),
                         choices = c("Fasta" = "fasta", "Clustal" = "clustal"),
                         selected = "fasta"
                     ),
-                    fileInput(
+                    shiny::fileInput(
                         ns("file"), "",
                         multiple = FALSE,
                         accept = c("text", "fasta")
                     ),
-                    htmlOutput(ns("fileName"))
+                    shiny::htmlOutput(ns("fileName"))
                 ),
-                conditionalPanel(
-                    ns = NS(id),
+                shiny::conditionalPanel(
+                    ns = shiny::NS(id),
                     condition = "input.dataSelection == 'Use example data'",
-                    h5("Hepatitis E virus alignment")
+                    shiny::h5("Hepatitis E virus alignment")
                 )
             ),
-            mainPanel(
-                htmlOutput(ns("nSequences")),
-                htmlOutput(ns("alnLength"))
+            shiny::mainPanel(
+                shiny::htmlOutput(ns("nSequences")),
+                shiny::htmlOutput(ns("alnLength"))
             )
         )
     )
 }
 
 dataServer <- function(id) {
-    moduleServer(id, function(input, output, session) {
-        data("exampleRprimerAlignment")
+    shiny::moduleServer(id, function(input, output, session) {
 
-        aln <- reactive({
+        aln <- shiny::reactive({
             if (input$dataSelection == "Upload alignment") {
-                req(input$file)
+                shiny::req(input$file)
                 tryCatch(
                     {
                         Biostrings::readDNAMultipleAlignment(
@@ -59,7 +58,7 @@ dataServer <- function(id) {
                         )
                     },
                     error = function(cond) {
-                        showNotification(
+                        shiny::showNotification(
                             "Failed to upload file correctly.\n
                         Please check that the file format is correct.",
                             type = "error",
@@ -69,12 +68,13 @@ dataServer <- function(id) {
                     silent = TRUE
                 )
             } else if (input$dataSelection == "Use example data") {
+                data("exampleRprimerAlignment")
                 exampleRprimerAlignment
             }
         })
 
-        output$fileName <- renderText({
-            req(is(aln(), "DNAMultipleAlignment"))
+        output$fileName <- shiny::renderText({
+            shiny::req(is(aln(), "DNAMultipleAlignment"))
             if (input$dataSelection == "Upload alignment") {
                 paste0(
                     "'", input$file[[1]], "' was successfully uploaded! "
@@ -84,16 +84,16 @@ dataServer <- function(id) {
             }
         })
 
-        output$nSequences <- renderText({
-            req(is(aln(), "DNAMultipleAlignment"))
+        output$nSequences <- shiny::renderText({
+            shiny::req(is(aln(), "DNAMultipleAlignment"))
             paste("Number of sequences:", nrow(aln()))
         })
 
-        output$alnLength <- renderText({
-            req(is(aln(), "DNAMultipleAlignment"))
+        output$alnLength <- shiny::renderText({
+            shiny::req(is(aln(), "DNAMultipleAlignment"))
             paste("Alignment length:", ncol(aln()))
         })
 
-        list(data = reactive(aln()))
+        list(data = shiny::reactive(aln()))
     })
 }

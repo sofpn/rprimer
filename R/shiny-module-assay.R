@@ -1,37 +1,37 @@
 assayUI <- function(id) {
-    ns <- NS(id)
+    ns <- shiny::NS(id)
 
-    tagList(
-        titlePanel("Step 4/5: Design assays"),
-        br(),
-        sidebarLayout(
-            sidebarPanel(
-                h4("Assay settings"),
-                hr(),
-                sliderInput(
+    shiny::tagList(
+        shiny::titlePanel("Step 4/5: Design assays"),
+        shiny::br(),
+        shiny::sidebarLayout(
+            shiny::sidebarPanel(
+                shiny::h4("Assay settings"),
+                shiny::hr(),
+                shiny::sliderInput(
                     ns("length"),
-                    h5("Length"),
+                    shiny::h5("Length"),
                     value = c(60, 120), min = 40, max = 5000,
                 ),
-                numericInput(
+                shiny::numericInput(
                     ns("tmDifferencePrimers"),
-                    h5(
+                    shiny::h5(
                         "Maximum melting temperature
                         difference between primers (Celcius degrees)"
                     ),
                     value = 10, min = 0, max = Inf,
                 ),
-                hr(),
-                actionButton(ns("getAssays"), "Get assays")
+                shiny::hr(),
+                shiny::actionButton(ns("getAssays"), "Get assays")
             ),
-            mainPanel(
-                tabsetPanel(
+            shiny::mainPanel(
+                shiny::tabsetPanel(
                     id = ns("wizard"),
-                    tabPanel(
+                    shiny::tabPanel(
                         title = "Plot",
-                        br(),
+                        shiny::br(),
                         shinycssloaders::withSpinner(
-                            plotOutput(
+                            shiny::plotOutput(
                                 ns("assayPlot"),
                                 width = "100%",
                                 height = 600
@@ -39,57 +39,57 @@ assayUI <- function(id) {
                             color = "grey"
                         )
                     ),
-                    tabPanel(
+                    shiny::tabPanel(
                         title = "Table",
-                        br(),
-                        uiOutput(ns("getData")),
-                        br(),
-                        h5("Select a row for more details"),
-                        br(),
+                        shiny::br(),
+                        shiny::uiOutput(ns("getData")),
+                        shiny::br(),
+                        shiny::h5("Select a row for more details"),
+                        shiny::br(),
                         DT::dataTableOutput(ns("assayTable"))
                     ),
-                    tabPanel(
+                    shiny::tabPanel(
                         title = "Selection",
-                        br(),
+                        shiny::br(),
                         width = 12,
-                        tabsetPanel(
-                            tabPanel(
+                        shiny::tabsetPanel(
+                            shiny::tabPanel(
                                 title = "Overview",
-                                br(),
-                                uiOutput(ns("getSelectionData")),
-                                br(),
-                                h5("General assay information"),
-                                hr(),
+                                shiny::br(),
+                                shiny::uiOutput(ns("getSelectionData")),
+                                shiny::br(),
+                                shiny::h5("General assay information"),
+                                shiny::hr(),
                                 DT::dataTableOutput(ns("assayTableSelection")),
-                                br(),
-                                h5("Details"),
-                                hr(),
-                                br(),
-                                uiOutput(ns("detailsTab"))
+                                shiny::br(),
+                                shiny::h5("Details"),
+                                shiny::hr(),
+                                shiny::br(),
+                                shiny::uiOutput(ns("detailsTab"))
                             ),
-                            tabPanel(
+                            shiny::tabPanel(
                                 title = "Match details",
-                                br(),
-                                h5(
+                                shiny::br(),
+                                shiny::h5(
                                     "Proportion of matching sequences within the
                                                   intended target binding region in the input alignment"
                                 ),
-                                hr(),
-                                br(),
-                                column(
+                                shiny::hr(),
+                                shiny::br(),
+                                shiny::column(
                                     width = 12, align = "center",
                                     shinycssloaders::withSpinner(
-                                        plotOutput(
+                                        shiny::plotOutput(
                                             ns("matchPlot"),
                                             width = "100%"
                                         ),
                                         color = "grey"
                                     )
                                 ),
-                                h5("Details"),
-                                hr(),
-                                br(),
-                                uiOutput(ns("matchDetailsTab"))
+                                shiny::h5("Details"),
+                                shiny::hr(),
+                                shiny::br(),
+                                shiny::uiOutput(ns("matchDetailsTab"))
                             )
                         )
                     )
@@ -100,10 +100,10 @@ assayUI <- function(id) {
 }
 
 assayServer <- function(id, alignment, consensus, oligos) {
-    moduleServer(id, function(input, output, session) {
+    shiny::moduleServer(id, function(input, output, session) {
 
-        assay <- eventReactive(input$getAssays, {
-            req(is(oligos(), "RprimerOligo"))
+        assay <- shiny::eventReactive(input$getAssays, {
+            shiny::req(is(oligos(), "RprimerOligo"))
 
             tryCatch(
                 {
@@ -118,7 +118,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
 
                 },
                 error = function(cond) {
-                    showNotification(
+                    shiny::showNotification(
                         "No assays were found.\n
                         Try to adjust oligo or assay design settings.",
                         type = "error",
@@ -129,18 +129,18 @@ assayServer <- function(id, alignment, consensus, oligos) {
             )
         })
 
-        output$assayPlot <- renderPlot({
-            req(is(assay(), "RprimerAssay"))
+        output$assayPlot <- shiny::renderPlot({
+            shiny::req(is(assay(), "RprimerAssay"))
             plotData(assay())
         })
 
-        observeEvent(input$assayTable_rows_selected, {
+        shiny::observeEvent(input$assayTable_rows_selected, {
             Sys.sleep(1)
-            updateTabsetPanel(session, "wizard", selected = "Selection")
+            shiny::updateTabsetPanel(session, "wizard", selected = "Selection")
         })
 
-        selectedAssay <- reactive({
-            req(is(assay(), "RprimerAssay"))
+        selectedAssay <- shiny::reactive({
+            shiny::req(is(assay(), "RprimerAssay"))
             if (!is.null(input$assayTable_rows_selected)) {
                 assay()[input$assayTable_rows_selected, ]
             } else {
@@ -148,14 +148,14 @@ assayServer <- function(id, alignment, consensus, oligos) {
             }
         })
 
-        selectedAssayList <- reactive({
-            req(selectedAssay())
+        selectedAssayList <- shiny::reactive({
+            shiny::req(selectedAssay())
             splitAssayToList(selectedAssay())
         })
 
-        selectedAssayMatch <- reactive({
-            req(selectedAssay())
-            req(alignment())
+        selectedAssayMatch <- shiny::reactive({
+            shiny::req(selectedAssay())
+            shiny::req(alignment())
             if (is.na(selectedAssay()$length[[1]])) {
                 NULL
             } else {
@@ -163,12 +163,12 @@ assayServer <- function(id, alignment, consensus, oligos) {
             }
         })
 
-        selectedAssayMatchList <- reactive({
-            req(selectedAssayMatch())
+        selectedAssayMatchList <- shiny::reactive({
+            shiny::req(selectedAssayMatch())
             splitAssayToList(selectedAssayMatch())
         })
 
-        output$downloadTable <- downloadHandler(
+        output$downloadTable <- shiny::downloadHandler(
             filename <- function() {
                 paste0("assays-", Sys.Date(), ".txt")
             },
@@ -181,22 +181,22 @@ assayServer <- function(id, alignment, consensus, oligos) {
             }
         )
 
-        output$getData <- renderUI({
-            req(is(assay(), "RprimerAssay"))
+        output$getData <- shiny::renderUI({
+            shiny::req(is(assay(), "RprimerAssay"))
             ns <- session$ns
             list(
-                downloadLink(
+                shiny::downloadLink(
                     ns("downloadTable"), "Download table as .txt"
                 ),
-                br(),
-                downloadLink(
+                shiny::br(),
+                shiny::downloadLink(
                     ns("downloadFasta"),
                     "Download assays in fasta-format"
                 )
             )
         })
 
-        output$downloadFasta <- downloadHandler(
+        output$downloadFasta <- shiny::downloadHandler(
             filename <- function() {
                 paste0("assays-fasta", Sys.Date(), ".txt")
             },
@@ -210,7 +210,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
 
         output$assayTable <- DT::renderDataTable(
             {
-                req(is(assay(), "RprimerAssay"))
+                shiny::req(is(assay(), "RprimerAssay"))
                 x <- assay()
                 x <- roundDbls(removeListColumns(as.data.frame(x)))
                 if (any(grepl("Pr", names(x)))) {
@@ -276,56 +276,56 @@ assayServer <- function(id, alignment, consensus, oligos) {
             selection = list(mode = "single")
         )
 
-        output$detailsTab <- renderUI({
+        output$detailsTab <- shiny::renderUI({
             ns <- session$ns
             tabs <- list(
-                tabPanel(
+                shiny::tabPanel(
                     title = "Forward",
-                    br(),
+                    shiny::br(),
                     DT::dataTableOutput(ns("tableFwd")),
-                    br(),
-                    br(),
-                    h5("All sequence variants"),
-                    hr(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
+                    shiny::h5("All sequence variants"),
+                    shiny::hr(),
+                    shiny::br(),
                     DT::dataTableOutput(ns("tableFwdAll")),
-                    br(),
-                    br(),
-                    h5("Nucleotide distribution in target alignment"),
-                    hr(),
-                    br(),
-                    column(
+                    shiny::br(),
+                    shiny::br(),
+                    shiny::h5("Nucleotide distribution in target alignment"),
+                    shiny::hr(),
+                    shiny::br(),
+                    shiny::column(
                         width = 12, align = "center",
                         shinycssloaders::withSpinner(
-                            plotOutput(
+                            shiny::plotOutput(
                                 ns("ntPlotFwd"),
                                 width = "75%"
                             ),
                             color = "grey"
                         )
                     ),
-                    br(),
-                    br()
+                    shiny::br(),
+                    shiny::br()
                 ),
-                tabPanel(
+                shiny::tabPanel(
                     title = "Reverse",
-                    br(),
+                    shiny::br(),
                     DT::dataTableOutput(ns("tableRev")),
-                    br(),
-                    br(),
-                    h5("All sequence variants"),
-                    hr(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
+                    shiny::h5("All sequence variants"),
+                    shiny::hr(),
+                    shiny::br(),
                     DT::dataTableOutput(ns("tableRevAll")),
-                    br(),
-                    br(),
-                    h5("Nucleotide distribution in target alignment"),
-                    hr(),
-                    br(),
-                    column(
+                    shiny::br(),
+                    shiny::br(),
+                    shiny::h5("Nucleotide distribution in target alignment"),
+                    shiny::hr(),
+                    shiny::br(),
+                    shiny::column(
                         width = 12, align = "center",
                         shinycssloaders::withSpinner(
-                            plotOutput(
+                            shiny::plotOutput(
                                 ns("ntPlotRev"),
                                 width = "75%"
                             ),
@@ -333,134 +333,134 @@ assayServer <- function(id, alignment, consensus, oligos) {
                         )
                     )
                 ),
-                tabPanel(
+                shiny::tabPanel(
                     title = "Probe",
-                    br(),
+                    shiny::br(),
                     DT::dataTableOutput(ns("tablePr")),
-                    br(),
-                    br(),
-                    h5("All sequence variants"),
-                    hr(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
+                    shiny::h5("All sequence variants"),
+                    shiny::hr(),
+                    shiny::br(),
                     DT::dataTableOutput(ns("tablePrAll")),
-                    br(),
-                    br(),
-                    h5("Nucleotide distribution in target alignment"),
-                    hr(),
-                    br(),
-                    column(
+                    shiny::br(),
+                    shiny::br(),
+                    shiny::h5("Nucleotide distribution in target alignment"),
+                    shiny::hr(),
+                    shiny::br(),
+                    shiny::column(
                         width = 12, align = "center",
                         shinycssloaders::withSpinner(
-                            plotOutput(
+                            shiny::plotOutput(
                                 ns("ntPlotPr"),
                                 width = "75%"
                             ),
                             color = "grey"
                         )
                     ),
-                    br(),
-                    br()
+                    shiny::br(),
+                    shiny::br()
                 )
             )
 
             if (length(selectedAssayList()) == 3) {
-                do.call(tabsetPanel, tabs)
+                do.call(shiny::tabsetPanel, tabs)
             } else {
-                do.call(tabsetPanel, tabs[1:2])
+                do.call(shiny::tabsetPanel, tabs[1:2])
             }
         })
 
-        output$matchDetailsTab <- renderUI({
+        output$matchDetailsTab <- shiny::renderUI({
             ns <- session$ns
 
             tabs <- list(
-                tabPanel(
+                shiny::tabPanel(
                     title = "Forward",
-                    br(),
+                    shiny::br(),
                     DT::dataTableOutput(
                         ns("tableFwdMatch")
                     ),
-                    br(),
-                    h5("Target sequence names"),
-                    hr(),
+                    shiny::br(),
+                    shiny::h5("Target sequence names"),
+                    shiny::hr(),
                     htmlOutput(ns("perfectMatchFwd")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("oneMismatchFwd")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("twoMismatchesFwd")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("threeMismatchesFwd")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("fourOrMoreMismatchesFwd")),
-                    br(),
-                    br()
+                    shiny::br(),
+                    shiny::br()
                 ),
-                tabPanel(
+                shiny::tabPanel(
                     title = "Reverse",
-                    br(),
+                    shiny::br(),
                     DT::dataTableOutput(
                         ns("tableRevMatch")
                     ),
-                    br(),
-                    h5("Target sequence names"),
-                    hr(),
+                    shiny::br(),
+                    shiny::h5("Target sequence names"),
+                    shiny::hr(),
                     htmlOutput(ns("perfectMatchRev")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("oneMismatchRev")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("twoMismatchesRev")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("threeMismatchesRev")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("fourOrMoreMismatchesRev")),
-                    br(),
-                    br()
+                    shiny::br(),
+                    shiny::br()
                 ),
-                tabPanel(
+                shiny::tabPanel(
                     title = "Probe",
-                    br(),
+                    shiny::br(),
                     DT::dataTableOutput(
                         ns("tablePrMatch")
                     ),
-                    br(),
-                    h5("Target sequence names"),
-                    hr(),
+                    shiny::br(),
+                    shiny::h5("Target sequence names"),
+                    shiny::hr(),
                     htmlOutput(ns("perfectMatchPr")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("oneMismatchPr")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("twoMismatchesPr")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("threeMismatchesPr")),
-                    br(),
-                    br(),
+                    shiny::br(),
+                    shiny::br(),
                     htmlOutput(ns("fourOrMoreMismatchesPr")),
-                    br(),
-                    br()
+                    shiny::br(),
+                    shiny::br()
                 )
             )
 
             if (length(selectedAssayList()) == 3) {
-                do.call(tabsetPanel, tabs)
+                do.call(shiny::tabsetPanel, tabs)
             } else {
-                do.call(tabsetPanel, tabs[1:2])
+                do.call(shiny::tabsetPanel, tabs[1:2])
             }
         })
 
         output$assayTableSelection <- DT::renderDataTable(
             {
-                req(selectedAssay())
+                shiny::req(selectedAssay())
                 if (is.na(selectedAssay()$length[[1]])) {
                     NULL
                 } else {
@@ -477,8 +477,8 @@ assayServer <- function(id, alignment, consensus, oligos) {
             selection = "none"
         )
 
-        output$ntPlotFwd <- renderPlot({
-            req(selectedAssay())
+        output$ntPlotFwd <- shiny::renderPlot({
+            shiny::req(selectedAssay())
             if (is.na(selectedAssay()$length[[1]])) {
                 NULL
             } else {
@@ -490,8 +490,8 @@ assayServer <- function(id, alignment, consensus, oligos) {
             }
         })
 
-        output$ntPlotRev <- renderPlot({
-            req(selectedAssay())
+        output$ntPlotRev <- shiny::renderPlot({
+            shiny::req(selectedAssay())
             if (is.na(selectedAssay()$length[[1]])) {
                 NULL
             } else {
@@ -503,9 +503,9 @@ assayServer <- function(id, alignment, consensus, oligos) {
             }
         })
 
-        output$ntPlotPr <- renderPlot({
-            req(selectedAssay())
-            req(grepl("Pr", names(selectedAssay())))
+        output$ntPlotPr <- shiny::renderPlot({
+            shiny::req(selectedAssay())
+            shiny::req(grepl("Pr", names(selectedAssay())))
             if (is.na(selectedAssay()$length[[1]])) {
                 NULL
             } else {
@@ -518,23 +518,23 @@ assayServer <- function(id, alignment, consensus, oligos) {
             }
         })
 
-        output$getSelectionData <- renderUI({
-            req(selectedAssay())
+        output$getSelectionData <- shiny::renderUI({
+            shiny::req(selectedAssay())
             ns <- session$ns
             list(
-                downloadLink(
+                shiny::downloadLink(
                     ns("downloadSelectionTable"),
                     "Download assay information as .txt"
                 ),
-                br(),
-                downloadLink(
+                shiny::br(),
+                shiny::downloadLink(
                     ns("downloadSelectionFasta"),
                     "Download assay in fasta-format"
                 )
             )
         })
 
-        output$downloadSelectionTable <- downloadHandler(
+        output$downloadSelectionTable <- shiny::downloadHandler(
             filename <- function() {
                 paste0("assay-selection-", Sys.Date(), ".txt")
             },
@@ -547,7 +547,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
             }
         )
 
-        output$downloadSelectionFasta <- downloadHandler(
+        output$downloadSelectionFasta <- shiny::downloadHandler(
             filename <- function() {
                 paste0("assay-selection-fasta-", Sys.Date(), ".txt")
             },
@@ -581,7 +581,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
 
         output$tableFwdAll <- DT::renderDataTable(
             {
-                req(selectedAssayList())
+                shiny::req(selectedAssayList())
                 x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[1]])))
                 names(x) <- c(
                     "Sequence", "GC content", "Tm", "Delta G"
@@ -600,7 +600,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
 
         output$tableRev <- DT::renderDataTable(
             {
-                req(selectedAssayList())
+                shiny::req(selectedAssayList())
                 x <- roundDbls(removeListColumns(selectedAssayList()[[2]]))
                 names(x) <- c(
                     "Start", "End", "Length", "IUPAC sequence", "Identity",
@@ -621,7 +621,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
 
         output$tableRevAll <- DT::renderDataTable(
             {
-                req(selectedAssayList())
+                shiny::req(selectedAssayList())
                 x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[2]])))
                 names(x) <- c(
                     "Sequence", "GC content", "Tm", "Delta G"
@@ -640,7 +640,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
 
         output$tablePr <- DT::renderDataTable(
             {
-                req(length(selectedAssayList()) == 3)
+                shiny::req(length(selectedAssayList()) == 3)
                 x <- roundDbls(removeListColumns(selectedAssayList()[[3]]))
                 x$iupacSequence <- ifelse(x$plus, x$iupacSequence, NA)
                 x$iupacSequenceRc <- ifelse(x$minus, x$iupacSequenceRc, NA)
@@ -666,7 +666,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
 
         output$tablePrAll <- DT::renderDataTable(
             {
-                req(length(selectedAssayList()) == 3)
+                shiny::req(length(selectedAssayList()) == 3)
                 x <- roundDbls(makeListTable(as.data.frame(selectedAssayList()[[3]])))
                 names(x) <- c(
                     "Sequence, plus", "Sequence, minus", "GC content", "Tm", "Delta G"
@@ -696,7 +696,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
 
         output$tableFwdMatch <- DT::renderDataTable(
             {
-                req(selectedAssayMatchList())
+                shiny::req(selectedAssayMatchList())
                 x <- roundDbls(removeListColumns(selectedAssayMatchList()[[1]]))
                 names(x) <- c(
                     "IUPAC sequence",
@@ -717,7 +717,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
 
         output$tableRevMatch <- DT::renderDataTable(
             {
-                req(selectedAssayMatchList())
+                shiny::req(selectedAssayMatchList())
                 x <- roundDbls(removeListColumns(selectedAssayMatchList()[[2]]))
                 names(x) <- c(
                     "IUPAC sequence",
@@ -738,7 +738,7 @@ assayServer <- function(id, alignment, consensus, oligos) {
 
         output$tablePrMatch <- DT::renderDataTable(
             {
-                req(length(selectedAssayList()) == 3)
+                shiny::req(length(selectedAssayList()) == 3)
                 x <- roundDbls(removeListColumns(selectedAssayMatchList()[[3]]))
                 names(x) <- c(
                     "IUPAC sequence",
@@ -757,13 +757,13 @@ assayServer <- function(id, alignment, consensus, oligos) {
             selection = "none"
         )
 
-        output$matchPlot <- renderPlot({
-            req(is(selectedAssayMatch(), "RprimerMatchAssay"))
+        output$matchPlot <- shiny::renderPlot({
+            shiny::req(is(selectedAssayMatch(), "RprimerMatchAssay"))
             plotData(selectedAssayMatch())
         })
 
-        output$perfectMatchFwd <- renderText({
-            req(!is.null(selectedAssayMatch()))
+        output$perfectMatchFwd <- shiny::renderText({
+            shiny::req(!is.null(selectedAssayMatch()))
             c(
                 "<b>Perfect match</b><br>",
                 selectedAssayMatch()$idPerfectMatchFwd[[1]]
@@ -771,118 +771,118 @@ assayServer <- function(id, alignment, consensus, oligos) {
         })
 
 
-        output$oneMismatchFwd <- renderText({
-            req(!is.null(selectedAssayMatch()))
+        output$oneMismatchFwd <- shiny::renderText({
+            shiny::req(!is.null(selectedAssayMatch()))
             c(
                 "<b>One mismatch</b><br>",
                 selectedAssayMatch()$idOneMismatchFwd[[1]]
             )
         })
 
-        output$twoMismatchesFwd <- renderText({
-            req(!is.null(selectedAssayMatch()))
+        output$twoMismatchesFwd <- shiny::renderText({
+            shiny::req(!is.null(selectedAssayMatch()))
             c(
                 "<b>Two mismatches</b><br>",
                 selectedAssayMatch()$idTwoMismatchesFwd[[1]]
             )
         })
 
-        output$threeMismatchesFwd <- renderText({
-            req(!is.null(selectedAssayMatch()))
+        output$threeMismatchesFwd <- shiny::renderText({
+            shiny::req(!is.null(selectedAssayMatch()))
             c(
                 "<b>Three mismatches</b><br>",
                 selectedAssayMatch()$idThreeMismatchesFwd[[1]]
             )
         })
 
-        output$fourOrMoreMismatchesFwd <- renderText({
-            req(!is.null(selectedAssayMatch()))
+        output$fourOrMoreMismatchesFwd <- shiny::renderText({
+            shiny::req(!is.null(selectedAssayMatch()))
             c(
                 "<b>Four or more mismatches</b><br>",
                 selectedAssayMatch()$idFourOrMoreMismatchesFwd[[1]]
             )
         })
 
-        output$perfectMatchRev <- renderText({
-            req(!is.null(selectedAssayMatch()))
+        output$perfectMatchRev <- shiny::renderText({
+            shiny::req(!is.null(selectedAssayMatch()))
             c(
                 "<b>Perfect match</b><br>",
                 selectedAssayMatch()$idPerfectMatchRev[[1]]
             )
         })
 
-        output$oneMismatchRev <- renderText({
-            req(!is.null(selectedAssayMatch()))
+        output$oneMismatchRev <- shiny::renderText({
+            shiny::req(!is.null(selectedAssayMatch()))
             c(
                 "<b>One mismatch</b><br>",
                 selectedAssayMatch()$idOneMismatchRev[[1]]
             )
         })
 
-        output$twoMismatchesRev <- renderText({
-            req(!is.null(selectedAssayMatch()))
+        output$twoMismatchesRev <- shiny::renderText({
+            shiny::req(!is.null(selectedAssayMatch()))
             c(
                 "<b>Two mismatches</b><br>",
                 selectedAssayMatch()$idTwoMismatchesRev[[1]]
             )
         })
 
-        output$threeMismatchesRev <- renderText({
-            req(!is.null(selectedAssayMatch()))
+        output$threeMismatchesRev <- shiny::renderText({
+            shiny::req(!is.null(selectedAssayMatch()))
             c(
                 "<b>Three mismatches</b><br>",
                 selectedAssayMatch()$idThreeMismatchesRev[[1]]
             )
         })
 
-        output$fourOrMoreMismatchesRev <- renderText({
-            req(!is.null(selectedAssayMatch()))
+        output$fourOrMoreMismatchesRev <- shiny::renderText({
+            shiny::req(!is.null(selectedAssayMatch()))
             c(
                 "<b>Four or more mismatches</b><br>",
                 selectedAssayMatch()$idFourOrMoreMismatchesRev[[1]]
             )
         })
 
-        output$perfectMatchPr <- renderText({
-            req(any(grepl("Pr", names(selectedAssayMatch()))))
+        output$perfectMatchPr <- shiny::renderText({
+            shiny::req(any(grepl("Pr", names(selectedAssayMatch()))))
             c(
                 "<b>Perfect match</b><br>",
                 selectedAssayMatch()$idPerfectMatchPr[[1]]
             )
         })
 
-        output$oneMismatchPr <- renderText({
-            req(any(grepl("Pr", names(selectedAssayMatch()))))
+        output$oneMismatchPr <- shiny::renderText({
+            shiny::req(any(grepl("Pr", names(selectedAssayMatch()))))
             c(
                 "<b>One mismatch</b><br>",
                 selectedAssayMatch()$idOneMismatchPr[[1]]
             )
         })
 
-        output$twoMismatchesPr <- renderText({
-            req(any(grepl("Pr", names(selectedAssayMatch()))))
+        output$twoMismatchesPr <- shiny::renderText({
+            shiny::req(any(grepl("Pr", names(selectedAssayMatch()))))
             c(
                 "<b>Two mismatches</b><br>",
                 selectedAssayMatch()$idTwoMismatchesPr[[1]]
             )
         })
 
-        output$threeMismatchesPr <- renderText({
-            req(any(grepl("Pr", names(selectedAssayMatch()))))
+        output$threeMismatchesPr <- shiny::renderText({
+            shiny::req(any(grepl("Pr", names(selectedAssayMatch()))))
             c(
                 "<b>Three mismatches</b><br>",
                 selectedAssayMatch()$idThreeMismatchesPr[[1]]
             )
         })
 
-        output$fourOrMoreMismatchesPr <- renderText({
-            req(any(grepl("Pr", names(selectedAssayMatch()))))
+        output$fourOrMoreMismatchesPr <- shiny::renderText({
+            shiny::req(any(grepl("Pr", names(selectedAssayMatch()))))
             c(
                 "<b>Four or more mismatches</b><br>",
                 selectedAssayMatch()$idFourOrMoreMismatchesPr[[1]]
             )
         })
 
-        list(data = reactive(assay()))
+        list(data = shiny::reactive(assay()))
     })
 }

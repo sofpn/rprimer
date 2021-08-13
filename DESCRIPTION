@@ -24,6 +24,7 @@ Depends:
 Imports:
     Biostrings,
     bslib,
+    DT,
     ggplot2,
     IRanges,
     methods,

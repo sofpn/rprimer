@@ -1,4 +1,4 @@
-# Custom functions =============================================================
+# Helper functions to shiny app ================================================
 
 filterOligos <- function(x,
                          fwdFrom,

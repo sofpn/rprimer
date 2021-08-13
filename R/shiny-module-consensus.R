@@ -1,31 +1,33 @@
 consensusUI <- function(id) {
-    ns <- NS(id)
+    ns <- shiny::NS(id)
 
-    tagList(
-        titlePanel("Step 1/5: Make consensus profile"),
-        br(),
-        sidebarLayout(
-            sidebarPanel(
-                h5("Region of interest (position)"),
-                uiOutput(ns("roiFrom")),
-                uiOutput(ns("roiTo")),
-                sliderInput(
+    shiny::tagList(
+        shiny::titlePanel("Step 1/5: Make consensus profile"),
+        shiny::br(),
+        shiny::sidebarLayout(
+            shiny::sidebarPanel(
+                shiny::h5("Region of interest (position)"),
+                shiny::uiOutput(ns("roiFrom")),
+                shiny::uiOutput(ns("roiTo")),
+                shiny::sliderInput(
                     ns("ambiguityThreshold"),
-                    h5("Threshold for an ambiguous base"),
+                    shiny::h5("Threshold for an ambiguous base"),
                     value = 0.05, min = 0, max = 0.2,
                 ),
-                br(),
-                htmlOutput(ns("ambiguityExplanation")),
-                br(),
-                actionButton(ns("getConsensusProfile"), "Get consensus profile"),
+                shiny::br(),
+                shiny::htmlOutput(ns("ambiguityExplanation")),
+                shiny::br(),
+                shiny::actionButton(
+                    ns("getConsensusProfile"), "Get consensus profile"
+                    ),
             ),
-            mainPanel(
-                tabsetPanel(
-                    tabPanel(
+            shiny::mainPanel(
+                shiny::tabsetPanel(
+                    shiny::tabPanel(
                         title = "Plot",
-                        br(),
+                        shiny::br(),
                         shinycssloaders::withSpinner(
-                            plotOutput(
+                            shiny::plotOutput(
                                 ns("consensusPlot"),
                                 width = "100%",
                                 height = 600
@@ -33,11 +35,11 @@ consensusUI <- function(id) {
                             color = "grey"
                         )
                     ),
-                    tabPanel(
+                    shiny::tabPanel(
                         title = "Table",
-                        br(),
-                        uiOutput(ns("getData")),
-                        br(),
+                        shiny::br(),
+                        shiny::uiOutput(ns("getData")),
+                        shiny::br(),
                         DT::dataTableOutput(ns("consensusTable"))
                     )
                 )
@@ -47,26 +49,26 @@ consensusUI <- function(id) {
 }
 
 consensusServer <- function(id, alignment) {
-    moduleServer(id, function(input, output, session) {
-        output$roiFrom <- renderUI({
-            req(is(alignment(), "DNAMultipleAlignment"))
+    shiny::moduleServer(id, function(input, output, session) {
+        output$roiFrom <-  shiny::renderUI({
+            shiny::req(is(alignment(), "DNAMultipleAlignment"))
             ns <- session$ns
-            numericInput(
-                ns("roiFrom"), h5("From"),
+            shiny::numericInput(
+                ns("roiFrom"),  shiny::h5("From"),
                 min = 1, max = ncol(alignment()) - 1, value = 1,
             )
         })
 
-        output$roiTo <- renderUI({
+        output$roiTo <-  shiny::renderUI({
             req(is(alignment(), "DNAMultipleAlignment"))
             ns <- session$ns
-            numericInput(
-                ns("roiTo"), h5("To"),
+            shiny::numericInput(
+                ns("roiTo"),  shiny::h5("To"),
                 min = 2, max = ncol(alignment()), value = ncol(alignment())
             )
         })
 
-        output$ambiguityExplanation <- renderText({
+        output$ambiguityExplanation <-  shiny::renderText({
             paste(
                 "At each position, all bases with an occurence of more than",
                 input$ambiguityThreshold * 100, "% will be included when the
@@ -74,28 +76,27 @@ consensusServer <- function(id, alignment) {
             )
         })
 
-        consensus <- eventReactive(input$getConsensusProfile, {
-            req(is(alignment(), "DNAMultipleAlignment"))
+        consensus <-  shiny::eventReactive(input$getConsensusProfile, {
+            shiny::req(is(alignment(), "DNAMultipleAlignment"))
             consensus <- consensusProfile(alignment(), input$ambiguityThreshold)
-            selection <- consensus[
+            consensus[
                 consensus$position >= as.numeric(input$roiFrom) &
                     consensus$position <= as.numeric(input$roiTo),
             ]
-            selection
         })
 
-        output$consensusPlot <- renderPlot({
-            req(is(consensus(), "RprimerProfile"))
+        output$consensusPlot <-  shiny::renderPlot({
+            shiny::req(is(consensus(), "RprimerProfile"))
             plotData(consensus())
         })
 
-        output$getData <- renderUI({
-            req(is(consensus(), "RprimerProfile"))
+        output$getData <-  shiny::renderUI({
+            shiny::req(is(consensus(), "RprimerProfile"))
             ns <- session$ns
-            downloadLink(ns("download"), "Download table as .txt")
+            shiny::downloadLink(ns("download"), "Download table as .txt")
         })
 
-        output$download <- downloadHandler(
+        output$download <-  shiny::downloadHandler(
             filename <- function() {
                 paste0("consensus_profile-", Sys.Date(), ".txt")
             },
@@ -110,7 +111,7 @@ consensusServer <- function(id, alignment) {
 
         output$consensusTable <- DT::renderDataTable(
             {
-                req(is(consensus(), "RprimerProfile"))
+                shiny::req(is(consensus(), "RprimerProfile"))
                 x <- roundDbls(as.data.frame(consensus()))
                 names(x) <- c(
                     "Position", "A", "C", "G", "T", "Other", "Gaps", "Majority",
@@ -128,6 +129,6 @@ consensusServer <- function(id, alignment) {
             selection = "none"
         )
 
-        list(data = reactive(consensus()))
+        list(data = shiny::reactive(consensus()))
     })
 }
