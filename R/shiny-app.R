@@ -1,5 +1,4 @@
 rprimerApp <- function() {
-
     ui <- shiny::fluidPage(
 
         shiny::tags$head(
@@ -134,38 +133,43 @@ rprimerApp <- function() {
         oligoFilter <- oligoFilterServer(
             "oligoFilter",
             alignment = alignment$data, consensus = consensus$data,
-            oligos = oligo$data
+            oligo = oligo$data
         )
 
         assay <- assayServer(
             "assay",
             alignment = alignment$data, consensus = consensus$data,
-            oligos = oligoFilter$data
+            oligo = oligoFilter$data
         )
 
         assayFilterServer(
             "assayFilter",
             alignment = alignment$data, consensus = consensus$data,
-            assays = assay$data
+            assay = assay$data
         )
 
         output$page23 <- shiny::renderUI({
-            shiny::req(is(alignment$data(), "DNAMultipleAlignment"))
+            shiny::req(alignment$data())
             nextButton(3)
         })
 
         output$page34 <- shiny::renderUI({
-            shiny::req(is(consensus$data(), "RprimerProfile"))
+            shiny::req(consensus$data())
             nextButton(4)
         })
 
         output$page45 <- shiny::renderUI({
-            shiny::req(is(oligo$data(), "RprimerOligo"))
+            shiny::req(oligo$data())
+            nextButton(5)
+        })
+
+        output$page56 <- shiny::renderUI({
+            shiny::req(oligoFilter$data())
             nextButton(5)
         })
 
         output$page67 <- shiny::renderUI({
-            shiny::req(is(assay$data(), "RprimerAssay"))
+            shiny::req(assay$data())
             nextButton(7)
         })
 
@@ -184,30 +188,4 @@ rprimerApp <- function() {
     }
 
     shiny::shinyApp(ui, server)
-
-}
-
-# Helpers ======================================================================
-
-switchPage <- function(i) {
-    shiny::updateTabsetPanel(inputId = "wizard", selected = paste0("page", i))
-}
-
-previousButton <- function(i) {
-    id <- paste0("page", i + 1, i)
-    shiny::actionButton(
-        id, "Previous",
-        icon = shiny::icon("chevron-left")
-    )
-}
-
-nextButton <- function(i) {
-    id <- paste0("page", i - 1, i)
-    shiny::actionButton(
-        id,
-        label = shiny::div(
-            "Next", shiny::icon("chevron-right"),
-            class = "btn btn-primary"
-        )
-    )
 }

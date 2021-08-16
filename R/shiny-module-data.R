@@ -1,16 +1,14 @@
-options(shiny.maxRequestSize = 90 * 1024^2)
-
 dataUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::titlePanel("File import"),
-        shiny::br(),
+        shiny::h4("File import"),
+        shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(
                 shiny::radioButtons(
                     ns("dataSelection"),
-                    label = NULL,
+                    shiny::h5("Option"),
                     choices = c(
                         "Upload alignment", "Use example data"
                     ), selected = "Upload alignment"
@@ -40,13 +38,13 @@ dataUI <- function(id) {
                 shiny::htmlOutput(ns("nSequences")),
                 shiny::htmlOutput(ns("alnLength"))
             )
-        )
+        ),
+        shiny::hr()
     )
 }
 
 dataServer <- function(id) {
     shiny::moduleServer(id, function(input, output, session) {
-
         aln <- shiny::reactive({
             if (input$dataSelection == "Upload alignment") {
                 shiny::req(input$file)
@@ -97,3 +95,15 @@ dataServer <- function(id) {
         list(data = shiny::reactive(aln()))
     })
 }
+
+## Module app for testing ======================================================
+
+# dataApp <- function() {
+#    ui <- fluidPage(
+#        dataUI("id")
+#    )
+#    server <- function(input, output, session) {
+#       dataServer("id")
+#    }
+#    shinyApp(ui, server)
+# }

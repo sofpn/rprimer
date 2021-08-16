@@ -81,14 +81,12 @@ setMethod("plotData", "RprimerProfile", \(x,
             stop("'highlight' must be numeric, e.g. c(1, 10).", call. = FALSE)
         }
         .plotOverview(x, highlight)
-    }
-    else if (type == "nucleotide") {
+    } else if (type == "nucleotide") {
         if (!(is.logical(rc))) {
             stop("'rc' must be set to TRUE or FALSE.", call. = FALSE)
         }
         .plotNucleotides(x, rc)
-    }
-    else {
+    } else {
         stop("'type' must be either 'overview' or 'nucleotide'", call. = FALSE)
     }
 })
@@ -455,8 +453,7 @@ setMethod("plotData", "RprimerMatchAssay", \(x) {
                 type = "Probes"
             )
         ), ncol = 1)
-    }
-    else if (all(x$type == "primer")) {
+    } else if (all(x$type == "primer")) {
         patchwork::wrap_plots(list(
             .gcTmCoveragePlot(
                 x[x$type == "primer", ],

@@ -2,8 +2,8 @@ oligoUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::titlePanel("Step 2/5: Design oligos"),
-        shiny::br(),
+        shiny::h4("Design oligos"),
+        shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(
                 shiny::h4("Primer settings"),
@@ -115,19 +115,16 @@ oligoUI <- function(id) {
                     shiny::tabPanel(
                         title = "Plot",
                         shiny::br(),
-                        shinycssloaders::withSpinner(
-                            shiny::plotOutput(
-                                ns("oligoPlot"),
-                                width = "100%",
-                                height = 600
-                            ),
-                            color = "grey"
+                        spinnerPlot(
+                            ns("oligoPlot"),
+                            width = "100%", height = 600
                         )
                     ),
                     shiny::tabPanel(
                         title = "Table",
                         shiny::br(),
-                        shiny::uiOutput(ns("getData")),
+                        shiny::uiOutput(ns("getDownloadLinkTxt")),
+                        shiny::uiOutput(ns("getDownloadLinkFasta")),
                         shiny::br(),
                         shiny::h5("Select a row for more details"),
                         shiny::br(),
@@ -136,139 +133,80 @@ oligoUI <- function(id) {
                     shiny::tabPanel(
                         title = "Selection",
                         shiny::br(),
-                        shiny::tabsetPanel(
-                            shiny::tabPanel(
-                                title = "Overview",
-                                shiny::br(),
-                                shiny::uiOutput(ns("getSelectionData")),
-                                shiny::br(),
-                                shiny::h5("Oligo information"),
-                                shiny::hr(),
-                                DT::dataTableOutput(ns("oligoTableSelection")),
-                                shiny::br(),
-                                shiny::h5("All sequence variants"),
-                                shiny::hr(),
-                                DT::dataTableOutput(ns("oligoTableSelectionAll")),
-                                shiny::br(),
-                                shiny::h5("Nucleotide distribution in target alignment (5'-3')"),
-                                shiny::hr(),
-                                shiny::br(),
-                                shiny::column(
-                                    width = 12, align = "center",
-                                    shinycssloaders::withSpinner(
-                                        shiny::plotOutput(
-                                            ns("ntPlot"),
-                                            width = "75%"
-                                        ),
-                                        color = "grey"
-                                    )
-                                )
-                            ),
-                            shiny::tabPanel(
-                                title = "Match details",
-                                shiny::br(),
-                                shiny::h5(
-                                    "Proportion of matching sequences within the
-                                                  intended target binding region in the input alignment"
-                                ),
-                                shiny::hr(),
-                                DT::dataTableOutput(
-                                    ns("oligoTableSelectionMatch")
-                                ),
-                                shiny::br(),
-                                shiny::br(),
-                                shiny::column(
-                                    width = 12, align = "center",
-                                    shinycssloaders::withSpinner(
-                                        shiny::plotOutput(
-                                            ns("matchPlot"),
-                                            width = "75%"
-                                        ),
-                                        color = "grey"
-                                    )
-                                ),
-                                shiny::br(),
-                                shiny::br(),
-                                shiny::h5("Target sequence names"),
-                                shiny::hr(),
-                                shiny::htmlOutput(ns("perfectMatch")),
-                                shiny::br(),
-                                shiny::br(),
-                                shiny::htmlOutput(ns("oneMismatch")),
-                                shiny::br(),
-                                shiny::br(),
-                                shiny::htmlOutput(ns("twoMismatches")),
-                                shiny::br(),
-                                shiny::br(),
-                                shiny::htmlOutput(ns("threeMismatches")),
-                                shiny::br(),
-                                shiny::br(),
-                                shiny::htmlOutput(ns("fourOrMoreMismatches")),
-                                shiny::br(),
-                                shiny::br()
-                            )
-                        )
+                        oligoSelectionUI(ns("selection"))
                     )
                 )
             )
-        )
+        ),
+        shiny::hr()
     )
 }
 
 oligoServer <- function(id, alignment, consensus) {
     shiny::moduleServer(id, function(input, output, session) {
-        ols <- shiny::eventReactive(input$getOligos, {
-            shiny::req(is(consensus(), "RprimerProfile"))
+        oligo <- shiny::eventReactive(input$getOligos, {
+            shiny::req(consensus())
 
-            validDegenPrimer <- input$maxDegeneracyPrimer >= 1 && input$maxDegeneracyPrimer <= 64
+            validDegenPrimer <- input$maxDegeneracyPrimer >= 1 &&
+                input$maxDegeneracyPrimer <= 64
             shinyFeedback::feedbackDanger(
-                "maxDegeneracyPrimer", !validDegenPrimer, "Enter a value from 1 to 64"
+                "maxDegeneracyPrimer", !validDegenPrimer,
+                "Enter a value from 1 to 64"
             )
 
-            validDegenProbe <- input$maxDegeneracyProbe >= 1 && input$maxDegeneracyProbe <= 64
+            validDegenProbe <- input$maxDegeneracyProbe >= 1 &&
+                input$maxDegeneracyProbe <= 64
             shinyFeedback::feedbackDanger(
-                "maxDegeneracyProbe", !validDegenProbe, "Enter a value from 1 to 64"
+                "maxDegeneracyProbe", !validDegenProbe,
+                "Enter a value from 1 to 64"
             )
 
-            validConcPrimer <- input$concPrimer >= 20 && input$concPrimer <= 2000
+            validConcPrimer <- input$concPrimer >= 20 &&
+                input$concPrimer <= 2000
             shinyFeedback::feedbackDanger(
-                "concPrimer", !validConcPrimer, "Enter a value from 20 to 2000"
+                "concPrimer", !validConcPrimer,
+                "Enter a value from 20 to 2000"
             )
 
-            validConcProbe <- input$concProbe >= 20 && input$concProbe <= 2000
+            validConcProbe <- input$concProbe >= 20 &&
+                input$concProbe <= 2000
             shinyFeedback::feedbackDanger(
-                "concProbe", !validConcProbe, "Enter a value from 20 to 2000"
+                "concProbe", !validConcProbe,
+                "Enter a value from 20 to 2000"
             )
 
             validConcNa <- input$concNa >= 0.01 && input$concNa <= 1
             shinyFeedback::feedbackDanger(
-                "concNa", !validConcNa, "Enter a value from 0.01 to 1"
+                "concNa", !validConcNa,
+                "Enter a value from 0.01 to 1"
             )
 
-            validGap <- input$maxGapFrequency >= 0 && input$maxGapFrequency <= 1
+            validGap <- input$maxGapFrequency >= 0 &&
+                input$maxGapFrequency <= 1
             shinyFeedback::feedbackDanger(
-                "maxGapFrequency", !validGap, "Enter a value from 0 to 1"
+                "maxGapFrequency", !validGap,
+                "Enter a value from 0 to 1"
             )
 
             tryCatch(
                 {
                     oligos(consensus(),
-                           maxGapFrequency = input$maxGapFrequency,
-                           lengthPrimer = input$lengthPrimer,
-                           maxDegeneracyPrimer = input$maxDegeneracyPrimer,
-                           avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
-                           gcClampPrimer = input$gcClampPrimer,
-                           gcPrimer = input$gcPrimer,
-                           tmPrimer = input$tmPrimer,
-                           concPrimer = input$concPrimer,
-                           designStrategyPrimer = input$designStrategyPrimer,
-                           probe = input$probe,
-                           lengthProbe = input$lengthProbe,
-                           maxDegeneracyProbe = input$maxDegeneracyProbe,
-                           avoidFiveEndGProbe = input$avoidFiveEndGProbe,
-                           gcProbe = input$gcProbe,
-                           tmProbe = input$tmProbe,
-                           concNa = input$concNa
+                        maxGapFrequency = input$maxGapFrequency,
+                        lengthPrimer = input$lengthPrimer,
+                        maxDegeneracyPrimer = input$maxDegeneracyPrimer,
+                        avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
+                        gcClampPrimer = input$gcClampPrimer,
+                        gcPrimer = input$gcPrimer,
+                        tmPrimer = input$tmPrimer,
+                        concPrimer = input$concPrimer,
+                        designStrategyPrimer = input$designStrategyPrimer,
+                        probe = input$probe,
+                        lengthProbe = input$lengthProbe,
+                        maxDegeneracyProbe = input$maxDegeneracyProbe,
+                        avoidFiveEndGProbe = input$avoidFiveEndGProbe,
+                        gcProbe = input$gcProbe,
+                        tmProbe = input$tmProbe,
+                        concNa = input$concNa
                     )
                 },
                 error = function(cond) {
@@ -292,252 +230,63 @@ oligoServer <- function(id, alignment, consensus) {
             )
         })
 
-        selectedOligo <- shiny::reactive({
-            shiny::req(ols())
-            if (!is.null(input$oligoTable_rows_selected)) {
-                ols()[input$oligoTable_rows_selected, ]
-            } else {
-                NULL
-            }
-        })
-
         shiny::observeEvent(input$oligoTable_rows_selected, {
             Sys.sleep(1)
             shiny::updateTabsetPanel(session, "wizard", selected = "Selection")
         })
 
-        selectedOligoMatch <- shiny::reactive({
-            shiny::req(is(selectedOligo(), "RprimerOligo"))
-            shiny::req(is(alignment(), "DNAMultipleAlignment"))
-            checkMatch(selectedOligo(), alignment())
+        selectedOligo <- shiny::reactive({
+            shiny::req(oligo())
+            if (!is.null(input$oligoTable_rows_selected)) {
+                oligo()[input$oligoTable_rows_selected, ]
+            } else {
+                NULL
+            }
         })
 
         output$oligoPlot <- shiny::renderPlot({
-            shiny::req(is(ols(), "RprimerOligo"))
-            plotData(ols())
+            shiny::req(oligo())
+            plotData(oligo())
         })
 
-        output$getData <- shiny::renderUI({
-            shiny::req(is(ols(), "RprimerOligo"))
-            ns <- session$ns
-            list(
-                shiny::downloadLink(
-                    ns("downloadTable"), "Download table as .txt"
-                ),
-                shiny::br(),
-                shiny::downloadLink(
-                    ns("downloadFasta"),
-                    "Download oligo sequences in fasta-format"
-                )
-            )
-        })
-
-        output$downloadTable <- shiny::downloadHandler(
-            filename <- function() {
-                paste0("oligos-", Sys.Date(), ".txt")
-            },
-            content <- function(file) {
-                write.table(
-                    as.data.frame(ols()), file,
-                    quote = FALSE, sep = "\t",
-                    row.names = FALSE
-                )
-            }
+        output$getDownloadLinkTxt <- displayDownloadHandlerTxt(
+            oligo(), session
         )
 
-        output$downloadFasta <- shiny::downloadHandler(
-            filename <- function() {
-                paste0("oligos-fasta", Sys.Date(), ".txt")
-            },
-            content <- function(file) {
-                x <- ols()
-                x <- as(ols(), "DNAStringSet")
-                Biostrings::writeXStringSet(x, file)
-            }
+        output$getDownloadLinkFasta <- displayDownloadHandlerFasta(
+            oligo(), session
         )
 
-        output$oligoTable <- DT::renderDataTable(
-            {
-                shiny::req(is(ols(), "RprimerOligo"))
-                x <- roundDbls(removeListColumns(as.data.frame(ols())))
-                names(x) <- c(
-                    "Type", "Forward", "Reverse", "Start", "End", "Length",
-                    "IUPAC sequence", "IUPAC sequence, RC", "Identity",
-                    "Coverage", "Degeneracy", "GC content, mean",
-                    "GC content, range", "Tm, mean", "Tm, range", "Delta G, mean",
-                    "Delta G, range", "Design method", "Score", "ROI, start",
-                    "ROI, end"
-                )
-                x
-            },
-            options = list(
-                info = FALSE,
-                searching = FALSE, paging = TRUE,
-                scrollX = TRUE, autoWidth = TRUE,
-                ordering = TRUE, scrollY = "300"
-            ),
-            rownames = FALSE,
-            selection = list(mode = "single")
+        output$downloadTxt <- downloadHandlerTxt(oligo(), "oligo")
+
+        output$downloadFasta <- downloadHandlerFasta(oligo(), "oligo")
+
+        output$oligoTable <- oligoDataTable(
+            oligo(),
+            selection = list(mode = "single"),
+            scrollY = "300", ordering = TRUE
         )
 
-        output$getSelectionData <- shiny::renderUI({
-            shiny::req(is(selectedOligo(), "RprimerOligo"))
-            ns <- session$ns
-            list(
-                shiny::downloadLink(
-                    ns("downloadSelectionTable"),
-                    "Download oligo information as .txt"
-                ),
-                shiny::br(),
-                shiny::downloadLink(
-                    ns("downloadSelectionFasta"),
-                    "Download oligo sequence in fasta-format"
-                )
-            )
-        })
-
-        output$downloadSelectionTable <- shiny::downloadHandler(
-            filename <- function() {
-                paste0("oligo-selection-", Sys.Date(), ".txt")
-            },
-            content <- function(file) {
-                write.table(
-                    as.data.frame(selectedOligo()), file,
-                    quote = FALSE, sep = "\t",
-                    row.names = FALSE
-                )
-            }
+        oligoSelectionServer(
+            "selection", alignment, consensus, selectedOligo
         )
 
-        output$downloadSelectionFasta <- shiny::downloadHandler(
-            filename <- function() {
-                paste0("oligo-selection-fasta-", Sys.Date(), ".txt")
-            },
-            content <- function(file) {
-                x <- selectedOligo()
-                x <- as(selectedOligo(), "DNAStringSet")
-                Biostrings::writeXStringSet(x, file)
-            }
-        )
-
-        output$oligoTableSelection <- DT::renderDataTable(
-            {
-                shiny::req(is(selectedOligo(), "RprimerOligo"))
-                x <- roundDbls(removeListColumns(as.data.frame(selectedOligo())))
-                names(x) <- c(
-                    "Type", "Forward", "Reverse", "Start", "End", "Length",
-                    "IUPAC sequence", "IUPAC sequence, RC", "Identity",
-                    "Coverage", "Degeneracy", "GC content, mean",
-                    "GC content, range", "Tm, mean", "Tm, range", "Delta G, mean",
-                    "Delta G, range", "Design method", "Score", "ROI, start",
-                    "ROI, end"
-                )
-                x
-            },
-            options = list(
-                info = FALSE,
-                searching = FALSE, paging = FALSE,
-                scrollX = TRUE, autoWidth = TRUE,
-                ordering = FALSE
-            ),
-            rownames = FALSE,
-            selection = "none"
-        )
-
-
-        output$oligoTableSelectionAll <- DT::renderDataTable(
-            {
-                shiny::req(is(selectedOligo(), "RprimerOligo"))
-                x <- roundDbls(makeListTable(as.data.frame(selectedOligo())))
-                names(x) <- c(
-                    "Sequence", "Sequence, RC", "GC content", "Tm", "Delta G"
-                )
-                x
-            },
-            options = list(
-                info = FALSE,
-                searching = FALSE, paging = FALSE,
-                scrollX = TRUE, autoWidth = FALSE,
-                ordering = FALSE
-            ),
-            rownames = FALSE,
-            selection = "none"
-        )
-
-        output$ntPlot <- shiny::renderPlot({
-            shiny::req(is(selectedOligo(), "RprimerOligo"))
-            from <- selectedOligo()$start
-            to <- selectedOligo()$end
-            plotData(consensus()[
-                consensus()$position >= from & consensus()$position <= to,
-            ], type = "nucleotide")
-        })
-
-        output$oligoTableSelectionMatch <- DT::renderDataTable(
-            {
-                shiny::req(is(selectedOligoMatch(), "RprimerMatchOligo"))
-                x <- roundDbls(removeListColumns(as.data.frame(selectedOligoMatch())))
-                names(x) <- c(
-                    "IUPAC sequence", "Perfect match", "1 mismatch", "2 mismatches",
-                    "3 mismatches", "4 or more mismatches"
-                )
-                x
-            },
-            options = list(
-                info = FALSE,
-                searching = FALSE, paging = FALSE,
-                scrollX = TRUE, autoWidth = FALSE,
-                ordering = FALSE
-            ),
-            rownames = FALSE,
-            selection = "none"
-        )
-
-        output$matchPlot <- shiny::renderPlot({
-            shiny::req(is(selectedOligoMatch(), "RprimerMatchOligo"))
-            plotData(selectedOligoMatch())
-        })
-
-        output$perfectMatch <- shiny::renderText({
-            shiny::req(is(selectedOligoMatch(), "RprimerMatchOligo"))
-            c(
-                "<b>Perfect match</b><br>",
-                selectedOligoMatch()$idPerfectMatch[[1]]
-            )
-        })
-
-        output$oneMismatch <- shiny::renderText({
-            shiny::req(is(selectedOligoMatch(), "RprimerMatchOligo"))
-            c(
-                "<b>One mismatch</b><br>",
-                selectedOligoMatch()$idOneMismatch[[1]]
-            )
-        })
-
-        output$twoMismatches <- shiny::renderText({
-            shiny::req(is(selectedOligoMatch(), "RprimerMatchOligo"))
-            c(
-                "<b>Two mismatches</b><br>",
-                selectedOligoMatch()$idTwoMismatches[[1]]
-            )
-        })
-
-        output$threeMismatches <- shiny::renderText({
-            shiny::req(is(selectedOligoMatch(), "RprimerMatchOligo"))
-            c(
-                "<b>Three mismatches</b><br>",
-                selectedOligoMatch()$idThreeMismatches[[1]]
-            )
-        })
-
-        output$fourOrMoreMismatches <- shiny::renderText({
-            shiny::req(is(selectedOligoMatch(), "RprimerMatchOligo"))
-            c(
-                "<b>Four or more mismatches</b><br>",
-                selectedOligoMatch()$idFourOrMoreMismatches[[1]]
-            )
-        })
-
-        list(data = shiny::reactive(ols()))
+        list(data = shiny::reactive(oligo()))
     })
 }
+
+## Module app for testing ======================================================
+
+# oligoApp <- function() {
+#    data("exampleRprimerAlignment")
+#    x <- reactive(exampleRprimerAlignment)
+#    data("exampleRprimerProfile")
+#    y <- reactive(exampleRprimerProfile)
+#    ui <- fluidPage(
+#        oligoUI("id")
+#    )
+#    server <- function(input, output, session) {
+#        oligoServer("id", alignment = x, consensus = y)
+#    }
+#    shinyApp(ui, server)
+# }

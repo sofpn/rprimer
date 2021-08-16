@@ -110,7 +110,7 @@ NULL
 #' @rdname Rprimer-classes
 RprimerProfile <- function(...) {
     S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE) |>
-    .RprimerProfile()
+        .RprimerProfile()
 }
 
 S4Vectors::setValidity2("RprimerProfile", \(object) {
@@ -142,7 +142,7 @@ S4Vectors::setValidity2("RprimerProfile", \(object) {
 #' @rdname Rprimer-classes
 RprimerOligo <- function(...) {
     S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE) |>
-    .RprimerOligo()
+        .RprimerOligo()
 }
 
 S4Vectors::setValidity2("RprimerOligo", \(object) {
@@ -178,7 +178,7 @@ S4Vectors::setValidity2("RprimerOligo", \(object) {
 #' @rdname Rprimer-classes
 RprimerAssay <- function(...) {
     S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE) |>
-    .RprimerAssay()
+        .RprimerAssay()
 }
 
 S4Vectors::setValidity2("RprimerAssay", \(object) {
@@ -222,7 +222,7 @@ S4Vectors::setValidity2("RprimerAssay", \(object) {
 #' @rdname Rprimer-classes
 RprimerMatchOligo <- function(...) {
     S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE) |>
-    .RprimerMatchOligo()
+        .RprimerMatchOligo()
 }
 
 S4Vectors::setValidity2("RprimerMatchOligo", \(object) {
@@ -254,7 +254,7 @@ S4Vectors::setValidity2("RprimerMatchOligo", \(object) {
 #' @rdname Rprimer-classes
 RprimerMatchAssay <- function(...) {
     S4Vectors::DataFrame(..., row.names = NULL, check.names = TRUE) |>
-    .RprimerMatchAssay()
+        .RprimerMatchAssay()
 }
 
 S4Vectors::setValidity2("RprimerMatchAssay", \(object) {
@@ -306,22 +306,22 @@ setAs("RprimerAssay", "DNAStringSet", \(from) .toDNAStringSetAssay(from))
 .toDNAStringSetOligo <- function(x) {
     oligo <- x$sequence
     oligo <- .addNames(oligo, "oligo") |>
-    Biostrings::DNAStringSet()
+        Biostrings::DNAStringSet()
     oligo
 }
 
 .toDNAStringSetAssay <- function(x) {
     fwd <- x$sequenceFwd
     fwd <- .addNames(fwd, "assay", "_fwd") |>
-    Biostrings::DNAStringSet()
+        Biostrings::DNAStringSet()
     rev <- x$sequenceRev
     rev <- .addNames(rev, "assay", "_rev") |>
-    Biostrings::DNAStringSet() |>
-    Biostrings::reverseComplement()
+        Biostrings::DNAStringSet() |>
+        Biostrings::reverseComplement()
     if ("sequencePr" %in% names(x)) {
         pr <- x$sequencePr
         pr <- .addNames(pr, "assay", "_pr") |>
-        Biostrings::DNAStringSet()
+            Biostrings::DNAStringSet()
     } else {
         pr <- NULL
     }
