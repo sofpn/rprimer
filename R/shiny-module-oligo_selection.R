@@ -32,7 +32,8 @@ oligoSelectionUI <- function(id) {
                 title = "Match details",
                 shiny::br(),
                 shiny::h5(
-                    "bla bla at the intended target binding site in the alignment)"
+                    "The match check is performed only within the intended oligo
+                    binding site in the target alignment."
                 ),
                 shiny::br(),
                 shiny::h5("Proportion of matching sequences"),

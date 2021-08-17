@@ -157,13 +157,16 @@ assays <- function(x,
                    length = c(65, 120),
                    tmDifferencePrimers = NULL) {
     if (!methods::is(x, "RprimerOligo")) {
-        stop("'x' must be an RprimerOligo object.")
+        stop("'x' must be an RprimerOligo object.", call. = FALSE)
     }
     if (!(min(length) >= 40 && max(length) <= 5000)) {
         stop("'length' must be from 40 to 5000.", call. = FALSE)
     }
     if (!is.null(tmDifferencePrimers) && !is.numeric(tmDifferencePrimers)) {
-        stop("'tmDifferencePrimers must be either 'NULL' or a number.")
+        stop(
+            "'tmDifferencePrimers must be either 'NULL' or a number.",
+            .call = FALSE
+        )
     }
     x <- as.data.frame(x)
     assays <- .combinePrimers(

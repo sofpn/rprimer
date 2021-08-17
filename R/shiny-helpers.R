@@ -35,17 +35,17 @@ spinnerPlot <- function(id, ...) {
 
 numericInputFrom <- function(x, id) {
     shiny::numericInput(id, shiny::h5("From"),
-        min = x$roiStart[[1]],
-        max = x$roiEnd[[1]],
-        value = x$roiStart[[1]]
+                        min = x$roiStart[[1]],
+                        max = x$roiEnd[[1]],
+                        value = x$roiStart[[1]]
     )
 }
 
 numericInputTo <- function(x, id) {
     shiny::numericInput(id, shiny::h5("To"),
-        min = x$roiStart[[1]],
-        max = x$roiEnd[[1]],
-        value = x$roiEnd[[1]]
+                        min = x$roiStart[[1]],
+                        max = x$roiEnd[[1]],
+                        value = x$roiEnd[[1]]
     )
 }
 
@@ -73,11 +73,11 @@ conservationInput <- function(x,
     maxValue <- round(max(var, na.rm = TRUE), 4)
 
     shiny::sliderInput(id,
-        round = -4, step = 0.0001,
-        shiny::h5(paste("Minimum", variable)),
-        min = minValue,
-        max = maxValue,
-        value = minValue
+                       round = -4, step = 0.0001,
+                       shiny::h5(paste("Minimum", variable)),
+                       min = minValue,
+                       max = maxValue,
+                       value = minValue
     )
 }
 
@@ -86,7 +86,7 @@ conservationInput <- function(x,
 
 displayDownloadHandlerTxt <- function(x, session) {
     shiny::renderUI({
-        shiny::req(!is.na(x$length[[1]]))
+        shiny::req(x)
         ns <- session$ns
         list(
             shiny::downloadLink(

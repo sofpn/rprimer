@@ -2,7 +2,7 @@ oligoFilterUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::h4("Filter oligos"),
+        shiny::h4("Filter oligos (step 3/5)"),
         shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(

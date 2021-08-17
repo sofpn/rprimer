@@ -2,7 +2,7 @@ consensusUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::h4("Make consensus profile"),
+        shiny::h4("Make consensus profile (step 1/5)"),
         shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(
@@ -18,7 +18,8 @@ consensusUI <- function(id) {
                 shiny::htmlOutput(ns("ambiguityExplanation")),
                 shiny::br(),
                 shiny::actionButton(
-                    ns("getConsensusProfile"), "Get consensus profile"
+                    ns("getConsensusProfile"), "Get consensus profile",
+                    class = "btn btn-primary"
                 ),
             ),
             shiny::mainPanel(
@@ -31,7 +32,7 @@ consensusUI <- function(id) {
                     shiny::tabPanel(
                         title = "Table",
                         shiny::br(),
-                        shiny::uiOutput(ns("getDownloadLink")),
+                        shiny::uiOutput(ns("getDownloadLinkTxt")),
                         shiny::br(),
                         DT::dataTableOutput(ns("consensusTable"))
                     )
@@ -45,7 +46,7 @@ consensusUI <- function(id) {
 consensusServer <- function(id, alignment) {
     shiny::moduleServer(id, function(input, output, session) {
         output$roiFrom <- shiny::renderUI({
-            shiny::req(is(alignment(), "DNAMultipleAlignment"))
+            shiny::req(alignment())
             ns <- session$ns
             shiny::numericInput(
                 ns("roiFrom"), shiny::h5("From"),
@@ -54,7 +55,7 @@ consensusServer <- function(id, alignment) {
         })
 
         output$roiTo <- shiny::renderUI({
-            req(is(alignment(), "DNAMultipleAlignment"))
+            req(alignment())
             ns <- session$ns
             shiny::numericInput(
                 ns("roiTo"), shiny::h5("To"),
@@ -64,14 +65,14 @@ consensusServer <- function(id, alignment) {
 
         output$ambiguityExplanation <- shiny::renderText({
             paste(
-                "At each position, all bases with an occurence of more than",
-                input$ambiguityThreshold * 100, "% will be included when the
-                ambiguous base is determined"
+                "Across each position, all bases that occur in more than",
+                input$ambiguityThreshold * 100, "% of the target sequences
+                will be included when the ambiguous base is determined"
             )
         })
 
         consensus <- shiny::eventReactive(input$getConsensusProfile, {
-            shiny::req(is(alignment(), "DNAMultipleAlignment"))
+            shiny::req(alignment())
             consensus <- consensusProfile(alignment(), input$ambiguityThreshold)
             consensus[
                 consensus$position >= as.numeric(input$roiFrom) &
@@ -80,17 +81,17 @@ consensusServer <- function(id, alignment) {
         })
 
         output$consensusPlot <- shiny::renderPlot({
-            shiny::req(is(consensus(), "RprimerProfile"))
+            shiny::req(consensus())
             plotData(consensus())
         })
 
-        output$getDownloadLink <- displayDownloadHandlerTxt(
+        output$getDownloadLinkTxt <- displayDownloadHandlerTxt(
             consensus(), session
         )
 
         output$downloadTxt <- downloadHandlerTxt(
-            consensus(), "consensus_profile"
-        )
+            consensus(), "consensus"
+            )
 
         output$consensusTable <- consensusDataTable(consensus())
 

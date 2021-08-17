@@ -2,7 +2,7 @@ assayFilterUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::h4("Filter assays"),
+        shiny::h4("Filter assays (step 5/5)"),
         shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(

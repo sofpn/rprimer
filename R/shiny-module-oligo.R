@@ -2,7 +2,7 @@ oligoUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::h4("Design oligos"),
+        shiny::h4("Design oligos (step 2/5)"),
         shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(
@@ -98,7 +98,10 @@ oligoUI <- function(id) {
                 shiny::hr(),
                 shiny::numericInput(
                     ns("maxGapFrequency"),
-                    shiny::h5("Maximum gap frequency (0-1)"),
+                    shiny::h5(
+                        "Maximum allowed gap proportion at binding sites in
+                        target alignment (0-1)"
+                    ),
                     value = 0.01, min = 0, max = 0.2
                 ),
                 shiny::numericInput(
@@ -107,7 +110,10 @@ oligoUI <- function(id) {
                     value = 0.05, min = 0, max = 1
                 ),
                 shiny::hr(),
-                shiny::actionButton(ns("getOligos"), "Get oligos")
+                shiny::actionButton(
+                    ns("getOligos"), "Get oligos",
+                    class = "btn btn-primary"
+                )
             ),
             shiny::mainPanel(
                 shiny::tabsetPanel(
@@ -191,22 +197,22 @@ oligoServer <- function(id, alignment, consensus) {
             tryCatch(
                 {
                     oligos(consensus(),
-                        maxGapFrequency = input$maxGapFrequency,
-                        lengthPrimer = input$lengthPrimer,
-                        maxDegeneracyPrimer = input$maxDegeneracyPrimer,
-                        avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
-                        gcClampPrimer = input$gcClampPrimer,
-                        gcPrimer = input$gcPrimer,
-                        tmPrimer = input$tmPrimer,
-                        concPrimer = input$concPrimer,
-                        designStrategyPrimer = input$designStrategyPrimer,
-                        probe = input$probe,
-                        lengthProbe = input$lengthProbe,
-                        maxDegeneracyProbe = input$maxDegeneracyProbe,
-                        avoidFiveEndGProbe = input$avoidFiveEndGProbe,
-                        gcProbe = input$gcProbe,
-                        tmProbe = input$tmProbe,
-                        concNa = input$concNa
+                           maxGapFrequency = input$maxGapFrequency,
+                           lengthPrimer = input$lengthPrimer,
+                           maxDegeneracyPrimer = input$maxDegeneracyPrimer,
+                           avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
+                           gcClampPrimer = input$gcClampPrimer,
+                           gcPrimer = input$gcPrimer,
+                           tmPrimer = input$tmPrimer,
+                           concPrimer = input$concPrimer,
+                           designStrategyPrimer = input$designStrategyPrimer,
+                           probe = input$probe,
+                           lengthProbe = input$lengthProbe,
+                           maxDegeneracyProbe = input$maxDegeneracyProbe,
+                           avoidFiveEndGProbe = input$avoidFiveEndGProbe,
+                           gcProbe = input$gcProbe,
+                           tmProbe = input$tmProbe,
+                           concNa = input$concNa
                     )
                 },
                 error = function(cond) {

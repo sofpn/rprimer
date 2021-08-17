@@ -6,12 +6,22 @@ welcomeUI <- function(id) {
         shiny::h5(
             "This application provides tools for visualizing sequence
                                 conservation and designing degenerate primers, probes and (RT)-(q/d)PCR
-                                assays from a multiple DNA sequence alignment. The workflow is
-                                developed primarily for sequence variable RNA viruses, but it should also
-                                be useful for other targets with high sequence variability"
+                                assays from a multiple DNA sequence alignment. It is primarily developed for
+                                sequence variable RNA viruses, but it should also
+                                be useful for other targets with high sequence variability."
         ),
+        shiny::h5(
+            "The design workflow consist of five steps:"
+            ),
+        shiny::h5(shiny::tags$ul(
+            shiny::tags$li("Generation of a consensus profile"),
+            shiny::tags$li("Oligo design"),
+            shiny::tags$li("Optional filtering of oligos"),
+            shiny::tags$li("Assay design"),
+            shiny::tags$li("Optional filtering of assays")
+        )),
         shiny::h5(shiny::tags$b("Citation")),
-        shiny::h5("S Persson et al., 2021, manuscript in preparation"),
+        shiny::h5("Persson et al., 2021, manuscript in preparation"),
         shiny::hr()
     )
 }

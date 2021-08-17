@@ -165,7 +165,7 @@ rprimerApp <- function() {
 
         output$page56 <- shiny::renderUI({
             shiny::req(oligoFilter$data())
-            nextButton(5)
+            nextButton(6)
         })
 
         output$page67 <- shiny::renderUI({

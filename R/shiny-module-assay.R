@@ -2,7 +2,7 @@ assayUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::h4("Design assays"),
+        shiny::h4("Design assays (step 4/5)"),
         shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(
@@ -22,7 +22,10 @@ assayUI <- function(id) {
                     value = 10, min = 0, max = Inf,
                 ),
                 shiny::hr(),
-                shiny::actionButton(ns("getAssays"), "Get assays")
+                shiny::actionButton(
+                    ns("getAssays"), "Get assays",
+                    class = "btn btn-primary"
+                )
             ),
             shiny::mainPanel(
                 shiny::tabsetPanel(
@@ -68,8 +71,8 @@ assayServer <- function(id, alignment, consensus, oligo) {
                     }
 
                     assays(oligo(),
-                        length = input$length,
-                        tmDifferencePrimers = as.numeric(input$tmDifferencePrimers)
+                           length = input$length,
+                           tmDifferencePrimers = as.numeric(input$tmDifferencePrimers)
                     )
                 },
                 error = function(cond) {

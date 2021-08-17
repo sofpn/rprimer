@@ -128,13 +128,14 @@ The results can be visualized by using `plotData()`:
 plotData(myConsensusProfile)
 ```
 
-The dots represent the value at each position and the black lines represent centered running averages. High identity and low entropy values (in combination with low gap values) indicate high sequence conservation. We can now see that the most conserved region of the genome appears to be somewhere around position ~5800-6000. 
+The dots represent the value at each position and the black lines represent centered running averages. High identity and low entropy values (in combination with low gap values) indicate high sequence conservation. We can now see that the most conserved region of the genome is between position ~5800-6000. 
+
 The data can be explored in more detail by zooming into a specific region of interest:
 
 ```{r, fig.width=12, fig.height=6}
-## Select position 1000 to 1500 in the consensus profile 
+## Select position 5000 to 5800 in the consensus profile 
 selection <- myConsensusProfile[
-  myConsensusProfile$position >= 1000 & myConsensusProfile$position <= 1500, 
+  myConsensusProfile$position >= 5000 & myConsensusProfile$position <= 5800, 
   ]
 
 plotData(selection)
@@ -192,7 +193,7 @@ The design settings (i.e., the arguments of `oligos()`) are:
 
 All sequence variants of an oligo must fulfill all specified design constraints to be considered as a potential candidate. 
 
-Oligos with at least one sequence variant containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
+In addition, oligos with at least one sequence variant containing more than four consecutive runs of the same nucleotide (e.g. "AAAAA") and/or more than three consecutive runs of the same di-nucleotide (e.g. "TATATATA") are excluded from consideration.
 
 An error message will return if no oligos are found. If so, a good idea could be to re-run the process from [Step 1](#Step1) and increase the `ambiguityThreshold` in `consensusProfile()`, and/or relax the design constraints above. 
 
@@ -410,7 +411,7 @@ It is often valuable to investigate how well the generated oligos or assays matc
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
 
-The output gives information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo *within the intended oligo binding region* in the alignment. However, note that the output does not say anything about the type or severity of the mismatches.
+The output provides information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo *within the intended oligo binding region* in the alignment. Hence, be cautious that false negatives (or positives) may occur due to poorly aligned sequences. Also, note that the output does not say anything about the type or severity of the mismatches.
 
 Below, I show how to use `checkMatch()` for both oligos and assays. The function is rather slow, especially if there are many target sequences, so a good idea could be to select only a few oligo or assay candidates to investigate. 
 
