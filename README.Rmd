@@ -63,7 +63,7 @@ The package can be run through a Shiny application (a graphical user interface).
 
 The first step is to import an alignment with target sequences of interest. This is done by using `readDNAMultipleAlignment()` from Biostrings.
 
-The file "example_alignment.txt" contains an alignment of 200 hepatitis E virus sequences. 
+The file "example_alignment.txt" contains an alignment of 198 hepatitis E virus sequences. 
 
 ```{r}
 infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")

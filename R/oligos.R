@@ -219,7 +219,6 @@
 #' \strong{Scoring system for oligos}
 #'
 #' All valid oligos are scored based on their identity, coverage,
-#' degeneracy,
 #' average GC content and tm range. The scoring system is presented below.
 #'
 #' \strong{Identity and coverage}
@@ -230,16 +229,6 @@
 #' \eqn{(0.95, 0.99]} \tab 1 \cr
 #' \eqn{(0.90, 0.95]} \tab 2 \cr
 #' \eqn{\leq 0.90} \tab 3
-#' }
-#'
-#' \strong{Degeneracy}
-#'
-#' \tabular{lr}{
-#' Value \tab Score \cr
-#' 1 \tab 0 \cr
-#' 2 or 3 \tab 1 \cr
-#' 3 or 4 \tab 2 \cr
-#' More than 4 \tab 3
 #' }
 #'
 #' \strong{Average GC-content}
@@ -271,7 +260,7 @@
 #' \eqn{\geq 3} \tab 3
 #' }
 #'
-#' These scores are summarized to a total score, and
+#' These scores are summarized, and
 #' the weight of each individual score is 1. Thus, the lowest and best
 #' possible score for an oligo is 0, and the worst possible score is 12.
 #'
@@ -971,6 +960,9 @@ oligos <- function(x,
         }
     })
     all <- do.call("rbind", all)
+    if (is.null(all)) {
+        stop("No primers were found.", call. = FALSE)
+    }
     all <- .filterPrimers(
         all,
         lengthPrimer,
@@ -1038,7 +1030,7 @@ oligos <- function(x,
 .designAmbiguousOligos <- function(x,
                                    maxGapFrequency = 0.01,
                                    primer = TRUE,
-                                   lengthPrimer = c(18, 22),
+                                   lengthPrimer = 18:22,
                                    maxDegeneracyPrimer = 4,
                                    gcClampPrimer = TRUE,
                                    avoidThreeEndRunsPrimer = TRUE,
@@ -1046,7 +1038,7 @@ oligos <- function(x,
                                    tmPrimer = c(50, 65),
                                    concPrimer = 500,
                                    probe = TRUE,
-                                   lengthProbe = c(18, 22),
+                                   lengthProbe = 18:22,
                                    maxDegeneracyProbe = 4,
                                    avoidFiveEndGProbe = TRUE,
                                    gcProbe = c(0.40, 0.65),
@@ -1087,6 +1079,9 @@ oligos <- function(x,
         }
     })
     ambiguous <- do.call("rbind", ambiguous)
+    if (is.null(ambiguous)) {
+        stop("No primers were found.", call. = FALSE)
+    }
     if (primer) {
         primers <- .filterPrimers(
             ambiguous,
@@ -1134,21 +1129,6 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerOligo")
-#' x <- head(exampleRprimerOligo$degeneracy)
-#' .scoreDegeneracy(x)
-.scoreDegeneracy <- function(x) {
-    score <- vector(mode = "double", length = length(x))
-    score[x == 1] <- 0
-    score[x == 2 | x == 3] <- 1
-    score[x == 3 | x == 4] <- 2
-    score[x > 4] <- 3
-    score
-}
-
-#' @noRd
-#'
-#' @examples
-#' data("exampleRprimerOligo")
 #' x <- head(exampleRprimerOligo$gcContentMean)
 #' .scoreGcContent(x)
 .scoreGcContent <- function(x) {
@@ -1186,7 +1166,6 @@ oligos <- function(x,
     score <- list()
     score$identity <- .scoreIdentityCoverage(x$identity)
     score$coverage <- .scoreIdentityCoverage(x$coverage)
-    score$degeneracy <- .scoreDegeneracy(x$degeneracy)
     score$gcContent <- .scoreGcContent(x$gcContentMean)
     score$tm <- .scoreTmRange(x$tmRange)
     score <- do.call("cbind", score)

@@ -273,26 +273,23 @@ oligoServer <- function(id, alignment, consensus) {
             scrollY = "300", ordering = TRUE
         )
 
-        oligoSelectionServer(
-            "selection", alignment, consensus, selectedOligo
-        )
-
         list(data = shiny::reactive(oligo()))
     })
 }
 
+
 ## Module app for testing ======================================================
 
-# oligoApp <- function() {
-#    data("exampleRprimerAlignment")
-#    x <- reactive(exampleRprimerAlignment)
-#    data("exampleRprimerProfile")
-#    y <- reactive(exampleRprimerProfile)
-#    ui <- fluidPage(
-#        oligoUI("id")
-#    )
-#    server <- function(input, output, session) {
-#        oligoServer("id", alignment = x, consensus = y)
-#    }
-#    shinyApp(ui, server)
-# }
+ #oligoApp <- function() {
+ #   data("exampleRprimerAlignment")
+ #   x <- reactive(exampleRprimerAlignment)
+ #   data("exampleRprimerProfile")
+ #   y <- reactive(exampleRprimerProfile)
+ #   ui <- fluidPage(
+ #       oligoUI("id")
+ #   )
+ #   server <- function(input, output, session) {
+ #       mainServer("id", alignment = x, consensus = y)
+ #   }
+ #   shinyApp(ui, server)
+ #}

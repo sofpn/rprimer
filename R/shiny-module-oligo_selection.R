@@ -55,6 +55,8 @@ oligoSelectionUI <- function(id) {
 
 oligoSelectionServer <- function(id, alignment, consensus, oligo) {
     shiny::moduleServer(id, function(input, output, session) {
+        ns <- session$ns
+
         match <- shiny::reactive({
             shiny::req(oligo())
             shiny::req(alignment())

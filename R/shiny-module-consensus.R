@@ -67,7 +67,7 @@ consensusServer <- function(id, alignment) {
             paste(
                 "Across each position, all bases that occur in more than",
                 input$ambiguityThreshold * 100, "% of the target sequences
-                will be included when the ambiguous base is determined"
+                will be included when the IUPAC consensus base is determined"
             )
         })
 

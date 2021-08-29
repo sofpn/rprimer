@@ -172,6 +172,9 @@ oligoDataTable <- function(x, selection = "none", ordering = FALSE, ...) {
                 "Delta G, range", "Design method", "Score", "ROI, start",
                 "ROI, end"
             )
+            if (is.na(x$Score[[1]])) {
+                x <- x[!names(x) %in% "Score"]
+            }
             x
         },
         options = list(
@@ -458,11 +461,20 @@ removeListColumns <- function(x) {
 splitAssayToList <- function(x) {
     x <- as.data.frame(x)
     fwd <- x[, grepl("Fwd", names(x))]
+    fwd <- cbind(
+        fwd, "roiStart" = x$roiStart, "roiEnd" = x$roiEnd
+    )
     names(fwd) <- gsub("Fwd", "", names(fwd))
     rev <- x[, grepl("Rev", names(x))]
+    rev <- cbind(
+        rev, "roiStart" = x$roiStart, "roiEnd" = x$roiEnd
+    )
     names(rev) <- gsub("Rev", "", names(rev))
     if (any(grepl("Pr", names(x)))) {
         pr <- x[, grepl("Pr", names(x))]
+        pr <- cbind(
+            pr, "roiStart" = x$roiStart, "roiEnd" = x$roiEnd
+        )
         names(pr) <- gsub("Pr", "", names(pr))
         all <- list(fwd, rev, pr)
     } else {
@@ -471,14 +483,35 @@ splitAssayToList <- function(x) {
     all
 }
 
-convertToOligo <- function(x) {
+convertToOligo <- function(x, rev = FALSE, type = "primer") {
     add <- data.frame(
-        "type" = NA, "fwd" = NA, "rev" = NA, "score" = NA,
+        "type" = type, "fwd" = !rev, "rev" = rev, "score" = NA,
         "roiStart" = NA, "roiEnd" = NA, "iupacSequenceRc" = NA,
         "sequenceRc" = NA
     )
     x <- cbind(x, add)
+    x$iupacSequenceRc <- makeRc(x$iupacSequence)
+    x$sequenceRc <- makeRcList(x$sequence)
+    if (rev) {
+        old <- c("iupacSequence", "sequence", "iupacSequenceRc", "sequenceRc")
+        new <- c("iupacSequenceRc", "sequenceRc", "iupacSequence", "sequence")
+        names(x)[names(x) %in% old] <- new
+    }
+    x <- .beautifyOligos(x)
     RprimerOligo(x)
+}
+
+makeRc <- function(x) {
+    x <- Biostrings::DNAString(x)
+    x <- Biostrings::reverseComplement(x)
+    as.character(x)
+}
+
+makeRcList <- function(x) {
+    x <- unlist(x)
+    x <- lapply(x, makeRc)
+    x <- unlist(x)
+    list(x)
 }
 
 makeListTable <- function(x) {

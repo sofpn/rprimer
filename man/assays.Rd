@@ -24,10 +24,8 @@ An \code{RprimerAssay} object, which contains the following information:
   \item{end}{Position where the assay ends.}
   \item{length}{Length of the amplicon.}
   \item{totalDegeneracy}{Total number of oligos in the assay.}
-  \item{score}{Summarized oligo score. The lowest, and best,
-  possible score is 0. The highest possible score is 24 for assays
-  with only primers,
-  and 36 for assays with probes.
+  \item{score}{Average oligo score. The best
+  possible score is 0 and the worst possible score is 12.
   See \code{?oligos} for more information about the scoring system.}
   \item{startFwd}{Start position of the forward primer.}
   \item{endFwd}{End positon of the forward primer.}

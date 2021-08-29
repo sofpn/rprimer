@@ -10,6 +10,8 @@ assaySelectionUI <- function(id) {
         shiny::br(),
         DT::dataTableOutput(ns("overviewTable")),
         shiny::br(),
+        shiny::hr("Oligo details"),
+        shiny::br(),
         shiny::uiOutput(ns("detailsTab"))
     )
 }
@@ -70,7 +72,7 @@ assaySelectionServer <- function(id, alignment, consensus, assay) {
                 )
             )
 
-            if (length(assayList()) == 3) {
+            if (length(assayList()) == 3L) {
                 do.call(shiny::tabsetPanel, tabs)
             } else {
                 do.call(shiny::tabsetPanel, tabs[seq_len(2)])
@@ -79,11 +81,12 @@ assaySelectionServer <- function(id, alignment, consensus, assay) {
 
         oligoFwd <- reactive(convertToOligo(assayList()[[1]]))
 
-        oligoRev <- reactive(convertToOligo(assayList()[[2]]))
+        oligoRev <- reactive(convertToOligo(assayList()[[2]], rev = TRUE))
 
         oligoPr <- reactive(
-            if (length(assayList()) == 3) {
-                convertToOligo(assayList()[[3]])
+            if (length(assayList()) == 3L) {
+                x <- assayList()[[3]]
+                convertToOligo(x, rev = !x$plus, type = "probe")
             } else {
                 NULL
             }
@@ -99,18 +102,18 @@ assaySelectionServer <- function(id, alignment, consensus, assay) {
 
 ## Module app for testing ======================================================
 
-#assaySelectionApp <- function() {
-#    data("exampleRprimerAlignment")
-#    x <- reactive(exampleRprimerAlignment)
-#    data("exampleRprimerProfile")
-#    y <- reactive(exampleRprimerProfile)
-#    data("exampleRprimerAssay")
-#    z <- reactive(exampleRprimerAssay[1, ])
-#    ui <- fluidPage(
-#        assaySelectionUI("id")
-#    )
-#    server <- function(input, output, session) {
-#        assaySelectionServer("id", alignment = x, consensus = y, assay = z)
-#    }
-#    shinyApp(ui, server)
-#}
+assaySelectionApp <- function() {
+    data("exampleRprimerAlignment")
+    x <- reactive(exampleRprimerAlignment)
+    data("exampleRprimerProfile")
+    y <- reactive(exampleRprimerProfile)
+    data("exampleRprimerAssay")
+    z <- reactive(exampleRprimerAssay[1, ])
+    ui <- fluidPage(
+        assaySelectionUI("id")
+    )
+    server <- function(input, output, session) {
+        assaySelectionServer("id", alignment = x, consensus = y, assay = z)
+    }
+    shinyApp(ui, server)
+}

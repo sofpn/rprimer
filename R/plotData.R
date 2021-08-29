@@ -1,6 +1,6 @@
 #' Plot an Rprimer object
 #'
-#' \code{plotData} can be used to visualize objects from all different
+#' \code{plotData} visualizes objects from all different
 #' Rprimer classes.
 #'
 #' @param x
