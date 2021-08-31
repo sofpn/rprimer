@@ -734,7 +734,7 @@ setMethod("plotData", "RprimerMatchAssay", \(x) {
     names(x)[3] <- "mismatches"
     levels(x$mismatches) <- c(
         "0 mismatches", "1 mismatch", "2 mismatches", "3 mismatches",
-        "4 or more mismatches"
+        "4 or more mismatches", "Off-target match (< 3 mismatches)"
     )
     if (type == "oligo") {
         yLabels <- x$iupacSequence
@@ -744,7 +744,9 @@ setMethod("plotData", "RprimerMatchAssay", \(x) {
             " (length: ", nchar(x$iupacSequence), ")"
         )
     }
-    ggplot2::ggplot(data = x, ggplot2::aes(x = id)) +
+    offTarget <- x[x$mismatches == "Off-target match (< 3 mismatches)", ]
+    onTarget <-  x[x$mismatches != "Off-target match (< 3 mismatches)", ]
+    ggplot2::ggplot(data = onTarget, ggplot2::aes(x = id)) +
         ggplot2::geom_bar(
             ggplot2::aes(x = id, y = value, fill = mismatches),
             stat = "identity", position = "stack"
@@ -756,10 +758,15 @@ setMethod("plotData", "RprimerMatchAssay", \(x) {
             labels = rev(yLabels)
         ) +
         ggplot2::coord_flip() +
+        ggplot2::geom_bar(data = offTarget,
+            ggplot2::aes(x = id, y = value, fill = mismatches),
+            stat = "identity", position = "dodge", width = 0.2,
+            alpha = 0.9
+        ) +
         ggplot2::scale_fill_manual(
             values = c(
                 "#BDC9CC", "#B4B1B4", "#AC999C",
-                "#A38183", "#9B6A6C" # , "#424B54"
+                "#A38183", "#9B6A6C", "#424B54"
             )
         ) +
         .themeRprimer(showLegend = showLegend)

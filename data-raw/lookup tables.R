@@ -74,6 +74,24 @@ degenerates <- c(
     "-" = "-"
 )
 
+degenerateMatch <- c(
+    "A" = "A,N,V,H,D,M,W,R",
+    "C" = "C,N,V,H,B,M,S,Y",
+    "G" = "G,N,V,D,B,K,S,R",
+    "T" = "T,N,H,D,B,K,W,Y",
+    "R" = "A,G,R,N,V,H,D,B,M,K,W,S",
+    "Y" = "C,T,Y,N,V,H,D,B,M,K,W,S",
+    "S" = "C,G,S,N,V,H,D,B,M,K,Y,R",
+    "W" = "A,T,W,N,V,H,D,B,M,K,Y,R",
+    "K" = "G,T,K,N,V,H,D,B,W,S,Y,R",
+    "M" = "A,C,M,N,V,H,D,B,W,S,Y,R",
+    "B" = "C,G,T,N,V,H,D,B,M,K,W,S,Y,R",
+    "D" = "A,G,T,N,V,H,D,B,M,K,W,S,Y,R",
+    "H" = "A,C,T,N,V,H,D,B,M,K,W,S,Y,R",
+    "V" = "A,C,G,N,V,H,D,B,M,K,W,S,Y,R",
+    "N" = "A,C,G,T,N,V,H,D,B,M,K,W,S,Y,R"
+)
+
 degeneracy <- c(
     "A" = 1,
     "C" = 1,
@@ -166,6 +184,7 @@ lookup <- list(
     "complement" = complement,
     "iupac" = iupac,
     "degenerates" = degenerates,
+    "degenerateMatch" = degenerateMatch,
     "degeneracy" = degeneracy,
     "nn" = nn
 )

@@ -229,7 +229,7 @@ S4Vectors::setValidity2("RprimerMatchOligo", \(object) {
     msg <- NULL
     colnames <- c(
         "perfectMatch", "oneMismatch", "twoMismatches",
-        "threeMismatches", "fourOrMoreMismatches"
+        "threeMismatches", "fourOrMoreMismatches", "offTargetMatch"
     )
     if (!all(colnames %in% names(object))) {
         msg <- c(
@@ -261,7 +261,7 @@ S4Vectors::setValidity2("RprimerMatchAssay", \(object) {
     msg <- NULL
     oligoColnames <- c(
         "perfectMatch", "oneMismatch", "twoMismatches",
-        "threeMismatches", "fourOrMoreMismatches"
+        "threeMismatches", "fourOrMoreMismatches", "offTargetMatch"
     )
     colnames <- c(
         paste0(oligoColnames, "Fwd"),

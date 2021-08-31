@@ -226,8 +226,8 @@ Probes are always designed using the ambiguous strategy.
 
 \strong{Scoring system for oligos}
 
-All valid oligos are scored based on their identity, coverage,
-average GC content and tm range. The scoring system is presented below.
+All valid oligos are scored based on their identity, coverage and
+average GC content. The scoring system is presented below.
 
 \strong{Identity and coverage}
 
@@ -255,22 +255,9 @@ Value range \tab Score \cr
 \eqn{\geq 0.2} \tab 3
 }
 
-\strong{Tm range}
-
-\tabular{lr}{
-Value range \tab Score \cr
-\eqn{[0, 1)}
-\tab 0 \cr
-\eqn{[1, 2)}
-\tab 1 \cr
-\eqn{[2, 3)}
-\tab 2 \cr
-\eqn{\geq 3} \tab 3
-}
-
 These scores are summarized, and
 the weight of each individual score is 1. Thus, the lowest and best
-possible score for an oligo is 0, and the worst possible score is 12.
+possible score for an oligo is 0, and the worst possible score is 9.
 }
 \examples{
 data("exampleRprimerProfile")

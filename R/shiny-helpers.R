@@ -378,7 +378,9 @@ printMatchId <- function(x) {
             "<br><br><b>Three mismatches</b><br>",
             x$idThreeMismatches[[1]],
             "<br><br><b>Four or more mismatches</b><br>",
-            x$idFourOrMoreMismatches[[1]]
+            x$idFourOrMoreMismatches[[1]],
+            "<br><br><b>Off target match (< 3 mismatches)</b><br>",
+            x$idOffTargetMatch[[1]]
         )
     })
 }

@@ -31,11 +31,6 @@ oligoSelectionUI <- function(id) {
             shiny::tabPanel(
                 title = "Match details",
                 shiny::br(),
-                shiny::h5(
-                    "The match check is performed only within the intended oligo
-                    binding site in the target alignment."
-                ),
-                shiny::br(),
                 shiny::h5("Proportion of matching sequences"),
                 shiny::br(),
                 DT::dataTableOutput(ns("matchTable")),

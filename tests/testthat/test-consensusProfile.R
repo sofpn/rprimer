@@ -68,10 +68,11 @@ test_that(".asIUPAC works", {
 # .dnaBasesOnly ================================================================
 
 test_that(".dnaBasesOnly works", {
-    dnaBases <- .dnaBasesOnly(testmat)[, 1:100]
+    dnaBases <- .dnaBasesOnly(testmat)[, 1:10]
     expect_equal(rownames(dnaBases), c("A", "C", "G", "T"))
     expect_true(
-        all(colSums(dnaBases) > 0.9999999 & colSums(dnaBases < 1.00000001))
+        all(colSums(dnaBases) > 0.9999999 & colSums(dnaBases < 1.00000001)
+            )
     )
 })
 
@@ -111,18 +112,7 @@ test_that(".shannonEntropy works", {
     s <- x[rownames(x) %in% bases, , drop = FALSE]
     s <- apply(s, 2, function(x) x / sum(x))
     expect_equal(.shannonEntropy(x), .shannonEntropy(s))
-    entropy <- 0.035 * log2(0.035) + 0.240 * log2(0.240) + 0.045 * log2(0.045) + 0.680 * log2(0.680)
-    entropy <- abs(entropy)
-    expect_equal(.shannonEntropy(s[, 1, drop = FALSE]), entropy)
 })
 
 # .coverage ====================================================================
 
-test_that(".coverage works", {
-    selection <- testmat[, 200:220]
-    x <- selection[, 1:4]
-    expect_equal(
-        .coverage(x[, 1, drop = FALSE], 0.2), 1 - (0.035 + 0.045),
-        ignore_attr = TRUE
-    )
-})

@@ -59,6 +59,8 @@ The package can be run through a Shiny application (a graphical user interface).
 
 ## Workflow 
 
+### Quick start 
+
 ### Import alignment
 
 The first step is to import an alignment with target sequences of interest. This is done by using `readDNAMultipleAlignment()` from Biostrings.

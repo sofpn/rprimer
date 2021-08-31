@@ -218,8 +218,8 @@
 #'
 #' \strong{Scoring system for oligos}
 #'
-#' All valid oligos are scored based on their identity, coverage,
-#' average GC content and tm range. The scoring system is presented below.
+#' All valid oligos are scored based on their identity, coverage and
+#' average GC content. The scoring system is presented below.
 #'
 #' \strong{Identity and coverage}
 #'
@@ -247,22 +247,9 @@
 #' \eqn{\geq 0.2} \tab 3
 #' }
 #'
-#' \strong{Tm range}
-#'
-#' \tabular{lr}{
-#' Value range \tab Score \cr
-#' \eqn{[0, 1)}
-#' \tab 0 \cr
-#' \eqn{[1, 2)}
-#' \tab 1 \cr
-#' \eqn{[2, 3)}
-#' \tab 2 \cr
-#' \eqn{\geq 3} \tab 3
-#' }
-#'
 #' These scores are summarized, and
 #' the weight of each individual score is 1. Thus, the lowest and best
-#' possible score for an oligo is 0, and the worst possible score is 12.
+#' possible score for an oligo is 0, and the worst possible score is 9.
 #'
 #' @references
 #' Rose, TM., Schultz ER., Henikoff JG., Pietrokovski S.,
@@ -1145,21 +1132,6 @@ oligos <- function(x,
 #'
 #' @examples
 #' data("exampleRprimerOligo")
-#' x <- head(exampleRprimerOligo$tmRange)
-#' .scoreTmRange(x)
-.scoreTmRange <- function(x) {
-    score <- vector(mode = "double", length = length(x))
-    score[x >= 0 & x < 1] <- 0
-    score[x >= 1 & x < 2] <- 1
-    score[x >= 2 & x < 3] <- 2
-    score[x >= 3] <- 3
-    score
-}
-
-#' @noRd
-#'
-#' @examples
-#' data("exampleRprimerOligo")
 #' x <- head(exampleRprimerOligo)
 #' .scoreOligos(x)
 .scoreOligos <- function(x) {
@@ -1167,7 +1139,6 @@ oligos <- function(x,
     score$identity <- .scoreIdentityCoverage(x$identity)
     score$coverage <- .scoreIdentityCoverage(x$coverage)
     score$gcContent <- .scoreGcContent(x$gcContentMean)
-    score$tm <- .scoreTmRange(x$tmRange)
     score <- do.call("cbind", score)
     score <- rowSums(score)
     cbind(x, score)

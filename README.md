@@ -172,14 +172,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches |
-|:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|
-| GCCYTGGCGAATGCTGTGGT   |         0.92 | M73218.1….     |        0.08 | X99441.1….    |          0.00 |                 |            0.01 | KJ013415.1        |                    0 |                        |
-| TGACMGGGTTGATTCTCAGC   |         0.94 | M73218.1….     |        0.06 | AB222183….    |          0.00 |                 |            0.00 |                   |                    0 |                        |
-| TTGATTCTCAGCCCTTCGCMM  |         0.94 | M73218.1….     |        0.05 | AY575857….    |          0.01 | AB222183.1      |            0.01 | JF443725.1        |                    0 |                        |
-| CCCTATWTTCATCCAACCAACC |         0.95 | M73218.1….     |        0.05 | AY575857….    |          0.00 |                 |            0.00 |                   |                    0 |                        |
-| AGCCCTTCGCMMTCCCCTAT   |         0.96 | M73218.1….     |        0.03 | AB222183….    |          0.00 |                 |            0.01 | JF443725.1        |                    0 |                        |
-| GGGGTGACMGGGTTGATTCT   |         0.94 | M73218.1….     |        0.06 | AB222183….    |          0.01 | JQ953665.1      |            0.00 |                   |                    0 |                        |
+| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
+|:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
+| TTCTGGGGTGACMGGGTTGAT  |         0.95 | M73218.1….     |        0.05 | AB222183….    |          0.01 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| GTTGATTCTCAGCCCTTCG    |         0.92 | M73218.1….     |        0.07 | AY575857….    |          0.01 | AB222183.1      |               0 |                   |                    0 |                        |              0 |                  |
+| GGTGACMGGGTTGATTCT     |         0.94 | M73218.1….     |        0.06 | AB222183….    |          0.01 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| TCTGGGGTGACMGGGTTGATTC |         0.95 | M73218.1….     |        0.05 | AB222183….    |          0.01 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| TGGGGTGACMGGGTTGAT     |         0.95 | M73218.1….     |        0.05 | AB222183….    |          0.01 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| GCRGTGGTTTCTGGGGTGAC   |         0.96 | M73218.1….     |        0.04 | BD378055….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 

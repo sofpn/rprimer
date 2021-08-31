@@ -27,130 +27,164 @@ as input.
 \code{RprimerMatchOligo} objects contain the following information:
 
 \describe{
-  \item{iupacSequence}{The oligo sequence in IUPAC format.}
-  \item{perfectMatch}{Proportion of target sequences that matches perfectly
-  to the oligo within the intended binding region.}
-  \item{idPerfectMatch}{Names of all sequences that matches perfectly.}
-  \item{oneMismatch}{Proportion of target sequences with one mismatch to
-  the oligo
-  within the intended binding region.}
-  \item{idOneMismatch}{Names of all sequences that matches with one
-  mismatch.}
-  \item{twoMismatches}{Proportion of target sequences with two mismatches
-  to the oligo
-  within the intended binding region.}
-  \item{idTwoMismatches}{Names of all sequences that matches with two
-  mismatches.}
-  \item{threeMismatches}{Proportion of target sequences with
-  three mismatches to the oligo
-  within the intended binding region.}
-  \item{idThreeMismatches}{Names of all sequences that matches with three
-  mismatches.}
-  \item{fourOrMoreMismatches}{Proportion of target sequences with
-  four or more mismatches to the oligo
-  within the intended binding region.}
-  \item{idFourOrMoreMismatches}{Names of all sequences that matches with four
-  or more mismatches.}
- }
+\item{iupacSequence}{The oligo sequence in IUPAC format.}
+\item{perfectMatch}{Proportion of target sequences that matches perfectly
+to the oligo within the intended binding region.}
+\item{idPerfectMatch}{Names of all sequences that matches perfectly.}
+\item{oneMismatch}{Proportion of target sequences with one mismatch to
+the oligo
+within the intended binding region.}
+\item{idOneMismatch}{Names of all sequences that matches with one
+mismatch.}
+\item{twoMismatches}{Proportion of target sequences with two mismatches
+to the oligo
+within the intended binding region.}
+\item{idTwoMismatches}{Names of all sequences that matches with two
+mismatches.}
+\item{threeMismatches}{Proportion of target sequences with
+three mismatches to the oligo
+within the intended binding region.}
+\item{idThreeMismatches}{Names of all sequences that matches with three
+mismatches.}
+\item{fourOrMoreMismatches}{Proportion of target sequences with
+four or more mismatches to the oligo
+within the intended binding region.}
+\item{idFourOrMoreMismatches}{Names of all sequences that matches with four
+or more mismatches.}
+\item{offTargetMatch}{Proportion of target sequences with maximum two
+mismatches to at least one site outside the intended
+oligo binding region in the input alignment.
+}
+\item{idOffTargetMatch}{Names of all off-target matching sequences.}
 
- \code{RprimerMatchAssay} objects contain the following information:
+\code{RprimerMatchAssay} objects contain the following information:
 
-\describe{
-  \item{iupacSequenceFwd}{The forward primer sequence in IUPAC format.}
-  \item{perfectMatchFwd}{Proportion of target sequences that matches
-  perfectly
-  with the forward primer withing the intended binding region.}
-  \item{idPerfectMatchFwd}{Names of all sequences that matches perfectly.}
-  \item{oneMismatchFwd}{Proportion of target sequences with one mismatch to
-  the forward primer
-  within the intended binding region.}
-  \item{idOneMismatchFwd}{Names of all sequences that matches with one
-  mismatch.}
-  \item{twoMismatchesFwd}{Proportion of target sequences with two mismatches
-  to the forward primer
-  within the intended binding region.}
-  \item{idTwoMismatchesFwd}{Names of all sequences that matches with two
-  mismatches.}
-  \item{threeMismatchesFwd}{Proportion of target sequences with
-  three mismatches to the forward primer
-  within the intended binding region.}
-  \item{idThreeMismatchesFwd}{Names of all sequences that matches with three
-  mismatches.}
-  \item{fourOrMoreMismatchesFwd}{Proportion of target sequences with
-  four or more mismatches to the forward primer
-  within the intended binding region.}
-  \item{idFourOrMoreMismatchesFwd}{Names of all sequences that matches with
-  four or more mismatches.}
-  \item{iupacSequenceRev}{The reverse primer sequence in IUPAC format.}
-  \item{perfectMatchRev}{Proportion of target sequences that matches
-  perfectly
-  with the reverse primer withing the intended binding region.}
-  \item{idPerfectMatchRev}{Names of all sequences that matches perfectly.}
-  \item{oneMismatchRev}{Proportion of target sequences with one mismatch to
-  the reverse primer
-  within the intended binding region.}
-  \item{idOneMismatchRev}{Names of all sequences that matches with one
-  mismatch.}
-  \item{twoMismatchesRev}{Proportion of target sequences with two mismatches
-  to the reverse primer
-  within the intended binding region.}
-  \item{idTwoMismatchesRev}{Names of all sequences that matches with two
-  mismatches.}
-  \item{threeMismatchesRev}{Proportion of target sequences with
-  three mismatches to the reverse primer
-  within the intended binding region.}
-  \item{idThreeMismatchesRev}{Names of all sequences that matches with three
-  mismatches.}
-  \item{fourOrMoreMismatchesRev}{Proportion of target sequences with
-  four or more mismatches to the reverse primer
-  within the intended binding region.}
-  \item{idFourOrMoreMismatchesRev}{Names of all sequences that matches with
-  four or more mismatches.}
-  \item{iupacSequencePr}{The probe sequence in IUPAC format.}
+\item{iupacSequenceFwd}{The forward primer sequence in IUPAC format.}
+\item{perfectMatchFwd}{Proportion of target sequences that matches
+perfectly
+with the forward primer withing the intended binding region.}
+\item{idPerfectMatchFwd}{Names of all sequences that matches perfectly.}
+\item{oneMismatchFwd}{Proportion of target sequences with one mismatch to
+the forward primer
+within the intended binding region.}
+\item{idOneMismatchFwd}{Names of all sequences that matches with one
+mismatch.}
+\item{twoMismatchesFwd}{Proportion of target sequences with two mismatches
+to the forward primer
+within the intended binding region.}
+\item{idTwoMismatchesFwd}{Names of all sequences that matches with two
+mismatches.}
+\item{threeMismatchesFwd}{Proportion of target sequences with
+three mismatches to the forward primer
+within the intended binding region.}
+\item{idThreeMismatchesFwd}{Names of all sequences that matches with three
+mismatches.}
+\item{fourOrMoreMismatchesFwd}{Proportion of target sequences with
+four or more mismatches to the forward primer
+within the intended binding region.}
+\item{idFourOrMoreMismatchesFwd}{Names of all sequences that matches with
+four or more mismatches.}
+\item{offTargetMatchFwd}{Proportion of target sequences with maximum two
+mismatches to at least one site outside the intended
+forward primer binding region in the input alignment.}
+\item{idOffTargetMatchFwd}{Names of all off-target matching sequences.}
+\item{iupacSequenceRev}{The reverse primer sequence in IUPAC format.}
+\item{perfectMatchRev}{Proportion of target sequences that matches
+perfectly
+with the reverse primer withing the intended binding region.}
+\item{idPerfectMatchRev}{Names of all sequences that matches perfectly.}
+\item{oneMismatchRev}{Proportion of target sequences with one mismatch to
+the reverse primer
+within the intended binding region.}
+\item{idOneMismatchRev}{Names of all sequences that matches with one
+mismatch.}
+\item{twoMismatchesRev}{Proportion of target sequences with two mismatches
+to the reverse primer
+within the intended binding region.}
+\item{idTwoMismatchesRev}{Names of all sequences that matches with two
+mismatches.}
+\item{threeMismatchesRev}{Proportion of target sequences with
+three mismatches to the reverse primer
+within the intended binding region.}
+\item{idThreeMismatchesRev}{Names of all sequences that matches with three
+mismatches.}
+\item{fourOrMoreMismatchesRev}{Proportion of target sequences with
+four or more mismatches to the reverse primer
+within the intended binding region.}
+\item{idFourOrMoreMismatchesRev}{Names of all sequences that matches with
+four or more mismatches.}
+\item{offTargetMatchRev}{Proportion of target sequences with maximum two
+mismatches to at least one site outside the intended
+reverse primer binding region in the input alignment.}
+\item{idOffTargetMatchRev}{Names of all off-target matching sequences.}
 
 If the input assay contains probes, the following information
 is also added:
 
-  \item{perfectMatchPr}{Proportion of target sequences that matches perfectly
-  with the probe withing the intended binding region.}
-  \item{idPerfectMatchPr}{Names of all sequences that matches perfectly.}
-  \item{oneMismatchPr}{Proportion of target sequences with one mismatch to
-  the probe
-  within the intended binding region.}
-  \item{idOneMismatchPr}{Names of all sequences that matches with one
-  mismatch.}
-  \item{twoMismatchesPr}{Proportion of target sequences with two mismatches
-  to the probe
-  within the intended binding region.}
-  \item{idTwoMismatchesPr}{Names of all sequences that matches with two
-  mismatches.}
-  \item{threeMismatchesPr}{Proportion of target sequences with
-  three mismatches to the probe
-  within the intended binding region.}
-  \item{idThreeMismatchesPr}{Names of all sequences that matches with three
-  mismatches.}
-  \item{fourOrMoreMismatchesPr}{Proportion of target sequences with
-  four or more mismatches to the probe
-  within the intended binding region.}
-  \item{idFourOrMoreMismatchesPr}{Names of all sequences that matches with
-  four or more mismatches.}
- }
+\item{iupacSequencePr}{The probe sequence in IUPAC format.}
+\item{perfectMatchPr}{Proportion of target sequences that matches perfectly
+with the probe withing the intended binding region.}
+\item{idPerfectMatchPr}{Names of all sequences that matches perfectly.}
+\item{oneMismatchPr}{Proportion of target sequences with one mismatch to
+the probe
+within the intended binding region.}
+\item{idOneMismatchPr}{Names of all sequences that matches with one
+mismatch.}
+\item{twoMismatchesPr}{Proportion of target sequences with two mismatches
+to the probe
+within the intended binding region.}
+\item{idTwoMismatchesPr}{Names of all sequences that matches with two
+mismatches.}
+\item{threeMismatchesPr}{Proportion of target sequences with
+three mismatches to the probe
+within the intended binding region.}
+\item{idThreeMismatchesPr}{Names of all sequences that matches with three
+mismatches.}
+\item{fourOrMoreMismatchesPr}{Proportion of target sequences with
+four or more mismatches to the probe
+within the intended binding region.}
+\item{idFourOrMoreMismatchesPr}{Names of all sequences that matches with
+four or more mismatches.}
+\item{offTargetMatchPr}{Proportion of target sequences with maximum two
+mismatches to at least one site outside the intended
+probe binding region in the input alignment.}
+\item{idOffTargetMatchPr}{Names of all off-target matching sequences.}
+}
 }
 \description{
-\code{checkMatch()} checks how well the oligos within an \code{RprimerOligo}
+\code{checkMatch()} investigates how well oligos within an
+\code{RprimerOligo}
 or \code{RprimerAssay} object match with their intended target sequences
-within a multiple sequence alignment.
-The output gives information on the proportion and names of target
-sequences that match perfectly as well as with one, two, three or four or
-more mismatches to the oligo.
-Ambiguous bases and gaps in the
-target sequences will be identified as mismatches.
-Note that the match check is only performed within the intended oligo
-binding region in the alignment.
-Also, note that the output does not say anything about the type or
-severity of the mismatches.
+within a multiple DNA sequence alignment.
+}
+\details{
+The output gives information on the proportion and names of target sequences
+that match perfectly as well as with one, two, three or four or more
+mismatches to the oligo within the intended oligo binding region
+in the alignment (on-target match).
+It also gives the proportion and names of target sequences that
+match with a maximum of two mismatches to at least one sequence variant of
+the oligo outside the
+intended oligo binding region (off-target match).
 The function is a wrapper to \code{Biostrings::vcountPDict()}
 (Pages et al., 2020).
+
+Limitations
+There are a few limitations with this function, which is important to be
+aware of:
+\itemize{
+\item False negatives or positives may occur due to
+poorly aligned sequences
+\item The output does not tell which strand
+(minus or plus) the oligo matches to.
+This is important to consider when
+assessing off-target matches to single-stranded
+targets
+\item Ambiguous bases and gaps in the
+target sequences are identified as mismatches
+\item The function checks strictly on- and off-target, and may therefore
+miss off-target matches that partially overlap the intended target
+}
 }
 \section{Methods (by class)}{
 \itemize{

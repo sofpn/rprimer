@@ -1,19 +1,38 @@
 #' Check how oligos and assays match to target sequences
 #'
-#' \code{checkMatch()} checks how well the oligos within an \code{RprimerOligo}
+#' \code{checkMatch()} investigates how well oligos within an
+#' \code{RprimerOligo}
 #' or \code{RprimerAssay} object match with their intended target sequences
-#' within a multiple sequence alignment.
-#' The output gives information on the proportion and names of target
-#' sequences that match perfectly as well as with one, two, three or four or
-#' more mismatches to the oligo.
-#' Ambiguous bases and gaps in the
-#' target sequences will be identified as mismatches.
-#' Note that the match check is only performed within the intended oligo
-#' binding region in the alignment.
-#' Also, note that the output does not say anything about the type or
-#' severity of the mismatches.
+#' within a multiple DNA sequence alignment.
+#'
+#' The output gives information on the proportion and names of target sequences
+#' that match perfectly as well as with one, two, three or four or more
+#' mismatches to the oligo within the intended oligo binding region
+#' in the alignment (on-target match).
+#' It also gives the proportion and names of target sequences that
+#' match with a maximum of two mismatches to at least one sequence variant of
+#' the oligo outside the
+#' intended oligo binding region (off-target match).
 #' The function is a wrapper to \code{Biostrings::vcountPDict()}
 #' (Pages et al., 2020).
+#'
+#' @md
+#'
+#' @details Limitations
+#' There are a few limitations with this function, which is important to be
+#' aware of:
+#'
+#' * False negatives or positives may occur due to
+#' poorly aligned sequences
+#' * The output does not tell which strand
+#' (minus or plus) the oligo matches to.
+#' This is important to consider when
+#' assessing off-target matches to single-stranded
+#' targets
+#' * Ambiguous bases and gaps in the
+#' target sequences are identified as mismatches
+#' * The function checks strictly on- and off-target, and may therefore
+#' miss off-target matches that partially overlap the intended target
 #'
 #' @param x
 #' An \code{RprimerOligo} or \code{RprimerAssay} object.
@@ -55,11 +74,14 @@
 #'   within the intended binding region.}
 #'   \item{idFourOrMoreMismatches}{Names of all sequences that matches with four
 #'   or more mismatches.}
-#'  }
+#'   \item{offTargetMatch}{Proportion of target sequences with maximum two
+#'   mismatches to at least one site outside the intended
+#'   oligo binding region in the input alignment.
+#'   }
+#'   \item{idOffTargetMatch}{Names of all off-target matching sequences.}
 #'
-#'  \code{RprimerMatchAssay} objects contain the following information:
+#' \code{RprimerMatchAssay} objects contain the following information:
 #'
-#' \describe{
 #'   \item{iupacSequenceFwd}{The forward primer sequence in IUPAC format.}
 #'   \item{perfectMatchFwd}{Proportion of target sequences that matches
 #'   perfectly
@@ -85,6 +107,10 @@
 #'   within the intended binding region.}
 #'   \item{idFourOrMoreMismatchesFwd}{Names of all sequences that matches with
 #'   four or more mismatches.}
+#'   \item{offTargetMatchFwd}{Proportion of target sequences with maximum two
+#'   mismatches to at least one site outside the intended
+#'   forward primer binding region in the input alignment.}
+#'   \item{idOffTargetMatchFwd}{Names of all off-target matching sequences.}
 #'   \item{iupacSequenceRev}{The reverse primer sequence in IUPAC format.}
 #'   \item{perfectMatchRev}{Proportion of target sequences that matches
 #'   perfectly
@@ -110,11 +136,15 @@
 #'   within the intended binding region.}
 #'   \item{idFourOrMoreMismatchesRev}{Names of all sequences that matches with
 #'   four or more mismatches.}
-#'   \item{iupacSequencePr}{The probe sequence in IUPAC format.}
+#'   \item{offTargetMatchRev}{Proportion of target sequences with maximum two
+#'   mismatches to at least one site outside the intended
+#'   reverse primer binding region in the input alignment.}
+#'   \item{idOffTargetMatchRev}{Names of all off-target matching sequences.}
 #'
 #' If the input assay contains probes, the following information
 #' is also added:
 #'
+#'   \item{iupacSequencePr}{The probe sequence in IUPAC format.}
 #'   \item{perfectMatchPr}{Proportion of target sequences that matches perfectly
 #'   with the probe withing the intended binding region.}
 #'   \item{idPerfectMatchPr}{Names of all sequences that matches perfectly.}
@@ -138,7 +168,11 @@
 #'   within the intended binding region.}
 #'   \item{idFourOrMoreMismatchesPr}{Names of all sequences that matches with
 #'   four or more mismatches.}
-#'  }
+#'    \item{offTargetMatchPr}{Proportion of target sequences with maximum two
+#'    mismatches to at least one site outside the intended
+#'   probe binding region in the input alignment.}
+#'   \item{idOffTargetMatchPr}{Names of all off-target matching sequences.}
+#'}
 #'
 #' @export
 #'
@@ -219,19 +253,27 @@ setMethod("checkMatch", "RprimerAssay", \(x, target) {
 #' x <- Biostrings::DNAStringSet(x)
 #' target <- Biostrings::DNAStringSet(exampleRprimerAlignment)
 #' .getMatchIndex(x, target)
-.getMatchIndex <- function(x, target) {
-    res <- lapply(seq(0, 3), \(i) {
+.getMatchIndex <- function(x, target, offTarget = FALSE) {
+    if (!offTarget) {
+        res <- lapply(seq(0, 3), \(i) {
+            result <- Biostrings::vcountPDict(
+                x, target,
+                max.mismatch = i
+            )
+            which(colSums(result) == 0)
+        })
+        res[-length(res)] <- lapply(seq(1, length(res) - 1), \(i) {
+            setdiff(res[[i]], res[[i + 1]])
+        })
+        res[[length(res) + 1]] <- setdiff(seq_along(target), unlist(res))
+        res[c(length(res), seq_len(length(res) - 1))]
+    } else {
         result <- Biostrings::vcountPDict(
             x, target,
-            max.mismatch = i
+            max.mismatch = 2
         )
-        which(colSums(result) == 0)
-    })
-    res[-length(res)] <- lapply(seq(1, length(res) - 1), \(i) {
-        setdiff(res[[i]], res[[i + 1]])
-    })
-    res[[length(res) + 1]] <- setdiff(seq_along(target), unlist(res))
-    res[c(length(res), seq_len(length(res) - 1))]
+        list(which(colSums(result) > 0))
+    }
 }
 
 #' @noRd
@@ -254,21 +296,25 @@ setMethod("checkMatch", "RprimerAssay", \(x, target) {
 #' x <- exampleRprimerOligo$sequence[[1]]
 #' x <- Biostrings::DNAStringSet(x)
 #' .getMatchProportion(x, target)
-.getMatchProportion <- function(x, target) {
-    matching <- .getMatchIndex(x, target)
+.getMatchProportion <- function(x, target, offTarget = FALSE) {
+    matching <- .getMatchIndex(x, target, offTarget)
     sequenceNames <- .getSequenceNames(matching, target)
     matching <- lapply(matching, \(x) length(x) / length(target))
     matching <- do.call("cbind.data.frame", matching)
     sequenceNames <- as.data.frame(t(do.call("cbind", list(sequenceNames))))
     matching <- cbind(matching, sequenceNames)
-    matching <- matching[c(1, 6, 2, 7, 3, 8, 4, 9, 5, 10)]
-    names(matching) <- c(
-        "perfectMatch", "idPerfectMatch",
-        "oneMismatch", "idOneMismatch",
-        "twoMismatches", "idTwoMismatches",
-        "threeMismatches", "idThreeMismatches",
-        "fourOrMoreMismatches", "idFourOrMoreMismatches"
-    )
+    if (!offTarget) {
+        matching <- matching[c(1, 6, 2, 7, 3, 8, 4, 9, 5, 10)]
+        names(matching) <- c(
+            "perfectMatch", "idPerfectMatch",
+            "oneMismatch", "idOneMismatch",
+            "twoMismatches", "idTwoMismatches",
+            "threeMismatches", "idThreeMismatches",
+            "fourOrMoreMismatches", "idFourOrMoreMismatches"
+        )
+    } else {
+        names(matching) <- c("offTargetMatch", "idOffTargetMatch")
+    }
     matching
 }
 
@@ -289,8 +335,20 @@ setMethod("checkMatch", "RprimerAssay", \(x, target) {
         check <- Biostrings::DNAStringSet(x$sequence[[i]])
         .getMatchProportion(check, target)
     })
+    offTarget <- lapply(seq_len(nrow(x)), \(i) {
+        target <- .maskRange(
+            x$start[[i]], x$end[[i]], target,
+            invert = FALSE
+        )
+        check <- Biostrings::DNAStringSet(x$sequence[[i]])
+        .getMatchProportion(check, target, offTarget = TRUE)
+    })
     onTarget <- do.call("rbind", onTarget)
-    cbind("iupacSequence" = x$iupacSequence, onTarget)
+    offTarget <- do.call("rbind", offTarget)
+    cbind(
+        "iupacSequence" = x$iupacSequence,
+        onTarget, offTarget
+    )
 }
 
 #' @noRd

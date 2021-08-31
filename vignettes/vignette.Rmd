@@ -273,7 +273,7 @@ For mixed primers, identity refers to the average identity within the 5' consens
 
 **Scoring system**
 
-All valid oligos are scored based on their average identity, coverage, GC-content, and tm range. The score can range from 0 to 12, where 0 is considered best. You can find more information about the scoring system in the manual (`?oligos`).
+All valid oligos are scored based on their average identity, coverage, and GC-content. The score can range from 0 to 9, where 0 is considered best. You can find more information about the scoring system in the manual (`?oligos`).
 
 The best scoring oligos can be retrieved as follows: 
 
@@ -350,7 +350,7 @@ plotData(myAssays)
 
 We now have over 1000 assays, but the number can be reduced by filtering the dataset. In the example below, I select to subset the assays based on their average oligo score (see the score variable in the table above), so that only the assays with the best score are kept. 
 
-The best possible average score is 0 and the worst possible score is 12 (see [Step 2](#Step2) for more information).
+The best possible average score is 0 and the worst possible score is 9 (see [Step 2](#Step2) for more information).
 
 ```{r, fig.width=12, fig.height=6}
 ## Get the minimum (best) score from myAssays
@@ -410,9 +410,11 @@ It is often valuable to investigate how the generated oligos or assays match wit
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
 
-The output provides information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo *within the intended oligo binding region* in the alignment. Hence, be cautious that false negatives (or positives) may occur due to poorly aligned sequences. Also, note that the output does not say anything about the type or severity of the mismatches.
+The output gives information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo *within the intended oligo binding region* in the alignment (on-target match). It also tells the proportion and names of target sequences that match with a maximum of two mismatches to the oligo *outside the intended oligo binding region* (off-target match). Be cautious that false negatives (or positives) may occur due to poorly aligned sequences. Moreover, the output does not tell what strand (minus or plus) the oligo matches to, which is important to consider when assessing off-target matches to single-stranded targets.
 
-Below, I show how to use `checkMatch()` for both oligos and assays. However, the function is rather slow, especially if there are many target sequences, so a good idea could be to select only a few oligo or assay candidates to investigate. 
+Ambiguous bases and gaps in the target sequences will be identified as mismatches.
+
+Below, I show how to use `checkMatch()` for both oligos and assays. The function is rather slow, especially if there are many target sequences, so a good idea could be to select only a few oligo or assay candidates to investigate. 
 
 **Oligos**
 
