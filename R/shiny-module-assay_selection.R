@@ -102,18 +102,18 @@ assaySelectionServer <- function(id, alignment, consensus, assay) {
 
 ## Module app for testing ======================================================
 
-assaySelectionApp <- function() {
-    data("exampleRprimerAlignment")
-    x <- reactive(exampleRprimerAlignment)
-    data("exampleRprimerProfile")
-    y <- reactive(exampleRprimerProfile)
-    data("exampleRprimerAssay")
-    z <- reactive(exampleRprimerAssay[1, ])
-    ui <- fluidPage(
-        assaySelectionUI("id")
-    )
-    server <- function(input, output, session) {
-        assaySelectionServer("id", alignment = x, consensus = y, assay = z)
-    }
-    shinyApp(ui, server)
-}
+#assaySelectionApp <- function() {
+#    data("exampleRprimerAlignment")
+#    x <- reactive(exampleRprimerAlignment)
+#    data("exampleRprimerProfile")
+#    y <- reactive(exampleRprimerProfile)
+#    data("exampleRprimerAssay")
+#    z <- reactive(exampleRprimerAssay[1, ])
+#    ui <- fluidPage(
+#        assaySelectionUI("id")
+#    )
+#    server <- function(input, output, session) {
+#        assaySelectionServer("id", alignment = x, consensus = y, assay = z)
+#    }
+#    shinyApp(ui, server)
+#}

@@ -283,21 +283,21 @@ oligoServer <- function(id, alignment, consensus) {
 
 ## Module app for testing ======================================================
 
- oligoApp <- function() {
-    data("exampleRprimerAlignment")
-    x <- reactive(exampleRprimerAlignment)
-    data("exampleRprimerProfile")
-    y <- reactive(exampleRprimerProfile)
-    ui <- fluidPage(
-        oligoUI("id")
-    )
-    server <- function(input, output, session) {
-
-        oligo <- oligoServer("id", alignment = x, consensus = y)
-        oligoSelectionServer(
-            "selection", alignment = x, consensus = y, oligo = oligo$selectedOligo
-        )
-
-    }
-    shinyApp(ui, server)
- }
+# oligoApp <- function() {
+#    data("exampleRprimerAlignment")
+#    x <- reactive(exampleRprimerAlignment)
+#    data("exampleRprimerProfile")
+#    y <- reactive(exampleRprimerProfile)
+#    ui <- fluidPage(
+#        oligoUI("id")
+#    )
+#    server <- function(input, output, session) {
+#
+#        oligo <- oligoServer("id", alignment = x, consensus = y)
+#        oligoSelectionServer(
+#            "selection", alignment = x, consensus = y, oligo = oligo$selectedOligo
+#        )
+#
+#    }
+#    shinyApp(ui, server)
+# }

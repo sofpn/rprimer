@@ -19,9 +19,9 @@ An object of class \code{RprimerOligo} with 337 rows and 26 columns.
 
 An object of class \code{RprimerAssay} with 6535 rows and 65 columns.
 
-An object of class \code{RprimerMatchOligo} with 10 rows and 11 columns.
+An object of class \code{RprimerMatchOligo} with 10 rows and 13 columns.
 
-An object of class \code{RprimerMatchAssay} with 5 rows and 33 columns.
+An object of class \code{RprimerMatchAssay} with 5 rows and 39 columns.
 }
 \usage{
 data("exampleRprimerAlignment")

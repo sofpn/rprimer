@@ -177,18 +177,18 @@ oligoFilterServer <- function(id, alignment, consensus, oligo) {
 
 ## Module app for testing ======================================================
 
- oligoFilterApp <- function() {
-    data("exampleRprimerAlignment")
-    x <- reactive(exampleRprimerAlignment)
-    data("exampleRprimerProfile")
-    y <- reactive(exampleRprimerProfile)
-    data("exampleRprimerOligo")
-    z <- reactive(exampleRprimerOligo)
-    ui <- fluidPage(
-        oligoFilterUI("id")
-    )
-    server <- function(input, output, session) {
-        oligoFilterServer("id", alignment = x, consensus = y, oligo = z)
-    }
-    shinyApp(ui, server)
- }
+ #oligoFilterApp <- function() {
+ #   data("exampleRprimerAlignment")
+ #   x <- reactive(exampleRprimerAlignment)
+ #   data("exampleRprimerProfile")
+ #   y <- reactive(exampleRprimerProfile)
+ #   data("exampleRprimerOligo")
+ #   z <- reactive(exampleRprimerOligo)
+ #   ui <- fluidPage(
+ #       oligoFilterUI("id")
+ #   )
+ #   server <- function(input, output, session) {
+ #       oligoFilterServer("id", alignment = x, consensus = y, oligo = z)
+ #   }
+ #   shinyApp(ui, server)
+ #}
