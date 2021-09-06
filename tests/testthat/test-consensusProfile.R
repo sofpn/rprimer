@@ -71,8 +71,7 @@ test_that(".dnaBasesOnly works", {
     dnaBases <- .dnaBasesOnly(testmat)[, 1:10]
     expect_equal(rownames(dnaBases), c("A", "C", "G", "T"))
     expect_true(
-        all(colSums(dnaBases) > 0.9999999 & colSums(dnaBases < 1.00000001)
-            )
+        all(colSums(dnaBases) > 0.9999999 & colSums(dnaBases < 1.00000001))
     )
 })
 
@@ -115,4 +114,3 @@ test_that(".shannonEntropy works", {
 })
 
 # .coverage ====================================================================
-

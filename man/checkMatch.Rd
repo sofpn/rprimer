@@ -168,8 +168,16 @@ the oligo outside the
 intended oligo binding region (off-target match).
 The function is a wrapper to \code{Biostrings::vcountPDict()}
 (Pages et al., 2020).
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{RprimerOligo}: 
 
-Limitations
+\item \code{RprimerAssay}: 
+}}
+
+\section{Limitations}{
+
 There are a few limitations with this function, which is important to be
 aware of:
 \itemize{
@@ -186,12 +194,6 @@ target sequences are identified as mismatches
 miss off-target matches that partially overlap the intended target
 }
 }
-\section{Methods (by class)}{
-\itemize{
-\item \code{RprimerOligo}: 
-
-\item \code{RprimerAssay}: 
-}}
 
 \examples{
 #### RprimerOligo objects

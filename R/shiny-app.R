@@ -133,7 +133,7 @@ rprimerApp <- function() {
         oligoFilter <- oligoFilterServer(
             "oligoFilter",
             alignment = alignment$data, consensus = consensus$data,
-            oligo = oligo$data
+            allOligos = oligo$data
         )
 
         assay <- assayServer(
@@ -145,7 +145,7 @@ rprimerApp <- function() {
         assayFilterServer(
             "assayFilter",
             alignment = alignment$data, consensus = consensus$data,
-            assay = assay$data
+            allAssays = assay$data
         )
 
         output$page23 <- shiny::renderUI({

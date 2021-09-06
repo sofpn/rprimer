@@ -745,7 +745,7 @@ setMethod("plotData", "RprimerMatchAssay", \(x) {
         )
     }
     offTarget <- x[x$mismatches == "Off-target match (< 3 mismatches)", ]
-    onTarget <-  x[x$mismatches != "Off-target match (< 3 mismatches)", ]
+    onTarget <- x[x$mismatches != "Off-target match (< 3 mismatches)", ]
     ggplot2::ggplot(data = onTarget, ggplot2::aes(x = id)) +
         ggplot2::geom_bar(
             ggplot2::aes(x = id, y = value, fill = mismatches),
@@ -758,7 +758,8 @@ setMethod("plotData", "RprimerMatchAssay", \(x) {
             labels = rev(yLabels)
         ) +
         ggplot2::coord_flip() +
-        ggplot2::geom_bar(data = offTarget,
+        ggplot2::geom_bar(
+            data = offTarget,
             ggplot2::aes(x = id, y = value, fill = mismatches),
             stat = "identity", position = "dodge", width = 0.2,
             alpha = 0.9

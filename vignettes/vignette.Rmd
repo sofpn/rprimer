@@ -410,7 +410,7 @@ It is often valuable to investigate how the generated oligos or assays match wit
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
 
-The output gives information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo *within the intended oligo binding region* in the alignment (on-target match). It also tells the proportion and names of target sequences that match with a maximum of two mismatches to the oligo *outside the intended oligo binding region* (off-target match). Be cautious that false negatives (or positives) may occur due to poorly aligned sequences. Moreover, the output does not tell what strand (minus or plus) the oligo matches to, which is important to consider when assessing off-target matches to single-stranded targets.
+The output gives information on the proportion and names of target sequences that match perfectly as well as with one, two, three or four or more mismatches to the oligo *within the intended oligo binding region* in the alignment (on-target match). It also tells the proportion and names of target sequences that match with a maximum of two mismatches to the oligo *outside the intended oligo binding region* (off-target match). Be cautious that false negatives (or positives) may occur due to poorly aligned sequences. Moreover, the output does not tell what strand (minus or plus) the oligo matches to, which is important to consider when assessing off-target matches to single-stranded targets. See the manual (`?checkMatch`) for more information. 
 
 Ambiguous bases and gaps in the target sequences will be identified as mismatches.
 
@@ -508,7 +508,7 @@ write.table(myAssays, file = "myAssays.txt", quote = FALSE, row.names = FALSE)
 
 **Oligos and assays to fasta format**
 
-It is also possible to export the oligo sequences in fasta-format. To do this, the oligo or assay(s) of interest must first be cocered to a `Biostrings::DNAStringSet` object, as  follows:
+It is also possible to export the oligo sequences in fasta-format. To do this, the oligo or assay(s) of interest must first be cocered to a `Biostrings::DNAStringSet` object, as follows:
 
 ```{r}
 ## Convert the first two oligos 

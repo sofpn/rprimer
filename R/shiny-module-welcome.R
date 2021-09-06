@@ -9,8 +9,8 @@ welcomeUI <- function(id) {
                                 assays from a multiple DNA sequence alignment."
         ),
         shiny::h5(
-            "The design workflow consist of five steps:"
-            ),
+            "The design workflow in this application consist of five steps:"
+        ),
         shiny::h5(shiny::tags$ul(
             shiny::tags$li("Generation of a consensus profile"),
             shiny::tags$li("Oligo design"),
@@ -18,19 +18,7 @@ welcomeUI <- function(id) {
             shiny::tags$li("Assay design"),
             shiny::tags$li("Optional filtering of assays")
         )),
-        shiny::h5(shiny::tags$b("Citation")),
-        shiny::h5("Persson et al., 2021, manuscript in preparation"),
-        #tags$h5(tags$b(tags$a(href = "https://github.com/sofpn/rprimer", "View source", icon("github")))),
+        tags$h5(tags$b(tags$a(href = "https://github.com/sofpn/rprimer", "View source", icon("github")))),
         shiny::hr()
     )
 }
-
-## Module app for testing ======================================================
-
-# welcomeApp <- function() {
-#    ui <- fluidPage(
-#        welcomeUI("id")
-#    )
-#    server <- function(input, output, session) {}
-#    shinyApp(ui, server)
-# }

@@ -81,34 +81,54 @@ consensusServer <- function(id, alignment) {
         })
 
         output$consensusPlot <- shiny::renderPlot({
-            shiny::req(consensus())
+            shiny::req(is(consensus(), "RprimerProfile"))
             plotData(consensus())
         })
 
-        output$getDownloadLinkTxt <- displayDownloadHandlerTxt(
-            consensus(), session
+        output$getDownloadLinkTxt <- shiny::renderUI({
+            shiny::req(is(consensus(), "RprimerProfile"))
+            ns <- session$ns
+            list(
+                shiny::downloadLink(
+                    ns("downloadTxt"), "Download table as .txt"
+                ),
+                shiny::br()
+            )
+        })
+
+        output$downloadTxt <- shiny::downloadHandler(
+            filename <- function() {
+                paste0("consensus", "-", Sys.Date(), ".txt")
+            },
+            content <- function(file) {
+                utils::write.table(
+                    as.data.frame(consensus()), file,
+                    quote = FALSE, sep = "\t",
+                    row.names = FALSE
+                )
+            }
         )
 
-        output$downloadTxt <- downloadHandlerTxt(
-            consensus(), "consensus"
-            )
-
-        output$consensusTable <- consensusDataTable(consensus())
+        output$consensusTable <- DT::renderDataTable(
+            {
+                shiny::req(is(consensus(), "RprimerProfile"))
+                x <- roundDbls(as.data.frame(consensus()))
+                names(x) <- c(
+                    "Position", "A", "C", "G", "T", "Other", "Gaps", "Majority",
+                    "Identity", "IUPAC", "Entropy", "Coverage"
+                )
+                x
+            },
+            options = list(
+                info = FALSE,
+                searching = FALSE, paging = TRUE,
+                scrollX = TRUE, autoWidth = FALSE,
+                ordering = FALSE, scrollY = "300"
+            ),
+            rownames = FALSE,
+            selection = "none"
+        )
 
         list(data = shiny::reactive(consensus()))
     })
 }
-
-## Module app for testing ======================================================
-
-# consensusApp <- function() {
-#    data("exampleRprimerAlignment")
-#    x <- reactive(exampleRprimerAlignment)
-#    ui <- fluidPage(
-#        consensusUI("id")
-#    )
-#    server <- function(input, output, session) {
-#        consensusServer("id", alignment = x)
-#    }
-#    shinyApp(ui, server)
-# }

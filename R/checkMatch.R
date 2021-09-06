@@ -18,7 +18,7 @@
 #'
 #' @md
 #'
-#' @details Limitations
+#' @section Limitations:
 #' There are a few limitations with this function, which is important to be
 #' aware of:
 #'
@@ -172,7 +172,7 @@
 #'    mismatches to at least one site outside the intended
 #'   probe binding region in the input alignment.}
 #'   \item{idOffTargetMatchPr}{Names of all off-target matching sequences.}
-#'}
+#' }
 #'
 #' @export
 #'
