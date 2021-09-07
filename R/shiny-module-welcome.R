@@ -18,7 +18,7 @@ welcomeUI <- function(id) {
             shiny::tags$li("Assay design"),
             shiny::tags$li("Optional filtering of assays")
         )),
-        tags$h5(tags$b(tags$a(href = "https://github.com/sofpn/rprimer", "View source", icon("github")))),
+        #tags$h5(tags$b(tags$a(href = "https://github.com/sofpn/rprimer", "View source", icon("github")))),
         shiny::hr()
     )
 }

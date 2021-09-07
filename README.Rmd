@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R build status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
-[![Codecov test coverage](https://codecov.io/gh/sofpn/rprimer/branch/master/graph/badge.svg)](https://codecov.io/gh/sofpn/rprimer?branch=master)
 <!-- badges: end -->
 
 *This package is in development*

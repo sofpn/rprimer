@@ -42,9 +42,12 @@ assayFilterUI <- function(id) {
                         shiny::br(),
                         spinnerPlot(ns("assayPositionPlot")),
                         shiny::br(),
-                        shiny::hr("Oligo details"),
+                        shiny::h5("Amplicon sequence"),
+                        shiny::hr(),
+                        htmlOutput(ns("ampliconSequence")),
                         shiny::br(),
-                        shiny::br(),
+                        shiny::h5("Oligo details"),
+                        shiny::hr(),
                         shiny::uiOutput(ns("detailsTab"))
                     )
                 )
@@ -240,6 +243,15 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
             splitAssayToList(assayMatch())
         })
 
+        output$ampliconSequence <- shiny::renderText({
+            shiny::req(selectedAssay())
+            from <- selectedAssay()$start
+            to <- selectedAssay()$end
+            sequence <- consensus()$iupac[
+                consensus()$position >= from & consensus()$position <= to]
+            paste(sequence, collapse = "")
+        })
+
         output$getDownloadLinkTxtSel <- shiny::renderUI({
             shiny::req(is(selectedAssay(), "RprimerAssay"))
             ns <- session$ns
@@ -341,7 +353,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 shiny::tabPanel(
                     title = "Forward",
                     br(),
-                    shiny::tabsetPanel(
+                    shiny::tabsetPanel(type = "pills",
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),
@@ -385,7 +397,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 shiny::tabPanel(
                     title = "Reverse",
                     br(),
-                    shiny::tabsetPanel(
+                    shiny::tabsetPanel(type = "pills",
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),
@@ -429,7 +441,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 shiny::tabPanel(
                     title = "Probe",
                     br(),
-                    shiny::tabsetPanel(
+                    shiny::tabsetPanel(type = "pills",
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),
@@ -517,7 +529,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 info = FALSE,
                 searching = FALSE, paging = FALSE,
                 scrollX = TRUE, autoWidth = TRUE,
-                ordering = TRUE
+                ordering = FALSE
             ),
             rownames = FALSE,
             selection = "none"
@@ -627,7 +639,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 info = FALSE,
                 searching = FALSE, paging = FALSE,
                 scrollX = TRUE, autoWidth = TRUE,
-                ordering = TRUE
+                ordering = FALSE
             ),
             rownames = FALSE,
             selection = "none"
@@ -736,7 +748,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 info = FALSE,
                 searching = FALSE, paging = FALSE,
                 scrollX = TRUE, autoWidth = TRUE,
-                ordering = TRUE
+                ordering = FALSE
             ),
             rownames = FALSE,
             selection = "none"

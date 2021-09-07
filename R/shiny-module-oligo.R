@@ -139,7 +139,7 @@ oligoUI <- function(id) {
                     shiny::tabPanel(
                         title = "Selection",
                         shiny::br(),
-                        shiny::tabsetPanel(
+                        shiny::tabsetPanel(type = "pills",
                             shiny::tabPanel(
                                 title = "Oligo information",
                                 shiny::br(),
@@ -239,22 +239,22 @@ oligoServer <- function(id, alignment, consensus) {
             tryCatch(
                 {
                     oligos(consensus(),
-                        maxGapFrequency = input$maxGapFrequency,
-                        lengthPrimer = input$lengthPrimer,
-                        maxDegeneracyPrimer = input$maxDegeneracyPrimer,
-                        avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
-                        gcClampPrimer = input$gcClampPrimer,
-                        gcPrimer = input$gcPrimer,
-                        tmPrimer = input$tmPrimer,
-                        concPrimer = input$concPrimer,
-                        designStrategyPrimer = input$designStrategyPrimer,
-                        probe = input$probe,
-                        lengthProbe = input$lengthProbe,
-                        maxDegeneracyProbe = input$maxDegeneracyProbe,
-                        avoidFiveEndGProbe = input$avoidFiveEndGProbe,
-                        gcProbe = input$gcProbe,
-                        tmProbe = input$tmProbe,
-                        concNa = input$concNa
+                           maxGapFrequency = input$maxGapFrequency,
+                           lengthPrimer = input$lengthPrimer,
+                           maxDegeneracyPrimer = input$maxDegeneracyPrimer,
+                           avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
+                           gcClampPrimer = input$gcClampPrimer,
+                           gcPrimer = input$gcPrimer,
+                           tmPrimer = input$tmPrimer,
+                           concPrimer = input$concPrimer,
+                           designStrategyPrimer = input$designStrategyPrimer,
+                           probe = input$probe,
+                           lengthProbe = input$lengthProbe,
+                           maxDegeneracyProbe = input$maxDegeneracyProbe,
+                           avoidFiveEndGProbe = input$avoidFiveEndGProbe,
+                           gcProbe = input$gcProbe,
+                           tmProbe = input$tmProbe,
+                           concNa = input$concNa
                     )
                 },
                 error = function(cond) {
@@ -433,16 +433,13 @@ oligoServer <- function(id, alignment, consensus) {
                     "Delta G, range", "Design method", "Score", "ROI, start",
                     "ROI, end"
                 )
-                if (is.na(x$Score[[1]])) {
-                    x <- x[!names(x) %in% "Score"]
-                }
                 x
             },
             options = list(
                 info = FALSE,
                 searching = FALSE, paging = FALSE,
                 scrollX = TRUE, autoWidth = TRUE,
-                ordering = TRUE
+                ordering = FALSE
             ),
             rownames = FALSE,
             selection = "none"
@@ -452,15 +449,9 @@ oligoServer <- function(id, alignment, consensus) {
             {
                 shiny::req(is(selectedOligo(), "RprimerOligo"))
                 x <- roundDbls(makeListTable(as.data.frame(selectedOligo())))
-                if (ncol(x) == 4) {
-                    names(x) <- c(
-                        "Sequence", "GC content", "Tm", "Delta G"
-                    )
-                } else {
-                    names(x) <- c(
-                        "Sequence", "Sequence, RC", "GC content", "Tm", "Delta G"
-                    )
-                }
+                names(x) <- c(
+                    "Sequence", "Sequence, RC", "GC content", "Tm", "Delta G"
+                )
                 x
             },
             options = list(

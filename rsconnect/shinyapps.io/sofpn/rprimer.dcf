@@ -1,0 +1,13 @@
+name: rprimer
+title: rprimer
+username:
+account: sofpn
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4214599
+bundleId: 5004886
+url: https://sofpn.shinyapps.io/rprimer/
+when: 1630934382.29992
+lastSyncTime: 1630934382.29992
+asMultiple: FALSE
+asStatic: FALSE
