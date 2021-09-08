@@ -95,15 +95,3 @@ dataServer <- function(id) {
         list(data = shiny::reactive(aln()))
     })
 }
-
-## Module app for testing ======================================================
-
-# dataApp <- function() {
-#    ui <- fluidPage(
-#        dataUI("id")
-#    )
-#    server <- function(input, output, session) {
-#       dataServer("id")
-#    }
-#    shinyApp(ui, server)
-# }

@@ -52,7 +52,7 @@ assayUI <- function(id) {
                         title = "Selection",
                         shiny::br(),
                         shiny::h5("Assay information"),
-                        br(),
+                        shiny::br(),
                         shiny::uiOutput(ns("getDownloadLinkTxtSel")),
                         shiny::uiOutput(ns("getDownloadLinkFastaSel")),
                         shiny::br(),
@@ -63,7 +63,7 @@ assayUI <- function(id) {
                         shiny::br(),
                         shiny::h5("Amplicon sequence"),
                         shiny::hr(),
-                        htmlOutput(ns("ampliconSequence")),
+                        shiny::verbatimTextOutput(ns("ampliconSequence")),
                         shiny::br(),
                         shiny::h5("Oligo details"),
                         shiny::hr(),
@@ -256,7 +256,7 @@ assayServer <- function(id, alignment, consensus, oligo) {
             splitAssayToList(assayMatch())
         })
 
-        output$ampliconSequence <- shiny::renderText({
+        output$ampliconSequence <- shiny::renderPrint({
             shiny::req(selectedAssay())
             from <- selectedAssay()$start
             to <- selectedAssay()$end
