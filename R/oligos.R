@@ -39,7 +39,7 @@
 #' A numeric vector [30, 90], defaults to \code{c(55, 65)}.
 #'
 #' @param concPrimer
-#' Primer concentration in nM, for Tm calculation. A number
+#' Primer concentration in nM, for tm calculation. A number
 #' [20, 2000], defaults to \code{500}.
 #'
 #' @param designStrategyPrimer
@@ -199,9 +199,10 @@
 #' 2/3 of the primer),
 #' which instead of having ambiguous bases contains the most probable
 #' nucleotide at each position.
-#' This strategy is based on the Consensus-Degenerate Hybrid
+#' This strategy resembles the Consensus-Degenerate Hybrid
 #' Oligonucleotide Primer (CODEHOP) principle (Rose et al., 1998), and aims to
-#' to allow amplification of highly variable targets with minimal degeneracy.
+#' to allow amplification of highly variable targets using primers with
+#' low degeneracy.
 #' The idea is that the degenerate 3' end part will bind specifically to
 #' the target sequence in the initial PCR cycles, and promote amplification
 #' in spite of eventual mismatches at the 5' consensus part

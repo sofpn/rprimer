@@ -57,15 +57,14 @@ test_that(".tm works", {
 
 # .deltaG ======================================================================
 
-# test_that(".deltaG works", {
-#    ## Confirm that the calculation agrees with the examples in
-## SantaLucia and Hicks 2004
-#    m <- t(matrix(unlist(strsplit("CGTTGA", split = ""))))
-#    x <- .tmParameters(m, concNa = 1)
-#    test <- .deltaG(x)
-#    expect_equal(round(test, 2), -5.36)
-#    x <- .tmParameters(m, concNa = 0.115)
-#    test <- .deltaG(x)
-#    expect_equal(round(test, 2), -4.12)
-
-# })
+test_that(".deltaG works", {
+    ## Confirm that the calculation agrees with the examples in
+    ## SantaLucia and Hicks 2004
+    m <- t(matrix(unlist(strsplit("CGTTGA", split = ""))))
+    x <- .tmParameters(m, concNa = 1)
+    test <- .deltaG(x)
+    expect_equal(round(test, 2), -5.36)
+    x <- .tmParameters(m, concNa = 0.115)
+    test <- .deltaG(x)
+    expect_equal(round(test, 2), -4.12)
+ })
