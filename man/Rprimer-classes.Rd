@@ -32,15 +32,15 @@ RprimerMatchOligo(...)
 RprimerMatchAssay(...)
 }
 \arguments{
-\item{...}{A data frame or list to be converted into an Rprimer object.}
+\item{...}{A data frame or list to be converted into an Rprimer-object.}
 }
 \value{
-An Rprimer object if validation succeeds, an error
+An Rprimer-object if validation succeeds, an error
 message otherwise.
 }
 \description{
 The rprimer package contains five different S4 classes. Each class is used
-as input/output for the different functions in the oligo and assay design
+as input or output for the different functions in the oligo and assay design
 workflow:
 
  \itemize{
@@ -67,7 +67,7 @@ within an
 \code{RprimerOligo} or \code{RprimerAssay} object into a
 \code{Biostrings::DNAStringSet}
 object (Pages et al., 2020).
-All sequences will be written in the
+Note that all oligo sequences will be written in the
 same direction as the input alignment that was used to generate
 the oligos.
 }

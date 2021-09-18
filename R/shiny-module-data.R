@@ -50,7 +50,7 @@ dataServer <- function(id) {
                 shiny::req(input$file)
                 tryCatch(
                     {
-                        Biostrings::readDNAMultipleAlignment(
+                        readDNAMultipleAlignment(
                             input$file$datapath,
                             format = input$filetype
                         )

@@ -54,7 +54,7 @@ A numeric vector [0, 1], defaults to \code{c(0.40, 0.65)}.}
 \item{tmPrimer}{Tm range for primers (in Celcius degrees).
 A numeric vector [30, 90], defaults to \code{c(55, 65)}.}
 
-\item{concPrimer}{Primer concentration in nM, for Tm calculation. A number
+\item{concPrimer}{Primer concentration in nM, for tm calculation. A number
 [20, 2000], defaults to \code{500}.}
 
 \item{designStrategyPrimer}{\code{"ambiguous"} or \code{"mixed"}. Defaults to \code{"ambiguous"}
@@ -207,9 +207,10 @@ region) and a longer consensus part at the 5' end (approx.
 2/3 of the primer),
 which instead of having ambiguous bases contains the most probable
 nucleotide at each position.
-This strategy is based on the Consensus-Degenerate Hybrid
+This strategy resembles the Consensus-Degenerate Hybrid
 Oligonucleotide Primer (CODEHOP) principle (Rose et al., 1998), and aims to
-to allow amplification of highly variable targets with minimal degeneracy.
+to allow amplification of highly variable targets using primers with
+low degeneracy.
 The idea is that the degenerate 3' end part will bind specifically to
 the target sequence in the initial PCR cycles, and promote amplification
 in spite of eventual mismatches at the 5' consensus part

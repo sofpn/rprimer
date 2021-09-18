@@ -3,16 +3,17 @@ citHeader("To cite rprimer in publications use:")
 citEntry(
   entry    = "Unpublished",
   note     = "Manuscript in preparation",
-  title    = "{rprimer}: An R package for designing degenerate DNA oligos for sequence variable viruses",
-  author   = personList(as.person("Sofia Persson")),
+  title    = "{rprimer}: An R package for designing degenerate oligos for sequence variable viruses",
+  author   = personList(as.person("Sofia Persson"), as.person("Magnus Simonsson"), as.person("Patrik Ellstroem")),
   journal  = "",
   year     = "2021",
   volume   = "",
   number   = "",
   pages    = "",
   url      = "https://github.com/sofpn/rprimer",
-  textVersion = paste("Sofia Persson (2021).",
-  "rprimer: An R package for designing degenerate DNA  oligos for sequence variavle viruses.",
+  textVersion = paste("Sofia Persson, Magnus Simonsson, and Patrik Ellstroem (2021).",
+  "rprimer: An R package for designing degenerate oligos for sequence variable viruses.",
+  "Manuscript in preparation.",
   "URL: https://github.com/sofpn/rprimer."
   )
 )

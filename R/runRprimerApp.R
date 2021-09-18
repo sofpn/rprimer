@@ -4,12 +4,13 @@
 #' the workflow of the rprimer package can be run through a
 #' graphical user interface.
 #'
-#' @return
-#' Opens the Shiny application.
+#' @return Opens the Shiny application.
 #'
 #' @export
 #'
 #' @import shiny
+#'
+#' @importFrom Biostrings readDNAMultipleAlignment
 #'
 #' @examples
 #' ## Only run this in interactive R sessions:
