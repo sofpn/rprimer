@@ -274,19 +274,6 @@
 #'
 #' ## Design primers and probes with default values
 #' oligos(x)
-#'
-#' ## Design primers and probes only within a specific region of interest
-#' roi <- x[x$position >= 5000 & x$position <= 6000, ]
-#' oligos(roi)
-#'
-#' ## Design primers only
-#' oligos(roi, probe = FALSE)
-#'
-#' ## Allow higher degeneracy
-#' oligos(roi, maxDegeneracyPrimer = 32, probe = FALSE)
-#'
-#' ## Use the mixed strategy for primers
-#' oligos(roi, designStrategyPrimer = "mixed", probe = FALSE)
 oligos <- function(x,
                    maxGapFrequency = 0.01,
                    lengthPrimer = c(18, 22),
