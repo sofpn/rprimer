@@ -47,7 +47,9 @@ oligoUI <- function(id) {
                     ns("designStrategyPrimer"),
                     shiny::h5("Design strategy"),
                     choices = c(
-                        "Ambiguous" = "ambiguous", "Mixed" = "mixed"
+                        "Ambiguous
+                        (the entire primer is degenerate)" = "ambiguous",
+                        "Mixed (only the 3' end is degenerate)" = "mixed"
                     ),
                     selected = "ambiguous"
                 ),

@@ -100,7 +100,8 @@ setMethod("plotData", "RprimerProfile", \(x,
 #' @export
 #'
 #' @examples
-#' ### Plot an RprimerOligo object
+#'
+#' #### Plot an RprimerOligo object
 #'
 #' data("exampleRprimerOligo")
 #' oligos <- exampleRprimerOligo
@@ -129,7 +130,8 @@ setMethod("plotData", "RprimerOligo", \(x) {
 #' @export
 #'
 #' @examples
-#' ### Plot an RprimerAssay object
+#'
+#' #### Plot an RprimerAssay object
 #'
 #' data("exampleRprimerAssay")
 #' plotData(exampleRprimerAssay)
@@ -149,7 +151,8 @@ setMethod("plotData", "RprimerAssay", \(x) {
 #' @export
 #'
 #' @examples
-#' ### Plot an RprimerMatchOligo object
+#'
+#' #### Plot an RprimerMatchOligo object
 #'
 #' data("exampleRprimerMatchOligo")
 #' plotData(exampleRprimerMatchOligo)
@@ -166,7 +169,8 @@ setMethod("plotData", "RprimerMatchOligo", \(x) {
 #' @export
 #'
 #' @examples
-#' ### Plot an RprimerMatchAssay object
+#'
+#' #### Plot an RprimerMatchAssay object
 #'
 #' data("exampleRprimerMatchAssay")
 #' plotData(exampleRprimerMatchAssay)

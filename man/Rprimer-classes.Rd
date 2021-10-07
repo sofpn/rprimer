@@ -40,8 +40,8 @@ message otherwise.
 }
 \description{
 The rprimer package contains five different S4 classes. Each class is used
-as input or output for the different functions in the oligo and assay design
-workflow:
+as input or output for the different functions within the oligo and assay
+design workflow:
 
  \itemize{
  \item \code{RprimerProfile} - output from \code{consensusProfile()},

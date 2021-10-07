@@ -1,7 +1,7 @@
 #' Design primers and probes
 #'
 #' \code{oligos()} designs oligos (primers and probes)
-#' from an \code{RprimerProfile} object.
+#' from a consensus profile.
 #'
 #' @param x An \code{RprimerProfile} object.
 #'
@@ -81,7 +81,7 @@
 #' A numeric vector [0.01, 1], defaults to \code{0.05} (50 mM).
 #'
 #' @return
-#' An \code{RprimerOligo} object, which contains the following information:
+#' An \code{RprimerOligo} object, containing the following information:
 #'
 #' \describe{
 #'   \item{type}{Whether the oligo is a primer or probe.}
@@ -95,11 +95,11 @@
 #'   \item{iupacSequence}{Oligo sequence in IUPAC format
 #'   (i.e. with ambiguous bases).}
 #'   \item{iupaSequenceRc}{The reverse complement of the iupacSequence.}
-#'   \item{identity}{For ambiguous oligos: Average identity of the oligo.
-#'     For mixed oligos: Average identity of the 5' (consensus) part of the
+#'   \item{identity}{For ambiguous oligos: average identity of the oligo.
+#'     For mixed oligos: average identity of the 5' (consensus) part of the
 #'     oligo. The value can range from 0 to 1.}
-#'   \item{coverage}{For ambiguous oligos: Average coverage of the oligo.
-#'     For mixed oligos: Average coverage of the 3' (degenerate) part of the
+#'   \item{coverage}{For ambiguous oligos: average coverage of the oligo.
+#'     For mixed oligos: average coverage of the 3' (degenerate) part of the
 #'     oligo. The value can range from 0 to 1.}
 #'   \item{degeneracy}{Number of sequence variants of the oligo.}
 #'   \item{gcContentMean}{Mean GC-content of all sequence variants of the oligo.
@@ -146,6 +146,9 @@
 #'
 #' \strong{Calculation of tm and delta G}
 #'
+#' (Please see the pdf-version of the package manual for accurate representation of
+#' formulas.)
+#'
 #' Melting temperatures
 #' are calculated for perfectly matching
 #' DNA duplexes using the
@@ -188,7 +191,7 @@
 #'
 #' \itemize{
 #' \item{The \strong{ambiguous strategy} (default) generates primers from the
-#' IUPAC consensus sequence, which means that ambiguous bases can
+#' IUPAC consensus sequence alone, which means that ambiguous bases can
 #' occur at any position in the primer.}
 #'
 #' \item{The \strong{mixed strategy} generates primers from both the majority
@@ -199,7 +202,7 @@
 #' 2/3 of the primer),
 #' which instead of having ambiguous bases contains the most probable
 #' nucleotide at each position.
-#' This strategy resembles the Consensus-Degenerate Hybrid
+#' This strategy resembles the widely-adopted Consensus-Degenerate Hybrid
 #' Oligonucleotide Primer (CODEHOP) principle (Rose et al., 1998), and aims to
 #' to allow amplification of highly variable targets using primers with
 #' low degeneracy.
@@ -212,7 +215,7 @@
 #' to be efficiently amplified in later PCR cycles.
 #' To provide a sufficiently high tm in spite of mismatches, it is
 #' recommended to design relatively long primers (at least 25 bases) when using
-#' this strategy}
+#' this strategy.}
 #' }
 #'
 #' Probes are always designed using the ambiguous strategy.
@@ -248,8 +251,8 @@
 #' \eqn{\geq 0.2} \tab 3
 #' }
 #'
-#' These scores are summarized, and
-#' the weight of each individual score is 1. Thus, the lowest and best
+#' These scores are summarized. The weight of each individual score is 1, and
+#' thus, the lowest and best
 #' possible score for an oligo is 0, and the worst possible score is 9.
 #'
 #' @references

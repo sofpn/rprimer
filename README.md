@@ -9,10 +9,8 @@
 status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 <!-- badges: end -->
 
-*This package is in development*
-
-rprimer provides tools for designing degenerate DNA oligos for sequence
-variable targets.
+rprimer provides tools for designing degenerate DNA oligos and PCR
+assays for sequence variable targets.
 
 ## Installation
 
@@ -174,12 +172,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
 |:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| GAATTRATTTCGTCGGCYGG   |         0.89 | M73218.1….     |        0.10 | AY575857….    |          0.00 |                 |            0.01 | MH410175….        |                    0 |                        |              0 |                  |
-| ATWTTCATCCAACCAACCCCTT |         0.94 | M73218.1….     |        0.06 | FJ457024….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| TCCCCTATWTTCATCCAACCA  |         0.97 | M73218.1….     |        0.03 | AY575857….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| TGGTTTCTGGGGTGACMG     |         0.98 | M73218.1….     |        0.02 | BD378055….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| CTATWTTCATCCAACCAACCC  |         0.95 | M73218.1….     |        0.05 | AY575857….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| GGTTGATTCTCAGCCCTTCG   |         0.92 | M73218.1….     |        0.07 | AY575857….    |          0.01 | AB222183.1      |            0.00 |                   |                    0 |                        |              0 |                  |
+| CGACAGAATTRATTTCGTCGG  |         0.94 | M73218.1….     |        0.05 | AY575857….    |          0.01 | MH410175….      |            0.00 |                   |                    0 |                        |              0 |                  |
+| CCCCTATWTTCATCCAACCAAC |         0.95 | M73218.1….     |        0.05 | AY575857….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
+| TGGTTTCTGGGGTGACMGGGTT |         0.96 | M73218.1….     |        0.04 | AB222183….    |          0.01 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
+| GCCYTGGCGAATGCTGTGGT   |         0.92 | M73218.1….     |        0.08 | X99441.1….    |          0.00 |                 |            0.01 | KJ013415.1        |                    0 |                        |              0 |                  |
+| CAGAATTRATTTCGTCGGCY   |         0.93 | M73218.1….     |        0.06 | AY575857….    |          0.00 |                 |            0.01 | MH410175….        |                    0 |                        |              0 |                  |
+| TTGATTCTCAGCCCTTCGC    |         0.94 | M73218.1….     |        0.06 | JF443725….    |          0.01 | AB222183.1      |            0.00 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 

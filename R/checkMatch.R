@@ -1,14 +1,13 @@
-#' Check how oligos and assays match to target sequences
+#' Check how oligos and assays match to their target sequences
 #'
-#' \code{checkMatch()} investigates how well oligos within an
-#' \code{RprimerOligo}
-#' or \code{RprimerAssay} object match with their intended target sequences
+#' \code{checkMatch()} investigates how well oligos or assays match with their
+#' intended target sequences
 #' within a multiple DNA sequence alignment.
 #'
 #' The output gives information on the proportion and names of target sequences
 #' that match perfectly as well as with one, two, three or four or more
 #' mismatches to the oligo within the intended oligo binding region
-#' in the alignment (on-target match).
+#' in the input alignment (on-target match).
 #' It also gives the proportion and names of target sequences that
 #' match with a maximum of two mismatches to at least one sequence variant of
 #' the oligo outside the

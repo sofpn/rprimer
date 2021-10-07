@@ -11,8 +11,8 @@
 #' object (Pages et al., 2020)
 #' containing an alignment of 198 hepatitis E virus
 #' sequences collected from NCBI GenBank. See
-#' "documentation_example_alignment.txt" within the inst/script folder
-#' for more details.
+#' "documentation_example_alignment.txt" within the inst/script folder of this
+#' package for more details.
 #' \item \code{exampleRprimerProfile} - an \code{RprimerProfile} object, generated
 #' from the alignment above.
 #' \item \code{exampleRprimerOligo} - an \code{RprimerOligo} object, generated from

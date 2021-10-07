@@ -13,7 +13,7 @@
 #' All DNA bases that occur with a relative frequency higher than the
 #' specified value will be included when the IUPAC consensus character
 #' is determined.
-#' Can range from `0 to 0.2, defaults to \code{0}.
+#' Can range from 0 to 0.2, defaults to \code{0}.
 #'
 #' @return
 #' An \code{RprimerProfile} object, which contains the following information:
@@ -40,10 +40,10 @@
 #'   position.}
 #'   \item{entropy}{Shannon entropy.
 #'   Shannon entropy is a measurement of
-#'   variability (Shannon, 1951). It is calculated among occurring DNA bases
+#'   variability (Shannon, 1951). It is calculated among the occurring DNA bases
 #'   (gaps and ambiguous bases are not included) at each
-#'   position in the alignment. A value of \code{0} indicate complete
-#'   conservation and a high value indicate high variability.}
+#'   position in the alignment. A value of \code{0} indicates complete
+#'   conservation and a high value indicates high variability.}
 #'   \item{coverage}{Proportion of sequences in the target alignment,
 #'   among all sequences with a DNA base, that are covered the IUPAC consensus
 #'   character.

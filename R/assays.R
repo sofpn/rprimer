@@ -18,7 +18,7 @@
 #' which means that primers will be paired regardless of their tm.
 #'
 #' @return
-#' An \code{RprimerAssay} object, which contains the following information:
+#' An \code{RprimerAssay} object, containing the following information:
 #'
 #' \describe{
 #'   \item{start}{Position where the assay starts.}
@@ -26,18 +26,18 @@
 #'   \item{length}{Length of the amplicon.}
 #'   \item{totalDegeneracy}{Total number of oligos in the assay.}
 #'   \item{score}{Average oligo score. The best
-#'   possible score is 0 and the worst possible score is 12.
+#'   possible score is 0 and the worst possible score is 9.
 #'   See \code{?oligos} for more information about the scoring system.}
 #'   \item{startFwd}{Start position of the forward primer.}
 #'   \item{endFwd}{End positon of the forward primer.}
 #'   \item{lengthFwd}{Length of the forward primer.}
 #'   \item{iupacSequenceFwd}{Forward primer sequence in IUPAC format
 #'   (i.e. with ambiguous bases).}
-#'   \item{identityFwd}{For ambiguous primers: Average identity of the
-#'   forward primer. For mixed primers: Average identity of the 5' (consensus)
+#'   \item{identityFwd}{For ambiguous primers: average identity of the
+#'   forward primer. For mixed primers: average identity of the 5' (consensus)
 #'   part of the forward primer. The value can range from 0 to 1.}
-#'   \item{coverageFwd}{For ambiguous primers: Average coverage of the
-#'   forward primer. For mixed primers: Average coverage of the 3' (degenerate)
+#'   \item{coverageFwd}{For ambiguous primers: average coverage of the
+#'   forward primer. For mixed primers: average coverage of the 3' (degenerate)
 #'   part of the forward primer. The value can range from 0 to 1.}
 #'   \item{degeneracyFwd}{Number of sequence variants of the forward primer.}
 #'   \item{gcContentMeanFwd}{Mean GC-content of all sequence variants of the
@@ -60,17 +60,17 @@
 #'   \item{deltaGFwd}{Delta G of all sequence variants
 #'   of the forward primer (in kcal/mol).}
 #'   \item{methodFwd}{Design method used to generate the forward
-#'   primer: "ambiguous" or "mixedFwd.}
+#'   primer: "ambiguous" or "mixedFwd".}
 #'   \item{startRev}{Start position of the reverse primer.}
 #'   \item{endRev}{End positon of the reverse primer.}
 #'   \item{lengthRev}{Length of the reverse primer.}
 #'   \item{iupacSequenceRev}{Reverse primer sequence in IUPAC format
 #'   (i.e. with ambiguous bases).}
-#'   \item{identityRev}{For ambiguous primers: Average identity of the
-#'   reverse primer. For mixed primers: Average identity of the 5' (consensus)
+#'   \item{identityRev}{For ambiguous primers: average identity of the
+#'   reverse primer. For mixed primers: average identity of the 5' (consensus)
 #'   part of the reverse primer. The value can range from 0 to 1.}
-#'   \item{coverageRev}{For ambiguous primers: Average coverage of the
-#'   reverse primer. For mixed primers: Average coverage of the 3' (degenerate)
+#'   \item{coverageRev}{For ambiguous primers: average coverage of the
+#'   reverse primer. For mixed primers: average coverage of the 3' (degenerate)
 #'   part of the reverse primer. The value can range from 0 to 1.}
 #'   \item{degeneracyRev}{Number of sequence variants of the reverse primer.}
 #'   \item{gcContentMeanRev}{Mean GC-content of all sequence variants of the
@@ -110,11 +110,11 @@
 #'   \item{iupacSequencePr}{Probe sequence in plus sense, in IUPAC format.}
 #'   \item{iupacSequenceRcPr}{Probe sequence in minus sense,
 #'   in IUPAC format.}
-#'   \item{identityPr}{For ambiguous primers: Average identity of the
-#'   probe. For mixed primers: Average identity of the 5' (consensus)
+#'   \item{identityPr}{For ambiguous primers: average identity of the
+#'   probe. For mixed primers: average identity of the 5' (consensus)
 #'   part of the probe. The value can range from 0 to 1.}
-#'   \item{coveragePr}{For ambiguous primers: Average coverage of the
-#'   probe. For mixed primers: Average coverage of the 3' (degenerate)
+#'   \item{coveragePr}{For ambiguous primers: average coverage of the
+#'   probe. For mixed primers: average coverage of the 3' (degenerate)
 #'   part of the probe. The value can range from 0 to 1.}
 #'   \item{degeneracyPr}{Number of sequence variants of the probe.}
 #'   \item{gcContentMeanPr}{Mean GC-content of all sequence variants of the
