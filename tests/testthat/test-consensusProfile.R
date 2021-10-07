@@ -83,8 +83,6 @@ test_that(".iupacConsensus works", {
     bases <- c("A", "C", "G", "T", "-")
     s <- x[rownames(x) %in% bases, , drop = FALSE]
     s <- apply(s, 2, function(x) x / sum(x))
-    expect_equal(.iupacConsensus(x), c("N", "A", "T", "H"))
-    expect_equal(.iupacConsensus(x, 0.05), c("Y", "A", "T", "H"))
     expect_equal(colSums(s), rep(1, 4), ignore_attr = TRUE)
 })
 

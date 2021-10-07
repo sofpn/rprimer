@@ -60,7 +60,7 @@ The design workflow can also be run through a Shiny application. It is loaded by
 
 The first step is to identify and align target sequences of interest. It is important that the alignment accurately represents the generic variation of the target population. Moreover, for best results, it should not contain any poorly aligned sequences. 
 
-The file “example_alignment.txt” is provided with the package and contains an alignment of 198 HEV sequences. The file path can be retrieved by:  
+The file “example_alignment.txt” is provided with the package and contains an alignment of 50 HEV sequences. The file path can be retrieved by:  
 
 ```r
 system.file("extdata", "example_alignment.txt", package = "rprimer")

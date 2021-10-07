@@ -11,13 +11,13 @@
 \alias{exampleRprimerMatchAssay}
 \title{Example datasets}
 \format{
-An object of class \code{DNAMultipleAlignment} with 198 rows and 7997 columns.
+An object of class \code{DNAMultipleAlignment} with 50 rows and 7597 columns.
 
-An object of class \code{RprimerProfile} with 7997 rows and 12 columns.
+An object of class \code{RprimerProfile} with 7597 rows and 12 columns.
 
-An object of class \code{RprimerOligo} with 337 rows and 26 columns.
+An object of class \code{RprimerOligo} with 322 rows and 26 columns.
 
-An object of class \code{RprimerAssay} with 6535 rows and 65 columns.
+An object of class \code{RprimerAssay} with 4883 rows and 65 columns.
 
 An object of class \code{RprimerMatchOligo} with 10 rows and 13 columns.
 
@@ -43,7 +43,7 @@ rprimer. The following datasets are provided:
 \itemize{
 \item \code{exampleRprimerAlignment} - a \code{Biostrings::DNAMultipleAlignment}
 object (Pages et al., 2020)
-containing an alignment of 198 hepatitis E virus
+containing an alignment of 50 hepatitis E virus
 sequences collected from NCBI GenBank. See
 "documentation_example_alignment.txt" within the inst/script folder of this
 package for more details.

@@ -71,9 +71,6 @@ data("exampleRprimerProfile")
 prof <- exampleRprimerProfile
 
 ## Plot an overview
-plotData(prof)
-
-## Highlight a specific area
 plotData(prof, highlight = c(500, 1000))
 
 ## Select a region of interest
@@ -85,20 +82,10 @@ plotData(roi)
 ## Plot the nucleotide distribution of the roi
 plotData(roi, type = "nucleotide")
 
-## Plot the nucleotide distribution of the roi, as reverse complement
-plotData(roi, type = "nucleotide", rc = TRUE)
-
 #### Plot an RprimerOligo object
 
 data("exampleRprimerOligo")
-oligos <- exampleRprimerOligo
-
-## Plot all oligos
-plotData(oligos)
-
-## Select a subset of the oligos, and plot
-selected <- oligos[oligos$start >= 5000, ]
-plotData(selected)
+plotData(exampleRprimerOligo)
 
 #### Plot an RprimerAssay object
 

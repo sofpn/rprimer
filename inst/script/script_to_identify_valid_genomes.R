@@ -5,9 +5,9 @@ results <- read.table("typing_results.txt", sep = "\t", header = TRUE)
 valid <- results$BLAST.result == "Hepeviridae Orthohepevirus A"
 hev <- results$name[valid]
 
-## Randomly select 200 sequences to include as example data in the package
+## Randomly select 50 sequences to include as example data in the package
 set.seed(1)
-selection <- sample(hev, 200)
+selection <- sample(hev, 50)
 
 ## Save accession numbers for the selected sequences so that they can be
 ## downloaded using batch entrez

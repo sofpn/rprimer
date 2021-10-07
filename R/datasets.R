@@ -9,7 +9,7 @@
 #' \itemize{
 #' \item \code{exampleRprimerAlignment} - a \code{Biostrings::DNAMultipleAlignment}
 #' object (Pages et al., 2020)
-#' containing an alignment of 198 hepatitis E virus
+#' containing an alignment of 50 hepatitis E virus
 #' sequences collected from NCBI GenBank. See
 #' "documentation_example_alignment.txt" within the inst/script folder of this
 #' package for more details.
