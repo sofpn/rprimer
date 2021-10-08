@@ -170,14 +170,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
-|:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| CCCCTATWTTCATCCAACC    |         1.00 | AB073912….     |        0.00 |               |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| ATTCTCAGCCCTTCGCMMTCCC |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| CGACAGAATTRATTTCGTCGG  |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
-| GGTTGATTCTCAGCCCTTCGCM |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GGTTTCTGGGGTGACMGGGT   |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
-| TWTTCATCCAACCAACCCCTT  |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
+|:----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
+| GTGGTTTCTGGGGTGACMG   |         0.96 | AB073912….     |        0.04 | BD378055….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GGGTGACMGGGTTGATTCTCA |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| TTTCTGGGGTGACMGGGTTG  |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| TTYTGCCTATGYTGCCCGC   |         0.96 | AB073912….     |        0.04 | GU937805….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GTTTCTGGGGTGACMGGGTTG |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| ATCCAACCAACCCCTTYG    |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 

@@ -81,7 +81,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     profile$iupac <- .iupacConsensus(x, ambiguityThreshold)
     profile$iupac[profile$majority == "-"] <- "-"
     profile$coverage <- .coverage(x, ambiguityThreshold)
-    profile$coverage[profile$majority == "-"] <- 0
+    profile$coverage[profile$majority == "-"] <- NA
     RprimerProfile(profile)
 }
 

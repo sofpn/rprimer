@@ -115,7 +115,7 @@ consensusServer <- function(id, alignment) {
                 x <- roundDbls(as.data.frame(consensus()))
                 names(x) <- c(
                     "Position", "A", "C", "G", "T", "Other", "Gaps", "Majority",
-                    "Identity", "IUPAC", "Entropy", "Coverage"
+                    "Identity", "IUPAC", "Coverage"
                 )
                 x
             },

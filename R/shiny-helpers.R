@@ -61,16 +61,13 @@ conservationInput <- function(x,
     } else {
         x <- x[x$rev & x$fwd, ]
     }
-
     if (variable == "identity") {
         var <- x$identity
     } else if (variable == "coverage") {
         var <- x$coverage
     }
-
     minValue <- round(min(var, na.rm = TRUE), 4)
     maxValue <- round(max(var, na.rm = TRUE), 4)
-
     shiny::sliderInput(id,
         round = -4, step = 0.0001,
         shiny::h5(paste("Minimum", variable)),
@@ -80,7 +77,7 @@ conservationInput <- function(x,
     )
 }
 
-## Other =======================================================================
+## Other functions =============================================================
 
 filterOligos <- function(x,
                          fwdFrom,
