@@ -100,15 +100,4 @@ test_that(".nucleotideIdentity works", {
     )
 })
 
-# .shannonEntropy ==============================================================
-
-test_that(".shannonEntropy works", {
-    selection <- testmat[, 200:220]
-    x <- selection[, 1:4]
-    bases <- c("A", "C", "G", "T", "-")
-    s <- x[rownames(x) %in% bases, , drop = FALSE]
-    s <- apply(s, 2, function(x) x / sum(x))
-    expect_equal(.shannonEntropy(x), .shannonEntropy(s))
-})
-
 # .coverage ====================================================================

@@ -100,7 +100,6 @@ Once the alignment is imported, a consensus profile can be generated. The consen
 * Majority consensus base 
 * Identity
 * IUPAC consensus character
-* Shannon entropy
 * Coverage
 
 The majority consensus base is the most frequently occurring letter among the letters A, C, G, T and -. 
@@ -108,8 +107,6 @@ The majority consensus base is the most frequently occurring letter among the le
 Identity represents the proportion of sequences, among all sequences with a DNA base (A, C, G, T) or gap (-) that has the majority consensus base.
 
 The IUPAC consensus character includes all DNA bases that occur at a relative frequency higher than a       user-specified ambiguity threshold. The threshold can range from 0 to 0.2: a value of 0 (default) will  catch all the variation, but with the potential downside of generating oligos with high degeneracy. A higher value will capture most of the variation, but with the potential downside of missing less common sequence variants.
-
-Shannon entropy is a measurement of variability  [@shannon1951prediction]. It is calculated among all DNA bases that occur at the specific position. A value of 0 indicates complete conservation among these bases, and a high value indicates high variability.
 
 Coverage represents the proportion of sequences in the target alignment (among all sequences with a DNA base) that are covered by the IUPAC consensus character.
 
@@ -139,7 +136,7 @@ The results can be visualized by using `plotData()`:
 plotData(myConsensusProfile)
 ```
 
-The dots represent the value at each position, and the black lines show centered running averages. High identity and low entropy values (in combination with low gap values) indicate high sequence conservation. 
+The dots represent the value at each position, and the black lines show centered running averages. High identity values (in combination with low gap values) indicate high sequence conservation. 
 
 The data can be explored in more detail by zooming into a specific region of interest:
 

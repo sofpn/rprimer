@@ -38,12 +38,6 @@
 #'   will be skipped. If a position only contains
 #'   degenerate bases, the IUPAC consensus will be \code{NA} at that
 #'   position.}
-#'   \item{entropy}{Shannon entropy.
-#'   Shannon entropy is a measurement of
-#'   variability (Shannon, 1951). It is calculated among the occurring DNA bases
-#'   (gaps and ambiguous bases are not included) at each
-#'   position in the alignment. A value of \code{0} indicates complete
-#'   conservation and a high value indicates high variability.}
 #'   \item{coverage}{Proportion of sequences in the target alignment,
 #'   among all sequences with a DNA base, that are covered the IUPAC consensus
 #'   character.
@@ -55,9 +49,6 @@
 #' Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
 #' Efficient manipulation of biological strings. R package version
 #' 2.57.2.
-#'
-#' Shannon, SE. (1951). Prediction and Entropy of Printed English.
-#' Bell System Technical Journal 30 (1): 50-64.
 #'
 #' @export
 #'
@@ -89,8 +80,8 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     profile$identity <- .nucleotideIdentity(x)
     profile$iupac <- .iupacConsensus(x, ambiguityThreshold)
     profile$iupac[profile$majority == "-"] <- "-"
-    profile$entropy <- .shannonEntropy(x)
     profile$coverage <- .coverage(x, ambiguityThreshold)
+    profile$coverage[profile$majority == "-"] <- 0
     RprimerProfile(profile)
 }
 
@@ -189,20 +180,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     identity <- unname(identity)
     identity[is.na(identity)] <- 1
     identity
-}
-
-#' @noRd
-#'
-#' @examples
-#' data("exampleRprimerAlignment")
-#' x <- .consensusMatrix(exampleRprimerAlignment)
-#' .shannonEntropy(x)
-.shannonEntropy <- function(x) {
-    x <- .dnaBasesOnly(x)
-    entropy <- apply(x, 2, \(y) ifelse(y == 0, 0, y * log2(y)))
-    entropy <- abs(colSums(entropy))
-    entropy[is.na(entropy)] <- 0
-    unname(entropy)
 }
 
 #' @noRd

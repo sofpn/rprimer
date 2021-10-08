@@ -586,26 +586,6 @@ setMethod("plotData", "RprimerMatchAssay", \(x) {
         .themeRprimer(showXAxis = FALSE)
 }
 
-.entropyPlot <- function(x, highlight = NULL, mask) {
-    position <- entropy <- average <- NULL
-    averages <- .runningAverage(x$entropy)
-    xadj <- unique(x$position - seq_along(x$position))
-    averages$position <- averages$position + xadj
-    ggplot2::ggplot(
-        data = x, ggplot2::aes(x = position, y = entropy)
-    ) +
-        .highlightRegion(highlight) +
-        ggplot2::geom_point(alpha = 1 / 3, shape = 1, color = "#93A8AC") +
-        ggplot2::geom_line(
-            data = averages,  color = "#1B1C22",
-            ggplot2::aes(x = position, y = average)
-        ) +
-        .maskRegion(mask + xadj) +
-        ggplot2::ylab("Entropy") +
-        ggplot2::xlab("") +
-        .themeRprimer(showXAxis = FALSE)
-}
-
 .gcPlot <- function(x, highlight = NULL, mask) {
     position <- average <- NULL
     gc <- ifelse(x$majority == "C" | x$majority == "G", 1, 0)
@@ -666,7 +646,6 @@ setMethod("plotData", "RprimerMatchAssay", \(x) {
     patchwork::wrap_plots(
         list(
             .identityPlot(x, highlight, mask),
-            .entropyPlot(x, highlight, mask),
             .gcPlot(x, highlight, mask),
             .gapPlot(x, highlight, mask)
         ),

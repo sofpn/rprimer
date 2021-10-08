@@ -117,7 +117,7 @@ S4Vectors::setValidity2("RprimerProfile", \(object) {
     msg <- NULL
     colnames <- c(
         "position", "a", "c", "g", "t", "other", "gaps", "majority", "identity",
-        "iupac", "entropy", "coverage"
+        "iupac", "coverage"
     )
     if (!all(colnames %in% names(object))) {
         msg <- c(
