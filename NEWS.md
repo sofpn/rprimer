@@ -1,2 +1,2 @@
-Changes in version 0.99.0 (XXX-XX-XX)  
-+ ADD HERE 
+Changes in version 0.99.0 (2021-10-08)  
++ Submitted to Bioconductor
