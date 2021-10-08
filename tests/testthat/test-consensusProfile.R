@@ -23,7 +23,7 @@ test_that("consensusProfile works with a rowmask", {
     expect_true(all(prof$identity == 1))
     expect_true(all(prof$entropy == 0))
     expect_true(all(prof$gaps == 0 | prof$gaps == 1))
-    expect_true(all(prof$coverage == 1))
+    expect_true(all(prof$coverage == 1 | prof$coverage == 0))
 })
 
 test_that("consensusProfile works with a colmask", {
