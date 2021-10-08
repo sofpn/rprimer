@@ -9,8 +9,8 @@
 status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 <!-- badges: end -->
 
-rprimer provides tools for designing degenerate DNA oligos and PCR
-assays for sequence variable targets.
+rprimer provides tools for designing degenerate oligos and PCR assays
+for sequence variable viruses.
 
 ## Installation
 
@@ -170,14 +170,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
-|:----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| GTGGTTTCTGGGGTGACMG   |         0.96 | AB073912….     |        0.04 | BD378055….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GGGTGACMGGGTTGATTCTCA |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
-| TTTCTGGGGTGACMGGGTTG  |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
-| TTYTGCCTATGYTGCCCGC   |         0.96 | AB073912….     |        0.04 | GU937805….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GTTTCTGGGGTGACMGGGTTG |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
-| ATCCAACCAACCCCTTYG    |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
+|:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
+| GTTTCTGGGGTGACMGGGTTGA |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| MGGGTTGATTCTCAGCCCTTCG |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TCATCCAACCAACCCCTT     |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GTGGTTTCTGGGGTGACMGGGT |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| GGGTTGATTCTCAGCCCTTCGC |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TCCCCTATWTTCATCCAACCA  |         1.00 | AB073912….     |        0.00 |               |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 

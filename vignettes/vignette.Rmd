@@ -494,9 +494,9 @@ write.csv(myAssays, file = "myAssays.csv", quote = FALSE, row.names = FALSE)
 write.table(myAssays, file = "myAssays.txt", quote = FALSE, row.names = FALSE) 
 ```
 
-**Oligos and assays to fasta format**
+**Fasta format**
 
-It is also possible to export the oligo sequences in fasta-format. To do this, the oligo or assay(s) of interest must first be cocered to a `Biostrings::DNAStringSet` object, as follows:
+It is also possible to export oligos and assays in fasta-format. To do this, the object of interest must first be cocered to a `Biostrings::DNAStringSet` object, as follows:
 
 ```{r}
 ## Convert the first two oligos 
@@ -510,7 +510,7 @@ as(myAssays[1:2, ], "DNAStringSet")
 
 Note that all sequences will be written in the same direction as the input target alignment, and all sequence variants of each oligo will be printed.
 
-The sequences can now be saved in fasta format, for example: 
+The sequences can now be saved in fasta format as follows: 
 
 ```r
 toFile <- as(myOligos[1:2, ], "DNAStringSet")
