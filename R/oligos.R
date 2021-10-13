@@ -200,7 +200,7 @@
 #' conserved
 #' region) and a longer consensus part at the 5' end (approx.
 #' 2/3 of the primer),
-#' which instead of having ambiguous bases contains the most probable
+#' which instead of having ambiguous bases contains the most frequent
 #' nucleotide at each position.
 #' This strategy resembles the widely-adopted Consensus-Degenerate Hybrid
 #' Oligonucleotide Primer (CODEHOP) principle (Rose et al., 1998), and aims to
