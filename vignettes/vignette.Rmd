@@ -24,7 +24,7 @@ library(rprimer)
 
 # Introduction
 
-rprimer provides tools for designing degenerate oligos (primers and probes) for sequence variable viruses. A a multiple DNA sequence alignment is used as input data, and the outputs are presented in data frame format and as dashboard-like plots. 
+rprimer provides tools for designing degenerate oligos (primers and probes) for sequence variable viruses. A multiple DNA sequence alignment is used as input data, and the outputs are presented in data frame format and as dashboard-like plots. 
 
 In this vignette, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for reverse transcription (RT) polymerase chain reaction (PCR)-based amplification and detection of hepatitis E virus (HEV), a sequence variable RNA virus and a common foodborne pathogen. 
 
@@ -167,7 +167,7 @@ Probes are always designed using the ambiguous strategy.
 * `gcClampPrimer`: if primers should have a GC clamp, defaults to `TRUE`. A GC clamp is identified as two to three G or C:s within the last five bases (3' end) of the oligo. The presence of a GC clamp is thought to promote specific binding of the 3' end
 * `avoidThreeEndRunsPrimer`: if primers with more than two runs of the same nucleotide at the terminal 3' end should be avoided (to reduce the risk of mispriming), defaults to `TRUE`
 * `gcPrimer`: GC-content range of primers, defaults to `c(0.40, 0.65)`
-* `tmPrimer`: melting temperature range for primers (in Celcius degrees), defaults to `c(55, 65)`. Melting temperatures are calculated for perfectly matching oligo-target duplexes using the nearest neighbor method [@SantaLuciaUnified], using the formula, salt correction method, and table values as described in [@santalucia2004thermodynamics]. See the manual (`?oligos`) for more information 
+* `tmPrimer`: melting temperature range for primers (in Celsius degrees), defaults to `c(55, 65)`. Melting temperatures are calculated for perfectly matching oligo-target duplexes using the nearest neighbor method [@SantaLuciaUnified], using the formula, salt correction method, and table values as described in [@santalucia2004thermodynamics]. See the manual (`?oligos`) for more information 
 * `concPrimer`: primer concentration in nM, defaults to `500` (for tm calculation)
 * `designStrategyPrimer`: design strategy for primers, `"ambiguous"` or `"mixed"`, defaults to `"ambiguous"`
 * `probe`: if probes should be designed, defaults to `TRUE`
@@ -279,7 +279,7 @@ The final step is to find pairs of forward and reverse primers, and eventually, 
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `length`: amplicon length range, defaults to `c(65, 120)`
-* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celcius degrees). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed. What in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta. See  [@santalucia2007physical] for details on how to calculate the proportion of hybridized primer at different temperatures.]
+* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celsius degrees). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed. What in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta. See  [@santalucia2007physical] for details on how to calculate the proportion of hybridized primer at different temperatures.]
 
 An error message will return if no assays are found.
 
@@ -372,7 +372,7 @@ Ambiguous bases and gaps in the target sequences will be identified as mismatche
 Below, I show how to check how the three first candidates of the `oligoSelection` dataset matches to the sequences in `myAlignment`:
 
 ```{r}
-## Check the first three candidates in the oligoSelection datasert
+## Check the first three candidates in the oligoSelection dataset
 oligoSelectionMatch <- checkMatch(oligoSelection[1:3, ], target = myAlignment)
 ```
 
@@ -415,7 +415,7 @@ write.table(myAssays, file = "myAssays.txt", quote = FALSE, row.names = FALSE)
 
 ### Fasta-format 
 
-It is also possible to export oligos and assays in fasta-format. To do this, the object of interest must first be cocered to a `Biostrings::DNAStringSet` object, as follows:
+It is also possible to export oligos and assays in fasta-format. To do this, the object of interest must first be coerced to a `Biostrings::DNAStringSet` object, as follows:
 
 ```{r}
 ## Convert the first two oligos 

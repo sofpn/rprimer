@@ -66,6 +66,7 @@ dataServer <- function(id) {
                     silent = TRUE
                 )
             } else if (input$dataSelection == "Use example data") {
+                exampleRprimerAlignment <- NULL
                 utils::data("exampleRprimerAlignment", package = "rprimer")
                 exampleRprimerAlignment
             }
