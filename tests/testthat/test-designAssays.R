@@ -4,15 +4,15 @@ x <- exampleRprimerOligo
 
 # assays =======================================================================
 
-test_that("assays returns an error when it sould", {
-    expect_error(assays(unclass(x)))
-    expect_error(assays(x, length = c(39, 120)))
-    expect_error(assays(x, length = c(40, 50001)))
-    expect_error(assays(x, tmDifferencePrimers = FALSE))
+test_that("designAssays returns an error when it sould", {
+    expect_error(designAssays(unclass(x)))
+    expect_error(designAssays(x, length = c(39, 120)))
+    expect_error(designAssays(x, length = c(40, 50001)))
+    expect_error(designAssays(x, tmDifferencePrimers = FALSE))
 })
 
-test_that("assays works", {
-    test <- assays(x)
+test_that("designAssays works", {
+    test <- designAssays(x)
     expect_s4_class(test, "RprimerAssay")
 })
 

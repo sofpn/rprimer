@@ -12,9 +12,9 @@ exampleRprimerAlignment <- Biostrings::readDNAMultipleAlignment(
 
 exampleRprimerProfile <- consensusProfile(exampleRprimerAlignment, 0.05)
 
-exampleRprimerOligo <- oligos(exampleRprimerProfile)
+exampleRprimerOligo <- designOligos(exampleRprimerProfile)
 
-exampleRprimerAssay <- assays(exampleRprimerOligo)
+exampleRprimerAssay <- designAssays(exampleRprimerOligo)
 
 exampleRprimerMatchOligo <- checkMatch(
     exampleRprimerOligo[1:10, ],

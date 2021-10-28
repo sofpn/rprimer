@@ -34,7 +34,8 @@ oligoFilterUI <- function(id) {
                     shiny::tabPanel(
                         title = "Selection",
                         shiny::br(),
-                        shiny::tabsetPanel(type = "pills",
+                        shiny::tabsetPanel(
+                            type = "pills",
                             shiny::tabPanel(
                                 title = "Oligo information",
                                 shiny::br(),
@@ -153,18 +154,18 @@ oligoFilterServer <- function(id, alignment, consensus, allOligos) {
         oligo <- shiny::reactive({
             shiny::req(allOligos())
             filterOligos(allOligos(),
-                         fwdFrom = input$fwdRegionFrom,
-                         fwdTo = input$fwdRegionTo,
-                         revFrom = input$revRegionFrom,
-                         revTo = input$revRegionTo,
-                         prFrom = input$prRegionFrom,
-                         prTo = input$prRegionTo,
-                         fwdIdentity = input$minOligoIdentityFwd,
-                         revIdentity = input$minOligoIdentityRev,
-                         prIdentity = input$minOligoIdentityPr,
-                         fwdCoverage = input$minOligoCoverageFwd,
-                         revCoverage = input$minOligoCoverageRev,
-                         prCoverage = input$minOligoCoveragePr
+                fwdFrom = input$fwdRegionFrom,
+                fwdTo = input$fwdRegionTo,
+                revFrom = input$revRegionFrom,
+                revTo = input$revRegionTo,
+                prFrom = input$prRegionFrom,
+                prTo = input$prRegionTo,
+                fwdIdentity = input$minOligoIdentityFwd,
+                revIdentity = input$minOligoIdentityRev,
+                prIdentity = input$minOligoIdentityPr,
+                fwdCoverage = input$minOligoCoverageFwd,
+                revCoverage = input$minOligoCoverageRev,
+                prCoverage = input$minOligoCoveragePr
             )
         })
 

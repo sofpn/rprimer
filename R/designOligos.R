@@ -1,6 +1,6 @@
 #' Design primers and probes
 #'
-#' \code{oligos()} designs oligos (primers and probes)
+#' \code{designOligos()} designs oligos (primers and probes)
 #' from a consensus profile.
 #'
 #' @param x An \code{RprimerProfile} object.
@@ -146,42 +146,40 @@
 #'
 #' \strong{Calculation of tm and delta G}
 #'
-#' (Please see the pdf-version of the package manual for accurate representation of
-#' formulas.)
-#'
 #' Melting temperatures
 #' are calculated for perfectly matching
 #' DNA duplexes using the
 #' nearest-neighbor
 #' method (SantaLucia and Hicks, 2004), by using the following equation:
 #'
-#' \deqn{Tm = (\Delta H ^o \cdot 1000) / (\Delta S ^o + R \cdot \log [\mathrm{oligo}]) - 273.15}
+#' \loadmathjax
+#' \mjsdeqn{Tm = (\Delta H ^o \cdot 1000) / (\Delta S ^o + R \cdot \log [\mathrm{oligo}]) - 273.15}
 #'
-#' where \eqn{\Delta H ^o} is
-#' the change in enthalpy (in cal/mol) and \eqn{\Delta S ^o} is the
+#' where \mjseqn{\Delta H ^o} is
+#' the change in enthalpy (in cal/mol) and \mjseqn{\Delta S ^o} is the
 #' change in entropy (in cal/K/mol) when an
 #' oligo and a perfectly matching target sequence goes from random coil to
 #' duplex formation.
-#' \eqn{K} is the gas constant (1.9872 cal/mol \emph{K}).
+#' \mjseqn{K} is the gas constant (1.9872 cal/mol \emph{K}).
 #'
 #' Delta G is calculated at 37 Celcius degrees, for when an oligo and a
 #' perfectly matching target
 #' sequence goes from random coil to duplex state, by using  the following
 #' equation:
 #'
-#' \deqn{\Delta G ^o _T = (\Delta H ^o \cdot 1000 - T \cdot \Delta S ^o) / 1000}
+#' \mjsdeqn{ \Delta G ^o _T = ( \Delta H ^o \cdot 1000 - T \cdot \Delta S ^o ) / 1000}{ASCII representation}
 #
 #' For both tm and delta G, the following salt correction method is used
-#' for \eqn{\Delta S^o}, as
+#' for \mjseqn{ \Delta S^o }, as
 #' described in SantaLucia and Hicks (2004):
 #'
-#' \deqn{\Delta S^o [\mathrm{Na^+}] = \Delta S^o [\mathrm{1 M NaCl}] + 0.368 \cdot N / 2 \cdot \log [\mathrm{Na^+}]}
+#' \mjsdeqn{ \Delta S^o [\mathrm{Na^+}] = \Delta S^o [\mathrm{1 M NaCl}] + 0.368 \cdot N / 2 \cdot \log [\mathrm{Na^+}] }
 #'
-#' where \eqn{N} is the total number of phosphates in the duplex, and [Na+] is
+#' where \mjseqn{N} is the total number of phosphates in the duplex, and [Na+] is
 #' the total
 #' concentration of monovalent cations.
 #'
-#' Nearest neighbor table values for \eqn{\Delta S^o} and \eqn{\Delta H^o} are
+#' Nearest neighbor table values for \mjseqn{\Delta S^o} and \mjseqn{\Delta H^o} are
 #' from SantaLucia and Hicks, 2004, and can be
 #' retrieved calling \code{rprimer:::lookup$nn}.
 #'
@@ -268,30 +266,32 @@
 #'
 #' @export
 #'
+#' @import mathjaxr
+#'
 #' @examples
 #' data("exampleRprimerProfile")
 #' x <- exampleRprimerProfile
 #'
 #' ## Design primers and probes with default values
-#' oligos(x)
-oligos <- function(x,
-                   maxGapFrequency = 0.01,
-                   lengthPrimer = c(18, 22),
-                   maxDegeneracyPrimer = 4,
-                   gcClampPrimer = TRUE,
-                   avoidThreeEndRunsPrimer = TRUE,
-                   gcPrimer = c(0.40, 0.65),
-                   tmPrimer = c(50, 65),
-                   concPrimer = 500,
-                   designStrategyPrimer = "ambiguous",
-                   probe = TRUE,
-                   lengthProbe = c(18, 22),
-                   maxDegeneracyProbe = 4,
-                   avoidFiveEndGProbe = TRUE,
-                   gcProbe = c(0.40, 0.65),
-                   tmProbe = c(50, 70),
-                   concProbe = 250,
-                   concNa = 0.05) {
+#' designOligos(x)
+designOligos <- function(x,
+                         maxGapFrequency = 0.01,
+                         lengthPrimer = c(18, 22),
+                         maxDegeneracyPrimer = 4,
+                         gcClampPrimer = TRUE,
+                         avoidThreeEndRunsPrimer = TRUE,
+                         gcPrimer = c(0.40, 0.65),
+                         tmPrimer = c(50, 65),
+                         concPrimer = 500,
+                         designStrategyPrimer = "ambiguous",
+                         probe = TRUE,
+                         lengthProbe = c(18, 22),
+                         maxDegeneracyProbe = 4,
+                         avoidFiveEndGProbe = TRUE,
+                         gcProbe = c(0.40, 0.65),
+                         tmProbe = c(50, 70),
+                         concProbe = 250,
+                         concNa = 0.05) {
     if (!methods::is(x, "RprimerProfile")) {
         stop("'x' must be an RprimerProfile object.", call. = FALSE)
     }

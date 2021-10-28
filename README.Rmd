@@ -23,12 +23,12 @@ rprimer provides tools for designing degenerate oligos and PCR assays for sequen
 
 ## Installation
 
-rprimer can be installed from [GitHub](https://github.com/) with:
+To install rprimer, please use: 
 
   ``` r
-if (!requireNamespace("devtools", quietly = TRUE))
-    install.packages("devtools")
-devtools::install_github("sofpn/rprimer")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("rprimer")
 ```
 ``` {r, message=FALSE, warn=FALSE, echo=FALSE}
 devtools::load_all(".")
@@ -43,8 +43,8 @@ library(rprimer)
 The design workflow consists of five functions:
 
 * `consensusProfile()`
-* `oligos()` 
-* `assays()`
+* `designOligos()` 
+* `designAssays()`
 * `checkMatch()`
 * `plotData()`
 
@@ -55,8 +55,6 @@ The package can be run through a Shiny application (a graphical user interface).
 * `runRprimerApp()` 
 
 ## Workflow 
-
-### Quick start 
 
 ### Import alignment
 
@@ -90,12 +88,12 @@ The results can be visualized with `plotData()`:
 plotData(myConsensusProfile)
 ```
 
-### Step 2: `oligos`
+### Step 2: `designOligos`
 
-The next step is to design oligos. You can either use the default settings as below, or adjust them (see the package vignette or `?oligos` for more information). 
+The next step is to design oligos. You can either use the default settings as below, or adjust them as preferred (see the package vignette or `?designOligos` for more information). 
 
 ``` {r}
-myOligos <- oligos(myConsensusProfile)
+myOligos <- designOligos(myConsensusProfile)
 ```
 
 Results (first six rows): 
@@ -110,12 +108,12 @@ The results can be visualized as a dashboard, using `plotData()`:
 plotData(myOligos)
 ```
 
-### Step 3: `assays`
+### Step 3: `designAssays`
 
-`assays()` finds pairs of forward and reverse primers and combines them with probes, if probes are present in the input dataset. You can either use the default settings as below, or adjust the design constraints (see the package vignette or `?assays` for more information).
+`designAssays()` finds pairs of forward and reverse primers and combines them with probes, if probes are present in the input dataset. You can either use the default settings as below, or adjust the design constraints if required (see the package vignette or `?designAssays` for more information).
 
 ```{r}
-myAssays <- assays(myOligos)
+myAssays <- designAssays(myOligos)
 ```
 
 Results (first six rows):

@@ -141,7 +141,8 @@ oligoUI <- function(id) {
                     shiny::tabPanel(
                         title = "Selection",
                         shiny::br(),
-                        shiny::tabsetPanel(type = "pills",
+                        shiny::tabsetPanel(
+                            type = "pills",
                             shiny::tabPanel(
                                 title = "Oligo information",
                                 shiny::br(),
@@ -240,23 +241,23 @@ oligoServer <- function(id, alignment, consensus) {
 
             tryCatch(
                 {
-                    oligos(consensus(),
-                           maxGapFrequency = input$maxGapFrequency,
-                           lengthPrimer = input$lengthPrimer,
-                           maxDegeneracyPrimer = input$maxDegeneracyPrimer,
-                           avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
-                           gcClampPrimer = input$gcClampPrimer,
-                           gcPrimer = input$gcPrimer,
-                           tmPrimer = input$tmPrimer,
-                           concPrimer = input$concPrimer,
-                           designStrategyPrimer = input$designStrategyPrimer,
-                           probe = input$probe,
-                           lengthProbe = input$lengthProbe,
-                           maxDegeneracyProbe = input$maxDegeneracyProbe,
-                           avoidFiveEndGProbe = input$avoidFiveEndGProbe,
-                           gcProbe = input$gcProbe,
-                           tmProbe = input$tmProbe,
-                           concNa = input$concNa
+                    designOligos(consensus(),
+                        maxGapFrequency = input$maxGapFrequency,
+                        lengthPrimer = input$lengthPrimer,
+                        maxDegeneracyPrimer = input$maxDegeneracyPrimer,
+                        avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
+                        gcClampPrimer = input$gcClampPrimer,
+                        gcPrimer = input$gcPrimer,
+                        tmPrimer = input$tmPrimer,
+                        concPrimer = input$concPrimer,
+                        designStrategyPrimer = input$designStrategyPrimer,
+                        probe = input$probe,
+                        lengthProbe = input$lengthProbe,
+                        maxDegeneracyProbe = input$maxDegeneracyProbe,
+                        avoidFiveEndGProbe = input$avoidFiveEndGProbe,
+                        gcProbe = input$gcProbe,
+                        tmProbe = input$tmProbe,
+                        concNa = input$concNa
                     )
                 },
                 error = function(cond) {

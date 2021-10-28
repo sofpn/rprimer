@@ -67,4 +67,4 @@ test_that(".deltaG works", {
     x <- .tmParameters(m, concNa = 0.115)
     test <- .deltaG(x)
     expect_equal(round(test, 2), -4.12)
- })
+})

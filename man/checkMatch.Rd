@@ -158,7 +158,7 @@ within a multiple DNA sequence alignment.
 }
 \details{
 The output gives information on the proportion and names of target sequences
-that match perfectly as well as with one, two, three or four or more
+that match perfectly as well as with one, two, three, or four or more
 mismatches to the oligo within the intended oligo binding region
 in the input alignment (on-target match).
 It also gives the proportion and names of target sequences that

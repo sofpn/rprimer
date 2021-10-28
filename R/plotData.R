@@ -698,9 +698,7 @@ setMethod("plotData", "RprimerMatchAssay", \(x) {
     id <- as.factor(seq_len(nrow(x)))
     x <- x[!(grepl("id", names(x)))]
     x <- cbind(id, x)
-    x <- suppressMessages({
-        reshape2::melt(x)
-    })
+    x <- suppressMessages({reshape2::melt(x)})
     names(x)[3] <- "mismatches"
     levels(x$mismatches) <- c(
         "0 mismatches", "1 mismatch", "2 mismatches", "3 mismatches",

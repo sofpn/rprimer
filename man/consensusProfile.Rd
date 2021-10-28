@@ -38,12 +38,6 @@ An \code{RprimerProfile} object, which contains the following information:
   will be skipped. If a position only contains
   degenerate bases, the IUPAC consensus will be \code{NA} at that
   position.}
-  \item{entropy}{Shannon entropy.
-  Shannon entropy is a measurement of
-  variability (Shannon, 1951). It is calculated among the occurring DNA bases
-  (gaps and ambiguous bases are not included) at each
-  position in the alignment. A value of \code{0} indicates complete
-  conservation and a high value indicates high variability.}
   \item{coverage}{Proportion of sequences in the target alignment,
   among all sequences with a DNA base, that are covered the IUPAC consensus
   character.
@@ -67,7 +61,4 @@ consensusProfile(exampleRprimerAlignment, ambiguityThreshold = 0.05)
 Pages, H., Aboyoun, P., Gentleman R., and DebRoy S. (2020). Biostrings:
 Efficient manipulation of biological strings. R package version
 2.57.2.
-
-Shannon, SE. (1951). Prediction and Entropy of Printed English.
-Bell System Technical Journal 30 (1): 50-64.
 }

@@ -87,7 +87,7 @@ assayServer <- function(id, alignment, consensus, oligo) {
                         stop("No assays were found.", call. = FALSE)
                     }
 
-                    assays(oligo(),
+                    designAssays(oligo(),
                         length = input$length,
                         tmDifferencePrimers = as.numeric(input$tmDifferencePrimers)
                     )
@@ -261,7 +261,8 @@ assayServer <- function(id, alignment, consensus, oligo) {
             from <- selectedAssay()$start
             to <- selectedAssay()$end
             sequence <- consensus()$iupac[
-                consensus()$position >= from & consensus()$position <= to]
+                consensus()$position >= from & consensus()$position <= to
+            ]
             paste(sequence, collapse = "")
         })
 
@@ -366,7 +367,8 @@ assayServer <- function(id, alignment, consensus, oligo) {
                 shiny::tabPanel(
                     title = "Forward",
                     br(),
-                    shiny::tabsetPanel(type = "pills",
+                    shiny::tabsetPanel(
+                        type = "pills",
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),
@@ -410,7 +412,8 @@ assayServer <- function(id, alignment, consensus, oligo) {
                 shiny::tabPanel(
                     title = "Reverse",
                     br(),
-                    shiny::tabsetPanel(type = "pills",
+                    shiny::tabsetPanel(
+                        type = "pills",
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),
@@ -454,7 +457,8 @@ assayServer <- function(id, alignment, consensus, oligo) {
                 shiny::tabPanel(
                     title = "Probe",
                     br(),
-                    shiny::tabsetPanel(type = "pills",
+                    shiny::tabsetPanel(
+                        type = "pills",
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),

@@ -248,7 +248,8 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
             from <- selectedAssay()$start
             to <- selectedAssay()$end
             sequence <- consensus()$iupac[
-                consensus()$position >= from & consensus()$position <= to]
+                consensus()$position >= from & consensus()$position <= to
+            ]
             paste(sequence, collapse = "")
         })
 
@@ -353,7 +354,8 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 shiny::tabPanel(
                     title = "Forward",
                     br(),
-                    shiny::tabsetPanel(type = "pills",
+                    shiny::tabsetPanel(
+                        type = "pills",
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),
@@ -397,7 +399,8 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 shiny::tabPanel(
                     title = "Reverse",
                     br(),
-                    shiny::tabsetPanel(type = "pills",
+                    shiny::tabsetPanel(
+                        type = "pills",
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),
@@ -441,7 +444,8 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 shiny::tabPanel(
                     title = "Probe",
                     br(),
-                    shiny::tabsetPanel(type = "pills",
+                    shiny::tabsetPanel(
+                        type = "pills",
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),

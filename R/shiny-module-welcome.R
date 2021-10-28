@@ -22,7 +22,7 @@ welcomeUI <- function(id) {
             "Please see the package vingette or the package manual for
             detailed information on the different steps of the design procedure."
         ),
-        #tags$h5(tags$b(tags$a(href = "https://github.com/sofpn/rprimer", "View source", icon("github")))),
+        # tags$h5(tags$b(tags$a(href = "https://github.com/sofpn/rprimer", "View source", icon("github")))),
         shiny::hr()
     )
 }

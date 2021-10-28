@@ -128,7 +128,7 @@ filterOligos <- function(x,
 
 roundDbls <- function(x) {
     x <- as.data.frame(x)
-    y <- lapply(seq_len(ncol(x)), function(i) {
+    y <- lapply(seq_len(ncol(x)), \(i) {
         out <- if (is.double(x[, i])) {
             round(x[, i], 4)
         } else if (is.list(x[, i])) {
@@ -146,7 +146,7 @@ roundDbls <- function(x) {
 }
 
 removeListColumns <- function(x) {
-    lists <- vapply(seq_len(ncol(x)), function(i) {
+    lists <- vapply(seq_len(ncol(x)), \(i) {
         is.list(x[, i])
     }, logical(1L))
     x[, !lists]
@@ -213,11 +213,11 @@ makeRcList <- function(x) {
 
 makeListTable <- function(x) {
     x <- as.data.frame(x)
-    list <- vapply(seq_len(ncol(x)), function(i) {
+    list <- vapply(seq_len(ncol(x)), \(i) {
         is.list(x[, i])
     }, logical(1L))
     x <- x[, list]
-    allCols <- lapply(seq_len(ncol(x)), function(i) {
+    allCols <- lapply(seq_len(ncol(x)), \(i) {
         x[, i][[1]]
     })
     all <- data.frame(do.call("cbind", allCols))

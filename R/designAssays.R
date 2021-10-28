@@ -1,6 +1,6 @@
 #' Design (RT)-PCR assays
 #'
-#' \code{assays()} combines primers to (RT)-PCR assays from an
+#' \code{designAssays()} combines primers to (RT)-PCR assays from an
 #' \code{RprimerOligo} object.
 #' If probes are present in the input dataset,
 #' only assays with a probe present between the primer pair will be kept.
@@ -149,13 +149,11 @@
 #' data("exampleRprimerOligo")
 #'
 #' ## Design assays using default settings
-#' assays(exampleRprimerOligo)
+#' designAssays(exampleRprimerOligo)
 #'
 #' ## Modify the length range
-#' assays(exampleRprimerOligo, length = c(1000, 2000))
-assays <- function(x,
-                   length = c(65, 120),
-                   tmDifferencePrimers = NULL) {
+#' designAssays(exampleRprimerOligo, length = c(1000, 2000))
+designAssays <- function(x, length = c(65, 120), tmDifferencePrimers = NULL) {
     if (!methods::is(x, "RprimerOligo")) {
         stop("'x' must be an RprimerOligo object.", call. = FALSE)
     }

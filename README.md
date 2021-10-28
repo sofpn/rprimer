@@ -14,12 +14,12 @@ for sequence variable viruses.
 
 ## Installation
 
-rprimer can be installed from [GitHub](https://github.com/) with:
+To install rprimer, please use:
 
 ``` r
-if (!requireNamespace("devtools", quietly = TRUE))
-  install.packages("devtools")
-devtools::install_github("sofpn/rprimer")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("rprimer")
 ```
 
 ``` r
@@ -31,8 +31,8 @@ library(rprimer)
 The design workflow consists of five functions:
 
 -   `consensusProfile()`
--   `oligos()`
--   `assays()`
+-   `designOligos()`
+-   `designAssays()`
 -   `checkMatch()`
 -   `plotData()`
 
@@ -44,8 +44,6 @@ interface). It is loaded by:
 -   `runRprimerApp()`
 
 ## Workflow
-
-### Quick start
 
 ### Import alignment
 
@@ -96,14 +94,14 @@ plotData(myConsensusProfile)
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
-### Step 2: `oligos`
+### Step 2: `designOligos`
 
 The next step is to design oligos. You can either use the default
-settings as below, or adjust them (see the package vignette or `?oligos`
-for more information).
+settings as below, or adjust them as preferred (see the package vignette
+or `?designOligos` for more information).
 
 ``` r
-myOligos <- oligos(myConsensusProfile)
+myOligos <- designOligos(myConsensusProfile)
 ```
 
 Results (first six rows):
@@ -125,15 +123,16 @@ plotData(myOligos)
 
 <img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
-### Step 3: `assays`
+### Step 3: `designAssays`
 
-`assays()` finds pairs of forward and reverse primers and combines them
-with probes, if probes are present in the input dataset. You can either
-use the default settings as below, or adjust the design constraints (see
-the package vignette or `?assays` for more information).
+`designAssays()` finds pairs of forward and reverse primers and combines
+them with probes, if probes are present in the input dataset. You can
+either use the default settings as below, or adjust the design
+constraints if required (see the package vignette or `?designAssays` for
+more information).
 
 ``` r
-myAssays <- assays(myOligos)
+myAssays <- designAssays(myOligos)
 ```
 
 Results (first six rows):
@@ -170,14 +169,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
-|:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| GTTTCTGGGGTGACMGGGTTGA |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
-| MGGGTTGATTCTCAGCCCTTCG |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TCATCCAACCAACCCCTT     |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GTGGTTTCTGGGGTGACMGGGT |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
-| GGGTTGATTCTCAGCCCTTCGC |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TCCCCTATWTTCATCCAACCA  |         1.00 | AB073912….     |        0.00 |               |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
+|:----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
+| GGGTTGATTCTCAGCCCTT   |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| CCGACAGAATTRATTTCGTCG |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
+| TTGATTCTCAGCCCTTCGC   |         0.92 | AB073912….     |        0.08 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GGGGTGACMGGGTTGATTC   |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| GTTGATTCTCAGCCCTTCG   |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| CRGTGGTTTCTGGGGTGACM  |         0.96 | AB073912….     |        0.04 | BD378055….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 
