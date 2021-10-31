@@ -17,9 +17,9 @@ for sequence variable viruses.
 To install rprimer, please use:
 
 ``` r
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-BiocManager::install("rprimer")
+if (!requireNamespace("devtools", quietly = TRUE))
+  install.packages("devtools")
+devtools::install_github("sofpn/rprimer")
 ```
 
 ``` r
@@ -48,8 +48,8 @@ interface). It is loaded by:
 ### Import alignment
 
 The first step is to import an alignment with target sequences of
-interest. This is done by using `readDNAMultipleAlignment()` from
-Biostrings.
+interest. This is done by using `readDNAMultipleAlignment()` from the
+Biostrings package.
 
 The file “example\_alignment.txt” contains an alignment of 50 hepatitis
 E virus sequences.
@@ -171,12 +171,12 @@ Results:
 
 | iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
 |:----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| GGGTTGATTCTCAGCCCTT   |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| CCGACAGAATTRATTTCGTCG |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
-| TTGATTCTCAGCCCTTCGC   |         0.92 | AB073912….     |        0.08 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GGGGTGACMGGGTTGATTC   |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
-| GTTGATTCTCAGCCCTTCG   |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| CRGTGGTTTCTGGGGTGACM  |         0.96 | AB073912….     |        0.04 | BD378055….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| CCGACAGAATTRATTTCGTC  |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
+| GGGGTGACMGGGTTGATTCT  |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| ATCCAACCAACCCCTTYGY   |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| ATWTTCATCCAACCAACCC   |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| CCCTATWTTCATCCAACCAA  |         1.00 | AB073912….     |        0.00 |               |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TCCCCTATWTTCATCCAACCA |         1.00 | AB073912….     |        0.00 |               |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 

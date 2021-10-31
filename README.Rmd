@@ -26,10 +26,11 @@ rprimer provides tools for designing degenerate oligos and PCR assays for sequen
 To install rprimer, please use: 
 
   ``` r
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("rprimer")
+if (!requireNamespace("devtools", quietly = TRUE))
+    install.packages("devtools")
+devtools::install_github("sofpn/rprimer")
 ```
+
 ``` {r, message=FALSE, warn=FALSE, echo=FALSE}
 devtools::load_all(".")
 ```
@@ -58,7 +59,7 @@ The package can be run through a Shiny application (a graphical user interface).
 
 ### Import alignment
 
-The first step is to import an alignment with target sequences of interest. This is done by using `readDNAMultipleAlignment()` from Biostrings.
+The first step is to import an alignment with target sequences of interest. This is done by using `readDNAMultipleAlignment()` from the Biostrings package.
 
 The file "example_alignment.txt" contains an alignment of 50 hepatitis E virus sequences. 
 
