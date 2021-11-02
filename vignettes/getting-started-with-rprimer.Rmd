@@ -4,6 +4,7 @@ author: "Sofia Persson"
 package: rprimer
 output: BiocStyle::html_document
 bibliography: bibliography.bibtex
+csl: biomed-central.csl
 vignette: >
   %\VignetteIndexEntry{Instructions for use}
   %\VignetteEngine{knitr::rmarkdown}
@@ -19,6 +20,7 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
+devtools::load_all(".")
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -71,7 +73,7 @@ system.file("extdata", "example_alignment.txt", package = "rprimer")
 
 ## Data import {#Data}
 
-The alignment must be imported to R using the `readDNAMultipleAlignment()` function from Biostrings [@PagesBios]. The input file can contain from one to several thousand sequences. 
+The alignment must be imported to R using the `readDNAMultipleAlignment()` function from Biostrings [@Bios]. The input file can contain from one to several thousand sequences. 
 
 Below, I show how to import the file "example_alignment.txt":  
 
@@ -81,7 +83,7 @@ filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 myAlignment <- readDNAMultipleAlignment(filepath, format = "fasta")
 ```
 
-For some applications, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. This type of masking can be achieved by using `colMask()` from Biostrings [@PagesBios]:
+For some applications, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. This type of masking can be achieved by using `colMask()` from Biostrings [@Bios]:
 
 ```{r}
 ## Mask everything but position 3000 to 4000 and 5000 to 6000
@@ -90,7 +92,7 @@ myMaskedAlignment <- myAlignment
 colmask(myMaskedAlignment, invert = TRUE) <- c(3000:4000, 5000:6000)
 ```
 
-It is also possible to mask specific sequences by using `rowMask()`, and gap-rich positions can be hidden with `gapMask()` [@PagesBios].
+It is also possible to mask specific sequences by using `rowMask()`, and gap-rich positions can be hidden with `gapMask()` [@Bios].
 
 ## Design procedure 
 
@@ -283,7 +285,7 @@ The final step is to find pairs of forward and reverse primers, and eventually, 
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `length`: amplicon length range, defaults to `c(65, 120)`
-* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celsius degrees). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed. What in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta. See  [@santalucia2007physical] for details on how to calculate the proportion of hybridized primer at different temperatures.]
+* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celsius degrees). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed. What in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta. See  [@SL2007] for details on how to calculate the proportion of hybridized primer at different temperatures.]
 
 An error message will return if no assays are found.
 
@@ -362,7 +364,7 @@ paste(myAssayRegion$iupac, collapse = "")
 
 ### Check match 
 
-It is often valuable to investigate how the generated oligos match with their target sequences. `checkMatch()` can be used for this purpose. The function is a wrapper to `vcountPDict()` from Biostrings [@PagesBios] and has two arguments: 
+It is often valuable to investigate how the generated oligos match with their target sequences. `checkMatch()` can be used for this purpose. The function is a wrapper to `vcountPDict()` from Biostrings [@Bios] and has two arguments: 
 
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
@@ -433,7 +435,7 @@ as(myAssays[1:2, ], "DNAStringSet")
 
 Note that all sequences will be written in the same direction as the input target alignment, and all sequence variants of each oligo will be printed.
 
-The sequences can now be saved in fasta-format by using `writeXStringSet()` from Biostrings [@PagesBios].
+The sequences can now be saved in fasta-format by using `writeXStringSet()` from Biostrings [@Bios].
 
 ```r
 toFile <- as(myOligos[1:2, ], "DNAStringSet")
@@ -483,7 +485,7 @@ runRprimerApp()
 
 # Classes and example data
 
-The "Rprimer" classes (`RprimerProfile`, `RprimerOligo`, `RprimerAssay`, `RprimerMatchOligo` and `RprimerMatchAssay`) extends the `DataFrame` class from S4Vectors [@PagesS4], and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow()`, `ncol()`, `head()`, `tail()`, `rbind()`, `cbind()` etc. They can be coerced to traditional data frames by using `as.data.frame()`. 
+The "Rprimer" classes (`RprimerProfile`, `RprimerOligo`, `RprimerAssay`, `RprimerMatchOligo` and `RprimerMatchAssay`) extends the `DataFrame` class from S4Vectors [@S4], and behave in a similar way as traditional data frames, with methods for `[`, `$`, `nrow()`, `ncol()`, `head()`, `tail()`, `rbind()`, `cbind()` etc. They can be coerced to traditional data frames by using `as.data.frame()`. 
 
 Example datasets of each class are provided with the package, and are loaded by: 
 
