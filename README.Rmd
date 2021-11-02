@@ -26,9 +26,9 @@ rprimer provides tools for designing degenerate oligos and PCR assays for sequen
 To install rprimer, please use: 
 
   ``` r
-if (!requireNamespace("devtools", quietly = TRUE))
-    install.packages("devtools")
-devtools::install_github("sofpn/rprimer")
+if (!requireNamespace("biocManager", quietly = TRUE))
+    install.packages("biocManager")
+biocManager::install("rprimer")
 ```
 
 ``` {r, message=FALSE, warn=FALSE, echo=FALSE}
