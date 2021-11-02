@@ -53,6 +53,7 @@ biocViews:
     ddPCR,
     Coverage,
     MultipleSequenceAlignment,
+    SequenceMatching,
     qPCR
 biocType: 
     Software 
