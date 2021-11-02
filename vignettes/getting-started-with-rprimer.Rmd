@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
 
 ```{r, internal setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(kableExtra)
-devtools::load_all(".")
 ```
 
 ```{r, warning=FALSE, message=FALSE}
