@@ -19,7 +19,7 @@ rprimerApp <- function() {
         shiny::tabsetPanel(
             id = "wizard",
             type = "hidden",
-            shiny::tabPanel(
+            shiny::tabPanelBody(
                 "page1", "",
                 welcomeUI("welcome"),
                 shiny::br(),
@@ -31,7 +31,7 @@ rprimerApp <- function() {
                     )
                 ),
             ),
-            shiny::tabPanel(
+            shiny::tabPanelBody(
                 "page2", "",
                 dataUI("data"),
                 shiny::br(),
@@ -46,7 +46,7 @@ rprimerApp <- function() {
                     )
                 )
             ),
-            shiny::tabPanel(
+            shiny::tabPanelBody(
                 "page3", "",
                 consensusUI("consensus"),
                 shiny::br(),
@@ -61,7 +61,7 @@ rprimerApp <- function() {
                     )
                 )
             ),
-            shiny::tabPanel(
+            shiny::tabPanelBody(
                 "page4", "",
                 oligoUI("oligo"),
                 shiny::br(),
@@ -76,7 +76,7 @@ rprimerApp <- function() {
                     )
                 )
             ),
-            shiny::tabPanel(
+            shiny::tabPanelBody(
                 "page5", "",
                 oligoFilterUI("oligoFilter"),
                 shiny::br(),
@@ -91,7 +91,7 @@ rprimerApp <- function() {
                     )
                 )
             ),
-            shiny::tabPanel(
+            shiny::tabPanelBody(
                 "page6", "",
                 assayUI("assay"),
                 shiny::br(),
@@ -106,7 +106,7 @@ rprimerApp <- function() {
                     )
                 )
             ),
-            shiny::tabPanel(
+            shiny::tabPanelBody(
                 "page7", "",
                 assayFilterUI("assayFilter"),
                 shiny::br(),
