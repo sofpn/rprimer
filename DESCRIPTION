@@ -37,7 +37,6 @@ Imports:
 Suggests: 
     BiocStyle,
     covr,
-    hexSticker,
     kableExtra,
     knitr,
     rmarkdown,
