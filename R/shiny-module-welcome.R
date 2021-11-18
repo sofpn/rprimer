@@ -19,8 +19,7 @@ welcomeUI <- function(id) {
             shiny::tags$li("Optional filtering of assays")
         )),
         shiny::h5(
-            "Note that all sequences are written in 5'-3' direction.
-            Please see the package vingette or the package manual for
+            "Please see the package vingette or the package manual for
             further information on the different steps of the design procedure."
         ),
         shiny::hr()
