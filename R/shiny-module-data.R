@@ -57,7 +57,7 @@ dataServer <- function(id) {
                     },
                     error = function(cond) {
                         shiny::showNotification(
-                            "Failed to upload file correctly.\n
+                            "Failed to import sequence data from the file.\n
                         Please check that the file format is correct.",
                             type = "error",
                             duration = NULL

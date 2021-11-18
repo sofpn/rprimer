@@ -47,7 +47,7 @@ An \code{RprimerProfile} object, which contains the following information:
 }
 \description{
 \code{consensusProfile()} takes a DNA multiple alignment as input and
-returns all the data needed for subsequent primer and probe design.
+returns all the data needed for subsequent primer and probe design process.
 The function is a wrapper to
 \code{Biostrings::consensusMatrix()} (Pages et al., 2020).
 }

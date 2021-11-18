@@ -23,16 +23,17 @@ rprimer provides tools for designing degenerate oligos and PCR assays for sequen
 
 ## Installation
 
-To install rprimer, please use: 
+To install rprimer from [Bioconductor](https://bioconductor.org/packages/devel/bioc/html/rprimer.html), start R (version 4.2) and enter: 
 
   ``` r
-if (!requireNamespace("biocManager", quietly = TRUE))
-    install.packages("biocManager")
-biocManager::install("rprimer")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "devel")
+BiocManager::install("rprimer")
 ```
 
 ``` {r, message=FALSE, warn=FALSE, echo=FALSE}
-devtools::load_all(".")
+#devtools::load_all(".")
 ```
 
 ```{r, warn=FALSE, message=FALSE}
@@ -111,7 +112,7 @@ plotData(myOligos)
 
 ### Step 3: `designAssays`
 
-`designAssays()` finds pairs of forward and reverse primers and combines them with probes, if probes are present in the input dataset. You can either use the default settings as below, or adjust the design constraints if required (see the package vignette or `?designAssays` for more information).
+`designAssays()` finds pairs of forward and reverse primers and combine them with probes, if probes are present in the input dataset. You can either use the default settings as below, or adjust the design constraints if required (see the package vignette or `?designAssays` for more information).
 
 ```{r}
 myAssays <- designAssays(myOligos)

@@ -294,7 +294,7 @@ designAssays <- function(x, length = c(65, 120), tmDifferencePrimers = NULL) {
 #' data("exampleRprimerOligo")
 #' x <- exampleRprimerOligo
 #' assays <- .combinePrimers(x)
-#' #  .addProbes(assays, x[x$type == "probe", , drop = FALSE])
+#' .addProbes(assays, x[x$type == "probe", , drop = FALSE])
 .addProbes <- function(x, probes) {
     probeCandidates <- .identifyProbes(x, probes)
     .extractProbes(x, probeCandidates)

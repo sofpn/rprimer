@@ -19,10 +19,10 @@ welcomeUI <- function(id) {
             shiny::tags$li("Optional filtering of assays")
         )),
         shiny::h5(
-            "Please see the package vingette or the package manual for
-            detailed information on the different steps of the design procedure."
+            "Note that all sequences are written in 5'-3' direction.
+            Please see the package vingette or the package manual for
+            further information on the different steps of the design procedure."
         ),
-        # tags$h5(tags$b(tags$a(href = "https://github.com/sofpn/rprimer", "View source", icon("github")))),
         shiny::hr()
     )
 }

@@ -29,22 +29,29 @@ library(Biostrings)
 
 # Introduction
 
-rprimer provides tools for designing degenerate oligos (primers and probes) for sequence variable viruses. A multiple DNA sequence alignment is used as input data, and the outputs are presented in data frame format and as dashboard-like plots. 
+rprimer provides tools for designing degenerate oligos (primers and probes), and is especially developed for sequence variable viruses. A multiple DNA sequence alignment is used as input data, and the outputs are presented in data frame format and as dashboard-like plots. 
 
 In this vignette, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for reverse transcription (RT) polymerase chain reaction (PCR)-based amplification and detection of hepatitis E virus (HEV), a sequence variable RNA virus and a common foodborne pathogen. 
 
 # Installation
 
-To install rprimer, please use: 
+To install rprimer, start R (version 4.1.0 or higher), and enter the following code:
 
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("rprimer")
 ```
+
+It is also recommended to install the Biostrings package [@Bios]: 
+
+```r
+BiocManager::install("Biostrings")
+```
+
 # Overview
 
-The design workflow consists of five functions:
+The oligo and assay design workflow consists of five functions:
 
 * `consensusProfile()`
 * `designOligos()`  
@@ -54,7 +61,7 @@ The design workflow consists of five functions:
 
 # Shiny application
 
-The design workflow can also be run through a Shiny application. It is loaded by:
+The workflow can also be run through a Shiny application. It is loaded by:
 
 * `runRprimerApp()`
 
@@ -110,7 +117,7 @@ The majority consensus base is the most frequently occurring letter among the le
 
 Identity represents the proportion of sequences, among all sequences with a DNA base (A, C, G, T) or gap (-) that has the majority consensus base.
 
-The IUPAC consensus character includes all DNA bases that occur at a relative frequency higher than a       user-specified ambiguity threshold. The threshold can range from 0 to 0.2: a value of 0 (default) will  catch all the variation, but with the potential downside of generating oligos with high degeneracy. A higher value will capture most of the variation, but with the potential downside of missing less common sequence variants.
+The IUPAC consensus character includes all DNA bases that occur at a relative frequency higher than a user-specified ambiguity threshold. The threshold can range from 0 to 0.2: a value of 0 (default) will  catch all the variation, but with the potential downside of generating oligos with high degeneracy. A higher value will capture most of the variation, but with the potential downside of missing less common sequence variants.
 
 Coverage represents the proportion of sequences in the target alignment (among all sequences with a DNA base) that are covered by the IUPAC consensus character.
 
