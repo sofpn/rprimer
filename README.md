@@ -157,7 +157,7 @@ plotData(myAssays)
 
 <img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
-### Check match
+### Additional step: `checkMatch`
 
 `checkMatch()` shows the proportion and names of the target sequences in
 the input alignment that match with the generated oligos or assays. See
@@ -174,12 +174,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
 |:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| WTTCATCCAACCAACCCCT    |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TTGATTCTCAGCCCTTCG     |         0.92 | AB073912….     |        0.08 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GGTTGATTCTCAGCCCTTCG   |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| ACAGAATTRATTTCGTCGGC   |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
-| GTTGATTCTCAGCCCTTCGCMM |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GGCRGTGGTTTCTGGGGTGA   |         0.92 | AB073912….     |        0.08 | BD378055….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GATTCTCAGCCCTTCGCMMTC  |         0.94 | AB073912….     |        0.06 | AB481228….    |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TTCATCCAACCAACCCCTT    |         0.98 | AB073912….     |        0.02 | HM439284.1    |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| MGGGTTGATTCTCAGCCCTTCG |         0.88 | AB073912….     |        0.12 | AB481228….    |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| ATTCTCAGCCCTTCGCMM     |         0.94 | AB073912….     |        0.06 | AB481228….    |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TWTTCATCCAACCAACCCCTTY |         0.96 | AB073912….     |        0.04 | MF444040….    |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TCATCCAACCAACCCCTTYGY  |         0.96 | AB073912….     |        0.04 | MF444040….    |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 

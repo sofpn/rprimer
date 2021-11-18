@@ -130,7 +130,7 @@ The assays can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-### Check match 
+### Additional step: `checkMatch` 
 
 `checkMatch()` shows the proportion and names of the target sequences in the input alignment that match with the generated oligos or assays. See the package vignette or `?checkMatch` for more information. 
 
