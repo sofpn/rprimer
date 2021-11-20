@@ -1,6 +1,7 @@
 #' @details
 #' The package contains five functions: \code{consensusProfile()},
-#' \code{oligos()}, \code{assays()}, \code{checkMatch()} and \code{plotData()}
+#' \code{designOligos()}, \code{designAssays()}, \code{checkMatch()} 
+#' and \code{plotData()}
 #'
 #' @keywords internal
 "_PACKAGE"
