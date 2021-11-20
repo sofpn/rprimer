@@ -103,7 +103,7 @@ NULL
 # RprimerProfile ===============================================================
 
 #' @rdname Rprimer-classes
-.RprimerProfile <- setClass("RprimerProfile", contains = "DataFrame")
+.RprimerProfile <- setClass("RprimerProfile", contains = "DFrame")
 
 #' @export
 #'
@@ -135,7 +135,7 @@ S4Vectors::setValidity2("RprimerProfile", \(object) {
 # RprimerOligo ================================================================
 
 #' @rdname Rprimer-classes
-.RprimerOligo <- setClass("RprimerOligo", contains = "DataFrame")
+.RprimerOligo <- setClass("RprimerOligo", contains = "DFrame")
 
 #' @export
 #'
@@ -171,7 +171,7 @@ S4Vectors::setValidity2("RprimerOligo", \(object) {
 # RprimerAssay ================================================================
 
 #' @rdname Rprimer-classes
-.RprimerAssay <- setClass("RprimerAssay", contains = "DataFrame")
+.RprimerAssay <- setClass("RprimerAssay", contains = "DFrame")
 
 #' @export
 #'
@@ -215,7 +215,7 @@ S4Vectors::setValidity2("RprimerAssay", \(object) {
 # RprimerMatchOligo ============================================================
 
 #' @rdname Rprimer-classes
-.RprimerMatchOligo <- setClass("RprimerMatchOligo", contains = "DataFrame")
+.RprimerMatchOligo <- setClass("RprimerMatchOligo", contains = "DFrame")
 
 #' @export
 #'
@@ -247,7 +247,7 @@ S4Vectors::setValidity2("RprimerMatchOligo", \(object) {
 # RprimerMatchAssay ============================================================
 
 #' @rdname Rprimer-classes
-.RprimerMatchAssay <- setClass("RprimerMatchAssay", contains = "DataFrame")
+.RprimerMatchAssay <- setClass("RprimerMatchAssay", contains = "DFrame")
 
 #' @export
 #'
