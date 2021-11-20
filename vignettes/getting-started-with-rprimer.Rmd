@@ -1,6 +1,8 @@
 ---
 title: "Getting started with rprimer"
-author: "Sofia Persson"
+author: 
+- name: "Sofia Persson"
+  affiliation: "European Union Reference Laboratory for Foodborne Viruses, Swedish Food Agency, Uppsala, Sweden"
 package: rprimer
 output: BiocStyle::html_document
 bibliography: bibliography.bibtex
@@ -22,14 +24,9 @@ knitr::opts_chunk$set(
 library(kableExtra)
 ```
 
-```{r, warning=FALSE, message=FALSE}
-library(rprimer)
-library(Biostrings)
-```
-
 # Introduction
 
-rprimer provides tools for designing degenerate oligos (primers and probes), and is especially developed for sequence variable viruses. A multiple DNA sequence alignment is used as input data, and the outputs are presented in data frame format and as dashboard-like plots. 
+rprimer provides tools for designing degenerate oligos (primers and probes) for sequence variable viruses. A multiple DNA sequence alignment is used as input data, and the outputs are presented in data frame format and as dashboard-like plots. 
 
 In this vignette, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for reverse transcription (RT) polymerase chain reaction (PCR)-based amplification and detection of hepatitis E virus (HEV), a sequence variable RNA virus and a common foodborne pathogen. 
 
@@ -43,7 +40,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("rprimer")
 ```
 
-It is also recommended to install the Biostrings package [@Bios]: 
+For best functionality, it is also recommended to install Biostrings [@Bios]: 
 
 ```r
 BiocManager::install("Biostrings")
@@ -66,6 +63,11 @@ The workflow can also be run through a Shiny application. It is loaded by:
 * `runRprimerApp()`
 
 # Workflow
+
+```{r, warning=FALSE, message=FALSE}
+library(rprimer)
+library(Biostrings)
+```
 
 ## Collection of target sequences and multiple alignment 
 

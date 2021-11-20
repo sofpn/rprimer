@@ -16,10 +16,10 @@ knitr::opts_chunk$set(
 # rprimer <img src='man/figures/rprimer.png' align="right" height="139" />
 
 <!-- badges: start -->
-[![R build status](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
+[![R-CMD-check](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 <!-- badges: end -->
 
-rprimer provides tools for designing degenerate oligos and PCR assays for sequence variable viruses.
+rprimer provides tools for designing degenerate oligos and PCR assays from a multiple DNA sequence alignment. 
 
 ## Installation
 
