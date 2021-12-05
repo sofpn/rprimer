@@ -6,14 +6,13 @@ Description:
     Functions, workflow, and a Shiny application for visualizing sequence 
     conservation and designing degenerate primers, probes, and (RT)-(q/d)PCR 
     assays from a multiple DNA sequence alignment. The results can be presented 
-    in data frame format and visualized as dashboard-like plots. The package is 
-    developed primarily for sequence variable viruses. For more information, 
+    in data frame format and visualized as dashboard-like plots. For more information, 
     please see the package vignette.
 Authors@R: 
     person(given = "Sofia",
            family = "Persson",
            role = c("aut", "cre"),
-           email = "sofiapersson27@gmail.com",
+           email = "sofia.persson@slv.se",
            comment = c(ORCID = "0000-0003-2611-3030"))
 License: GPL-3
 URL: https://github.com/sofpn/rprimer

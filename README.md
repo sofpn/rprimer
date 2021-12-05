@@ -8,7 +8,7 @@
 [![R-CMD-check](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 <!-- badges: end -->
 
-rprimer provides tools for designing degenerate oligos and PCR assays
+rprimer is an R package that designs degenerate oligos and PCR assays
 from a multiple DNA sequence alignment.
 
 ## Installation
@@ -41,9 +41,8 @@ The design workflow consists of five functions:
 ## Shiny application
 
 The package can be run through a Shiny application (a graphical user
-interface). It is loaded by:
-
--   `runRprimerApp()`
+interface). To start the application, type `runRprimerApp()` from within
+R upon installing and attaching the package.
 
 ## Workflow
 
@@ -72,7 +71,7 @@ process.
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
 ```
 
-Results (row 100-110):
+Results (row 100-106):
 
 | position |    a |    c |    g |    t | other | gaps | majority | identity | iupac | coverage |
 |---------:|-----:|-----:|-----:|-----:|------:|-----:|:---------|---------:|:------|---------:|
@@ -83,10 +82,6 @@ Results (row 100-110):
 |      104 | 0.00 | 0.98 | 0.00 | 0.00 |  0.02 |    0 | C        |     1.00 | C     |     1.00 |
 |      105 | 0.20 | 0.00 | 0.02 | 0.78 |  0.00 |    0 | T        |     0.78 | W     |     0.98 |
 |      106 | 0.00 | 0.00 | 1.00 | 0.00 |  0.00 |    0 | G        |     1.00 | G     |     1.00 |
-|      107 | 0.00 | 0.98 | 0.00 | 0.02 |  0.00 |    0 | C        |     0.98 | C     |     0.98 |
-|      108 | 0.00 | 0.00 | 0.02 | 0.98 |  0.00 |    0 | T        |     0.98 | T     |     0.98 |
-|      109 | 0.00 | 0.98 | 0.00 | 0.02 |  0.00 |    0 | C        |     0.98 | C     |     0.98 |
-|      110 | 0.00 | 0.00 | 0.00 | 1.00 |  0.00 |    0 | T        |     1.00 | T     |     1.00 |
 
 The results can be visualized with `plotData()`:
 
@@ -130,8 +125,8 @@ plotData(myOligos)
 `designAssays()` finds pairs of forward and reverse primers and combine
 them with probes, if probes are present in the input dataset. You can
 either use the default settings as below, or adjust the design
-constraints if required (see the package vignette or `?designAssays` for
-more information).
+constraints (see the package vignette or `?designAssays` for more
+information).
 
 ``` r
 myAssays <- designAssays(myOligos)
@@ -173,12 +168,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
 |:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| CMGGGTTGATTCTCAGCCC    |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| RGTGGTTTCTGGGGTGAC     |         0.96 | AB073912….     |        0.04 | BD378055….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| CYTGGCGAATGCTGTGGT     |         0.90 | AB073912….     |        0.08 | KJ701409….    |          0.00 |                 |            0.02 | KJ013415.1        |                    0 |                        |              0 |                  |
-| GGTTGATTCTCAGCCCTTC    |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| CTGGGGTGACMGGGTTGATT   |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
-| GGGTGACMGGGTTGATTCTCAG |         0.88 | AB073912….     |        0.10 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
+| TGATTCTCAGCCCTTCGC     |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
+| ACAGAATTRATTTCGTCGGC   |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |            0.00 |                   |                    0 |                        |              0 |                  |
+| GTTGATTCTCAGCCCTTCGC   |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
+| WTTCATCCAACCAACCCCT    |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
+| CCYTGGCGAATGCTGTGGT    |         0.90 | AB073912….     |        0.08 | KJ701409….    |          0.00 |                 |            0.02 | KJ013415.1        |                    0 |                        |              0 |                  |
+| CGACAGAATTRATTTCGTCGGC |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |            0.00 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 
@@ -190,9 +185,10 @@ plotData(matchTableOligos)
 
 ## More information
 
-The package vignette contains more information. It is loaded by
-`browseVignettes("rprimer")`.
+Please see the [package
+vignette](https://bioconductor.org/packages/devel/bioc/vignettes/rprimer/inst/doc/getting-started-with-rprimer.html)
+for more information on how to use rprimer.
 
 ## Citation
 
-To cite this package, please use: `citation("rprimer")`.
+Manuscript in preparation.

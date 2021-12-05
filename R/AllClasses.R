@@ -20,8 +20,9 @@
 #'  \item \code{RprimerMatchAssay}: output from \code{checkMatch()}.
 #' }
 #'
-#' These classes extends the \code{S4Vectors::DataFrame} class
-#' (Pages et al., 2020), without any additional slots.
+#' These classes extends the DFrame class from S4vectors
+#' (Pages et al., 2020), without any additional slots, but with some
+#' additional checks for validity.
 #'
 #' @section Coercion:
 #' Each class can be converted to a traditional data frame, by using either
