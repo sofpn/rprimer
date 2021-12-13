@@ -92,33 +92,41 @@ arrangeMask <- function(from, to, aln) {
 }
 
 filterOligos <- function(x,
-                         fwdFrom,
-                         fwdTo,
-                         revFrom,
-                         revTo,
-                         prFrom,
-                         prTo,
-                         fwdIdentity,
-                         fwdCoverage,
-                         revIdentity,
-                         revCoverage,
-                         prIdentity,
-                         prCoverage) {
+                         fwdFrom = 0,
+                         fwdTo = Inf,
+                         revFrom = 0,
+                         revTo = Inf,
+                         prFrom = 0,
+                         prTo = Inf,
+                         fwdIdentity = 0,
+                         fwdCoverage = 0,
+                         revIdentity = 0,
+                         revCoverage = 0,
+                         prIdentity = 0,
+                         prCoverage = 0) {
     x <- as.data.frame(x)
     emptyRow <- makeEmptyRow(x)
-    primers <- x[x$type == "primer", ]
-    fwd <- primers$fwd &
-        primers$start >= fwdFrom &
-        primers$end <= fwdTo &
-        primers$identity >= fwdIdentity &
-        primers$coverage >= fwdCoverage
-    rev <- primers$rev &
-        primers$start >= revFrom &
-        primers$end <= revTo &
-        primers$identity >= revIdentity &
-        primers$coverage >= revCoverage
-    primers$fwd <- fwd
-    primers$rev <- rev
+    if (any(x$type == "primer")) {
+        primers <- x[x$type == "primer", ]
+        if (any(primers$fwd)) {
+            fwd <- primers$fwd &
+                primers$start >= fwdFrom &
+                primers$end <= fwdTo &
+                primers$identity >= fwdIdentity &
+                primers$coverage >= fwdCoverage
+            primers$fwd <- fwd
+        }
+        if (any(primers$rev)) {
+            rev <- primers$rev &
+                primers$start >= revFrom &
+                primers$end <= revTo &
+                primers$identity >= revIdentity &
+                primers$coverage >= revCoverage
+            primers$rev <- rev
+        }
+    } else {
+        primers <- NULL
+    }
     if (any(x$type == "probe")) {
         probes <- x[x$type == "probe", ]
         pr <- probes$start >= prFrom &
