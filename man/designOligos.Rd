@@ -38,10 +38,10 @@ defaults to \code{c(18, 22)}.}
 \item{maxDegeneracyPrimer}{Maximum number of variants of each primer. A number [1, 64],
 defaults to \code{4}.}
 
-\item{gcClampPrimer}{If primers must have a GC-clamp.
-A GC-clamp
+\item{gcClampPrimer}{If primers must have a GC clamp.
+A GC clamp
 is identified as two to three G or
-C:s within the last five bases (3' end) of the oligo.
+C:s within the last five bases (3' end) of the primer.
 \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.}
 
 \item{avoidThreeEndRunsPrimer}{If primers with more than two runs
@@ -206,7 +206,7 @@ degenerate part at the 3' end (approx. 1/3 of the primer, targeting a
 conserved
 region) and a longer consensus part at the 5' end (approx.
 2/3 of the primer),
-which instead of having ambiguous bases contains the most frequent
+which instead of having ambiguous bases contains the most frequently occuring
 nucleotide at each position.
 This strategy resembles the widely-adopted Consensus-Degenerate Hybrid
 Oligonucleotide Primer (CODEHOP) principle (Rose et al., 1998), and aims to

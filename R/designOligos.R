@@ -19,10 +19,10 @@
 #' defaults to \code{4}.
 #'
 #' @param gcClampPrimer
-#' If primers must have a GC-clamp.
-#' A GC-clamp
+#' If primers must have a GC clamp.
+#' A GC clamp
 #' is identified as two to three G or
-#' C:s within the last five bases (3' end) of the oligo.
+#' C:s within the last five bases (3' end) of the primer.
 #' \code{TRUE} or \code{FALSE}, defaults to \code{TRUE}.
 #'
 #' @param avoidThreeEndRunsPrimer
@@ -198,7 +198,7 @@
 #' conserved
 #' region) and a longer consensus part at the 5' end (approx.
 #' 2/3 of the primer),
-#' which instead of having ambiguous bases contains the most frequent
+#' which instead of having ambiguous bases contains the most frequently occuring
 #' nucleotide at each position.
 #' This strategy resembles the widely-adopted Consensus-Degenerate Hybrid
 #' Oligonucleotide Primer (CODEHOP) principle (Rose et al., 1998), and aims to
@@ -818,7 +818,7 @@ designOligos <- function(x,
 }
 
 #' Column means represent the proportion
-#' of sequence variants that fulfill a specific criteria (e.g. GC-clamp),
+#' of sequence variants that fulfill a specific criteria (e.g. GC clamp),
 #' and row means represent the proportion of the desired design criteria that
 #' are fulfilled by specific sequence variants.
 #'

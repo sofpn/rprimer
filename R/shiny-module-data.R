@@ -2,13 +2,13 @@ dataUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::h4("File import"),
+        shiny::h5("File import"),
         shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(
                 shiny::radioButtons(
                     ns("dataSelection"),
-                    shiny::h5("Option"),
+                    shiny::h6(shiny::tags$b("Option")),
                     choices = c(
                         "Upload alignment", "Use example data"
                     ), selected = "Upload alignment"
@@ -17,7 +17,7 @@ dataUI <- function(id) {
                     ns = shiny::NS(id),
                     condition = "input.dataSelection == 'Upload alignment'",
                     shiny::radioButtons(
-                        ns("filetype"), shiny::h5("Format"),
+                        ns("filetype"), shiny::h6(shiny::tags$b("File format")),
                         choices = c("Fasta" = "fasta", "Clustal" = "clustal"),
                         selected = "fasta"
                     ),
@@ -31,7 +31,7 @@ dataUI <- function(id) {
                 shiny::conditionalPanel(
                     ns = shiny::NS(id),
                     condition = "input.dataSelection == 'Use example data'",
-                    shiny::h5("Hepatitis E virus alignment")
+                    shiny::h6("Hepatitis E virus alignment")
                 )
             ),
             shiny::mainPanel(
@@ -66,7 +66,6 @@ dataServer <- function(id) {
                     silent = TRUE
                 )
             } else if (input$dataSelection == "Use example data") {
-#                exampleRprimerAlignment <- NULL
                 utils::data("exampleRprimerAlignment", package = "rprimer")
                 exampleRprimerAlignment
             }

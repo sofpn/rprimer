@@ -2,13 +2,15 @@ assayFilterUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::h4("Filter assays (step 5/5)"),
+        shiny::h5("Filter assays (step 5/5)"),
         shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(
+                width = 3,
                 shiny::uiOutput(ns("assayFilter"))
             ),
             shiny::mainPanel(
+                width = 9,
                 shiny::tabsetPanel(
                     id = ns("wizard"),
                     shiny::tabPanel(
@@ -25,14 +27,12 @@ assayFilterUI <- function(id) {
                         shiny::uiOutput(ns("getDownloadLinkTxt")),
                         shiny::uiOutput(ns("getDownloadLinkFasta")),
                         shiny::br(),
-                        shiny::h5("Select a row for more details"),
+                        shiny::h6("Select a row for more details"),
                         shiny::br(),
                         DT::dataTableOutput(ns("assayTable"))
                     ),
                     shiny::tabPanel(
                         title = "Selection",
-                        shiny::br(),
-                        shiny::h5("Assay information"),
                         shiny::br(),
                         shiny::uiOutput(ns("getDownloadLinkTxtSel")),
                         shiny::uiOutput(ns("getDownloadLinkFastaSel")),
@@ -42,11 +42,10 @@ assayFilterUI <- function(id) {
                         shiny::br(),
                         spinnerPlot(ns("assayPositionPlot")),
                         shiny::br(),
-                        shiny::h5("Amplicon sequence"),
+                        shiny::h6(shiny::tags$b("Amplicon sequence")),
                         shiny::hr(),
                         shiny::verbatimTextOutput(ns("ampliconSequence")),
-                        shiny::br(),
-                        shiny::h5("Oligo details"),
+                        shiny::h6(shiny::tags$b("Oligo details")),
                         shiny::hr(),
                         shiny::uiOutput(ns("detailsTab"))
                     )
@@ -82,11 +81,11 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 numericInputFrom(allAssays(), ns("assayRegionFrom")),
                 numericInputTo(allAssays(), ns("assayRegionTo")),
                 sliderInput(ns("maxAssayScore"),
-                    round = -4, step = 0.0001,
-                    shiny::h5("Maximum score (lower is better)"),
-                    min = round(min(allAssays()$score, na.rm = TRUE), 4),
-                    max = round(max(allAssays()$score, na.rm = TRUE), 4),
-                    value = round(max(allAssays()$score, na.rm = TRUE), 4)
+                            round = -4, step = 0.0001,
+                            "Maximum score (lower is better)",
+                            min = round(min(allAssays()$score, na.rm = TRUE), 4),
+                            max = round(max(allAssays()$score, na.rm = TRUE), 4),
+                            value = round(max(allAssays()$score, na.rm = TRUE), 4)
                 )
             )
         })
@@ -201,9 +200,9 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
             },
             options = list(
                 info = FALSE,
-                searching = FALSE, paging = TRUE,
+                searching = FALSE, paging = FALSE,
                 scrollX = TRUE, autoWidth = TRUE,
-                ordering = TRUE, scrollY = "300"
+                ordering = TRUE, scrollY = "1000"
             ),
             rownames = FALSE,
             selection = list(mode = "single")
@@ -359,15 +358,13 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),
-                            shiny::h5("Overview"),
-                            shiny::hr(),
+                            shiny::h6(shiny::tags$b("Overview")),
                             DT::dataTableOutput(ns("overviewTableFwd")),
                             shiny::br(),
-                            shiny::h5("All sequence variants"),
-                            shiny::hr(),
+                            shiny::h6(shiny::tags$b("All sequence variants")),
                             DT::dataTableOutput(ns("allVariantTableFwd")),
                             shiny::br(),
-                            shiny::h5("Nucleotide distribution in target alignment"),
+                            shiny::h6(shiny::tags$b("Nucleotide distribution in target alignment")),
                             shiny::hr(),
                             shiny::br(),
                             shiny::column(
@@ -381,7 +378,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                         shiny::tabPanel(
                             title = "Match details",
                             shiny::br(),
-                            shiny::h5("Proportion of matching sequences"),
+                            shiny::h6(shiny::tags$b("Proportion of matching sequences")),
                             shiny::br(),
                             DT::dataTableOutput(ns("matchTableFwd")),
                             shiny::br(),
@@ -390,7 +387,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                                 spinnerPlot(ns("matchPlotFwd"), width = "75%")
                             ),
                             shiny::br(),
-                            shiny::h5("Sequence names"),
+                            shiny::h6(shiny::tags$b("Sequence names")),
                             shiny::hr(),
                             shiny::htmlOutput(ns("matchIdFwd"))
                         )
@@ -404,15 +401,13 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),
-                            shiny::h5("Overview"),
-                            shiny::hr(),
+                            shiny::h6(shiny::tags$b("Overview")),
                             DT::dataTableOutput(ns("overviewTableRev")),
                             shiny::br(),
-                            shiny::h5("All sequence variants"),
-                            shiny::hr(),
+                            shiny::h6(shiny::tags$b("All sequence variants")),
                             DT::dataTableOutput(ns("allVariantTableRev")),
                             shiny::br(),
-                            shiny::h5("Nucleotide distribution in target alignment"),
+                            shiny::h6(shiny::tags$b("Nucleotide distribution in target alignment")),
                             shiny::hr(),
                             shiny::br(),
                             shiny::column(
@@ -426,7 +421,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                         shiny::tabPanel(
                             title = "Match details",
                             shiny::br(),
-                            shiny::h5("Proportion of matching sequences"),
+                            shiny::h6(shiny::tags$b("Proportion of matching sequences")),
                             shiny::br(),
                             DT::dataTableOutput(ns("matchTableRev")),
                             shiny::br(),
@@ -435,7 +430,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                                 spinnerPlot(ns("matchPlotRev"), width = "75%")
                             ),
                             shiny::br(),
-                            shiny::h5("Sequence names"),
+                            shiny::h6(shiny::tags$b("Sequence names")),
                             shiny::hr(),
                             shiny::htmlOutput(ns("matchIdRev"))
                         )
@@ -449,15 +444,13 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                         shiny::tabPanel(
                             title = "Oligo information",
                             shiny::br(),
-                            shiny::h5("Overview"),
-                            shiny::hr(),
+                            shiny::h6(shiny::tags$b("Overview")),
                             DT::dataTableOutput(ns("overviewTablePr")),
                             shiny::br(),
-                            shiny::h5("All sequence variants"),
-                            shiny::hr(),
+                            shiny::h6(shiny::tags$b("All sequence variants")),
                             DT::dataTableOutput(ns("allVariantTablePr")),
                             shiny::br(),
-                            shiny::h5("Nucleotide distribution in target alignment"),
+                            shiny::h6(shiny::tags$b("Nucleotide distribution in target alignment")),
                             shiny::hr(),
                             shiny::br(),
                             shiny::column(
@@ -468,7 +461,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                         shiny::tabPanel(
                             title = "Match details",
                             shiny::br(),
-                            shiny::h5("Proportion of matching sequences"),
+                            shiny::h6(shiny::tags$b("Proportion of matching sequences")),
                             shiny::br(),
                             DT::dataTableOutput(ns("matchTablePr")),
                             shiny::br(),
@@ -477,7 +470,7 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                                 spinnerPlot(ns("matchPlotPr"), width = "75%")
                             ),
                             shiny::br(),
-                            shiny::h5("Sequence names"),
+                            shiny::h6(shiny::tags$b("Sequence names")),
                             shiny::hr(),
                             shiny::htmlOutput(ns("matchIdPr"))
                         )

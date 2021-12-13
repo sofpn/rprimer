@@ -642,6 +642,8 @@ setMethod("plotData", "RprimerMatchAssay", \(x) {
 
 .plotOverview <- function(x, highlight = NULL) {
     x <- as.data.frame(x)
+    x$identity[is.na(x$identity)] <- 1
+    x$coverage[is.na(x$coverage)] <- 1
     mask <- .identifyMask(x)
     patchwork::wrap_plots(
         list(

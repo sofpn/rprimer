@@ -12,7 +12,7 @@ Authors@R:
     person(given = "Sofia",
            family = "Persson",
            role = c("aut", "cre"),
-           email = "sofia.persson@slv.se",
+           email = "sofiapersson27@gmail.com",
            comment = c(ORCID = "0000-0003-2611-3030"))
 License: GPL-3
 URL: https://github.com/sofpn/rprimer
@@ -44,7 +44,7 @@ Suggests:
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 RdMacros: mathjaxr
 biocViews: 
     Alignment, 

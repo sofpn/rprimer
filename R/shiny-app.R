@@ -123,7 +123,7 @@ rprimerApp <- function() {
     server <- function(input, output, session) {
         alignment <- dataServer("data")
 
-        consensus <- consensusServer("consensus", alignment = alignment$data)
+        consensus <- consensusServer("consensus", inputAlignment = alignment$data)
 
         oligo <- oligoServer(
             "oligo",

@@ -2,63 +2,83 @@ oligoUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::h4("Design oligos (step 2/5)"),
+        shiny::h5("Design oligos (step 2/5)"),
         shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(
-                shiny::h4("Primer settings"),
+                width = 3,
+                shiny::h5(shiny::tags$b("Primer settings")),
                 shiny::hr(),
                 shiny::sliderInput(
                     ns("lengthPrimer"),
-                    shiny::h5("Length"),
+                    "Length",
                     value = c(18, 22), min = 15, max = 40
                 ),
                 shiny::numericInput(
                     ns("maxDegeneracyPrimer"),
-                    shiny::h5("Maximum degeneracy (1-64)"),
+                    "Maximum degeneracy (1-64)",
                     value = 4, min = 1, max = 64
                 ),
                 shiny::checkboxInput(
                     ns("avoidThreeEndRunsPrimer"),
-                    shiny::h5("Avoid 3' end runs"),
+                    "Avoid 3' end runs",
                     value = TRUE
                 ),
+                shiny::h6(
+                    "If primers with more than two runs of the same
+                          nucleotide at the terminal 3' end should be avoided
+                          (to reduce the risk of mispriming)"
+                ),
+                shiny::br(),
                 shiny::checkboxInput(
                     ns("gcClampPrimer"),
-                    shiny::h5("Use GC clamp"),
+                    "Use GC-clamp",
                     value = TRUE
                 ),
+                shiny::h6(
+                    "A GC-clamp is identified as two to three G or C:s
+                    within the last five bases (3' end) of the primer"
+                ),
+                shiny::br(),
                 shiny::sliderInput(
                     ns("gcPrimer"),
-                    shiny::h5("GC content range"),
+                    "GC-content range",
                     value = c(0.4, 0.65), min = 0, max = 1
                 ),
                 shiny::sliderInput(
                     ns("tmPrimer"),
-                    shiny::h5("Melting temperature range (Celcius degrees)"),
+                    "Melting temperature (Tm) range (Celcius degrees)",
                     value = c(50, 65), min = 20, max = 90
                 ),
                 shiny::numericInput(
                     ns("concPrimer"),
-                    shiny::h5("Concentration (20-2000 nM)"),
+                    "Primer concentration (20-2000 nM) (for Tm calculation)",
                     value = 500, min = 20, max = 2000
                 ),
                 shiny::radioButtons(
                     ns("designStrategyPrimer"),
-                    shiny::h5("Design strategy"),
+                    "Primer design strategy",
                     choices = c(
-                        "Ambiguous
-                        (the entire primer is degenerate)" = "ambiguous",
-                        "Mixed (only the 3' end is degenerate)" = "mixed"
+                        "Ambiguous" = "ambiguous",
+                        "Mixed" = "mixed"
                     ),
                     selected = "ambiguous"
                 ),
+                shiny::h6(
+                    "Ambigous primers can have degenerate bases at any position"
+                ),
+                shiny::h6(
+                    "Mixed primers consist of a shorter degenerate part at the 3' end
+                    (1/3 of the primer) and a longer consensus part at the 5'
+                    end (2/3 of the primer), which instead of having ambiguous
+                    bases contains the most frequently occuring nucleotides"
+                ),
                 shiny::br(),
-                shiny::h4("Probe settings"),
+                shiny::h5(shiny::tags$b("Probe settings")),
                 shiny::hr(),
                 shiny::checkboxInput(
                     ns("probe"),
-                    shiny::h5("Design probes"),
+                    "Design probes",
                     value = FALSE
                 ),
                 shiny::conditionalPanel(
@@ -66,49 +86,47 @@ oligoUI <- function(id) {
                     condition = "input.probe == true",
                     shiny::sliderInput(
                         ns("lengthProbe"),
-                        shiny::h5("Length"),
+                        "Length",
                         value = c(18, 22), min = 15, max = 40
                     ),
                     shiny::numericInput(
                         ns("maxDegeneracyProbe"),
-                        shiny::h5("Maximum degeneracy (1-64)"),
+                        "Maximum degeneracy (1-64)",
                         value = 4, min = 1, max = 64
                     ),
                     shiny::checkboxInput(
                         ns("avoidFiveEndGProbe"),
-                        shiny::h5("Avoid 5' end G"),
+                        "Avoid probes with a 5' end G",
                         value = TRUE
                     ),
                     shiny::sliderInput(
                         ns("gcProbe"),
-                        shiny::h5("GC content range"),
+                        "GC-content range",
                         value = c(0.4, 0.65), min = 0, max = 1,
                     ),
                     shiny::sliderInput(
                         ns("tmProbe"),
-                        shiny::h5("Melting temperature range (Celcius degrees)"),
+                        "Melting temperature range (Celcius degrees)",
                         value = c(50, 70), min = 20, max = 90
                     ),
                     shiny::numericInput(
                         ns("concProbe"),
-                        shiny::h5("Concentration (20-2000 nM)"),
+                        "Prove concentration (20-2000 nM) (for Tm calculation)",
                         value = 250, min = 20, max = 2000
                     )
                 ),
                 shiny::br(),
-                shiny::h4("General settings"),
+                shiny::h5(shiny::tags$b("General settings")),
                 shiny::hr(),
                 shiny::numericInput(
                     ns("maxGapFrequency"),
-                    shiny::h5(
-                        "Maximum allowed gap proportion at binding sites in
-                        target alignment (0-1)"
-                    ),
+                    "Maximum allowed gap proportion at binding sites in
+                        target alignment (0-1)",
                     value = 0.01, min = 0, max = 0.2
                 ),
                 shiny::numericInput(
                     ns("concNa"),
-                    shiny::h5("Sodium ion concentration (0.01-1 M)"),
+                    "Sodium ion concentration (0.01-1 M) (for Tm calculation)",
                     value = 0.05, min = 0, max = 1
                 ),
                 shiny::hr(),
@@ -117,76 +135,74 @@ oligoUI <- function(id) {
                     class = "btn btn-primary"
                 )
             ),
-            shiny::mainPanel(
-                shiny::tabsetPanel(
-                    id = ns("wizard"),
-                    shiny::tabPanel(
-                        title = "Plot",
-                        shiny::br(),
-                        spinnerPlot(
-                            ns("oligoPlot"),
-                            width = "100%", height = 600
-                        )
-                    ),
-                    shiny::tabPanel(
-                        title = "Table",
-                        shiny::br(),
-                        shiny::uiOutput(ns("getDownloadLinkTxt")),
-                        shiny::uiOutput(ns("getDownloadLinkFasta")),
-                        shiny::br(),
-                        shiny::h5("Select a row for more details"),
-                        shiny::br(),
-                        DT::dataTableOutput(ns("oligoTable"))
-                    ),
-                    shiny::tabPanel(
-                        title = "Selection",
-                        shiny::br(),
-                        shiny::tabsetPanel(
-                            type = "pills",
-                            shiny::tabPanel(
-                                title = "Oligo information",
-                                shiny::br(),
-                                shiny::uiOutput(ns("getDownloadLinkTxtSel")),
-                                shiny::uiOutput(ns("getDownloadLinkFastaSel")),
-                                shiny::br(),
-                                shiny::h5("Overview"),
-                                shiny::hr(),
-                                DT::dataTableOutput(ns("overviewTable")),
-                                shiny::br(),
-                                shiny::h5("All sequence variants"),
-                                shiny::hr(),
-                                DT::dataTableOutput(ns("allVariantTable")),
-                                shiny::br(),
-                                shiny::h5("Nucleotide distribution in target alignment"),
-                                shiny::hr(),
-                                shiny::br(),
-                                shiny::column(
-                                    width = 12, align = "center",
-                                    spinnerPlot(
-                                        ns("bindingRegionPlot"),
-                                        width = "75%"
-                                    )
-                                )
-                            ),
-                            shiny::tabPanel(
-                                title = "Match details",
-                                shiny::br(),
-                                shiny::h5("Proportion of matching sequences"),
-                                shiny::br(),
-                                DT::dataTableOutput(ns("matchTable")),
-                                shiny::br(),
-                                shiny::column(
-                                    width = 12, align = "center",
-                                    spinnerPlot(ns("matchPlot"), width = "75%")
-                                ),
-                                shiny::br(),
-                                shiny::h5("Sequence names"),
-                                shiny::hr(),
-                                shiny::htmlOutput(ns("matchId"))
-                            )
-                        )
-                    )
-                )
+            shiny::mainPanel(width = 9,
+                             shiny::tabsetPanel(
+                                 id = ns("wizard"),
+                                 shiny::tabPanel(
+                                     title = "Plot",
+                                     shiny::br(),
+                                     spinnerPlot(
+                                         ns("oligoPlot"),
+                                         width = "100%", height = 600
+                                     )
+                                 ),
+                                 shiny::tabPanel(
+                                     title = "Table",
+                                     shiny::br(),
+                                     shiny::uiOutput(ns("getDownloadLinkTxt")),
+                                     shiny::uiOutput(ns("getDownloadLinkFasta")),
+                                     shiny::br(),
+                                     shiny::h6("Select a row for more details"),
+                                     shiny::br(),
+                                     DT::dataTableOutput(ns("oligoTable"))
+                                 ),
+                                 shiny::tabPanel(
+                                     title = "Selection",
+                                     shiny::br(),
+                                     shiny::tabsetPanel(
+                                         type = "pills",
+                                         shiny::tabPanel(
+                                             title = "Oligo information",
+                                             shiny::br(),
+                                             shiny::uiOutput(ns("getDownloadLinkTxtSel")),
+                                             shiny::uiOutput(ns("getDownloadLinkFastaSel")),
+                                             shiny::br(),
+                                             shiny::h6(shiny::tags$b("Overview")),
+                                             DT::dataTableOutput(ns("overviewTable")),
+                                             shiny::br(),
+                                             shiny::h6(shiny::tags$b("All sequence variants")),
+                                             DT::dataTableOutput(ns("allVariantTable")),
+                                             shiny::br(),
+                                             shiny::h6(shiny::tags$b("Nucleotide distribution in target alignment")),
+                                             shiny::hr(),
+                                             shiny::br(),
+                                             shiny::column(
+                                                 width = 12, align = "center",
+                                                 spinnerPlot(
+                                                     ns("bindingRegionPlot"),
+                                                     width = "75%"
+                                                 )
+                                             )
+                                         ),
+                                         shiny::tabPanel(
+                                             title = "Match details",
+                                             shiny::br(),
+                                             shiny::h6(shiny::tags$b("Proportion of matching sequences")),
+                                             shiny::br(),
+                                             DT::dataTableOutput(ns("matchTable")),
+                                             shiny::br(),
+                                             shiny::column(
+                                                 width = 12, align = "center",
+                                                 spinnerPlot(ns("matchPlot"), width = "75%")
+                                             ),
+                                             shiny::br(),
+                                             shiny::h6(shiny::tags$b("Sequence names")),
+                                             shiny::hr(),
+                                             shiny::htmlOutput(ns("matchId"))
+                                         )
+                                     )
+                                 )
+                             )
             )
         ),
         shiny::hr()
@@ -242,36 +258,36 @@ oligoServer <- function(id, alignment, consensus) {
             tryCatch(
                 {
                     designOligos(consensus(),
-                        maxGapFrequency = input$maxGapFrequency,
-                        lengthPrimer = input$lengthPrimer,
-                        maxDegeneracyPrimer = input$maxDegeneracyPrimer,
-                        avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
-                        gcClampPrimer = input$gcClampPrimer,
-                        gcPrimer = input$gcPrimer,
-                        tmPrimer = input$tmPrimer,
-                        concPrimer = input$concPrimer,
-                        designStrategyPrimer = input$designStrategyPrimer,
-                        probe = input$probe,
-                        lengthProbe = input$lengthProbe,
-                        maxDegeneracyProbe = input$maxDegeneracyProbe,
-                        avoidFiveEndGProbe = input$avoidFiveEndGProbe,
-                        gcProbe = input$gcProbe,
-                        tmProbe = input$tmProbe,
-                        concNa = input$concNa
+                                 maxGapFrequency = input$maxGapFrequency,
+                                 lengthPrimer = input$lengthPrimer,
+                                 maxDegeneracyPrimer = input$maxDegeneracyPrimer,
+                                 avoidThreeEndRunsPrimer = input$avoidThreeEndRunsPrimer,
+                                 gcClampPrimer = input$gcClampPrimer,
+                                 gcPrimer = input$gcPrimer,
+                                 tmPrimer = input$tmPrimer,
+                                 concPrimer = input$concPrimer,
+                                 designStrategyPrimer = input$designStrategyPrimer,
+                                 probe = input$probe,
+                                 lengthProbe = input$lengthProbe,
+                                 maxDegeneracyProbe = input$maxDegeneracyProbe,
+                                 avoidFiveEndGProbe = input$avoidFiveEndGProbe,
+                                 gcProbe = input$gcProbe,
+                                 tmProbe = input$tmProbe,
+                                 concNa = input$concNa
                     )
                 },
                 error = function(cond) {
                     if (grepl("must", cond)) {
                         shiny::showNotification(
                             "At least one design setting was invalid. \n
-                                  Please review.",
+Please review.",
                             type = "error",
                             duration = NULL
                         )
                     } else {
                         shiny::showNotification(
                             "No oligos were found.\n
-                        Try to adjust design settings.",
+Try to adjust design settings.",
                             type = "error",
                             duration = NULL
                         )
@@ -352,7 +368,7 @@ oligoServer <- function(id, alignment, consensus) {
                 info = FALSE,
                 searching = FALSE, paging = FALSE,
                 scrollX = TRUE, autoWidth = TRUE,
-                ordering = TRUE, scrollY = "300"
+                ordering = TRUE, scrollY = "1000"
             ),
             rownames = FALSE,
             selection = list(mode = "single")

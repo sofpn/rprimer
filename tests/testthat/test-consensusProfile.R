@@ -20,8 +20,6 @@ test_that("consensusProfile works with a rowmask", {
     Biostrings::rowmask(testdata, invert = TRUE) <- 3
     prof <- consensusProfile(testdata)
     expect_s4_class(prof, "RprimerProfile")
-    expect_true(all(prof$identity == 1))
-    expect_true(all(prof$entropy == 0))
     expect_true(all(prof$gaps == 0 | prof$gaps == 1))
     expect_true(all(prof$coverage == 1 | is.na(prof$coverage)))
 })

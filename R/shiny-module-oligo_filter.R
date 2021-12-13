@@ -2,15 +2,17 @@ oligoFilterUI <- function(id) {
     ns <- shiny::NS(id)
 
     shiny::tagList(
-        shiny::h4("Filter oligos (step 3/5)"),
+        shiny::h5("Filter oligos (step 3/5)"),
         shiny::hr(),
         shiny::sidebarLayout(
             shiny::sidebarPanel(
+                width = 3,
                 shiny::uiOutput(ns("fwd")),
                 shiny::uiOutput(ns("rev")),
                 shiny::uiOutput(ns("pr"))
             ),
             shiny::mainPanel(
+                width = 9,
                 shiny::tabsetPanel(
                     id = ns("wizard"),
                     shiny::tabPanel(
@@ -27,7 +29,7 @@ oligoFilterUI <- function(id) {
                         shiny::uiOutput(ns("getDownloadLinkTxt")),
                         shiny::uiOutput(ns("getDownloadLinkFasta")),
                         shiny::br(),
-                        shiny::h5("Select a row for more details"),
+                        shiny::h6("Select a row for more details"),
                         shiny::br(),
                         DT::dataTableOutput(ns("oligoTable"))
                     ),
@@ -42,15 +44,13 @@ oligoFilterUI <- function(id) {
                                 shiny::uiOutput(ns("getDownloadLinkTxtSel")),
                                 shiny::uiOutput(ns("getDownloadLinkFastaSel")),
                                 shiny::br(),
-                                shiny::h5("Overview"),
-                                shiny::hr(),
+                                shiny::h6(shiny::tags$b("Overview")),
                                 DT::dataTableOutput(ns("overviewTable")),
                                 shiny::br(),
-                                shiny::h5("All sequence variants"),
-                                shiny::hr(),
+                                shiny::h6(shiny::tags$b("All sequence variants")),
                                 DT::dataTableOutput(ns("allVariantTable")),
                                 shiny::br(),
-                                shiny::h5("Nucleotide distribution in target alignment"),
+                                shiny::h6(shiny::tags$b("Nucleotide distribution in target alignment")),
                                 shiny::hr(),
                                 shiny::br(),
                                 shiny::column(
@@ -64,7 +64,7 @@ oligoFilterUI <- function(id) {
                             shiny::tabPanel(
                                 title = "Match details",
                                 shiny::br(),
-                                shiny::h5("Proportion of matching sequences"),
+                                shiny::h6(shiny::tags$b("Proportion of matching sequences")),
                                 shiny::br(),
                                 DT::dataTableOutput(ns("matchTable")),
                                 shiny::br(),
@@ -73,7 +73,7 @@ oligoFilterUI <- function(id) {
                                     spinnerPlot(ns("matchPlot"), width = "75%")
                                 ),
                                 shiny::br(),
-                                shiny::h5("Sequence names"),
+                                shiny::h6(shiny::tags$b("Sequence names")),
                                 shiny::hr(),
                                 shiny::htmlOutput(ns("matchId"))
                             )
@@ -94,7 +94,7 @@ oligoFilterServer <- function(id, alignment, consensus, allOligos) {
             ns <- session$ns
 
             list(
-                shiny::h5("Forward"),
+                shiny::h6(shiny::tags$b("Forward")),
                 shiny::hr(),
                 numericInputFrom(allOligos(), ns("fwdRegionFrom")),
                 numericInputTo(allOligos(), ns("fwdRegionTo")),
@@ -115,7 +115,7 @@ oligoFilterServer <- function(id, alignment, consensus, allOligos) {
             ns <- session$ns
 
             list(
-                shiny::h5("Reverse"),
+                shiny::h6(shiny::tags$b("Reverse")),
                 shiny::hr(),
                 numericInputFrom(allOligos(), ns("revRegionFrom")),
                 numericInputTo(allOligos(), ns("revRegionTo")),
@@ -136,7 +136,7 @@ oligoFilterServer <- function(id, alignment, consensus, allOligos) {
             ns <- session$ns
 
             list(
-                shiny::h5("Probe"),
+                shiny::h6(shiny::tags$b("Probe")),
                 shiny::hr(),
                 numericInputFrom(allOligos(), ns("prRegionFrom")),
                 numericInputTo(allOligos(), ns("prRegionTo")),
@@ -240,7 +240,7 @@ oligoFilterServer <- function(id, alignment, consensus, allOligos) {
                 info = FALSE,
                 searching = FALSE, paging = FALSE,
                 scrollX = TRUE, autoWidth = TRUE,
-                ordering = TRUE, scrollY = "300"
+                ordering = TRUE, scrollY = "1000"
             ),
             rownames = FALSE,
             selection = list(mode = "single")

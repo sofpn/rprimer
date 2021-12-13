@@ -33,7 +33,7 @@ spinnerPlot <- function(id, ...) {
 }
 
 numericInputFrom <- function(x, id) {
-    shiny::numericInput(id, shiny::h5("From"),
+    shiny::numericInput(id, "From",
         min = x$roiStart[[1]],
         max = x$roiEnd[[1]],
         value = x$roiStart[[1]]
@@ -41,7 +41,7 @@ numericInputFrom <- function(x, id) {
 }
 
 numericInputTo <- function(x, id) {
-    shiny::numericInput(id, shiny::h5("To"),
+    shiny::numericInput(id, "To",
         min = x$roiStart[[1]],
         max = x$roiEnd[[1]],
         value = x$roiEnd[[1]]
@@ -70,7 +70,7 @@ conservationInput <- function(x,
     maxValue <- round(max(var, na.rm = TRUE), 4)
     shiny::sliderInput(id,
         round = -4, step = 0.0001,
-        shiny::h5(paste("Minimum", variable)),
+        paste("Minimum", variable),
         min = minValue,
         max = maxValue,
         value = minValue
@@ -78,6 +78,18 @@ conservationInput <- function(x,
 }
 
 ## Other functions =============================================================
+
+arrangeMask <- function(from, to, aln) {
+    alnLength <- ncol(aln)
+    if (from == 0 && to == 0) {
+        NULL
+    } else {
+        if (from < 1) from <- 1
+        if (to < 1) to <- 1
+        if (to > alnLength) to <- alnLength
+        sort(from:to)
+    }
+}
 
 filterOligos <- function(x,
                          fwdFrom,

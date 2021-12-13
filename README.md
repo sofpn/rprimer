@@ -95,7 +95,8 @@ plotData(myConsensusProfile)
 
 The next step is to design oligos. You can either use the default
 settings as below, or adjust them as preferred (see the package vignette
-or `?designOligos` for more information).
+or `?designOligos` for more information). The default settings allow a
+maximum degeneracy of four.
 
 ``` r
 myOligos <- designOligos(myConsensusProfile)
@@ -166,14 +167,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
-|:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| TGATTCTCAGCCCTTCGC     |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| ACAGAATTRATTTCGTCGGC   |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |            0.00 |                   |                    0 |                        |              0 |                  |
-| GTTGATTCTCAGCCCTTCGC   |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| WTTCATCCAACCAACCCCT    |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| CCYTGGCGAATGCTGTGGT    |         0.90 | AB073912….     |        0.08 | KJ701409….    |          0.00 |                 |            0.02 | KJ013415.1        |                    0 |                        |              0 |                  |
-| CGACAGAATTRATTTCGTCGGC |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |            0.00 |                   |                    0 |                        |              0 |                  |
+| iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
+|:----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
+| GGCGAATGCTGTGGTRRT    |         0.92 | AB073912….     |        0.04 | LY647099….    |          0.04 | GU937805….      |               0 |                   |                    0 |                        |              0 |                  |
+| GATTCTCAGCCCTTCGCMMTC |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TGGGGTGACMGGGTTGATTC  |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| CAGAATTRATTTCGTCGGC   |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
+| GTTGATTCTCAGCCCTTC    |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| ATTCTCAGCCCTTCGCMM    |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 
@@ -187,7 +188,7 @@ plotData(matchTableOligos)
 
 Please see the [package
 vignette](https://bioconductor.org/packages/devel/bioc/vignettes/rprimer/inst/doc/getting-started-with-rprimer.html)
-for more information on how to use rprimer.
+for more detailed information.
 
 ## Citation
 

@@ -1,10 +1,14 @@
+# check only on unique seq varianrs
+
+
 #' Check how oligos and assays match to their target sequences
 #'
 #' \code{checkMatch()} investigates how well oligos or assays match with their
 #' intended target sequences
 #' within a multiple DNA sequence alignment.
 #'
-#' The output gives information on the proportion and names of target sequences
+#' The output provides information on the proportion and names of target
+#' sequences
 #' that match perfectly as well as with one, two, three, or four or more
 #' mismatches to the oligo within the intended oligo binding region
 #' in the input alignment (on-target match).
@@ -289,13 +293,13 @@ setMethod("checkMatch", "RprimerAssay", \(x, target) {
 #' .getMatchIndex(x, target)
 .getMatchIndex <- function(x, target, offTarget = FALSE) {
     if (!offTarget) {
-        # 0-3: number of mismatches we are looking for
+        ## 0-3: number of mismatches we are looking for
         res <- lapply(seq(0, 3), \(i) {
             result <- Biostrings::vcountPDict(
                 x, target,
                 max.mismatch = i
             )
-            which(colSums(result) == 0) # Sequences who "fails"
+            which(colSums(result) == 0) ## Sequences who "fails"
         })
         res[-length(res)] <- lapply(seq(1, length(res) - 1), \(i) {
             setdiff(res[[i]], res[[i + 1]])
@@ -351,7 +355,6 @@ setMethod("checkMatch", "RprimerAssay", \(x, target) {
 #' target <- exampleRprimerAlignment
 #' .checkMatchOligo(x, target)
 .checkMatchOligo <- function(x, target) {
-
     onTarget <- lapply(seq_len(nrow(x)), \(i) {
         target <- .maskRange(
             x$start[[i]], x$end[[i]], target,
@@ -359,9 +362,7 @@ setMethod("checkMatch", "RprimerAssay", \(x, target) {
         )
         check <- Biostrings::DNAStringSet(x$sequence[[i]])
         .getMatchProportion(check, target)
-
     })
-
     offTarget <- lapply(seq_len(nrow(x)), \(i) {
         target <- .maskRange(
             x$start[[i]], x$end[[i]], target,

@@ -177,7 +177,7 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
 .nucleotideIdentity <- function(x) {
     x <- .dnaBasesOnly(x)
     identity <- apply(x, 2, max)
-    identity[is.na(identity)] <- 1
+    identity[is.nan(identity)] <- NA
     unname(identity)
 }
 
@@ -191,6 +191,5 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     x <- .dnaBasesOnly(x)
     x[x > ambiguityThreshold] <- 0
     coverage <- 1 - colSums(x)
-    coverage[is.na(coverage)] <- 1
     unname(coverage)
 }

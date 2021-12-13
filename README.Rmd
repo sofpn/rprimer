@@ -91,7 +91,7 @@ plotData(myConsensusProfile)
 
 ### Step 2: `designOligos`
 
-The next step is to design oligos. You can either use the default settings as below, or adjust them as preferred (see the package vignette or `?designOligos` for more information). 
+The next step is to design oligos. You can either use the default settings as below, or adjust them as preferred (see the package vignette or `?designOligos` for more information). The default settings allow a maximum degeneracy of four. 
 
 ``` {r}
 myOligos <- designOligos(myConsensusProfile)
@@ -154,7 +154,7 @@ plotData(matchTableOligos)
 
 ## More information
 
-Please see the [package vignette](https://bioconductor.org/packages/devel/bioc/vignettes/rprimer/inst/doc/getting-started-with-rprimer.html) for more information on how to use rprimer. 
+Please see the [package vignette](https://bioconductor.org/packages/devel/bioc/vignettes/rprimer/inst/doc/getting-started-with-rprimer.html) for more detailed information. 
 
 ## Citation
 
