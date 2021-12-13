@@ -200,7 +200,8 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
             },
             options = list(
                 info = FALSE,
-                searching = FALSE, paging = FALSE,
+                searching = FALSE, paging = TRUE,
+                pageLength = 100,
                 scrollX = TRUE, autoWidth = TRUE,
                 ordering = TRUE, scrollY = "1000"
             ),

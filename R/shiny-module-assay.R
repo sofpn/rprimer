@@ -213,7 +213,8 @@ assayServer <- function(id, alignment, consensus, oligo) {
             },
             options = list(
                 info = FALSE,
-                searching = FALSE, paging = FALSE,
+                searching = FALSE, paging = TRUE,
+                pageLength = 100,
                 scrollX = TRUE, autoWidth = TRUE,
                 ordering = TRUE, scrollY = "1000"
             ),
@@ -464,7 +465,7 @@ assayServer <- function(id, alignment, consensus, oligo) {
                             shiny::h6(shiny::tags$b("All sequence variants")),
                             DT::dataTableOutput(ns("allVariantTablePr")),
                             shiny::br(),
-                            shiny::h6("Nucleotide distribution in target alignment"),
+                            shiny::h6(shiny::tags$b("Nucleotide distribution in target alignment")),
                             shiny::hr(),
                             shiny::br(),
                             shiny::column(

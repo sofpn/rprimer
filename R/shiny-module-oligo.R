@@ -111,7 +111,7 @@ oligoUI <- function(id) {
                     ),
                     shiny::numericInput(
                         ns("concProbe"),
-                        "Prove concentration (20-2000 nM) (for Tm calculation)",
+                        "Probe concentration (20-2000 nM) (for Tm calculation)",
                         value = 250, min = 20, max = 2000
                     )
                 ),
@@ -366,7 +366,8 @@ Try to adjust design settings.",
             },
             options = list(
                 info = FALSE,
-                searching = FALSE, paging = FALSE,
+                searching = FALSE, paging = TRUE,
+                pageLength = 100,
                 scrollX = TRUE, autoWidth = TRUE,
                 ordering = TRUE, scrollY = "1000"
             ),

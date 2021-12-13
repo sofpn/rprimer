@@ -145,7 +145,8 @@ consensusServer <- function(id, inputAlignment) {
             },
             options = list(
                 info = FALSE,
-                searching = FALSE, paging = FALSE,
+                searching = FALSE, paging = TRUE,
+                pageLength = 100,
                 scrollX = TRUE, autoWidth = FALSE,
                 ordering = FALSE, scrollY = "1000"
             ),
