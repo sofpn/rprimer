@@ -60,7 +60,7 @@ assayFilterUI <- function(id) {
 assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
     shiny::moduleServer(id, function(input, output, session) {
         assay <- shiny::reactive({
-            shiny::req(nrow(allAssays() > 0))
+            shiny::req(nrow(allAssays()) > 0)
             x <- allAssays()
             x <- as.data.frame(x)
             emptyRow <- makeEmptyRow(x)
@@ -68,15 +68,15 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
                 x$start >= input$assayRegionFrom & x$end <= input$assayRegionTo,
             ]
             x <- x[x$score <= input$maxAssayScore, ]
-            if (nrow(x) == 0L) {
+            if (nrow(x) == 0) {
                 x <- emptyRow
             }
-            RprimerAssay(x)
+             RprimerAssay(x)
         })
 
         output$assayFilter <- shiny::renderUI({
             ns <- session$ns
-            shiny::req(nrow(allAssays() > 0))
+            shiny::req(nrow(allAssays()) > 0)
 
             list(
                 numericInputFrom(allAssays(), ns("assayRegionFrom")),
@@ -270,7 +270,8 @@ assayFilterServer <- function(id, alignment, consensus, oligo, allAssays) {
             ns <- session$ns
             list(
                 shiny::downloadLink(
-                    ns("downloadFastaSel"), "Download sequence(s) in fasta-format"
+                    ns("downloadFastaSel"),
+                    "Download sequence(s) in fasta-format"
                 ),
                 shiny::br()
             )

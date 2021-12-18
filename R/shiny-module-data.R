@@ -45,6 +45,8 @@ dataUI <- function(id) {
 
 dataServer <- function(id) {
     shiny::moduleServer(id, function(input, output, session) {
+        options(shiny.maxRequestSize=30*1024^2)
+
         aln <- shiny::reactive({
             if (input$dataSelection == "Upload alignment") {
                 shiny::req(input$file)
