@@ -16,7 +16,7 @@ oligoUI <- function(id) {
                 ),
                 shiny::numericInput(
                     ns("maxDegeneracyPrimer"),
-                    "Maximum degeneracy (1-64)",
+                    "Maximum degeneracy (number of sequence variants, 1-64)",
                     value = 4, min = 1, max = 64
                 ),
                 shiny::checkboxInput(
@@ -91,7 +91,7 @@ oligoUI <- function(id) {
                     ),
                     shiny::numericInput(
                         ns("maxDegeneracyProbe"),
-                        "Maximum degeneracy (1-64)",
+                        "Maximum degeneracy (number of sequence variants, 1-64)",
                         value = 4, min = 1, max = 64
                     ),
                     shiny::checkboxInput(

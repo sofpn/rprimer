@@ -26,13 +26,13 @@ library(kableExtra)
 
 # Introduction
 
-rprimer provides tools for designing degenerate oligos (primers and probes) for sequence variable viruses. A multiple DNA sequence alignment is used as input data, and the outputs are presented in data frame format and as dashboard-like plots. 
+rprimer provides tools for designing degenerate oligos (primers and probes) for sequence variable targets, such as RNA viruses. A multiple DNA sequence alignment is used as input data, and the outputs are presented in data frame format and as dashboard-like plots. The aim of the package is to provide a visual and efficient approach to degenerate oligo design, where sequence conservation analysis forms the basis of the design process. 
 
 In this vignette, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for reverse transcription (RT) polymerase chain reaction (PCR)-based amplification and detection of hepatitis E virus (HEV), a sequence variable RNA virus and a common foodborne pathogen. 
 
 # Installation
 
-To install rprimer, start R (version 4.1.0 or higher), and enter the following code:
+To install rprimer, start R (version 4.2.0 or higher), and enter the following code:
 
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -89,7 +89,7 @@ filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 myAlignment <- readDNAMultipleAlignment(filepath, format = "fasta")
 ```
 
-For some applications, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. This type of masking can be achieved by using `colMask()` from Biostrings [@Bios], as illustrated in the example below:
+For some applications, there is often an interest in amplifying a specific region of the genome. In such cases, the alignment can be masked so that only the desired oligo binding regions are available for the subsequent design process. This type of masking can be achieved by using `colmask()` from Biostrings [@Bios], as illustrated in the example below:
 
 ```{r}
 ## Mask everything but position 3000 to 4000 and 5000 to 6000
@@ -98,7 +98,7 @@ myMaskedAlignment <- myAlignment
 colmask(myMaskedAlignment, invert = TRUE) <- c(3000:4000, 5000:6000)
 ```
 
-It is also possible to mask specific sequences by using `rowMask()`. Gap-rich positions can be hidden with `gapMask()` [@Bios].
+It is also possible to mask specific sequences by using `rowmask()`. Gap-rich positions can be hidden with `gapmask()` [@Bios].
 
 ## Design procedure 
 
@@ -189,7 +189,7 @@ Probes are always designed using the ambiguous strategy.
 * `gcProbe`: defaults to `c(0.40, 0.65)`
 * `tmProbe`: defaults to `c(55, 70)`
 * `concProbe`: defaults to `250`
-* `concNa`: sodium ion concentration in the PCR reaction (in M), defaults to `0.05` (50 mM) (for calculation of tm and delta G)
+* `concNa`: sodium ion (equivalent) concentration in the PCR reaction (in M), defaults to `0.05` (50 mM) (for calculation of tm and delta G)
 
 All sequence variants of an oligo must fulfill all specified design constraints to be considered. 
 
@@ -293,7 +293,7 @@ The final step is to find pairs of forward and reverse primers, and eventually, 
 
 * `x`: the oligo dataset from [Step 2](#Step2)
 * `length`: amplicon length range, defaults to `c(65, 120)`
-* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celsius degrees). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is somewhat flawed. What in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta. See  [@SL2007] for details on how to calculate the proportion of hybridized primer at different temperatures.]
+* `tmDifferencePrimers`: maximum allowed difference between the mean tm of the forward and reverse primer (in Celsius degrees). Defaults to `NULL`, which means that primers will be paired regardless of their tm. ^[Note that the strategy of matching primer tm is flawed. What in reality is of interest is the amount of primer bound at the annealing temperature (ta). A PCR is most efficient if the two primers hybridize to the target at the same extent at the ta. See  [@SL2007] for details on how to calculate the proportion of hybridized primer at different temperatures.]
 
 An error message will return if no assays are found.
 
@@ -319,7 +319,7 @@ Again, the results can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-There are now over 1000 assays, but we can reduce the number by filtering the dataset. In the example below, I select to subset the assays based on their average oligo score (see the score variable in the table above), to keep only the assays with the best score. 
+There are now over 1000 assays, but we can reduce the number by filtering the dataset. In the example below, I select to subset the assays based on their average oligo score (see the score variable in the table above), and only keep those with the best score. 
 
 The best possible average score is 0 and the worst is 9 (see [Step 2](#Step2) for more information).
 
@@ -377,7 +377,7 @@ It is often valuable to investigate how the generated oligos match with their ta
 * `x`: an oligo or assay dataset from [Step 2](#Step2) or [3](#Step3)
 * `target`: the target alignment used as input in [Step 1](#Step1)
 
-The output gives information on the proportion and names of target sequences that match perfectly and with one, two, three, or four or more mismatches to the oligo *within* the intended oligo binding region in the alignment (on-target match). It also tells the proportion and names of target sequences that match with a maximum of two mismatches to the oligo *outside* the intended oligo binding region (off-target match). Thus, you should be cautious that false negatives (or positives) may occur due to poorly aligned sequences. Moreover, the output does not tell what strand (minus or plus) the oligo matches to, which is important to consider when assessing off-target matches to single-stranded targets. See the manual (`?checkMatch`) for more information. 
+The output gives information on the proportion and names of target sequences that match perfectly and with one, two, three, or four or more mismatches to the oligo *within* the intended oligo binding region in the alignment (on-target match). It also tells the proportion and names of target sequences that match with a maximum of two mismatches to the oligo *outside* the intended oligo binding region (off-target match). Thus, be cautious that false negatives (or positives) may occur due to poorly aligned sequences. Moreover, the output does not tell which strand (minus or plus) the oligo matches to, which is important to consider when assessing off-target matches to single-stranded targets. See the manual (`?checkMatch`) for more information. 
 
 Ambiguous bases and gaps in the target sequences will be identified as mismatches.
 

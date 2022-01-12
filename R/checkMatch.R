@@ -272,16 +272,6 @@ setMethod("checkMatch", "RprimerAssay", \(x, target) {
     list(sequence = sequence, name = name)
 }
 
-#### continue from here ###############################################################
-
-#x <- .maskRange(from = 5200, to = 5220, target, invert = TRUE)
-#x <- .uniqueSequences(x)
-#i <- .getMatchIndex(x$sequence, Biostrings::DNAStringSet(target), offTarget = FALSE)
-# baka in unique sequences nanstans
-# sen reduce...
-
-########################################################################################
-
 #' @noRd
 #'
 #' @examples

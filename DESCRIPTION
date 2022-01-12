@@ -1,7 +1,7 @@
 Type: Package
 Package: rprimer
 Title: Design Degenerate Oligos from a Multiple DNA Sequence Alignment
-Version: 0.99.8
+Version: 0.99.9
 Description: 
     Functions, workflow, and a Shiny application for visualizing sequence 
     conservation and designing degenerate primers, probes, and (RT)-(q/d)PCR 
@@ -18,7 +18,7 @@ License: GPL-3
 URL: https://github.com/sofpn/rprimer
 BugReports: https://github.com/sofpn/rprimer/issues
 Depends: 
-    R (>= 4.1)
+    R (>= 4.2)
 Imports:
     Biostrings,
     bslib,

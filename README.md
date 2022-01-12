@@ -9,7 +9,8 @@
 <!-- badges: end -->
 
 rprimer is an R package that designs degenerate oligos and PCR assays
-from a multiple DNA sequence alignment.
+from a multiple DNA sequence alignment of target sequences of interest.
+The package is especially developed for sequence variable viruses.
 
 ## Installation
 
@@ -24,13 +25,15 @@ BiocManager::install(version = "devel")
 BiocManager::install("rprimer")
 ```
 
+Attach the package by calling:
+
 ``` r
 library(rprimer)
 ```
 
 ## Overview
 
-The design workflow consists of five functions:
+The package contains four main functions:
 
 -   `consensusProfile()`
 -   `designOligos()`
@@ -49,8 +52,7 @@ R upon installing and attaching the package.
 ### Import alignment
 
 The first step is to import an alignment with target sequences of
-interest. This is done by using `readDNAMultipleAlignment()` from the
-Biostrings package.
+interest. This is done by using `readDNAMultipleAlignment()`.
 
 The file “example\_alignment.txt” contains an alignment of 50 hepatitis
 E virus sequences.
@@ -58,14 +60,13 @@ E virus sequences.
 ``` r
 infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 
-myAlignment <- Biostrings::readDNAMultipleAlignment(infile, format = "fasta")
+myAlignment <- readDNAMultipleAlignment(infile, format = "fasta")
 ```
 
 ### Step 1: `consensusProfile`
 
-`consensusProfile()` takes a `Biostrings::DNAMultipleAlignment` as input
-and returns all the information needed for the subsequent design
-process.
+`consensusProfile()` takes a `DNAMultipleAlignment` as input and returns
+all the information needed for the subsequent design process.
 
 ``` r
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
@@ -89,14 +90,15 @@ The results can be visualized with `plotData()`:
 plotData(myConsensusProfile)
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
 ### Step 2: `designOligos`
 
 The next step is to design oligos. You can either use the default
 settings as below, or adjust them as preferred (see the package vignette
 or `?designOligos` for more information). The default settings allow a
-maximum degeneracy of four.
+maximum degeneracy of four, which means that only the most conserved
+regions of the genome will be considered as oligo binding sites.
 
 ``` r
 myOligos <- designOligos(myConsensusProfile)
@@ -119,7 +121,7 @@ The results can be visualized as a dashboard, using `plotData()`:
 plotData(myOligos)
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
 ### Step 3: `designAssays`
 
@@ -150,7 +152,7 @@ The assays can be visualized using `plotData()`:
 plotData(myAssays)
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 ### Additional step: `checkMatch`
 
@@ -167,14 +169,14 @@ matchTableOligos <- checkMatch(myOligos[selection, ], target = myAlignment)
 
 Results:
 
-| iupacSequence         | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
-|:----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| GGCGAATGCTGTGGTRRT    |         0.92 | AB073912….     |        0.04 | LY647099….    |          0.04 | GU937805….      |               0 |                   |                    0 |                        |              0 |                  |
-| GATTCTCAGCCCTTCGCMMTC |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TGGGGTGACMGGGTTGATTC  |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
-| CAGAATTRATTTCGTCGGC   |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
-| GTTGATTCTCAGCCCTTC    |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| ATTCTCAGCCCTTCGCMM    |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
+|:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
+| GGTTGATTCTCAGCCCTTCGC  |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GTTTCTGGGGTGACMGGGTTGA |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| TGACMGGGTTGATTCTCAGC   |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TTCATCCAACCAACCCCTTY   |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TCCCCTATWTTCATCCAACCA  |         1.00 | AB073912….     |        0.00 |               |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GGGGTGACMGGGTTGATTCTCA |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 
@@ -182,14 +184,14 @@ The match table can be visualized using `plotData()`:
 plotData(matchTableOligos)
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
 ## More information
 
 Please see the [package
 vignette](https://bioconductor.org/packages/devel/bioc/vignettes/rprimer/inst/doc/getting-started-with-rprimer.html)
-for more detailed information.
+for more information on how to use the package.
 
 ## Citation
 
-Manuscript in preparation.
+Type `citation("rprimer")` for information on how to cite the package.

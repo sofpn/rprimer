@@ -82,8 +82,8 @@ A numeric vector [30, 90], defaults to \code{c(55, 70)}.}
 \item{concProbe}{Primer concentration in nM, for tm calculation. A numeric vector
 [20, 2000], defaults to \code{250}.}
 
-\item{concNa}{The sodium ion concentration in the PCR reaction (in M). For calculation of
-tm and delta G.
+\item{concNa}{Sodium ion (equivalent) concentration in the PCR reaction (in M).
+For calculation of tm and delta G.
 A numeric vector [0.01, 1], defaults to \code{0.05} (50 mM).}
 }
 \value{

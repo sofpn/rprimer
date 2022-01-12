@@ -12,6 +12,10 @@
 #'
 #' @importFrom Biostrings readDNAMultipleAlignment
 #'
+#' @importFrom Biostrings colmask
+#'
+#' @importFrom Biostrings rowmask
+#'
 #' @examples
 #' ## Only run this in interactive R sessions:
 #' if (interactive()) {

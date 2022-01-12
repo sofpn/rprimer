@@ -76,8 +76,8 @@
 #' [20, 2000], defaults to \code{250}.
 #'
 #' @param concNa
-#' The sodium ion concentration in the PCR reaction (in M). For calculation of
-#' tm and delta G.
+#' Sodium ion (equivalent) concentration in the PCR reaction (in M).
+#' For calculation of tm and delta G.
 #' A numeric vector [0.01, 1], defaults to \code{0.05} (50 mM).
 #'
 #' @return

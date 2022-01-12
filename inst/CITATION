@@ -5,7 +5,7 @@ citEntry(
   title    = "rprimer: Design Degenerate Oligos from a Multiple DNA Sequence Alignment",
   author   = personList(as.person("Sofia Persson")),
   journal  = "",
-  note = "R package version 0.99.8",
+  note = "R package version 0.99.9",
   year     = "2021",
   volume   = "",
   number   = "",
