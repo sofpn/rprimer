@@ -33,7 +33,7 @@ library(rprimer)
 
 ## Overview
 
-The package contains four main functions:
+The package contains five main functions:
 
 -   `consensusProfile()`
 -   `designOligos()`
@@ -171,12 +171,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
 |:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| GGTTGATTCTCAGCCCTTCGC  |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GTTTCTGGGGTGACMGGGTTGA |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
-| TGACMGGGTTGATTCTCAGC   |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TTCATCCAACCAACCCCTTY   |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TCCCCTATWTTCATCCAACCA  |         1.00 | AB073912….     |        0.00 |               |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GGGGTGACMGGGTTGATTCTCA |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| TGACMGGGTTGATTCTCA     |         0.92 | AB073912….     |        0.08 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TCAGCCCTTCGCMMTCCCCTAT |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GGGTGACMGGGTTGATTCTCAG |         0.88 | AB073912….     |        0.10 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| MGGGTTGATTCTCAGCCCTTCG |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TCATCCAACCAACCCCTTYGY  |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TCATCCAACCAACCCCTTY    |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 

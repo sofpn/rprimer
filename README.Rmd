@@ -33,7 +33,7 @@ BiocManager::install("rprimer")
 ```
 
 ``` {r, message=FALSE, warn=FALSE, echo=FALSE}
-#devtools::load_all(".")
+devtools::load_all(".")
 ```
 
 Attach the package by calling: 
