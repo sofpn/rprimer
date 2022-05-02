@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/sofpn/rprimer/workflows/R-CMD-check/badge.svg)](https://github.com/sofpn/rprimer/actions)
 <!-- badges: end -->
 
-rprimer is an R package that designs degenerate oligos and PCR assays from a multiple DNA sequence alignment of target sequences of interest. The package is especially developed for sequence variable viruses. 
+rprimer is an R package that designs degenerate oligos and PCR assays from a multiple DNA sequence alignment of target sequences of interest. The package is specifically designed for sequence variable viruses. 
 
 ## Installation
 
@@ -28,7 +28,6 @@ To install rprimer from [Bioconductor](https://bioconductor.org/packages/devel/b
   ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install(version = "devel")
 BiocManager::install("rprimer")
 ```
 

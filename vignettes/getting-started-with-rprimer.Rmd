@@ -26,9 +26,9 @@ library(kableExtra)
 
 # Introduction
 
-rprimer provides tools for designing degenerate oligos (primers and probes) for sequence variable targets, such as RNA viruses. A multiple DNA sequence alignment is used as input data, and the outputs are presented in data frame format and as dashboard-like plots. The aim of the package is to provide a visual and efficient approach to degenerate oligo design, where sequence conservation analysis forms the basis of the design process. 
+rprimer provides tools for designing degenerate oligos (primers and probes) for sequence variable targets, such as RNA viruses. A multiple DNA sequence alignment is used as input data, and the outputs are presented in data frame format and as dashboard-like plots. The aim of the package is to provide a visual and efficient approach to degenerate oligo design, where sequence conservation analysis forms the basis for the design process. 
 
-In this vignette, I describe and demonstrate how to use the package by designing broadly reactive primers and probes for reverse transcription (RT) polymerase chain reaction (PCR)-based amplification and detection of hepatitis E virus (HEV), a sequence variable RNA virus and a common foodborne pathogen. 
+In this vignette, I describe and demonstrate the use of the package by designing broadly reactive primers and probes for reverse transcription (RT) polymerase chain reaction (PCR)-based amplification and detection of hepatitis E virus (HEV), a sequence variable RNA virus and a common foodborne pathogen. 
 
 # Installation
 

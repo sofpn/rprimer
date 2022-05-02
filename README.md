@@ -10,7 +10,7 @@
 
 rprimer is an R package that designs degenerate oligos and PCR assays
 from a multiple DNA sequence alignment of target sequences of interest.
-The package is especially developed for sequence variable viruses.
+The package is specifically designed for sequence variable viruses.
 
 ## Installation
 
@@ -21,7 +21,6 @@ start R (version 4.2) and enter:
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
-BiocManager::install(version = "devel")
 BiocManager::install("rprimer")
 ```
 
@@ -171,10 +170,10 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
 |:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| TGACMGGGTTGATTCTCA     |         0.92 | AB073912….     |        0.08 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TCAGCCCTTCGCMMTCCCCTAT |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GGGTGACMGGGTTGATTCTCAG |         0.88 | AB073912….     |        0.10 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
-| MGGGTTGATTCTCAGCCCTTCG |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GACAGAATTRATTTCGTCGGC  |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
+| TGATTCTCAGCCCTTCGCMMTC |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GGTTGATTCTCAGCCCTTCG   |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TCCCCTATWTTCATCCAACCAA |         1.00 | AB073912….     |        0.00 |               |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 | TCATCCAACCAACCCCTTYGY  |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 | TCATCCAACCAACCCCTTY    |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
