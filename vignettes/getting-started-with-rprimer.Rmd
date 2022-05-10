@@ -123,7 +123,7 @@ Coverage represents the proportion of sequences in the target alignment (among a
 
 `consensusProfile()` has two arguments: 
 
-* `x`: a `Biostrings::MultipleDNAAlignment` object (see [Data import](#Data))
+* `x`: a `MultipleDNAAlignment` object (see [Data import](#Data))
 * `ambiguityThreshold`: position wise "detection level" for ambiguous bases. All DNA bases that occur with a proportion higher than the specified value will be included in the IUPAC consensus character. Defaults to `0`, can range from `0` to `0.2`
 
 Type the following code to generate a consensus profile from the example alignment below:
@@ -464,7 +464,7 @@ library(rprimer)
 filepath <- system.file("extdata", "example_alignment.txt", package = "rprimer")
 
 ## Import the alignment 
-myAlignment <- Biostrings::readDNAMultipleAlignment(filepath, format = "fasta") 
+myAlignment <- readDNAMultipleAlignment(filepath, format = "fasta") 
 
 ## Design primers, probes and assays (modify settings if needed) 
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
@@ -505,7 +505,7 @@ data("exampleRprimerMatchOligo")
 data("exampleRprimerMatchAssay")
 ```
 
-To provide reproducible examples, I have also included an alignment of class `Biostrings::DNAMultipleAlignment`. It is loaded by `data("exampleRprimerAlignment")`.
+To provide reproducible examples, I have also included an alignment of class `DNAMultipleAlignment`. It is loaded by `data("exampleRprimerAlignment")`.
 
 # Table values  
 
