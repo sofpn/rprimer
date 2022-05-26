@@ -53,7 +53,9 @@ The package contains five main functions:
 
 ## Shiny application
 
-The package can be run through a Shiny application (a graphical user interface). To start the application, type `runRprimerApp()` from within R upon installing and attaching the package. 
+The package can be run through a Shiny application (a graphical user interface). To start the application, type `runRprimerApp()` from within R upon installing and attaching the package.
+
+The application can also be found online, [here](https://sofpn.shinyapps.io/rprimer).
 
 ## Workflow 
 

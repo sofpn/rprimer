@@ -46,6 +46,9 @@ The package can be run through a Shiny application (a graphical user
 interface). To start the application, type `runRprimerApp()` from within
 R upon installing and attaching the package.
 
+The application can also be found online,
+[here](https://sofpn.shinyapps.io/rprimer).
+
 ## Workflow
 
 ### Import alignment
@@ -170,12 +173,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
 |:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| GACAGAATTRATTTCGTCGGC  |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
-| TGATTCTCAGCCCTTCGCMMTC |         0.94 | AB073912….     |        0.06 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| GGTTGATTCTCAGCCCTTCG   |         0.88 | AB073912….     |        0.12 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TCCCCTATWTTCATCCAACCAA |         1.00 | AB073912….     |        0.00 |               |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| CGACAGAATTRATTTCGTCGGC |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
+| CMGGGTTGATTCTCAGCCCT   |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| ACMGGGTTGATTCTCAGCCC   |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| ATWTTCATCCAACCAACCC    |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 | TCATCCAACCAACCCCTTYGY  |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TCATCCAACCAACCCCTTY    |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TTCTGGGGTGACMGGGTTGA   |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 
