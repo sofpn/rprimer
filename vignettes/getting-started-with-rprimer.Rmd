@@ -522,7 +522,7 @@ The source code is available at https://github.com/sofpn/rprimer.
 
 # Citation
 
-Enter `citation("rprimer")` from within R for information on how to cite the package.
+Persson S., Larsson C., Simonsson M., Ellström P. (2022) rprimer: an R/bioconductor package for design of degenerate oligos for sequence variable viruses. [*BMC Bioinformatics* 23:239](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-022-04781-0)
 
 # Session info 
 

@@ -173,12 +173,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
 |:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| CGACAGAATTRATTTCGTCGGC |         0.96 | AB073912….     |        0.00 |               |          0.04 | MH410175….      |               0 |                   |                    0 |                        |              0 |                  |
-| CMGGGTTGATTCTCAGCCCT   |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| ACMGGGTTGATTCTCAGCCC   |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| ATWTTCATCCAACCAACCC    |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TCATCCAACCAACCCCTTYGY  |         0.96 | AB073912….     |        0.04 | MF444040….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
-| TTCTGGGGTGACMGGGTTGA   |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| ACMGGGTTGATTCTCAGCCCTT |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
+| CCYTGGCGAATGCTGTGGT    |         0.90 | AB073912….     |        0.08 | KJ701409….    |          0.00 |                 |            0.02 | KJ013415.1        |                    0 |                        |              0 |                  |
+| GGGGTGACMGGGTTGATTCTCA |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
+| TCTGGGGTGACMGGGTTGA    |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
+| TGACMGGGTTGATTCTCAG    |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
+| GGTGACMGGGTTGATTCT     |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 
@@ -196,4 +196,7 @@ for more information on how to use the package.
 
 ## Citation
 
-Type `citation("rprimer")` for information on how to cite the package.
+Persson S., Larsson C., Simonsson M., Ellström P. (2022) rprimer: an
+R/bioconductor package for design of degenerate oligos for sequence
+variable viruses. [*BMC Bioinformatics*
+23:239](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-022-04781-0)
