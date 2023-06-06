@@ -468,8 +468,8 @@ myAlignment <- readDNAMultipleAlignment(filepath, format = "fasta")
 
 ## Design primers, probes and assays (modify settings if needed) 
 myConsensusProfile <- consensusProfile(myAlignment, ambiguityThreshold = 0.05)
-myOligos <- oligos(myConsensusProfile)
-myAssays <- assays(myOligos)
+myOligos <- designOligos(myConsensusProfile)
+myAssays <- designAssays(myOligos)
 
 ## Visualize the results 
 plotData(myConsensusProfile)
