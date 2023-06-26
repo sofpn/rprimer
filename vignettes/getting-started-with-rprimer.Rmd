@@ -2,7 +2,7 @@
 title: "Getting started with rprimer"
 author: 
 - name: "Sofia Persson"
-  affiliation: "European Union Reference Laboratory for Foodborne Viruses, Swedish Food Agency, Uppsala, Sweden"
+  affiliation: "Swedish Food Agency, Uppsala, Sweden"
 package: rprimer
 output: BiocStyle::html_document
 bibliography: bibliography.bibtex
