@@ -178,7 +178,6 @@ consensusProfile <- function(x, ambiguityThreshold = 0) {
     x <- .dnaBasesOnly(x)
     identity <- apply(x, 2, max)
     identity[is.nan(identity)] <- NA
-    identity[identity == 0] <- NA
     unname(identity)
 }
 
