@@ -1,7 +1,7 @@
 Type: Package
 Package: rprimer
 Title: Design Degenerate Oligos from a Multiple DNA Sequence Alignment
-Version: 1.6.0
+Version: 1.7.0
 Description: 
     Functions, workflow, and a Shiny application for visualizing sequence 
     conservation and designing degenerate primers, probes, and (RT)-(q/d)PCR 
