@@ -3,7 +3,7 @@ Package: rprimer
 Title: Design Degenerate Oligos from a Multiple DNA Sequence Alignment
 Version: 1.8.0
 Description: 
-    Functions, workflow, and a Shiny application for visualizing sequence 
+    Functions, workflow and a Shiny application for visualizing sequence 
     conservation and designing degenerate primers, probes, and (RT)-(q/d)PCR 
     assays from a multiple DNA sequence alignment. The results can be presented 
     in data frame format and visualized as dashboard-like plots. For more information, 
@@ -35,16 +35,14 @@ Imports:
     shinyFeedback
 Suggests: 
     BiocStyle,
-    covr,
     kableExtra,
     knitr,
     rmarkdown,
-    styler,
     testthat (>= 3.0.0)
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 RdMacros: mathjaxr
 biocViews: 
     Alignment, 

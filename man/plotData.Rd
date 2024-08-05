@@ -53,17 +53,17 @@ Rprimer classes.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{RprimerProfile}: 
+\item \code{plotData(RprimerProfile)}: 
 
-\item \code{RprimerOligo}: 
+\item \code{plotData(RprimerOligo)}: 
 
-\item \code{RprimerAssay}: 
+\item \code{plotData(RprimerAssay)}: 
 
-\item \code{RprimerMatchOligo}: 
+\item \code{plotData(RprimerMatchOligo)}: 
 
-\item \code{RprimerMatchAssay}: 
+\item \code{plotData(RprimerMatchAssay)}: 
+
 }}
-
 \examples{
 #### Plot an RprimerProfile object
 

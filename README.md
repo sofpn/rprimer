@@ -34,11 +34,11 @@ library(rprimer)
 
 The package contains five main functions:
 
--   `consensusProfile()`
--   `designOligos()`
--   `designAssays()`
--   `checkMatch()`
--   `plotData()`
+- `consensusProfile()`
+- `designOligos()`
+- `designAssays()`
+- `checkMatch()`
+- `plotData()`
 
 ## Shiny application
 
@@ -56,8 +56,8 @@ The application can also be found online,
 The first step is to import an alignment with target sequences of
 interest. This is done by using `readDNAMultipleAlignment()`.
 
-The file “example\_alignment.txt” contains an alignment of 50 hepatitis
-E virus sequences.
+The file “example_alignment.txt” contains an alignment of 50 hepatitis E
+virus sequences.
 
 ``` r
 infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
@@ -173,12 +173,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
 |:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| ACMGGGTTGATTCTCAGCCCTT |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| CCYTGGCGAATGCTGTGGT    |         0.90 | AB073912….     |        0.08 | KJ701409….    |          0.00 |                 |            0.02 | KJ013415.1        |                    0 |                        |              0 |                  |
-| GGGGTGACMGGGTTGATTCTCA |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
-| TCTGGGGTGACMGGGTTGA    |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
-| TGACMGGGTTGATTCTCAG    |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| GGTGACMGGGTTGATTCT     |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
+| MGGGTTGATTCTCAGCCCT    |         0.90 | AB073912….     |        0.10 | AB481228….    |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TGACMGGGTTGATTCTCA     |         0.92 | AB073912….     |        0.08 | AB481228….    |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GTGACMGGGTTGATTCTCA    |         0.92 | AB073912….     |        0.08 | AB481228….    |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| CCCCTATWTTCATCCAACCAA  |         1.00 | AB073912….     |        0.00 |               |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| CCCCTATWTTCATCCAACC    |         1.00 | AB073912….     |        0.00 |               |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TCAGCCCTTCGCMMTCCCCTAT |         0.94 | AB073912….     |        0.06 | AB481228….    |             0 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 
@@ -200,3 +200,5 @@ Persson S., Larsson C., Simonsson M., Ellström P. (2022) rprimer: an
 R/bioconductor package for design of degenerate oligos for sequence
 variable viruses. [*BMC Bioinformatics*
 23:239](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-022-04781-0)
+
+The publication describes version 1.1.0 of the package.

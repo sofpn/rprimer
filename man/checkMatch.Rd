@@ -171,11 +171,11 @@ The function is a wrapper to \code{Biostrings::vcountPDict()}
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{RprimerOligo}: 
+\item \code{checkMatch(RprimerOligo)}: 
 
-\item \code{RprimerAssay}: 
+\item \code{checkMatch(RprimerAssay)}: 
+
 }}
-
 \section{Limitations}{
 
 There are a few limitations with this function, which is important to be
