@@ -91,7 +91,7 @@ dataServer <- function(id) {
 
         output$alnLength <- shiny::renderText({
             shiny::req(is(aln(), "DNAMultipleAlignment"))
-            paste("Alignment length:", ncol(aln()))
+            paste("Alignment width:", ncol(aln()))
         })
 
         list(data = shiny::reactive(aln()))

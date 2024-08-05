@@ -35,7 +35,7 @@ A number [0, 1], defaults to \code{0.01}.}
 \item{lengthPrimer}{Primer length range. A numeric vector [15, 30],
 defaults to \code{c(18, 22)}.}
 
-\item{maxDegeneracyPrimer}{Maximum number of variants of each primer. A number [1, 64],
+\item{maxDegeneracyPrimer}{Maximum number of variants of each primer. A number [1, 256],
 defaults to \code{4}.}
 
 \item{gcClampPrimer}{If primers must have a GC clamp.
@@ -66,7 +66,7 @@ defaults to \code{TRUE}.}
 \item{lengthProbe}{Probe length range. A numeric vector [15, 40],
 defaults to \code{c(18, 22)}.}
 
-\item{maxDegeneracyProbe}{Maximum number of variants of each probe. A number [1, 64],
+\item{maxDegeneracyProbe}{Maximum number of variants of each probe. A number [1, 256],
 defaults to \code{4}.}
 
 \item{avoidFiveEndGProbe}{If probes with G

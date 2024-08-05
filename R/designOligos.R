@@ -15,7 +15,7 @@
 #' defaults to \code{c(18, 22)}.
 #'
 #' @param maxDegeneracyPrimer
-#' Maximum number of variants of each primer. A number [1, 64],
+#' Maximum number of variants of each primer. A number [1, 256],
 #' defaults to \code{4}.
 #'
 #' @param gcClampPrimer
@@ -55,7 +55,7 @@
 #' defaults to \code{c(18, 22)}.
 #'
 #' @param maxDegeneracyProbe
-#' Maximum number of variants of each probe. A number [1, 64],
+#' Maximum number of variants of each probe. A number [1, 256],
 #' defaults to \code{4}.
 #'
 #' @param avoidFiveEndGProbe
@@ -301,8 +301,8 @@ designOligos <- function(x,
     if (!(min(lengthPrimer) >= 15 && max(lengthPrimer) <= 40)) {
         stop("'lengthPrimer' must be from 15 to 40.", call. = FALSE)
     }
-    if (!(maxDegeneracyPrimer >= 1 && maxDegeneracyPrimer <= 64)) {
-        stop("'maxDegeneracyPrimer' must be from 1 to 64.", call. = FALSE)
+    if (!(maxDegeneracyPrimer >= 1 && maxDegeneracyPrimer <= 256)) {
+        stop("'maxDegeneracyPrimer' must be from 1 to 256.", call. = FALSE)
     }
     if (!is.logical(gcClampPrimer)) {
         stop("'gcClampPrimer' must be TRUE or FALSE", call. = FALSE)
@@ -339,8 +339,8 @@ designOligos <- function(x,
     if (!(min(lengthProbe) >= 15 && max(lengthProbe) <= 40)) {
         stop("'lengthProbe' must be from 15 to 40.", call. = FALSE)
     }
-    if (!(maxDegeneracyProbe >= 1 && maxDegeneracyProbe <= 64)) {
-        stop("'maxDegeneracyProbe' must be from 1 to 64.", call. = FALSE)
+    if (!(maxDegeneracyProbe >= 1 && maxDegeneracyProbe <= 256)) {
+        stop("'maxDegeneracyProbe' must be from 1 to 256.", call. = FALSE)
     }
     if (!is.logical(avoidFiveEndGProbe)) {
         stop("'avoidFiveEndGProbe' must be TRUE or FALSE", call. = FALSE)
