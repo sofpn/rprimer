@@ -16,7 +16,7 @@ The package is specifically designed for sequence variable viruses.
 
 To install rprimer from
 [Bioconductor](https://bioconductor.org/packages/devel/bioc/html/rprimer.html),
-start R (version 4.2) and enter:
+start R (version 4.2 or later) and enter:
 
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -34,11 +34,11 @@ library(rprimer)
 
 The package contains five main functions:
 
--   `consensusProfile()`
--   `designOligos()`
--   `designAssays()`
--   `checkMatch()`
--   `plotData()`
+- `consensusProfile()`
+- `designOligos()`
+- `designAssays()`
+- `checkMatch()`
+- `plotData()`
 
 ## Shiny application
 
@@ -56,8 +56,8 @@ The application can also be found online,
 The first step is to import an alignment with target sequences of
 interest. This is done by using `readDNAMultipleAlignment()`.
 
-The file “example\_alignment.txt” contains an alignment of 50 hepatitis
-E virus sequences.
+The file “example_alignment.txt” contains an alignment of 50 hepatitis E
+virus sequences.
 
 ``` r
 infile <- system.file("extdata", "example_alignment.txt", package = "rprimer")
@@ -90,6 +90,9 @@ The results can be visualized with `plotData()`:
 
 ``` r
 plotData(myConsensusProfile)
+#> Warning in ggplot2::geom_segment(color = "#93A8AC", ggplot2::aes(x = min(position), : All aesthetics have length 1, but the data has 7597 rows.
+#> ℹ Please consider using `annotate()` or provide this layer with data containing
+#>   a single row.
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
@@ -173,12 +176,12 @@ Results:
 
 | iupacSequence          | perfectMatch | idPerfectMatch | oneMismatch | idOneMismatch | twoMismatches | idTwoMismatches | threeMismatches | idThreeMismatches | fourOrMoreMismatches | idFourOrMoreMismatches | offTargetMatch | idOffTargetMatch |
 |:-----------------------|-------------:|:---------------|------------:|:--------------|--------------:|:----------------|----------------:|:------------------|---------------------:|:-----------------------|---------------:|:-----------------|
-| ACMGGGTTGATTCTCAGCCCTT |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| CCYTGGCGAATGCTGTGGT    |         0.90 | AB073912….     |        0.08 | KJ701409….    |          0.00 |                 |            0.02 | KJ013415.1        |                    0 |                        |              0 |                  |
-| GGGGTGACMGGGTTGATTCTCA |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
-| TCTGGGGTGACMGGGTTGA    |         0.92 | AB073912….     |        0.06 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
-| TGACMGGGTTGATTCTCAG    |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |            0.00 |                   |                    0 |                        |              0 |                  |
-| GGTGACMGGGTTGATTCT     |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |            0.00 |                   |                    0 |                        |              0 |                  |
+| ACMGGGTTGATTCTCAGCCCTT |         0.90 | AB073912….     |        0.10 | AB481228….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TATWTTCATCCAACCAACCCC  |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| CRGTGGTTTCTGGGGTGAC    |         0.96 | AB073912….     |        0.04 | BD378055….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| TTCATCCAACCAACCCCT     |         0.98 | AB073912….     |        0.02 | HM439284.1    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
+| GGTGACMGGGTTGATTCT     |         0.90 | AB073912….     |        0.08 | BD378055….    |          0.02 | JQ953665.1      |               0 |                   |                    0 |                        |              0 |                  |
+| TGGTTTCTGGGGTGACMG     |         0.96 | AB073912….     |        0.04 | BD378055….    |          0.00 |                 |               0 |                   |                    0 |                        |              0 |                  |
 
 The match table can be visualized using `plotData()`:
 
