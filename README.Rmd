@@ -23,7 +23,7 @@ rprimer is an R package that designs degenerate oligos and PCR assays from a mul
 
 ## Installation
 
-To install rprimer from [Bioconductor](https://bioconductor.org/packages/devel/bioc/html/rprimer.html), start R (version 4.2) and enter: 
+To install rprimer from [Bioconductor](https://bioconductor.org/packages/devel/bioc/html/rprimer.html), start R (version 4.2 or later) and enter: 
 
   ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))
